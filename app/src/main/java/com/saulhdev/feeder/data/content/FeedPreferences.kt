@@ -1083,6 +1083,24 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
     }
 
     companion object {
+        /**
+         * Every key declared below, with its type: what a settings file may
+         * put back (see SettingsBackup.import). Filled by the declarations
+         * themselves, so a setting added here can be restored without anybody
+         * remembering a second list. First in the object, so it exists before
+         * the first key is declared.
+         */
+        private val declared = LinkedHashMap<String, PrefType>()
+
+        /** The keys this version of the app knows, by name, with their types. */
+        val DECLARED_KEYS: Map<String, PrefType> get() = declared
+
+        private fun booleanKey(name: String) = booleanPreferencesKey(name).also { declared[name] = PrefType.BOOLEAN }
+        private fun floatKey(name: String) = floatPreferencesKey(name).also { declared[name] = PrefType.FLOAT }
+        private fun longKey(name: String) = longPreferencesKey(name).also { declared[name] = PrefType.LONG }
+        private fun stringKey(name: String) = stringPreferencesKey(name).also { declared[name] = PrefType.STRING }
+        private fun stringSetKey(name: String) = stringSetPreferencesKey(name).also { declared[name] = PrefType.STRING_SET }
+
         val prefsModule = module {
             singleOf(::FeedPreferences)
             singleOf(::provideDataStore)
@@ -1102,84 +1120,97 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
             )
         }
 
-        val OVERLAY_THEME = stringPreferencesKey("pref_overlay_theme")
-        val OVERLAY_DYNAMIC_THEME = booleanPreferencesKey("pref_dynamic_theme")
-        val APP_FONT = stringPreferencesKey("pref_app_font")
-        val PURE_BLACK = booleanPreferencesKey("pref_pure_black")
-        val GLANCE_ENABLED = booleanPreferencesKey("pref_glance_enabled")
-        val GLANCE_PLACE_NAME = stringPreferencesKey("pref_glance_place_name")
-        val GLANCE_PLACE_COORDS = stringPreferencesKey("pref_glance_place_coords")
-        val OVERLAY_OPACITY = floatPreferencesKey("pref_overlay_opacity")
-        val ARTICLE_OPEN_MODE = stringPreferencesKey("pref_article_open_mode")
-        val FEED_LAYOUT = stringPreferencesKey("pref_feed_layout")
-        val CATEGORY_FILTER = stringSetPreferencesKey("pref_category_filter")
-        val EXPORT_DIAGNOSTICS = stringPreferencesKey("pref_export_diagnostics")
-        val REPORT_PROBLEM = stringPreferencesKey("pref_report_problem")
+        val OVERLAY_THEME = stringKey("pref_overlay_theme")
+        val OVERLAY_DYNAMIC_THEME = booleanKey("pref_dynamic_theme")
+        val APP_FONT = stringKey("pref_app_font")
+        val PURE_BLACK = booleanKey("pref_pure_black")
+        val GLANCE_ENABLED = booleanKey("pref_glance_enabled")
+        val GLANCE_PLACE_NAME = stringKey("pref_glance_place_name")
+        val GLANCE_PLACE_COORDS = stringKey("pref_glance_place_coords")
+        val OVERLAY_OPACITY = floatKey("pref_overlay_opacity")
+        val ARTICLE_OPEN_MODE = stringKey("pref_article_open_mode")
+        val FEED_LAYOUT = stringKey("pref_feed_layout")
+        val CATEGORY_FILTER = stringSetKey("pref_category_filter")
+        val EXPORT_DIAGNOSTICS = stringKey("pref_export_diagnostics")
+        val REPORT_PROBLEM = stringKey("pref_report_problem")
 
         /** Open the tapped article in Whisper's own reader, using cached content. */
         const val OPEN_MODE_READER = "reader"
 
         /** Hand the article's URL to the device's default browser. */
         const val OPEN_MODE_BROWSER = "browser"
-        val REMOVE_DUPLICATES = booleanPreferencesKey("pref_remove_duplicates")
-        val VOLUME_KEY_SCROLL = booleanPreferencesKey("pref_volume_key_scroll")
-        val READ_VISIBILITY = stringPreferencesKey("pref_read_visibility")
-        val READ_VISIBILITY_BEFORE_HIDE = stringPreferencesKey("pref_read_visibility_before_hide")
-        val MARK_READ_ON_SCROLL = floatPreferencesKey("pref_mark_read_dwell_seconds")
-        val LEARNED = stringPreferencesKey("pref_learned")
-        val STATISTICS = stringPreferencesKey("pref_statistics")
-        val ACCOUNT = stringPreferencesKey("pref_account")
-        val BACKUP_FOLDER = stringPreferencesKey("pref_backup_folder")
-        val BACKUP_LAST_RUN = stringPreferencesKey("pref_backup_last_run")
+        val REMOVE_DUPLICATES = booleanKey("pref_remove_duplicates")
+        val VOLUME_KEY_SCROLL = booleanKey("pref_volume_key_scroll")
+        val READ_VISIBILITY = stringKey("pref_read_visibility")
+        val READ_VISIBILITY_BEFORE_HIDE = stringKey("pref_read_visibility_before_hide")
+        val MARK_READ_ON_SCROLL = floatKey("pref_mark_read_dwell_seconds")
+        val LEARNED = stringKey("pref_learned")
+        val STATISTICS = stringKey("pref_statistics")
+        val ACCOUNT = stringKey("pref_account")
+        val BACKUP_FOLDER = stringKey("pref_backup_folder")
+        val BACKUP_LAST_RUN = stringKey("pref_backup_last_run")
 
         // Spelled out again in PlatformBackupAgent, which the system builds
         // before the preference graph is worth loading. If either name changes
         // here it has to change there, which is why both say so.
-        val PLATFORM_BACKUP_DEVICE = booleanPreferencesKey("pref_platform_backup_device")
-        val PLATFORM_BACKUP_CLOUD = booleanPreferencesKey("pref_platform_backup_cloud")
-        val ONBOARDING_SEEN = booleanPreferencesKey("pref_onboarding_seen")
-        val FULL_TEXT_PURGED = booleanPreferencesKey("pref_full_text_purged")
-        val TOUR_SEEN = booleanPreferencesKey("pref_tour_seen")
-        val NOTIFICATION_PERMISSION_ASKED = booleanPreferencesKey("pref_notification_permission_asked")
-        val SHOW_TOUR = stringPreferencesKey("pref_show_tour")
-        val LAUNCHER_SETUP = stringPreferencesKey("pref_launcher_setup")
-        val SOURCES_ROUTE = stringPreferencesKey("pref_sources_route")
-        val SOURCES_SORT = stringPreferencesKey("pref_sources_sort")
-        val SOURCES_SORT_ASC = booleanPreferencesKey("pref_sources_sort_asc")
-        val SUGGESTIONS = stringPreferencesKey("pref_suggestions")
-        val IMPORT_BOOKMARKS = stringPreferencesKey("pref_import_bookmarks")
-        val BROKEN_FEEDS = stringPreferencesKey("pref_broken_feeds")
-        val INSECURE_FEEDS = stringPreferencesKey("pref_insecure_feeds")
-        val FEED_LIBRARY = stringPreferencesKey("pref_feed_library")
-        val BREAKING_NEWS = booleanPreferencesKey("pref_breaking_news")
-        val DIM_SKIPPED = booleanPreferencesKey("pref_dim_skipped")
+        val PLATFORM_BACKUP_DEVICE = booleanKey("pref_platform_backup_device")
+        val PLATFORM_BACKUP_CLOUD = booleanKey("pref_platform_backup_cloud")
+        val ONBOARDING_SEEN = booleanKey("pref_onboarding_seen")
+        val FULL_TEXT_PURGED = booleanKey("pref_full_text_purged")
+        val TOUR_SEEN = booleanKey("pref_tour_seen")
+        val NOTIFICATION_PERMISSION_ASKED = booleanKey("pref_notification_permission_asked")
+        val SHOW_TOUR = stringKey("pref_show_tour")
+        val LAUNCHER_SETUP = stringKey("pref_launcher_setup")
+        val SOURCES_ROUTE = stringKey("pref_sources_route")
+        val SOURCES_SORT = stringKey("pref_sources_sort")
+        val SOURCES_SORT_ASC = booleanKey("pref_sources_sort_asc")
+        val SUGGESTIONS = stringKey("pref_suggestions")
+        val IMPORT_BOOKMARKS = stringKey("pref_import_bookmarks")
+        val BROKEN_FEEDS = stringKey("pref_broken_feeds")
+        val INSECURE_FEEDS = stringKey("pref_insecure_feeds")
+        val FEED_LIBRARY = stringKey("pref_feed_library")
+        val BREAKING_NEWS = booleanKey("pref_breaking_news")
+        val DIM_SKIPPED = booleanKey("pref_dim_skipped")
 
-        val FULL_TEXT_ALL_FEEDS = booleanPreferencesKey("pref_full_text_all_feeds")
-        val FULL_TEXT_ON_MOBILE = booleanPreferencesKey("pref_full_text_on_mobile")
-        val SHOW_BOOKMARKS = booleanPreferencesKey("pref_show_bookmarks")
-        val SYNC_ON_WIFI = booleanPreferencesKey("pref_sync_only_wifi")
-        val SYNC_ONLY_CHARGING = booleanPreferencesKey("pref_sync_only_charging")
-        val SYNC_FREQUENCY = stringPreferencesKey("pref_sync_frequency")
-        val SYNC_RANGE = stringPreferencesKey("pref_sync_range")
-        val ITEMS_PER_FEED = stringPreferencesKey("pref_items_per_feed")
-        val BLOCKED_WORDS = stringSetPreferencesKey("pref_blocked_words")
-        val PLUGINS = stringSetPreferencesKey("pref_enabled_plugins")
-        val ABOUT = stringPreferencesKey("pref_about")
-        val DEBUG = booleanPreferencesKey("pref_debugging")
-        val TEST_SYNC_NOTICE = stringPreferencesKey("pref_test_sync_notice")
+        val FULL_TEXT_ALL_FEEDS = booleanKey("pref_full_text_all_feeds")
+        val FULL_TEXT_ON_MOBILE = booleanKey("pref_full_text_on_mobile")
+        val SHOW_BOOKMARKS = booleanKey("pref_show_bookmarks")
+        val SYNC_ON_WIFI = booleanKey("pref_sync_only_wifi")
+        val SYNC_ONLY_CHARGING = booleanKey("pref_sync_only_charging")
+        val SYNC_FREQUENCY = stringKey("pref_sync_frequency")
+        val SYNC_RANGE = stringKey("pref_sync_range")
+        val ITEMS_PER_FEED = stringKey("pref_items_per_feed")
+        val BLOCKED_WORDS = stringSetKey("pref_blocked_words")
+        val PLUGINS = stringSetKey("pref_enabled_plugins")
+        val ABOUT = stringKey("pref_about")
+        val DEBUG = booleanKey("pref_debugging")
+        val TEST_SYNC_NOTICE = stringKey("pref_test_sync_notice")
 
         // Filter & Sort
-        val FILTER_SOURCES = stringSetPreferencesKey("filter_sources")
+        val FILTER_SOURCES = stringSetKey("filter_sources")
         // The stored name stays as it was written. Renaming a DataStore key
         // is not a rename, it is a deletion plus an empty new setting, and
         // nobody's pinned sources are worth tidier spelling.
-        val PINNED_SOURCES = stringSetPreferencesKey("pref_favourite_sources")
-        val HIDDEN_SOURCES = stringSetPreferencesKey("pref_hidden_sources")
-val LEARNED_RESET_AT = longPreferencesKey("pref_learned_reset_at")
-        val BACKUP_STOPPED_AT = longPreferencesKey("pref_backup_stopped_at")
-        val SOURCE_AFFINITY = stringSetPreferencesKey("pref_source_affinity")
-        val FILTER_TAGS = stringSetPreferencesKey("filter_tags")
-        val FILTER_SORT = stringPreferencesKey("filter_sorting")
-        val FILTER_SORT_ASC = booleanPreferencesKey("filter_sorting_ascending")
+        val PINNED_SOURCES = stringSetKey("pref_favourite_sources")
+        val HIDDEN_SOURCES = stringSetKey("pref_hidden_sources")
+        val LEARNED_RESET_AT = longKey("pref_learned_reset_at")
+        val BACKUP_STOPPED_AT = longKey("pref_backup_stopped_at")
+        val SOURCE_AFFINITY = stringSetKey("pref_source_affinity")
+        val FILTER_TAGS = stringSetKey("filter_tags")
+        val FILTER_SORT = stringKey("filter_sorting")
+        val FILTER_SORT_ASC = booleanKey("filter_sorting_ascending")
     }
+}
+
+/**
+ * A preference's type, as a settings file names it. DataStore is typed and JSON
+ * is not, so the type travels with each value; see SettingsBackup.
+ */
+enum class PrefType(val tag: String) {
+    BOOLEAN("boolean"),
+    INT("int"),
+    LONG("long"),
+    FLOAT("float"),
+    STRING("string"),
+    STRING_SET("stringSet"),
 }

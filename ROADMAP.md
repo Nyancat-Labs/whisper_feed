@@ -2008,7 +2008,7 @@ case. *Low*: hardening or tidying.
   data. **Fix:** refuse audio, video and binary content types before reading;
   read through a counting stream capped at 10 MB for a feed and 5 MB for a
   page; and fail that one item, not the sync.
-- **S3 · Medium · A settings file can write anything.** The import says unknown
+- ~~**S3 · Medium · A settings file can write anything.**~~ The import says unknown
   keys are skipped (`SettingsBackup.kt:136`); the code writes every key, as
   whatever type the file claims (`:142`). A file with the sync frequency as a
   number rather than text makes the next read of that setting throw, at start,
@@ -2016,7 +2016,13 @@ case. *Low*: hardening or tidying.
   anybody editing a file: a backup from a version in which a setting had a
   different type. **Fix:** import only the keys `FeedPreferences` declares,
   only as the type it declares, and count the rest as skipped. That also makes
-  the comment true.
+  the comment true. **Done.** The keys register themselves as they are
+  declared, so a new setting is restorable with no second list, and a test
+  compares the register with the declarations. Two more stay on their own
+  phone: the backup-stopped warning, and whether the phone has asked for
+  notification permission, which restored on a new phone meant it never
+  asked. Tested against a real preference store; the old code failed four of
+  the seven tests.
 - **S4 · Medium · DNS rebinding gets past the private-network guard.**
   `BlockPrivateNetworks` (`SafeAddress.kt:141`) looks the host up itself;
   OkHttp has already looked it up again to connect. A hostile feed's domain can

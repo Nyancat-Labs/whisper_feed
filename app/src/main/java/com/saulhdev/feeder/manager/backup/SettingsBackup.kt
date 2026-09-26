@@ -26,6 +26,8 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
+import com.saulhdev.feeder.data.content.FeedPreferences
+import com.saulhdev.feeder.data.content.PrefType
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
@@ -75,6 +77,12 @@ object SettingsBackup {
     private val NOT_PORTABLE = setOf(
         "pref_backup_folder",
         "pref_backup_last_run",
+        // Also this phone's: when its folder stopped working, and whether it
+        // has asked for notification permission. Restored on a new phone,
+        // the one warned about a folder it never had and the other never
+        // asked at all.
+        "pref_backup_stopped_at",
+        "pref_notification_permission_asked",
     )
 
     /**
@@ -133,13 +141,23 @@ object SettingsBackup {
     /**
      * Puts them back, and reports how many.
      *
-     * Unknown keys are skipped rather than written. A backup taken from a
-     * later version of the app will name settings this one has never heard of,
-     * and storing them would leave junk in the preferences file for ever;
-     * skipping means an older app reads what it understands and ignores the
-     * rest, which is how a backup format survives its own app changing.
+     * Only a key this version declares, and only as the type it declares it.
+     * An unknown key is skipped: a backup from a later version names settings
+     * this one has never heard of, and storing them would leave junk in the
+     * preferences for ever. A known key in another type is skipped too, and
+     * that one matters more. It was written as given, and the next read of the
+     * setting as its own type threw, at start, on every start, until the app's
+     * data was cleared. A setting that changed type between versions would
+     * have done it with no hand-edited file at all.
+     *
+     * @param declared what may be put back; the app's own keys unless a test
+     *   says otherwise.
      */
-    suspend fun import(dataStore: DataStore<Preferences>, text: String): Int {
+    suspend fun import(
+        dataStore: DataStore<Preferences>,
+        text: String,
+        declared: Map<String, PrefType> = FeedPreferences.DECLARED_KEYS,
+    ): Int {
         val root = runCatching { json.parseToJsonElement(text).jsonObject }.getOrNull()
             ?: return 0
         if (root["app"]?.jsonPrimitive?.contentOrNull != "whisper") return 0
@@ -151,23 +169,25 @@ object SettingsBackup {
                 val entry = runCatching { element.jsonObject }.getOrNull() ?: return@forEach
                 val name = entry["key"]?.jsonPrimitive?.contentOrNull.orEmpty()
                 if (name.isEmpty() || name in NOT_PORTABLE) return@forEach
+                val type = declared[name] ?: return@forEach
+                if (entry["type"]?.jsonPrimitive?.contentOrNull != type.tag) return@forEach
                 val value = entry["value"] ?: return@forEach
 
                 runCatching {
-                    when (entry["type"]?.jsonPrimitive?.contentOrNull) {
-                        "boolean" -> prefs[booleanPreferencesKey(name)] =
+                    when (type) {
+                        PrefType.BOOLEAN -> prefs[booleanPreferencesKey(name)] =
                             value.jsonPrimitive.boolean
 
-                        "int" -> prefs[intPreferencesKey(name)] = value.jsonPrimitive.int
-                        "long" -> prefs[longPreferencesKey(name)] = value.jsonPrimitive.long
-                        "float" -> prefs[floatPreferencesKey(name)] = value.jsonPrimitive.float
-                        "string" -> prefs[stringPreferencesKey(name)] =
-                            value.jsonPrimitive.content
+                        PrefType.INT -> prefs[intPreferencesKey(name)] = value.jsonPrimitive.int
+                        PrefType.LONG -> prefs[longPreferencesKey(name)] = value.jsonPrimitive.long
+                        PrefType.FLOAT -> prefs[floatPreferencesKey(name)] = value.jsonPrimitive.float
+                        // content alone would take a number or true as text;
+                        // only a JSON string is one.
+                        PrefType.STRING -> prefs[stringPreferencesKey(name)] =
+                            value.jsonPrimitive.takeIf { it.isString }?.content ?: return@forEach
 
-                        "stringSet" -> prefs[stringSetPreferencesKey(name)] =
+                        PrefType.STRING_SET -> prefs[stringSetPreferencesKey(name)] =
                             value.jsonArray.map { it.jsonPrimitive.content }.toSet()
-
-                        else -> return@forEach
                     }
                     applied++
                 }
