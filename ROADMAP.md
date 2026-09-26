@@ -1979,7 +1979,7 @@ case. *Low*: hardening or tidying.
 
 #### 22a. Security
 
-- **S1 · High · Diagnostics can carry addresses.** The report includes this
+- ~~**S1 · High · Diagnostics can carry addresses.**~~ The report includes this
   app's log as it stands (`Diagnostics.kt:430`), and release builds keep
   warnings and errors (§19a). Three lines put addresses there: every failed
   feed with its full URL (`RssLocalSync.kt:356`, and the failure message
@@ -1992,6 +1992,14 @@ case. *Low*: hardening or tidying.
   it is read, turning any `http(s)://…` into `<address>` and any
   latitude/longitude pair into `<place>`. A test builds a report after
   failing feeds and a failed forecast, and finds no `://` in it.
+  **Done.** Ten lines no longer write an address: the failing feed and its
+  failure message, the weather request, a chosen file, a feed's image links,
+  a full article's link, the typed search, a bookmark's site and a suggested
+  site. The report is scrubbed as one piece as it is built (`LogScrub`):
+  anything with a scheme, IP addresses of both kinds, coordinates, and the
+  reader's own sync server, account name and place. Tested on lines taken
+  from real reports, including the Sony's; a source test fails, naming the
+  line, if a warning or error writes an address again.
 - **S2 · Medium · No limit on the size or type of a download.** A feed is read
   whole into memory (`RssLocalSync.kt:454`, `body.bytes()`), and so is a page
   for the full article (`FeedParser.kt:410`, `curl`). A feed address that
@@ -2019,14 +2027,15 @@ case. *Low*: hardening or tidying.
   address the connection actually went to (`chain.connection()?.route()
   ?.socketAddress`), which is one lookup and cannot disagree with itself; and
   add a `Dns` that drops private answers, so the socket is never opened.
-- **S5 · Low · Other apps can open any page inside Whisper.** The web-view
+- ~~**S5 · Low · Other apps can open any page inside Whisper.**~~ The web-view
   screen has a deep link (`NavigationManager.kt:141`), and `MainActivity`, which
   must be exported because it is the launcher entry, hands every intent it
   receives to navigation (`MainActivity.kt:274`). Any installed app can open a
   page of its choosing in Whisper's own browser, JavaScript on: a convincing
   "sign in to FreshRSS again". Nothing in the app uses that link; the stuck-sync
   notice, the panel and the settings shortcut use the other three. **Fix:**
-  remove it.
+  remove it. **Done**, and a test fails if a deep link takes an address
+  again.
 - **S6 · Low · The account store can stop the app from starting.** The
   encrypted preferences are created with nothing around them
   (`SyncAccount.kt:51`). Backups already leave the file out, so a restore

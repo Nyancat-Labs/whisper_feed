@@ -346,7 +346,8 @@ suspend fun parseFullArticle(
     } catch (e: Throwable) {
         Log.e(
             "FeederFullText",
-            "Failed to get fulltext for ${feedItem.link}: ${e.message}",
+            // The article's id, not its link: this ends up in a shared report.
+            "Failed to get fulltext for ${feedItem.uuid}: ${e.message}",
             e
         )
         false to e

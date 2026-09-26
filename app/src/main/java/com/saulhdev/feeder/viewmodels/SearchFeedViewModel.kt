@@ -108,7 +108,7 @@ class SearchFeedViewModel(
         // Nothing anywhere. One failure for the address the user gave, rather
         // than one per candidate — a wall of errors for paths they never typed
         // says nothing useful.
-        Log.d(TAG, "No feed found at or under $url")
+        Log.d(TAG, "No feed found at or under the address given")
         emit(
             SearchResult(
                 title = FAILED_TO_PARSE_PLACEHOLDER,

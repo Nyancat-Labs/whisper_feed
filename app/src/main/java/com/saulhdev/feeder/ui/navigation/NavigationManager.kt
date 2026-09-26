@@ -137,9 +137,12 @@ fun NavigationManager(
             composable<NavRoute.FeedLibrary> { FeedLibraryPage() }
             composable<NavRoute.Statistics> { StatisticsPage() }
             composable<NavRoute.BlockedWords> { BlockedWordsPage() }
-            composable<NavRoute.WebView>(
-                deepLinks = listOf(navDeepLink { uriPattern = "$NAV_BASE${Routes.WEB_VIEW}/{url}" })
-            ) {
+            // No deep link, on purpose. MainActivity is exported, as the
+            // launcher entry has to be, and hands every intent it receives to
+            // navigation: a link here let any installed app open a page of its
+            // choosing inside Whisper's own browser, looking like part of the
+            // app. Nothing in the app ever used it.
+            composable<NavRoute.WebView> {
                 val args = it.toRoute<NavRoute.WebView>()
                 ComposeWebView(args.url)
             }
@@ -158,7 +161,6 @@ fun NavigationManager(
 object Routes {
     const val MAIN = "main"
     const val SETTINGS = "settings"
-    const val WEB_VIEW = "web_view"
     const val ARTICLE_VIEW = "article_page"
     const val BROKEN_FEEDS = "broken_feeds"
 }

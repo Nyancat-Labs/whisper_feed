@@ -153,7 +153,7 @@ class DiscoveryWorker(
                     mentions = mentions,
                 )
             )
-            Log.i(TAG, "Suggesting $host on the evidence of $mentions read articles")
+            Log.i(TAG, "Suggesting a site on the evidence of $mentions read articles")
         }
 
         suggestFromLibrary(suggestions, subscribed, known + candidates.map { it.first }.toSet())

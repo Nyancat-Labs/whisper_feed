@@ -125,7 +125,7 @@ class WeatherRepository {
             val url = "https://geocoding-api.open-meteo.com/v1/search" +
                     "?name=${java.net.URLEncoder.encode(query.trim(), "UTF-8")}" +
                     "&count=8&format=json"
-            val body = get(url) ?: return@withContext emptyList()
+            val body = get(url, "place search") ?: return@withContext emptyList()
             val results = JSONObject(body).optJSONArray("results") ?: return@withContext emptyList()
             (0 until results.length()).map { i ->
                 val o = results.getJSONObject(i)
@@ -160,7 +160,7 @@ class WeatherRepository {
                     // Two days, so that after dark there is still a sunrise
                     // ahead of "now" to show.
                     "&timezone=auto&forecast_days=2"
-            val body = get(url) ?: return@withContext null
+            val body = get(url, "forecast") ?: return@withContext null
             val root = JSONObject(body)
             val current = root.getJSONObject("current")
             val daily = root.optJSONObject("daily")
@@ -188,14 +188,17 @@ class WeatherRepository {
         }
     }
 
-    private fun get(url: String): String? {
+    /** @param what which request this is, for the log: never the address. */
+    private fun get(url: String, what: String): String? {
         val request = Request.Builder()
             .url(url)
             .header("User-Agent", "Whisper RSS reader")
             .build()
         client.newCall(request).execute().use { response ->
             if (!response.isSuccessful) {
-                Log.w(TAG, "HTTP ${response.code} for $url")
+                // Which request, not the address: its query is the
+                // reader's location, or the place they typed.
+                Log.w(TAG, "HTTP ${response.code} for the $what")
                 return null
             }
             return response.body.string()

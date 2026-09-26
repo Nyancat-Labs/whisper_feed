@@ -353,7 +353,9 @@ internal suspend fun syncFeeds(
                                 // structured concurrency that cancelled us.
                                 throw e
                             } catch (e: Throwable) {
-                                Log.e(TAG, "Failed to sync ${feed.title}: ${feed.url}", e)
+                                // The title, never the address: some feed addresses carry a
+                                // private token, and this line ends up in a shared report.
+                                Log.e(TAG, "Failed to sync ${feed.title}", e)
                                 // Error, clear syncing flag but don't update lastSync
                                 feedsRepo.setCurrentlySyncingOn(feedId = feed.id, syncing = false)
                                 val code = (e as? ResponseFailure)?.code
@@ -446,7 +448,7 @@ private suspend fun syncFeed(
             null
         } else {
             if (!response.isSuccessful) {
-                throw ResponseFailure(response.code, "${response.code} when fetching ${feedSql.title}: ${feedSql.url}")
+                throw ResponseFailure(response.code, "${response.code} when fetching ${feedSql.title}")
             }
             // Read whole, then fingerprinted: a feed that sends everything
             // every time is most often sending exactly what it sent last

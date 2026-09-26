@@ -74,7 +74,7 @@ class FeedDiscovery(private val parser: FeedParser) {
         // pointing at a router would otherwise have the phone probing the
         // house from inside the firewall.
         if (!SafeAddress.isPublicHost(site)) {
-            Log.i(TAG, "Refusing to probe $site: not a public address")
+            Log.i(TAG, "Refusing to probe a bookmark: not a public address")
             return@withContext null
         }
 

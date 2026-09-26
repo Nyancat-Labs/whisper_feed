@@ -36,7 +36,9 @@ class OverlayService(): Service() {
         // *this* process's uid — so a check written that way would have
         // admitted everybody. See LauncherLink.callerIsALauncher.
         if (!LauncherLink.callerIsALauncher(this, intent)) {
-            Log.w(TAG, "Refusing a bind from ${intent.data?.host}: not a launcher")
+            // The Uri's host here is the caller's package name, not an address.
+            val caller = intent.data?.host
+            Log.w(TAG, "Refusing a bind from $caller: not a launcher")
             return null
         }
         // The one moment the app can know a launcher is actually using it.

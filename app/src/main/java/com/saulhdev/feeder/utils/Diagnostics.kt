@@ -51,6 +51,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withTimeout
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -77,7 +78,41 @@ object Diagnostics : KoinComponent {
     /** Enough to see the shape of a feed list without printing forty lines. */
     private const val MAX_SOURCES_LISTED = 20
 
-    suspend fun collect(context: Context): String = buildString {
+    /**
+     * The whole report, with addresses taken out. Scrubbed as one piece
+     * rather than section by section, so a section added later cannot forget
+     * to be. See [LogScrub].
+     */
+    suspend fun collect(context: Context): String = LogScrub.scrub(draft(context), ownValues())
+
+    /**
+     * What is this reader's own and must not travel with the report: the sync
+     * server and account name, and the glance row's place. Each read on its
+     * own, so one that cannot be read leaves the others.
+     */
+    private suspend fun ownValues(): Map<String, String> = buildMap {
+        runCatching {
+            val account = get<SyncAccount>()
+            val server = account.serverUrl.trim()
+            (server.toHttpUrlOrNull() ?: "https://$server".toHttpUrlOrNull())?.host
+                ?.let { put(it, "<server>") }
+            account.username.takeIf { it.isNotBlank() }?.let { put(it, "<account>") }
+        }
+        runCatching {
+            val prefs = get<FeedPreferences>()
+            val place = prefs.glancePlaceName.getValue().trim()
+            if (place.isNotEmpty()) {
+                put(place, LogScrub.PLACE)
+                put(place.substringBefore(',').trim(), LogScrub.PLACE)
+            }
+            prefs.glancePlaceCoords.getValue().split(',')
+                .map { it.trim() }
+                .filter { it.isNotEmpty() }
+                .forEach { put(it, LogScrub.PLACE) }
+        }
+    }
+
+    private suspend fun draft(context: Context): String = buildString {
         val now = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).format(Date())
 
         appendLine("Whisper diagnostics")
