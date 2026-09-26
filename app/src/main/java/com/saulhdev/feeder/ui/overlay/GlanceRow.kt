@@ -38,6 +38,10 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -52,8 +56,27 @@ import com.saulhdev.feeder.manager.glance.weatherLook
 import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
 
-/** Every chip is this tall, whatever it contains. */
-private val CHIP_HEIGHT = 84.dp
+/**
+ * The least a chip is: three lines at the normal text size, with room over.
+ *
+ * It used to be all a chip could be. At 130% text on a 360 dp phone the
+ * third line, the place, was cut in half, and at 150% on 412 dp only a sliver
+ * of it showed. The height now follows the text size; see [glanceChipHeight].
+ */
+private val CHIP_MIN_HEIGHT = 84.dp
+
+/** Above and below the chip's text. */
+private val CHIP_PADDING_V = 10.dp
+
+/**
+ * How wide a chip gets on a wide screen.
+ *
+ * Half the width, less the margins, is right on a phone (159 dp at 360,
+ * 185 dp at 412) and wrong on anything wider: on a phone on its side, a
+ * Fold's inner screen or a tablet, two chips stretched to half the screen
+ * each. Capped, all three fit and the row starts from the left.
+ */
+private val CHIP_MAX_WIDTH = 220.dp
 
 /** The space between two chips, and part of the sum that sizes them. */
 private val CHIP_GAP = 10.dp
@@ -62,8 +85,14 @@ private val CHIP_GAP = 10.dp
 /** The supplied artwork is rendered at this size; see docs/brand/08_icons. */
 private val ICON_SIZE = 32.dp
 
+/** Between the text and the artwork. */
+private val ICON_GAP = 10.dp
+
 /** Small enough to read as an annotation on the temperature, not a second icon. */
 private val RAIN_ICON_SIZE = 16.dp
+
+/** Between the temperature and the rain figure. */
+private val RAIN_GAP = 6.dp
 
 /**
  * Below this, the chance of rain is not worth the space.
@@ -112,7 +141,44 @@ fun GlanceRow(
     //
     // Two chips, two margins and one gap is an equation with one answer.
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
-        val chipWidth = (maxWidth - CARD_MARGIN * 2 - CHIP_GAP) / 2
+        val chipWidth = glanceChipWidth(maxWidth)
+        val labelStyle = MaterialTheme.typography.labelMedium
+        val valueStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold)
+        val measurer = rememberTextMeasurer()
+        val density = LocalDensity.current
+
+        // A line of each, measured rather than worked out from the style.
+        // Under Android's non-linear text scaling the line height grows with
+        // the font, not by the scale's own table: at 200% a label line is
+        // 32 dp where the arithmetic said 28, and the chips were cut short by
+        // exactly the difference.
+        val (labelLine, valueLine) = remember(labelStyle, valueStyle, density) {
+            with(density) {
+                measurer.measure("Ag", labelStyle, maxLines = 1).size.height.toDp() to
+                    measurer.measure("Ag", valueStyle, maxLines = 1).size.height.toDp()
+            }
+        }
+
+        val temperature = weather?.let { "${it.temperatureC.roundToInt()}°" }
+        // Only when it is worth knowing. A chip that reads "3%" every dry
+        // day is noise, and the number is only ever useful as the answer
+        // to "do I need a coat".
+        val rain = weather?.precipitationChance?.takeIf { it >= RAIN_WORTH_MENTIONING }?.let { "$it%" }
+        val rainBelow = temperature != null && rain != null &&
+            remember(temperature, rain, labelStyle, valueStyle, density, chipWidth) {
+                with(density) {
+                    !rainFitsBeside(
+                        valueWidth = measurer.measure(temperature, valueStyle, maxLines = 1).size.width,
+                        gapAndIcon = (RAIN_GAP + RAIN_ICON_SIZE).roundToPx(),
+                        rainWidth = measurer.measure(rain, labelStyle, maxLines = 1).size.width,
+                        available = glanceTextWidth(chipWidth).roundToPx(),
+                    )
+                }
+            }
+
+        // One height for the row, so every chip matches whether or not it
+        // has a third line, or a fourth for the rain.
+        val chipHeight = glanceChipHeight(labelLine, valueLine, labelLines = if (rainBelow) 3 else 2)
         val listState = rememberLazyListState()
 
         LazyRow(
@@ -133,15 +199,13 @@ fun GlanceRow(
             item {
                 GlanceChip(
                     width = chipWidth,
+                    height = chipHeight,
                     label = stringResource(look.labelRes),
-                    value = "${weather.temperatureC.roundToInt()}°",
+                    value = temperature.orEmpty(),
                     caption = weather.place.substringBefore(","),
                     iconRes = look.iconRes,
-                    // Only when it is worth knowing. A chip that reads "3%"
-                    // every dry day is noise, and the number is only ever
-                    // useful as the answer to "do I need a coat".
-                    rainChance = weather.precipitationChance
-                        ?.takeIf { it >= RAIN_WORTH_MENTIONING },
+                    rain = rain,
+                    rainBelow = rainBelow,
                 )
             }
             // After dark, today's sunset is behind us and repeating it is
@@ -152,6 +216,7 @@ fun GlanceRow(
             item {
                 GlanceChip(
                     width = chipWidth,
+                    height = chipHeight,
                     label = stringResource(
                         if (sunUp) R.string.glance_sunset else R.string.glance_sunrise
                     ),
@@ -166,6 +231,7 @@ fun GlanceRow(
             item {
                 GlanceChip(
                     width = chipWidth,
+                    height = chipHeight,
                     label = stringResource(R.string.pref_glance_place),
                     value = stringResource(R.string.glance_set_location),
                     iconRes = R.drawable.ic_glance_location,
@@ -177,6 +243,7 @@ fun GlanceRow(
             item {
                 GlanceChip(
                     width = chipWidth,
+                    height = chipHeight,
                     label = stringResource(R.string.glance_read_today),
                     value = state.readToday.toString(),
                     iconRes = R.drawable.ic_glance_articles_read,
@@ -187,7 +254,35 @@ fun GlanceRow(
 }
 
 /**
- * One chip. Label above, value below, icon in a tinted circle on the right.
+ * Half the width less the margins and the gap, up to [CHIP_MAX_WIDTH].
+ */
+internal fun glanceChipWidth(available: Dp): Dp =
+    ((available - CARD_MARGIN * 2 - CHIP_GAP) / 2).coerceAtMost(CHIP_MAX_WIDTH)
+
+/** Where a chip's text has to fit: its width less the padding and the artwork. */
+internal fun glanceTextWidth(chipWidth: Dp): Dp = chipWidth - CARD_MARGIN * 2 - ICON_SIZE - ICON_GAP
+
+/**
+ * Tall enough for the value and [labelLines] lines of label size at the text
+ * size in use, and never less than [CHIP_MIN_HEIGHT].
+ */
+internal fun glanceChipHeight(labelLine: Dp, valueLine: Dp, labelLines: Int = 2): Dp =
+    maxOf(CHIP_MIN_HEIGHT, labelLine * labelLines + valueLine + CHIP_PADDING_V * 2)
+
+/**
+ * Whether the rain figure fits beside the temperature, all in pixels.
+ *
+ * The figure is the part of the chip worth reading ("do I need a coat"),
+ * and beside the temperature it was the part cut off: "100%" read "100" on
+ * every 360 dp phone, "10" at 130% text and "1" at 200%. Where it will not
+ * fit whole it takes a line of its own under the temperature, and every chip
+ * in the row grows by that line.
+ */
+internal fun rainFitsBeside(valueWidth: Int, gapAndIcon: Int, rainWidth: Int, available: Int): Boolean =
+    valueWidth + gapAndIcon + rainWidth <= available
+
+/**
+ * One chip. Label above, value below, the artwork on the right.
  *
  * [caption] is optional and the chip is the same height without it, so a chip
  * that has a third line does not push its neighbours around.
@@ -195,11 +290,13 @@ fun GlanceRow(
 @Composable
 private fun GlanceChip(
     width: Dp,
+    height: Dp,
     label: String,
     value: String,
     @DrawableRes iconRes: Int,
     caption: String? = null,
-    rainChance: Int? = null,
+    rain: String? = null,
+    rainBelow: Boolean = false,
     onClick: (() -> Unit)? = null,
 ) {
     val colors = CardDefaults.cardColors(
@@ -209,7 +306,7 @@ private fun GlanceChip(
     val shape = MaterialTheme.shapes.large
     val chipModifier = Modifier
         .width(width)
-        .height(CHIP_HEIGHT)
+        .height(height)
 
     val content: @Composable () -> Unit = {
         Row(
@@ -222,9 +319,10 @@ private fun GlanceChip(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.Center,
             ) {
+                val labelStyle = MaterialTheme.typography.labelMedium
                 Text(
                     text = label,
-                    style = MaterialTheme.typography.labelMedium,
+                    style = labelStyle,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -237,31 +335,18 @@ private fun GlanceChip(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
-                    if (rainChance != null) {
-                        Spacer(Modifier.size(6.dp))
-                        // The supplied rain artwork at a small size, rather
-                        // than a percentage on its own — "20%" beside a
-                        // temperature could be anything. There is room for a
-                        // glyph and a number here and nowhere else on the
-                        // chip: the label line carries the condition and the
-                        // caption line the place, and both already truncate.
-                        Image(
-                            painter = painterResource(R.drawable.ic_glance_weather_rain),
-                            contentDescription = null,
-                            modifier = Modifier.size(RAIN_ICON_SIZE),
-                        )
-                        Text(
-                            text = "$rainChance%",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            maxLines = 1,
-                        )
+                    if (rain != null && !rainBelow) {
+                        Spacer(Modifier.size(RAIN_GAP))
+                        RainFigure(rain, labelStyle)
                     }
                 }
+                // On its own line where it would not fit whole beside the
+                // temperature, rather than cut to "10".
+                if (rain != null && rainBelow) RainFigure(rain, labelStyle)
                 if (!caption.isNullOrBlank()) {
                     Text(
                         text = caption,
-                        style = MaterialTheme.typography.labelMedium,
+                        style = labelStyle,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -269,7 +354,7 @@ private fun GlanceChip(
                 }
             }
 
-            Spacer(Modifier.size(10.dp))
+            Spacer(Modifier.size(ICON_GAP))
 
             // Drawn, not tinted: these are full-colour illustrations, so the
             // tinted circular badge that suited a monochrome symbol is gone and
@@ -286,5 +371,27 @@ private fun GlanceChip(
         Card(onClick = onClick, modifier = chipModifier, shape = shape, colors = colors) { content() }
     } else {
         Card(modifier = chipModifier, shape = shape, colors = colors) { content() }
+    }
+}
+
+/**
+ * The supplied rain artwork at a small size, and the chance beside it: "20%"
+ * on its own, next to a temperature, could be anything. Never shortened.
+ */
+@Composable
+private fun RainFigure(text: String, style: TextStyle) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Image(
+            painter = painterResource(R.drawable.ic_glance_weather_rain),
+            contentDescription = null,
+            modifier = Modifier.size(RAIN_ICON_SIZE),
+        )
+        Text(
+            text = text,
+            style = style,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
+            softWrap = false,
+        )
     }
 }

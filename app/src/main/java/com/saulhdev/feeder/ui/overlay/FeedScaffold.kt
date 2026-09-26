@@ -65,16 +65,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import com.saulhdev.feeder.ui.components.BrandTitle
 import com.saulhdev.feeder.R
 import com.saulhdev.feeder.data.db.models.FeedItem
 import com.saulhdev.feeder.manager.glance.GlanceState
@@ -269,26 +266,9 @@ fun FeedScaffold(
                     modifier = Modifier.padding(top = topInset),
                 )
             } else TopAppBar(
-                title = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        // ic_launcher_foreground is an adaptive-icon layer:
-                        // the mark fills only half its canvas, so a 34dp box
-                        // drew a 17dp mark — the same height as the word beside
-                        // it. ic_brand_mark is the same artwork cropped to its
-                        // own bounds, so the size here is the size drawn.
-                        Image(
-                            painter = painterResource(R.drawable.ic_brand_mark),
-                            contentDescription = null,
-                            modifier = Modifier.height(36.dp),
-                        )
-                        Spacer(Modifier.width(14.dp))
-                        Text(
-                            text = stringResource(R.string.app_name),
-                            style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.SemiBold,
-                        )
-                    }
-                },
+                // The same title as the app's own header, from one place. See
+                // BrandTitle for why the name sometimes stands aside.
+                title = { BrandTitle() },
                 actions = {
                     // Both of these are modes rather than one-shot actions, so
                     // they have to show when they are on — the View header only

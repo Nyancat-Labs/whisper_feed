@@ -58,6 +58,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
+import com.saulhdev.feeder.ui.components.BrandTitle
 import com.saulhdev.feeder.ui.overlay.feedColumns
 import com.saulhdev.feeder.data.entity.SORT_CHRONOLOGICAL
 import com.saulhdev.feeder.ui.overlay.feedSegments
@@ -89,16 +90,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.Alignment
 import com.saulhdev.feeder.NeoApp
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import com.saulhdev.feeder.R
@@ -411,21 +408,7 @@ fun ArticleListPage(
                                 // drawable was swapped underneath it, so the two
                                 // headers have been quietly different sizes
                                 // since.
-                                title = {
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Image(
-                                            painter = painterResource(R.drawable.ic_brand_mark),
-                                            contentDescription = null,
-                                            modifier = Modifier.height(36.dp),
-                                        )
-                                        Spacer(Modifier.width(14.dp))
-                                        Text(
-                                            text = stringResource(id = R.string.app_name),
-                                            style = MaterialTheme.typography.headlineSmall,
-                                            fontWeight = FontWeight.SemiBold,
-                                        )
-                                    }
-                                },
+                                title = { BrandTitle() },
                                 scrollBehavior = scrollBehavior,
                                 actions = {
                                     // The same three actions the overlay's

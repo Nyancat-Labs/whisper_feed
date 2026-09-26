@@ -2165,7 +2165,7 @@ face. A render at the Pixel 10 Pro's own size matched a screenshot from the
 phone to the pixel: the name 255 × 61 px, in the same place. The render
 harness is not in the repository.
 
-- **C1 · High · The glance chips cut their text.** Their height is fixed at 84
+- ~~**C1 · High · The glance chips cut their text.**~~ Their height is fixed at 84
   dp (`GlanceRow.kt:56`). At 130% on a 360 dp phone the third line (the place)
   is cut in half; at 150% on 412 dp it is a sliver. The rain figure is cut
   short at 360 dp at *every* text size ("100%" shows as "100", then "10" at
@@ -2174,13 +2174,21 @@ harness is not in the repository.
   its side, a Fold's inner screen or a tablet the two chips stretch to half
   the width each. **Fix:** a minimum height instead of a fixed one; a number
   never shortened (the label goes first); chips capped at about 200 dp wide
-  and started from the left.
-- **C2 · High · The name wraps in the header.** "Whisper", beside the mark and
+  and started from the left. **Done.** The height comes from a line of each
+  text style, measured: under Android's non-linear scaling a line grows with
+  its font, so at 200% a label line is 32 dp where the arithmetic said 28,
+  and a first attempt from the arithmetic still cut the chips short. Where
+  the rain figure will not fit whole beside the temperature it takes a line
+  of its own and the row grows by that line; on the Pixel it stays where it
+  was. Chips stop at 220 dp, so all three fit on a wide screen.
+- ~~**C2 · High · The name wraps in the header.**~~ "Whisper", beside the mark and
   four buttons, needs about 355 dp at 100%, so a 360 dp phone has almost
   nothing to spare. It breaks to "Whispe / r" on a 360 dp phone at 130%, and
   to "Whis / per" on the Fold6 cover at 100% and a 360 dp phone at 200%; at
   220 dp it stands one letter to a line. **Fix:** one line, never wrapped;
-  when it will not fit, the mark alone, which is still the brand.
+  when it will not fit, the mark alone, which is still the brand. **Done**,
+  in one title both headers now share (`BrandTitle`); TalkBack still reads
+  the name.
 - **C3 · Medium · Large headlines run above their shade.** The dark gradient
   under a lead story starts 30% of the way down the picture
   (`ArticleCard.kt:225`). A headline that is tall for its card, at 200% text
@@ -2210,9 +2218,10 @@ harness is not in the repository.
   phone of the year so far. **Fix:** also treat a phone with no media
   performance class (Android 12 and up) and 4 GB of memory or less as older.
   Diagnostics already says which is in force.
-- **C7 · Low · Choice lists cut their second line at 200%.** Each row is 48 dp
+- ~~**C7 · Low · Choice lists cut their second line at 200%.**~~ Each row is 48 dp
   high and no more (`StringSelectionPrefDialogUI.kt:131`); "Only on Wi-Fi and
   while charging" shows as "Only on Wi-Fi and". **Fix:** a minimum height.
+  **Done.**
 - **C8 · Low · The panel permission button can crash on the cheapest
   phones.** It starts Android's overlay settings with nothing around it
   (`LauncherPage.kt:173`). Android Go editions cannot grant that permission,
