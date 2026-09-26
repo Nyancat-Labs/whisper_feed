@@ -141,7 +141,9 @@ class ReaderDuplicationTest {
     @Test
     fun `extraction runs on the cleaned page`() {
         val parser = File("src/main/java/com/saulhdev/feeder/manager/models/FullTextParser.kt").readText()
-        assertTrue(parser.contains("val page = Jsoup.parse(html, url).also(::stripPageChrome)"))
+        // Parsed from bytes in the page's own encoding since B6; still cleaned
+        // before anything is extracted.
+        assertTrue(parser.contains("val page = pageDocument(fetched, url).also(::stripPageChrome)"))
         assertTrue(parser.contains("Readability4JExtended(url, page)"))
     }
 

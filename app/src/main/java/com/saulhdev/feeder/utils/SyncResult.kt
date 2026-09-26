@@ -77,8 +77,11 @@ data class SyncResult(
 /**
  * The name of what went wrong, safe for a report that is sent to the
  * developer: the class, with no message. A message can carry an address.
+ * A refused download says why in words, since a release build shortens
+ * class names to three letters.
  */
-fun errorKind(error: Throwable): String = error::class.java.simpleName.ifBlank { "error" }
+fun errorKind(error: Throwable): String =
+    (error as? DownloadRefused)?.kind ?: error::class.java.simpleName.ifBlank { "error" }
 
 /**
  * The history's outcome for a finished run.

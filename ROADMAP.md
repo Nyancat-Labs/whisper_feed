@@ -2000,14 +2000,20 @@ case. *Low*: hardening or tidying.
   reader's own sync server, account name and place. Tested on lines taken
   from real reports, including the Sony's; a source test fails, naming the
   line, if a warning or error writes an address again.
-- **S2 · Medium · No limit on the size or type of a download.** A feed is read
+- ~~**S2 · Medium · No limit on the size or type of a download.**~~ A feed is read
   whole into memory (`RssLocalSync.kt:454`, `body.bytes()`), and so is a page
   for the full article (`FeedParser.kt:410`, `curl`). A feed address that
   turns into a 300 MB podcast episode, or an article link to a video, is read
   in full: out of memory in the middle of a sync, and the data spent on mobile
   data. **Fix:** refuse audio, video and binary content types before reading;
   read through a counting stream capped at 10 MB for a feed and 5 MB for a
-  page; and fail that one item, not the sync.
+  page; and fail that one item, not the sync. **Done.** Audio, video and
+  pictures are refused before a byte is read; other types, even
+  `application/octet-stream`, which servers really do send feeds as, are
+  read to the limit and no further, and a body that declares itself larger
+  is refused unread. The feed's history says "too large" or "not a feed" in
+  words, where an exception's name would have been three letters in a
+  release build. The icon lookup's home page is capped with the article's.
 - ~~**S3 · Medium · A settings file can write anything.**~~ The import says unknown
   keys are skipped (`SettingsBackup.kt:136`); the code writes every key, as
   whatever type the file claims (`:142`). A file with the sync frequency as a
@@ -2111,12 +2117,14 @@ case. *Low*: hardening or tidying.
   every optional column empty. Checked by breaking: a column of the wrong
   type fails with the error a phone would crash on, and a lost row fails at
   every version that passes through the migration that lost it.
-- **B6 · Low · Full articles in older encodings come out garbled.** The page is
+- ~~**B6 · Low · Full articles in older encodings come out garbled.**~~ The page is
   decoded with the charset in the response header, or UTF-8
   (`FullTextParser.kt:323`); a page that names its encoding only in a `<meta>`
   tag (windows-1252, Shift_JIS) is decoded wrongly. There is a TODO on the
   next line. **Fix:** read the bytes, within S2's cap, and let jsoup find the
-  charset (`Jsoup.parse(stream, null, url)`).
+  charset (`Jsoup.parse(stream, null, url)`). **Done**: the header's charset
+  if it names one, then the page's `<meta>`, then UTF-8. Tested with pages in
+  windows-1252 and Shift_JIS.
 - **B7 · Low · A sync stops the advance download in progress.** The download
   replaces itself (`FullTextParser.kt:58`) and every sync asks for one
   (`RssLocalSync.kt:407`), so a pull to refresh or a sync on opening the app

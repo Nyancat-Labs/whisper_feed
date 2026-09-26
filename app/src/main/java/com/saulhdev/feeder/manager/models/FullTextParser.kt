@@ -1,6 +1,5 @@
 package com.saulhdev.feeder.manager.models
 
-import org.jsoup.Jsoup
 import com.saulhdev.feeder.utils.stripPageChrome
 import android.content.Context
 import android.util.Log
@@ -320,14 +319,13 @@ suspend fun parseFullArticle(
     return@withContext try {
         val url = feedItem.link ?: return@withContext false to null
         Log.d("FeederFullText", "Fetching full page ${feedItem.link}")
-        val html: String = okHttpClient.curl(URL(url)) ?: return@withContext false to null
+        val fetched = okHttpClient.fetchPage(URL(url)) ?: return@withContext false to null
 
-        // TODO verify encoding is respected in reader
         Log.i("FeederFullText", "Parsing article ${feedItem.link}")
         // Cleaned as a document first: the byline blocks and asides are only
         // recognisable by their class names, which extraction discards. See
-        // stripPageChrome.
-        val page = Jsoup.parse(html, url).also(::stripPageChrome)
+        // stripPageChrome. In the page's own encoding; see pageDocument.
+        val page = pageDocument(fetched, url).also(::stripPageChrome)
         val article = Readability4JExtended(url, page).parse()
 
         // TODO set image on item if none already

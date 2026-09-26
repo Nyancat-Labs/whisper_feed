@@ -41,7 +41,12 @@ import okhttp3.Response
 import okhttp3.ResponseBody
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import com.saulhdev.feeder.utils.PAGE_MAX_BYTES
+import com.saulhdev.feeder.utils.bytesAtMost
+import com.saulhdev.feeder.utils.refuseMedia
+import java.io.ByteArrayInputStream
 import java.io.IOException
+import java.nio.charset.Charset
 import java.net.MalformedURLException
 import java.net.URL
 import java.net.URLDecoder
@@ -404,13 +409,39 @@ suspend fun OkHttpClient.getResponse(
     }
 }
 
-suspend fun OkHttpClient.curl(url: URL): String? {
-    var result: String? = null
-    curlAndOnResponse(url) {
-        result = it.body.string()
+/**
+ * A page as it came: its bytes, and the charset the server named, if it
+ * named one. Kept as bytes so a page that names its encoding only in a
+ * `<meta>` tag can be decoded by what it says; see [pageDocument].
+ */
+class Page(val bytes: ByteArray, val charset: Charset?)
+
+/**
+ * A page, no larger than [PAGE_MAX_BYTES] and not a picture, a sound or a
+ * film. It was read whole, whatever it was.
+ */
+suspend fun OkHttpClient.fetchPage(url: URL): Page? {
+    var page: Page? = null
+    curlAndOnResponse(url) { response ->
+        val body = response.body
+        body.refuseMedia("a page")
+        page = Page(body.bytesAtMost(PAGE_MAX_BYTES), body.contentType()?.charset())
     }
-    return result
+    return page
 }
+
+/**
+ * A page as a document, in the encoding it names: the server's header if it
+ * gave one, otherwise the page's own `<meta charset>`, otherwise UTF-8.
+ * Decoding before jsoup could look meant a page in windows-1252 or Shift_JIS
+ * with no header was read as UTF-8, and every accented letter came out as a
+ * question mark in a box.
+ */
+fun pageDocument(page: Page, url: String): Document =
+    Jsoup.parse(ByteArrayInputStream(page.bytes), page.charset?.name(), url)
+
+suspend fun OkHttpClient.curl(url: URL): String? =
+    fetchPage(url)?.let { String(it.bytes, it.charset ?: Charsets.UTF_8) }
 
 suspend fun OkHttpClient.curlAndOnResponse(url: URL, block: (suspend (Response) -> Unit)) {
     // Closed on the failure path too. It used to throw before the use block,

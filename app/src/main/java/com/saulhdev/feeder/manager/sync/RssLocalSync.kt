@@ -44,6 +44,9 @@ import com.saulhdev.feeder.utils.FeedHistory
 import com.saulhdev.feeder.utils.FetchKind
 import com.saulhdev.feeder.utils.countsAgainstSource
 import com.saulhdev.feeder.utils.errorKind
+import com.saulhdev.feeder.utils.FEED_MAX_BYTES
+import com.saulhdev.feeder.utils.bytesAtMost
+import com.saulhdev.feeder.utils.refuseMedia
 import com.saulhdev.feeder.utils.whisperHasNetwork
 import com.saulhdev.feeder.utils.blobOutputStream
 import com.saulhdev.feeder.utils.getSyncDays
@@ -452,8 +455,13 @@ private suspend fun syncFeed(
             }
             // Read whole, then fingerprinted: a feed that sends everything
             // every time is most often sending exactly what it sent last
-            // time. See FeedDigest.
-            Triple(response.body.bytes(), response.body.contentType(), response.request.url.toUrl())
+            // time. See FeedDigest. Whole up to a limit, though, and not at
+            // all when it is a picture, a sound or a film: a feed address
+            // that had become a podcast episode was read to the end, on
+            // mobile data too, and then failed to parse.
+            val body = response.body
+            body.refuseMedia("a feed")
+            Triple(body.bytesAtMost(FEED_MAX_BYTES), body.contentType(), response.request.url.toUrl())
         }
     }
     if (download == null) {
