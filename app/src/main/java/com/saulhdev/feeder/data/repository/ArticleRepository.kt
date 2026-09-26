@@ -73,6 +73,12 @@ class ArticleRepository(db: NeoFeedDb) {
     var onSavedRemoved: ((Long) -> Unit)? = null
 
     /**
+     * Told when an article becomes saved, here or from the account, so its
+     * whole text can be downloaded for reading later. Set once at startup.
+     */
+    var onSaved: (() -> Unit)? = null
+
+    /**
      * Told when the reader changes whether articles are read, by local id.
      *
      * Only for what the reader did: a sync applying the server's read state
@@ -531,6 +537,7 @@ class ArticleRepository(db: NeoFeedDb) {
         articlesDao.getArticleById(articleId)?.let {
             articlesDao.updateFeedArticle(it.copy(bookmarked = bookmark))
             if (it.bookmarked != bookmark) onStarredChanged?.invoke(articleId, bookmark)
+            if (bookmark && !it.bookmarked) onSaved?.invoke()
             // A source removed while it still held saved articles is kept
             // only for their sake. Taking the last one back is what ends
             // that, and is what makes "kept until you un-bookmark it" a fact
@@ -570,6 +577,10 @@ class ArticleRepository(db: NeoFeedDb) {
         articlesDao.getArticleIdLinks(allFeeds)
             .flowOn(cc)
 
+    suspend fun savedArticleIdLinks(): List<ArticleIdWithLink> = withContext(cc) {
+        articlesDao.getSavedArticleIdLinks()
+    }
+
     fun getBookmarkedFeedItems(): Flow<List<FeedItem>> =
         whenChanged { articlesDao.loadAllBookmarkedFeedItems() }
 
@@ -605,6 +616,7 @@ class ArticleRepository(db: NeoFeedDb) {
     /** Stars from the server, as saves. Additions only; see GoogleReaderService. */
     suspend fun applyServerStars(ids: List<String>) = withContext(cc) {
         ids.chunked(SQLITE_ARG_LIMIT).forEach { articlesDao.setBookmarked(it) }
+        if (ids.isNotEmpty()) onSaved?.invoke()
     }
 
     /** How many articles a server has claimed. */

@@ -402,6 +402,10 @@ interface FeedArticleDao {
     )
     fun getArticleIdLinks(allFeeds: Boolean): Flow<List<ArticleIdWithLink>>
 
+    /** Saved articles, for downloading their whole text the moment they are saved. */
+    @Query("SELECT uuid, link FROM Article WHERE bookmarked = 1")
+    suspend fun getSavedArticleIdLinks(): List<ArticleIdWithLink>
+
     // Embedded FeedItem
     @Transaction
     @Query(

@@ -11,6 +11,7 @@ import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import androidx.work.workDataOf
 import com.saulhdev.feeder.data.content.FeedPreferences
 import com.saulhdev.feeder.data.db.models.ArticleIdWithLink
 import com.saulhdev.feeder.data.repository.ArticleRepository
@@ -44,14 +45,54 @@ import java.util.concurrent.TimeUnit
 
 fun scheduleFullTextParse() {
     Log.i("FeederFullText", "Scheduling a full text parse work")
+    val workRequest = OneTimeWorkRequestBuilder<FullTextWorker>()
+        .addTag("FullTextWorker")
+        .setConstraints(fullTextConstraints())
+        .keepResultsForAtLeast(1, TimeUnit.MINUTES)
+    val workManager: WorkManager by inject(WorkManager::class.java)
+    workManager.enqueueUniqueWork(
+        "FullTextWorker",
+        ExistingWorkPolicy.REPLACE,
+        workRequest.build()
+    )
+}
 
-    // This fetches and parses the body of every article the reader has, which
-    // is the heaviest thing the app does — and it carried no constraints at
-    // all. With no network requirement it would start on a phone with no
-    // connection, fail article by article, and be retried; with no battery
-    // requirement it would do that on a flat one.
+/**
+ * Downloads the whole of every saved article that does not have it yet, now.
+ *
+ * Saving is reading later, and reading later has to work offline: the empty
+ * Saved screen promises exactly that. Saved articles were already in the
+ * advance download whatever their source's setting, but that runs after a
+ * sync, so an article saved on the train waited up to an hour — and one
+ * saved just before losing signal was not there to read at all.
+ *
+ * Its own unique work, appended rather than replacing, so it neither cancels
+ * the after-sync run nor a save a moment earlier: each run looks again at
+ * what is still missing, so a queue of them costs nothing but a check. Same
+ * conditions as every other advance download, the mobile-data one included.
+ */
+fun scheduleSavedFullText() {
+    val request = OneTimeWorkRequestBuilder<FullTextWorker>()
+        .addTag("FullTextWorker")
+        .setConstraints(fullTextConstraints())
+        .setInputData(workDataOf(SAVED_ONLY to true))
+        .keepResultsForAtLeast(1, TimeUnit.MINUTES)
+        .build()
+    val workManager: WorkManager by inject(WorkManager::class.java)
+    workManager.enqueueUniqueWork(SAVED_WORK, ExistingWorkPolicy.APPEND_OR_REPLACE, request)
+}
+
+private const val SAVED_ONLY = "saved_only"
+private const val SAVED_WORK = "FullTextSaved"
+
+// This fetches and parses the body of every article the reader has, which is
+// the heaviest thing the app does — and it carried no constraints at all. With
+// no network requirement it would start on a phone with no connection, fail
+// article by article, and be retried; with no battery requirement it would do
+// that on a flat one.
+private fun fullTextConstraints(): Constraints {
     val prefs: FeedPreferences by inject(FeedPreferences::class.java)
-    val constraints = Constraints.Builder()
+    return Constraints.Builder()
         .setRequiredNetworkType(
             fullTextNetwork(
                 syncOnlyOnWifi = prefs.syncOnlyOnWifi.getValue(),
@@ -60,17 +101,6 @@ fun scheduleFullTextParse() {
         )
         .setRequiresBatteryNotLow(true)
         .build()
-
-    val workRequest = OneTimeWorkRequestBuilder<FullTextWorker>()
-        .addTag("FullTextWorker")
-        .setConstraints(constraints)
-        .keepResultsForAtLeast(1, TimeUnit.MINUTES)
-    val workManager: WorkManager by inject(WorkManager::class.java)
-    workManager.enqueueUniqueWork(
-        "FullTextWorker",
-        ExistingWorkPolicy.REPLACE,
-        workRequest.build()
-    )
 }
 
 class FullTextWorker(
@@ -100,12 +130,12 @@ class FullTextWorker(
         // Chosen before anything is fetched, so a run with nothing to do
         // leaves no line in the history: it follows every sync, and twenty
         // lines of "nothing to fetch" would push the syncs themselves out.
+        val savedOnly = inputData.getBoolean(SAVED_ONLY, false)
         val toFetch = withContext(Dispatchers.IO) {
-            repository.getFeedsItemsWithDefaultFullTextParse(
+            (if (savedOnly) repository.savedArticleIdLinks()
+            else repository.getFeedsItemsWithDefaultFullTextParse(
                 allFeeds = prefs.fullTextForAllFeeds.getValue()
-            )
-                .firstOrNull()
-                .orEmpty()
+            ).firstOrNull().orEmpty())
                 .filter { item ->
                     !blobFullFile(item.uuid, filesDir).isFile &&
                         shouldPrefetchFullText(now, readAttempts(item.uuid, filesDir))

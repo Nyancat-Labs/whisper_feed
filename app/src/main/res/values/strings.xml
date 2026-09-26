@@ -292,7 +292,7 @@
     <string name="pref_dim_skipped">Fade sources you skip</string>
     <string name="pref_dim_skipped_summary">Sources whose articles you scroll past without stopping are shown faded, so the ones you read stand out. Nothing is hidden, and you can see which sources this affects under What Whisper has learned.</string>
     <string name="empty_bookmarks">Nothing saved yet</string>
-    <string name="empty_bookmarks_hint">Tap the save mark on any article and it is kept here, readable offline.</string>
+    <string name="empty_bookmarks_hint">Save an article to read it later. Whisper downloads the whole article and keeps it here, readable offline, until you remove it.</string>
     <string name="empty_no_sources">No sources yet</string>
     <string name="empty_no_sources_hint">Add a website or a feed address and Whisper will do the rest. Settings, then Sources.</string>
     <string name="empty_syncing">Fetching your feeds</string>
@@ -439,7 +439,7 @@
     <string name="bookmark_remove">Remove bookmark</string>
     <string name="action_show_bookmarks">Show bookmarks</string>
     <string name="action_hide_bookmarks">Hide bookmarks</string>
-    <string name="title_bookmarks">Bookmarks</string>
+    <string name="title_bookmarks">Read later</string>
     <string name="summary_bookmarks">See your bookmarked articles</string>
     <string name="title_service">Service</string>
     <string name="title_other">Other</string>
@@ -512,8 +512,8 @@
     <string name="tour_chips_body">Everything at once, or one subject at a time. The launcher page follows whatever you choose here.</string>
     <string name="tour_article_title">Every article has a menu</string>
     <string name="tour_article_body">More like this, less like this, save it, or ask why an article is the size it is.</string>
-    <string name="tour_bookmarks_title">Saved articles</string>
-    <string name="tour_bookmarks_body">Anything you save is kept on your phone and stays readable offline.</string>
+    <string name="tour_bookmarks_title">Read later</string>
+    <string name="tour_bookmarks_body">Save an article to read it later. The whole article is downloaded and kept on your phone, readable offline, until you remove it.</string>
     <string name="tour_filter_title">Sort and filter</string>
     <string name="tour_filter_body">Change the order, mute a source, or hide what you have already read.</string>
     <string name="tour_overflow_title">Settings</string>

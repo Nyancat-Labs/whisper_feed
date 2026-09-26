@@ -22,7 +22,7 @@ is maintained:
 Two things are repeated here so a release note cannot be read as more than it
 is: **sync is supported with FreshRSS only** — proven against a live server
 with 114 feeds, on a phone and a tablet at once — and **there are no
-instrumentation or screenshot tests**: the 844 unit tests cover logic, and
+instrumentation or screenshot tests**: the 849 unit tests cover logic, and
 every on-device check has been manual.
 
 ---
