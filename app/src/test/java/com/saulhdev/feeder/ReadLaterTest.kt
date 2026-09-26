@@ -20,7 +20,10 @@ class ReadLaterTest {
     @Test
     fun `the saved run neither cancels the after-sync run nor an earlier save`() {
         val parser = read("manager/models/FullTextParser.kt")
-        assertTrue(parser.contains("enqueueUniqueWork(SAVED_WORK, ExistingWorkPolicy.APPEND_OR_REPLACE, request)"))
+        // Its own unique work, appended behind a running one and never
+        // replacing; and never more than one waiting (see WorkQueueTest).
+        assertTrue(parser.contains("enqueueUnlessWaiting(workManager, SAVED_WORK, request)"))
+        assertTrue(parser.contains("workManager.enqueueUniqueWork(name, ExistingWorkPolicy.APPEND_OR_REPLACE, request)"))
         assertTrue(parser.contains("private const val SAVED_WORK = \"FullTextSaved\""))
         // Same conditions as every other advance download.
         assertTrue(parser.contains(".setConstraints(fullTextConstraints())\n        .setInputData(workDataOf(SAVED_ONLY to true))"))

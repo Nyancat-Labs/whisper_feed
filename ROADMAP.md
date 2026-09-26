@@ -2084,32 +2084,43 @@ case. *Low*: hardening or tidying.
 
 #### 22b. Bugs
 
-- **B1 · Medium · Unsaving one article can take another's pictures.** Saved
+- ~~**B1 · Medium · Unsaving one article can take another's pictures.**~~ Saved
   pictures are stored once per address, so two saved articles that carry the
   same picture (one story in two feeds, a site's standard header) share a
   file. Unsaving either deletes it (`SavedImages.kt:112`), and the other shows
   grey boxes offline. **Fix:** before deleting, keep any file another saved
-  article's list still names.
-- **B2 · Medium · Saved-article downloads pile up while they wait.** Each one
+  article's list still names. **Done**; the test fails, saying the other save
+  lost its picture, with the fix taken out.
+- ~~**B2 · Medium · Saved-article downloads pile up while they wait.**~~ Each one
   is appended to the last (`FullTextParser.kt:85`). While the conditions are
   not met (no Wi-Fi with full articles off on mobile data, or the battery low)
   every save, and every sync that brings a save from another device, adds
   another. Nothing is lost, but the queue has no limit, and all of it runs back
   to back once the phone is on Wi-Fi. **Fix:** if one is already waiting, add
-  nothing; append only behind one that is running.
-- **B3 · Medium · A save the server no longer has is looked for on every sync,
-  for ever.** A waiting save whose feed is on the server but whose article is
+  nothing; append only behind one that is running. **Done**, asked without
+  blocking, since the app's start calls it on the main thread. Against
+  WorkManager's own test scheduler: ten saves waiting for Wi-Fi leave one run,
+  where the old way left ten.
+- ~~**B3 · Medium · A save the server no longer has is looked for on every sync,
+  for ever.**~~ A waiting save whose feed is on the server but whose article is
   not found is kept for next time (`SyncOutbox.kt:361`), and each sync searches
   up to a thousand items of that feed again (`GoogleReaderService.kt:423`). An
   article the server has already purged will never be found. **Fix:** count
   the attempts; after five syncs or seven days, stop, keep the save here, and
-  say so in the sync summary ("2 saves are not on the server").
-- **B4 · Medium · The saved list is downloaded whole on every sync.**
+  say so in the sync summary ("2 saves are not on the server"). **Done**, as
+  five looks spaced out rather than a count and a date: at once, then after
+  one, three, six and twelve hours, about a day in all, which covers a server
+  that has not fetched the article yet. A save not due is held without a
+  look. The account summary says "2 saves not on the server".
+- ~~**B4 · Medium · The saved list is downloaded whole on every sync.**~~
   `pullStars` (`GoogleReaderService.kt:531`) reads up to eight pages of 250
   saved articles, contents included, and writes an id for each, every sync.
   With a few hundred saves that is megabytes per sync, on mobile data too.
   **Fix:** ask for the saved ids only (`stream/items/ids`, a few kilobytes),
-  and fetch contents only for ids not already known here.
+  and fetch contents only for ids not already known here. **Done**, by id
+  (`stream/items/contents`, a hundred at a time). A saved item that is still
+  not found here is remembered and not asked about again while it stays
+  saved, so an account's old saves cost one lookup, not one a sync.
 - ~~**B5 · Medium · Database upgrades are never tested.**~~ Twenty-four steps take
   the database from version 1 to 25, twenty written by hand; twenty-three
   schemas are exported (`app/schemas`); no test runs a single migration. A
@@ -2133,12 +2144,13 @@ case. *Low*: hardening or tidying.
   charset (`Jsoup.parse(stream, null, url)`). **Done**: the header's charset
   if it names one, then the page's `<meta>`, then UTF-8. Tested with pages in
   windows-1252 and Shift_JIS.
-- **B7 · Low · A sync stops the advance download in progress.** The download
+- ~~**B7 · Low · A sync stops the advance download in progress.**~~ The download
   replaces itself (`FullTextParser.kt:58`) and every sync asks for one
   (`RssLocalSync.kt:407`), so a pull to refresh or a sync on opening the app
   cancels a pass partway. The next pass picks up what is still missing, so
   little is lost but the article that was mid-download. **Fix:** keep a
-  waiting one; append behind a running one.
+  waiting one; append behind a running one. **Done** with B2, by the same
+  rule.
 - **B8 · Low · "1 sources".** Seven strings put a number in front of a plural
   noun without a plurals resource: `sources_deleted`,
   `sources_articles_cleared`, `category_in_use`, `backup_restored`,
@@ -2149,10 +2161,12 @@ case. *Low*: hardening or tidying.
   `navigation_bar_height` from the system's own resources by name. They are
   not an API, and with a tall camera cutout or gesture navigation they are not
   the real insets. **Fix:** take the insets from the window, as the app does.
-- **B10 · Low · Interrupted picture downloads leave files behind.** A download
+- ~~**B10 · Low · Interrupted picture downloads leave files behind.**~~ A download
   that fails partway leaves its `.part` file (`SavedImages.kt:132`); only the
   too-large case removes it. **Fix:** delete the part file whenever it is not
-  renamed, and sweep old ones at start.
+  renamed, and sweep old ones at start. **Done** with B1: removed however the
+  download ends, and any left by a download that died are swept when the
+  next one starts, if more than an hour old.
 
 #### 22c. Screens: the phones that sell most
 

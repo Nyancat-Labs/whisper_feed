@@ -239,6 +239,23 @@ class GoogleReaderApi(
         maxPages: Int = 20,
     ): Paged<StreamItem> = collectPages(maxPages) { c -> contentsPage(auth, stream, pageSize, since, c) }
 
+    /**
+     * The items with these ids, with their addresses: the same payload as a
+     * stream, for a list of ids instead of a stream. FreshRSS takes the ids in
+     * decimal, as [GoogleReaderIds.itemId] gives them, repeated one per `i`.
+     */
+    suspend fun itemsContents(auth: String, ids: List<String>): List<StreamItem> = withContext(Dispatchers.IO) {
+        if (ids.isEmpty()) return@withContext emptyList()
+        val url = base?.newBuilder()?.addPathSegments("reader/api/0/stream/items/contents")
+            ?.addQueryParameter("output", "json")?.build()
+            ?: throw IOException("Not a valid server address")
+        val body = FormBody.Builder().apply { ids.forEach { add("i", it) } }.build()
+        client.newCall(authorised(auth, url).post(body).build()).execute().use { r ->
+            if (!r.isSuccessful) throw IOException("HTTP ${r.code} for stream/items/contents")
+            streamContentsAdapter.fromJson(r.body.string())?.items.orEmpty()
+        }
+    }
+
     /** Marks items read or unread, starred or not, in one call per batch. */
     suspend fun editTag(
         auth: String,

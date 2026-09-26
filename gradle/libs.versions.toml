@@ -52,6 +52,7 @@ browser = { group = "androidx.browser", name = "browser", version.ref = "browser
 materialkolor = { group = "com.materialkolor", name = "material-kolor", version.ref = "materialkolor" }
 multidex = { group = "androidx.multidex", name = "multidex", version.ref = "multidex" }
 work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "work-runtime-ktx" }
+work-testing = { group = "androidx.work", name = "work-testing", version.ref = "work-runtime-ktx" }
 datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "datetime" }
 
 lifecycle-common-java8 = { group = "androidx.lifecycle", name = "lifecycle-common-java8", version.ref = "lifecycle" }

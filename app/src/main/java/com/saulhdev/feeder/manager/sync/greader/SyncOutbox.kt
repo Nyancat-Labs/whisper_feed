@@ -239,6 +239,8 @@ object GoogleReaderState {
     private const val ALIASES = "aliases"
     private const val NOT_ON_SERVER = "not_on_server_v2"
     private const val REFUSED = "refused"
+    private const val SAVE_LOOKUPS = "save_lookups"
+    private const val STARS_UNPLACED = "stars_unplaced"
 
     private val lock = Any()
 
@@ -276,6 +278,29 @@ object GoogleReaderState {
             putStringSet(LAST_LOCAL, lastLocal)
             putStringSet(EVER_ON_SERVER, everOnServer)
         }
+    }
+
+    /** How often each held save has been looked for; see [planSaveLookups]. */
+    fun saveLookups(context: Context): Map<String, SaveLookup> =
+        prefs(context).getStringSet(SAVE_LOOKUPS, null).orEmpty().mapNotNull { entry ->
+            val parts = entry.split('\t')
+            val tries = parts.getOrNull(1)?.toIntOrNull() ?: return@mapNotNull null
+            val at = parts.getOrNull(2)?.toLongOrNull() ?: return@mapNotNull null
+            parts[0] to SaveLookup(tries, at)
+        }.toMap()
+
+    fun setSaveLookups(context: Context, lookups: Map<String, SaveLookup>) {
+        prefs(context).edit {
+            putStringSet(SAVE_LOOKUPS, lookups.mapTo(HashSet()) { (id, l) -> "$id\t${l.tries}\t${l.lastAt}" })
+        }
+    }
+
+    /** Saved items the server has that were looked up and not found here; see [starsToLookUp]. */
+    fun starsUnplaced(context: Context): Set<String> =
+        prefs(context).getStringSet(STARS_UNPLACED, null).orEmpty().toSet()
+
+    fun setStarsUnplaced(context: Context, ids: Set<String>) {
+        prefs(context).edit { putStringSet(STARS_UNPLACED, ids) }
     }
 
     /** Server feed key to Whisper feed key, for pairs whose addresses differ. See matchFeeds. */
@@ -360,6 +385,72 @@ object GoogleReaderState {
  */
 fun savesToKeep(outbox: Outbox, mapped: Set<String>, feedOnServer: Set<String>): Set<String> =
     (outbox.star + outbox.unstar).filterTo(HashSet()) { it !in mapped && it in feedOnServer }
+
+/**
+ * The saved items worth asking the server about: saved there, not matched to
+ * an article here, and not already asked about and not found.
+ */
+fun starsToLookUp(starred: Set<String>, known: Set<String>, unplaced: Set<String>): List<String> =
+    starred.filter { it !in known && it !in unplaced }
+
+/**
+ * Which saved items stay remembered as not found here: the ones asked about
+ * this time and still unmatched, and the ones remembered before, while they
+ * are still saved on the server. An unsave there forgets it.
+ */
+fun starsUnplacedAfter(
+    starred: Set<String>,
+    before: Set<String>,
+    lookedUp: Collection<String>,
+    known: Set<String>,
+): Set<String> = (before + lookedUp).filterTo(HashSet()) { it in starred && it !in known }
+
+/** How many times a held save has been looked for on the server, and when last. */
+data class SaveLookup(val tries: Int, val lastAt: Long)
+
+/**
+ * The most times a held save is looked for, and the wait before each try
+ * after the first: an hour, three, six, twelve. About a day in all, which
+ * covers a server that has not fetched the article yet; an article it has
+ * already purged will never be found, and was looked for, a thousand items
+ * of its feed at a time, on every sync for ever.
+ */
+const val SAVE_LOOKUP_TRIES = 5
+private val SAVE_LOOKUP_WAIT_H = longArrayOf(1, 3, 6, 12)
+
+/** Whether a held save is due another look now. */
+fun saveLookupDue(record: SaveLookup?, now: Long): Boolean {
+    if (record == null || record.tries == 0) return true
+    val waitH = SAVE_LOOKUP_WAIT_H.getOrElse(record.tries - 1) { SAVE_LOOKUP_WAIT_H.last() }
+    return now - record.lastAt >= waitH * 60 * 60 * 1000
+}
+
+/**
+ * The saves held after a sync's lookup, what their records become, and the
+ * ones that have had all their tries and are let go.
+ *
+ * @param held the saves still unmatched, from a feed the server carries.
+ * @param looked which of them were looked for this time.
+ */
+data class SaveLookupsAfter(
+    val keep: Set<String>,
+    val records: Map<String, SaveLookup>,
+    val givenUp: Set<String>,
+)
+
+fun planSaveLookups(
+    held: Set<String>,
+    looked: Set<String>,
+    before: Map<String, SaveLookup>,
+    now: Long,
+): SaveLookupsAfter {
+    val records = held.associateWith { id ->
+        val old = before[id]
+        if (id in looked) SaveLookup((old?.tries ?: 0) + 1, now) else old ?: SaveLookup(0, now)
+    }
+    val givenUp = records.filterValues { it.tries >= SAVE_LOOKUP_TRIES }.keys
+    return SaveLookupsAfter(keep = held - givenUp, records = records - givenUp, givenUp = givenUp)
+}
 
 /** Why one of Whisper's feeds is not on the server. */
 enum class MissingKind {

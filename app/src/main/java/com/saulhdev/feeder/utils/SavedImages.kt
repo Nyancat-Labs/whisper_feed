@@ -55,7 +55,13 @@ object SavedImages {
 
     /** The list of what one saved article brought in; see [download]. */
     fun manifest(itemId: String, filesDir: File): File =
-        File(filesDir, "${safeArticleId(itemId)}.images.txt")
+        File(filesDir, "${safeArticleId(itemId)}$MANIFEST")
+
+    private const val MANIFEST = ".images.txt"
+    private const val PART = ".part"
+
+    /** A download's part file older than this was left by one that died. */
+    private const val PART_STALE_MS = 60L * 60 * 1000
 
     fun fileFor(filesDir: File, url: String): File = File(folder(filesDir), nameFor(url))
 
@@ -103,22 +109,48 @@ object SavedImages {
             .take(MAX_PER_ARTICLE)
             .toList()
         folder(filesDir).mkdirs()
+        sweepStaleParts(filesDir)
         val kept = urls.filter { url -> fetch(client, url, fileFor(filesDir, url)) }
         manifest(itemId, filesDir).writeText(kept.joinToString("\n") { nameFor(it) })
         kept.size
     }
 
-    /** Deletes what one article brought in, and its list. */
+    /**
+     * Deletes what one article brought in that no other saved article still
+     * names, and its list.
+     *
+     * Pictures are stored once per address, so one story saved from two
+     * feeds, or a site's standard header, is one file for both. Unsaving
+     * either deleted it, and the other showed a grey box offline.
+     */
     fun delete(itemId: String, filesDir: File) {
         val list = manifest(itemId, filesDir)
         runCatching {
             if (list.isFile) {
-                list.readLines().filter { NAME.matches(it) }.forEach {
-                    File(folder(filesDir), it).delete()
-                }
+                val stillNamed = namedByOthers(list, filesDir)
+                list.readLines()
+                    .filter { NAME.matches(it) && it !in stillNamed }
+                    .forEach { File(folder(filesDir), it).delete() }
             }
         }
         list.delete()
+    }
+
+    /** Every picture the other saved articles' lists name. */
+    private fun namedByOthers(except: File, filesDir: File): Set<String> =
+        filesDir.listFiles { file -> file.isFile && file.name.endsWith(MANIFEST) && file != except }
+            .orEmpty()
+            .flatMapTo(HashSet()) { runCatching { it.readLines() }.getOrDefault(emptyList()) }
+
+    /**
+     * Part files left by a download that never finished: the app stopped
+     * mid-picture. A fresh one may belong to a download running now, so only
+     * old ones go.
+     */
+    private fun sweepStaleParts(filesDir: File) {
+        val cutoff = System.currentTimeMillis() - PART_STALE_MS
+        folder(filesDir).listFiles { file -> file.name.endsWith(PART) && file.lastModified() < cutoff }
+            ?.forEach { it.delete() }
     }
 
     private fun fetch(client: OkHttpClient, url: String, target: File): Boolean {
@@ -129,23 +161,28 @@ object SavedImages {
                 if (!response.isSuccessful) return false
                 val length = body.contentLength()
                 if (length > MAX_BYTES) return false
-                val part = File(target.parentFile, target.name + ".part")
+                val part = File(target.parentFile, target.name + PART)
                 var written = 0L
-                body.byteStream().use { input ->
-                    part.outputStream().use { output ->
-                        val buffer = ByteArray(16 * 1024)
-                        while (true) {
-                            val n = input.read(buffer)
-                            if (n < 0) break
-                            written += n
-                            if (written > MAX_BYTES) {
-                                output.close(); part.delete(); return false
+                try {
+                    body.byteStream().use { input ->
+                        part.outputStream().use { output ->
+                            val buffer = ByteArray(16 * 1024)
+                            while (true) {
+                                val n = input.read(buffer)
+                                if (n < 0) break
+                                written += n
+                                if (written > MAX_BYTES) return false
+                                output.write(buffer, 0, n)
                             }
-                            output.write(buffer, 0, n)
                         }
                     }
+                    written > 0 && part.renameTo(target)
+                } finally {
+                    // Gone whatever happened: renamed into place, too large,
+                    // or cut off by the network. Only the too-large case
+                    // used to clean up, and the rest stayed for ever.
+                    part.delete()
                 }
-                written > 0 && part.renameTo(target)
             }
         } catch (e: CancellationException) {
             throw e

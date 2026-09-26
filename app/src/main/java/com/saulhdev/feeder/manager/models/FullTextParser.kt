@@ -7,7 +7,9 @@ import androidx.work.CoroutineWorker
 import androidx.work.ExistingWorkPolicy
 import androidx.work.Constraints
 import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
@@ -43,8 +45,16 @@ import okhttp3.OkHttpClient
 import org.koin.java.KoinJavaComponent.inject
 import java.io.File
 import java.net.URL
+import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
 
+/**
+ * The advance download after a sync, or when a setting asks for more.
+ *
+ * It replaced itself, and every sync asks for one, so a pull to refresh or
+ * the sync on opening the app stopped a pass partway through. Now it waits
+ * behind a running pass instead; see [enqueueUnlessWaiting].
+ */
 fun scheduleFullTextParse() {
     Log.i("FeederFullText", "Scheduling a full text parse work")
     val workRequest = OneTimeWorkRequestBuilder<FullTextWorker>()
@@ -52,11 +62,39 @@ fun scheduleFullTextParse() {
         .setConstraints(fullTextConstraints())
         .keepResultsForAtLeast(1, TimeUnit.MINUTES)
     val workManager: WorkManager by inject(WorkManager::class.java)
-    workManager.enqueueUniqueWork(
-        "FullTextWorker",
-        ExistingWorkPolicy.REPLACE,
-        workRequest.build()
-    )
+    enqueueUnlessWaiting(workManager, FULL_TEXT_WORK, workRequest.build())
+}
+
+private const val FULL_TEXT_WORK = "FullTextWorker"
+
+/**
+ * Whether another run is worth adding. Not while one is waiting: it has yet
+ * to start, and when it does it looks again at everything still missing.
+ */
+internal fun worthAnotherRun(states: Collection<WorkInfo.State>): Boolean =
+    states.none { it == WorkInfo.State.ENQUEUED || it == WorkInfo.State.BLOCKED }
+
+/**
+ * Adds [request] to the unique work [name], unless a run is already waiting.
+ *
+ * Behind a running one, so neither the pass in progress nor the new request
+ * is lost; nothing, when one is waiting. At most one running and one waiting,
+ * however many saves or syncs ask. Appending every time let the queue grow
+ * without limit while the conditions were not met (no Wi-Fi with full
+ * articles off on mobile data, a low battery), and all of it ran back to back
+ * on the next Wi-Fi.
+ *
+ * Asked without blocking: this is called from the app's start, on the main
+ * thread.
+ */
+internal fun enqueueUnlessWaiting(workManager: WorkManager, name: String, request: OneTimeWorkRequest) {
+    val infos = workManager.getWorkInfosForUniqueWork(name)
+    infos.addListener({
+        val states = runCatching { infos.get().map { it.state } }.getOrDefault(emptyList())
+        if (worthAnotherRun(states)) {
+            workManager.enqueueUniqueWork(name, ExistingWorkPolicy.APPEND_OR_REPLACE, request)
+        }
+    }, Executor { it.run() })
 }
 
 /**
@@ -68,9 +106,8 @@ fun scheduleFullTextParse() {
  * sync, so an article saved on the train waited up to an hour — and one
  * saved just before losing signal was not there to read at all.
  *
- * Its own unique work, appended rather than replacing, so it neither cancels
- * the after-sync run nor a save a moment earlier: each run looks again at
- * what is still missing, so a queue of them costs nothing but a check. Same
+ * Its own unique work, so it never cancels the after-sync run, and never more
+ * than one waiting: each run looks again at what is still missing. Same
  * conditions as every other advance download, the mobile-data one included.
  */
 fun scheduleSavedFullText() {
@@ -81,7 +118,7 @@ fun scheduleSavedFullText() {
         .keepResultsForAtLeast(1, TimeUnit.MINUTES)
         .build()
     val workManager: WorkManager by inject(WorkManager::class.java)
-    workManager.enqueueUniqueWork(SAVED_WORK, ExistingWorkPolicy.APPEND_OR_REPLACE, request)
+    enqueueUnlessWaiting(workManager, SAVED_WORK, request)
 }
 
 private const val SAVED_ONLY = "saved_only"

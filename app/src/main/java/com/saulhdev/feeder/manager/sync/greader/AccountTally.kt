@@ -48,6 +48,11 @@ data class AccountTally(
     val readHere: Int = 0,
     val unreadHere: Int = 0,
     val savedHere: Int = 0,
+    /**
+     * Saves looked for on the server as many times as they get and not found,
+     * so no longer sent. Still saved here; see planSaveLookups.
+     */
+    val savesNotFound: Int = 0,
 )
 
 /**
@@ -71,6 +76,7 @@ fun accountSummary(t: AccountTally): String {
         "${t.matched} articles matched",
         up?.let { "sent $it" },
         if (t.changesKept > 0) "${t.changesKept} changes kept" else null,
+        if (t.savesNotFound > 0) "${t.savesNotFound} saves not on the server" else null,
         down?.let { "received $it" },
     ).joinToString("; ")
 }
@@ -176,6 +182,7 @@ object AccountTallyStore {
             readSent = i("read_sent"), unreadSent = i("unread_sent"), savedSent = i("saved_sent"),
             unsavedSent = i("unsaved_sent"), changesKept = i("changes_kept"),
             readHere = i("read_here"), unreadHere = i("unread_here"), savedHere = i("saved_here"),
+            savesNotFound = i("saves_not_found"),
         )
     }.getOrNull()
 
@@ -189,6 +196,7 @@ object AccountTallyStore {
         "read_sent" to t.readSent, "unread_sent" to t.unreadSent, "saved_sent" to t.savedSent,
         "unsaved_sent" to t.unsavedSent, "changes_kept" to t.changesKept,
         "read_here" to t.readHere, "unread_here" to t.unreadHere, "saved_here" to t.savedHere,
+        "saves_not_found" to t.savesNotFound,
     )
 
     private fun prefs(context: Context) =

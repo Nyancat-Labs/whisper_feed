@@ -34,6 +34,14 @@ class SavedImagesTest {
         server = HttpServer.create(InetSocketAddress("127.0.0.1", 0), 0)
         server.createContext("/") { ex ->
             hits += ex.requestURI.path
+            if (ex.requestURI.path == "/cut.jpg") {
+                // Says a thousand bytes, sends ten, and hangs up: a signal
+                // lost halfway through a picture.
+                ex.sendResponseHeaders(200, 1000)
+                ex.responseBody.write(ByteArray(10))
+                ex.close()
+                return@createContext
+            }
             val body = when (ex.requestURI.path) {
                 "/missing.jpg" -> null
                 else -> ("image:" + ex.requestURI.path).toByteArray()
@@ -51,9 +59,9 @@ class SavedImagesTest {
         dir.deleteRecursively()
     }
 
-    private fun download(html: String, lead: String? = null) = runBlocking {
+    private fun download(html: String, lead: String? = null, id: String = "a1") = runBlocking {
         SavedImages.download(
-            itemId = "a1", html = html, baseUrl = "$base/article", leadImageUrl = lead,
+            itemId = id, html = html, baseUrl = "$base/article", leadImageUrl = lead,
             widthPx = 1080, density = 2.6f, filesDir = dir, client = OkHttpClient(),
         )
     }
@@ -103,6 +111,43 @@ class SavedImagesTest {
         SavedImages.delete("a1", dir)
         assertFalse(kept.exists())
         assertFalse(SavedImages.isDone("a1", dir))
+    }
+
+    @Test
+    fun `a picture two saves share stays until the last of them goes`() {
+        // One story saved from two feeds: the same picture, stored once.
+        download("""<img src="$base/shared.jpg"><img src="$base/only-a1.jpg">""", id = "a1")
+        download("""<img src="$base/shared.jpg">""", id = "a2")
+        val shared = SavedImages.local(dir, listOf("$base/shared.jpg"))!!
+        val own = SavedImages.local(dir, listOf("$base/only-a1.jpg"))!!
+
+        SavedImages.delete("a1", dir)
+        assertTrue("the other save lost its picture", shared.exists())
+        assertFalse(own.exists())
+
+        SavedImages.delete("a2", dir)
+        assertFalse(shared.exists())
+    }
+
+    @Test
+    fun `a picture cut off halfway leaves nothing behind`() {
+        assertEquals(0, download("""<img src="$base/cut.jpg">"""))
+        assertNull(SavedImages.local(dir, listOf("$base/cut.jpg")))
+        val parts = SavedImages.folder(dir).listFiles { f -> f.name.endsWith(".part") }.orEmpty()
+        assertEquals(parts.joinToString(), 0, parts.size)
+    }
+
+    @Test
+    fun `a part file left by a download that died is swept, a fresh one is not`() {
+        SavedImages.folder(dir).mkdirs()
+        val stale = File(SavedImages.folder(dir), "0".repeat(40) + ".part").apply {
+            writeText("half a picture")
+            setLastModified(System.currentTimeMillis() - 2 * 60 * 60 * 1000)
+        }
+        val running = File(SavedImages.folder(dir), "1".repeat(40) + ".part").apply { writeText("in progress") }
+        download("""<img src="$base/one.jpg">""")
+        assertFalse(stale.exists())
+        assertTrue(running.exists())
     }
 
     @Test

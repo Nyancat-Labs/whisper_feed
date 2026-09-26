@@ -229,8 +229,8 @@ class TwoWaySyncTest {
             "syncFeeds(context = context, feedId = ID_ALL, forceNetwork = forceNetwork)",
             "mapRemoteIds(auth)",
             "requeueSavesOnce()",
-            "val keepSaves = mapPendingSaves(auth)",
-            "val push = pushChanges(auth, token, keepSaves)",
+            "val saves = mapPendingSaves(auth)",
+            "val push = pushChanges(auth, token, saves.keep)",
             "pullReadState(auth)",
         ).map { sync.indexOf(it) }
         assertTrue(order.toString(), order.all { it >= 0 } && order == order.sorted())

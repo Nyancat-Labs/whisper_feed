@@ -43,6 +43,11 @@ import com.saulhdev.feeder.manager.sync.greader.matchFeeds
 import com.saulhdev.feeder.manager.sync.greader.readChanges
 import com.saulhdev.feeder.manager.sync.greader.rememberAfter
 import com.saulhdev.feeder.manager.sync.greader.savesToKeep
+import com.saulhdev.feeder.manager.sync.greader.starsToLookUp
+import com.saulhdev.feeder.manager.sync.greader.starsUnplacedAfter
+import com.saulhdev.feeder.manager.sync.greader.SaveLookupsAfter
+import com.saulhdev.feeder.manager.sync.greader.planSaveLookups
+import com.saulhdev.feeder.manager.sync.greader.saveLookupDue
 import java.net.URL
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -113,11 +118,12 @@ class GoogleReaderService(
 
             mapRemoteIds(auth)
             requeueSavesOnce()
-            val keepSaves = mapPendingSaves(auth)
-            val push = pushChanges(auth, token, keepSaves)
+            val saves = mapPendingSaves(auth)
+            val push = pushChanges(auth, token, saves.keep)
             tally = tally.copy(
                 readSent = push.read, unreadSent = push.unread,
                 savedSent = push.saved, unsavedSent = push.unsaved, changesKept = push.kept,
+                savesNotFound = saves.givenUp.size,
             )
             if (push.ok) {
                 val (read, unread) = pullReadState(auth)
@@ -402,21 +408,30 @@ class GoogleReaderService(
      * others. A feed's own stream reaches back as far as the server keeps it.
      *
      * Returns the saves to hold for the next sync: still not found, but from
-     * a feed the server carries. See savesToKeep.
+     * a feed the server carries (see savesToKeep), and not yet looked for as
+     * often as a save gets (see planSaveLookups); and the ones let go.
      */
-    private suspend fun mapPendingSaves(auth: String): Set<String> {
+    private suspend fun mapPendingSaves(auth: String): SaveLookupsAfter {
         val outbox = GoogleReaderState.outbox(context)
         val saves = outbox.star + outbox.unstar
-        if (saves.isEmpty()) return emptySet()
-        val mappedBefore = articles.mappedArticles().mapTo(HashSet()) { it.uuid }
+        val none = SaveLookupsAfter(keep = emptySet(), records = emptyMap(), givenUp = emptySet())
+        val mappedBefore = if (saves.isEmpty()) emptySet() else articles.mappedArticles().mapTo(HashSet()) { it.uuid }
         val missing = saves.filter { it !in mappedBefore }
-        if (missing.isEmpty()) return emptySet()
+        if (missing.isEmpty()) {
+            GoogleReaderState.setSaveLookups(context, emptyMap())
+            return none
+        }
         val streamOf = articles.feedUrlsOf(missing).mapNotNull { (uuid, url) ->
             val key = runCatching { normalizeFeedUrl(URL(url)) }.getOrNull() ?: return@mapNotNull null
             serverStreams[key]?.let { uuid to it }
         }.toMap()
+        // Only the ones due another look. Each costs up to a thousand items
+        // of its feed, and one the server has purged is never found.
+        val now = System.currentTimeMillis()
+        val before = GoogleReaderState.saveLookups(context)
+        val due = streamOf.filterKeys { saveLookupDue(before[it], now) }
         var attached = 0
-        streamOf.entries.groupBy({ it.value }, { it.key }).forEach { (stream, ids) ->
+        due.entries.groupBy({ it.value }, { it.key }).forEach { (stream, ids) ->
             var continuation: String? = null
             val seen = HashSet<String>()
             var pages = 0
@@ -433,9 +448,15 @@ class GoogleReaderService(
             }
         }
         val mapped = articles.mappedArticles().mapTo(HashSet()) { it.uuid }
-        val keep = savesToKeep(outbox, mapped, streamOf.keys)
-        Log.i(TAG, "Saves: ${missing.size} unmatched, $attached matched in their feeds, ${keep.size} held")
-        return keep
+        val held = savesToKeep(outbox, mapped, streamOf.keys)
+        val after = planSaveLookups(held, looked = due.keys, before = before, now = now)
+        GoogleReaderState.setSaveLookups(context, after.records)
+        Log.i(
+            TAG,
+            "Saves: ${missing.size} unmatched, $attached matched in their feeds, " +
+                "${after.keep.size} held, ${after.givenUp.size} let go",
+        )
+        return after
     }
 
     private suspend fun pushChanges(auth: String, token: String?, keepSaves: Set<String> = emptySet()): PushResult {
@@ -529,31 +550,40 @@ class GoogleReaderService(
      * reader would least forgive losing. Unsaving here does reach the server.
      */
     private suspend fun pullStars(auth: String): Int {
-        // The saved list with addresses, not ids alone: an article saved on
-        // another device may be older than matching reaches here, and its
-        // address is the only way to find it. Matched as it is read.
-        val starred = HashSet<String>()
-        var continuation: String? = null
-        val pagesSeen = HashSet<String>()
-        var pages = 0
-        while (pages < STAR_PAGES) {
-            val (items, next) = api.contentsPage(auth, GoogleReaderIds.STREAM_STARRED, MAP_PAGE_SIZE, null, continuation)
-            pages++
-            items.forEach { item ->
+        // The saved list as ids: a few kilobytes. It was read with contents,
+        // eight pages of 250 on every sync, and an id written for each, to
+        // learn what the ids alone say for every article already matched.
+        val starred = api.allItemIds(auth, stream = GoogleReaderIds.STREAM_STARRED, pageSize = STAR_IDS_PAGE, maxPages = 2)
+            .items.toHashSet()
+        val unplacedBefore = GoogleReaderState.starsUnplaced(context)
+        if (starred.isEmpty()) {
+            if (unplacedBefore.isNotEmpty()) GoogleReaderState.setStarsUnplaced(context, emptySet())
+            return 0
+        }
+        // Contents only for saves this phone cannot place yet: an article
+        // saved on another device and older than matching reaches, whose
+        // address is the only way to find it here. Each is asked once; one
+        // still not found is remembered, and not asked again while it stays
+        // saved.
+        val known = articles.mappedArticles().mapTo(HashSet()) { it.remoteId }
+        val lookUp = starsToLookUp(starred, known, unplacedBefore)
+        lookUp.chunked(STAR_CONTENTS_BATCH).forEach { chunk ->
+            api.itemsContents(auth, chunk).forEach { item ->
                 val (link, remoteId) = item.mapping() ?: return@forEach
-                starred += remoteId
                 articles.attachRemoteId(link, remoteId)
             }
-            if (next == null || !pagesSeen.add(next)) break
-            continuation = next
         }
-        if (starred.isEmpty()) return 0
+        val mapped = articles.mappedArticles()
+        GoogleReaderState.setStarsUnplaced(
+            context,
+            starsUnplacedAfter(starred, unplacedBefore, lookUp, mapped.mapTo(HashSet()) { it.remoteId }),
+        )
         val waiting = GoogleReaderState.outbox(context).pending
-        val toSave = articles.mappedArticles()
+        val toSave = mapped
             .filter { !it.bookmarked && it.remoteId in starred && it.uuid !in waiting }
             .map { it.uuid }
         if (toSave.isNotEmpty()) articles.applyServerStars(toSave)
-        Log.i(TAG, "Stars applied: ${toSave.size} saved")
+        Log.i(TAG, "Stars: ${starred.size} on the server, ${lookUp.size} looked up, ${toSave.size} saved here")
         return toSave.size
     }
 
@@ -620,7 +650,11 @@ class GoogleReaderService(
         const val SAVE_LOOKUP_PAGES = 4
 
         /** The saved list, read in full up to 2,000 saves. */
-        const val STAR_PAGES = 8
+        /** Ids per page of the saved list; two pages is twenty thousand saves. */
+        const val STAR_IDS_PAGE = 10_000
+
+        /** Saved items asked for by id in one request. */
+        const val STAR_CONTENTS_BATCH = 100
     }
 }
 

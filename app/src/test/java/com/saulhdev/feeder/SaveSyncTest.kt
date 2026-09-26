@@ -4,6 +4,8 @@ import com.saulhdev.feeder.manager.sync.greader.GoogleReaderApi
 import com.saulhdev.feeder.manager.sync.greader.GoogleReaderIds
 import com.saulhdev.feeder.manager.sync.greader.Outbox
 import com.saulhdev.feeder.manager.sync.greader.savesToKeep
+import com.saulhdev.feeder.manager.sync.greader.starsToLookUp
+import com.saulhdev.feeder.manager.sync.greader.starsUnplacedAfter
 import com.sun.net.httpserver.HttpServer
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -54,12 +56,58 @@ class SaveSyncTest {
     }
 
     @Test
-    fun `the saved list is read with addresses and matched as it is read`() {
+    fun `the saved list is read as ids, and only saves not placed here are asked for`() {
+        // It was read with contents, eight pages of 250 on every sync. The
+        // ids are kilobytes; the contents are needed only for an address.
         val service = source("manager/sync/service/GoogleReaderService.kt")
         val stars = service.substring(service.indexOf("private suspend fun pullStars"))
             .substringBefore("override suspend fun setRead")
-        assertTrue(stars.contains("api.contentsPage(auth, GoogleReaderIds.STREAM_STARRED, MAP_PAGE_SIZE, null, continuation)"))
+        assertTrue(stars.contains("api.allItemIds(auth, stream = GoogleReaderIds.STREAM_STARRED"))
+        assertTrue(stars.contains("val lookUp = starsToLookUp(starred, known, unplacedBefore)"))
+        assertTrue(stars.contains("api.itemsContents(auth, chunk)"))
         assertTrue(stars.contains("articles.attachRemoteId(link, remoteId)"))
+        assertTrue(!stars.contains("contentsPage("))
+    }
+
+    @Test
+    fun `a save is asked about once, and forgotten when it is unsaved there`() {
+        val starred = setOf("known", "new", "asked-before")
+        // Matched here already, or asked about and not found: neither again.
+        assertEquals(listOf("new"), starsToLookUp(starred, known = setOf("known"), unplaced = setOf("asked-before")))
+        // "new" was asked about and is still not here; "gone" was unsaved on
+        // the server, so there is nothing left to remember.
+        assertEquals(
+            setOf("new", "asked-before"),
+            starsUnplacedAfter(starred, before = setOf("asked-before", "gone"), lookedUp = listOf("new"), known = setOf("known")),
+        )
+        // Found this time: not remembered as missing.
+        assertEquals(emptySet<String>(), starsUnplacedAfter(setOf("new"), emptySet(), listOf("new"), known = setOf("new")))
+    }
+
+    @Test
+    fun `saved items are asked for by id, in the body, one i each`() {
+        val server = HttpServer.create(InetSocketAddress("127.0.0.1", 0), 0)
+        var path = ""
+        var form = ""
+        server.createContext("/") { ex ->
+            path = ex.requestURI.rawPath + "?" + ex.requestURI.rawQuery
+            form = ex.requestBody.readBytes().decodeToString()
+            val body = """{"items":[{"id":"tag:google.com,2005:reader/item/000000000000000b",
+                "alternate":[{"href":"https://example.com/older-story"}]}]}""".toByteArray()
+            ex.responseHeaders.add("Content-Type", "application/json")
+            ex.sendResponseHeaders(200, body.size.toLong())
+            ex.responseBody.use { it.write(body) }
+        }
+        server.start()
+        try {
+            val api = GoogleReaderApi("http://127.0.0.1:${server.address.port}/api/greader.php")
+            val items = runBlocking { api.itemsContents("auth", listOf("11", "12")) }
+            assertEquals("https://example.com/older-story" to "11", items.single().mapping())
+            assertTrue(path, path.endsWith("/reader/api/0/stream/items/contents?output=json"))
+            assertEquals("i=11&i=12", form)
+        } finally {
+            server.stop(0)
+        }
     }
 
     @Test

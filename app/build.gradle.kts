@@ -360,6 +360,7 @@ dependencies {
     testImplementation(libs.koin.test)
     testImplementation(libs.coroutines.test)
     testImplementation(libs.robolectric)
+    testImplementation(libs.work.testing)
 
     //Libs
     implementation(libs.threetenabp)
