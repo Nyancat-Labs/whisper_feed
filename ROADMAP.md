@@ -235,12 +235,12 @@ subscription list built over years existing in exactly one place — is built,
 scheduled and offered on first run, and the app now explains itself to
 somebody opening it for the first time.
 
-**Before §8: the first group in §22.** The deep dive of 26 September found
-things that should not reach people who never agreed to test: a diagnostics
-report that can carry feed addresses and a location, a settings file that can
-stop the app starting, a way for another app to open any page inside Whisper,
-glance text cut on every 360 dp phone, and database upgrades no test has ever
-run. §22d gives the order.
+**§22 is done.** The deep dive of 26 September found things that should not
+reach people who never agreed to test: a diagnostics report that could carry
+feed addresses and a location, a settings file that could stop the app
+starting, a way for another app to open any page inside Whisper, glance text
+cut on every 360 dp phone, and database upgrades no test had ever run. All of
+it, and the rest of §22, is fixed and on main.
 
 **What to build next: §8, shipping it.** Everything above is being tested by
 three people on builds handed to them directly, which does not scale and does
@@ -1977,6 +1977,11 @@ reported from a device; each item says where it is and what the fix is.
 breaks a rule this project set itself. *Medium*: a real fault, in a narrower
 case. *Low*: hardening or tidying.
 
+**Status: all done, the same day**, in the order of §22d, each with a test
+that fails with the fix taken out. Two things are left, on purpose: the second
+half of S6 (moving the token off the deprecated library), and a device check
+of B9 (the launcher panel's insets), which renders cannot show.
+
 #### 22a. Security
 
 - ~~**S1 · High · Diagnostics can carry addresses.**~~ The report includes this
@@ -2566,7 +2571,7 @@ Small, and cheaper now than later.
   from the code and measured where it could be measured — text widths against
   the real font, icon alpha, migration SQL. The on-device checks have all been
   yours. Emulator-based screenshot tests would change that.
-- **Test coverage is 319 unit tests**, across article age, tag splitting, feed
+- **Test coverage is 936 unit tests** (September 2026), across article age, tag splitting, feed
   layout and weighting, clustering, the settings backup format, the tour's step
   machine, the starter list, bookmark import, link harvesting, the Google Reader
   id shapes, the source list's filters and range selection, and the URL scheme
