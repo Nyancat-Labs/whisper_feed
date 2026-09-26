@@ -2029,7 +2029,7 @@ case. *Low*: hardening or tidying.
   notification permission, which restored on a new phone meant it never
   asked. Tested against a real preference store; the old code failed four of
   the seven tests.
-- **S4 · Medium · DNS rebinding gets past the private-network guard.**
+- ~~**S4 · Medium · DNS rebinding gets past the private-network guard.**~~
   `BlockPrivateNetworks` (`SafeAddress.kt:141`) looks the host up itself;
   OkHttp has already looked it up again to connect. A hostile feed's domain can
   give a private address to one lookup and a public one to the other, and the
@@ -2039,6 +2039,14 @@ case. *Low*: hardening or tidying.
   address the connection actually went to (`chain.connection()?.route()
   ?.socketAddress`), which is one lookup and cannot disagree with itself; and
   add a `Dns` that drops private answers, so the socket is never opened.
+  **Done**, the first half, and the real risk was lower than written: all of
+  this is https against the system's certificates, and a router cannot
+  present a valid certificate for the attacker's domain, so the connection
+  failed before any request. The guard now judges the connected address
+  (through a proxy, still the name, since the socket is then the proxy's).
+  The `Dns` filter was left out on purpose: it cannot tell a target from a
+  proxy, and would have cut off anybody behind a proxy on their own
+  network. The refusal no longer names the host, which went into the log.
 - ~~**S5 · Low · Other apps can open any page inside Whisper.**~~ The web-view
   screen has a deep link (`NavigationManager.kt:141`), and `MainActivity`, which
   must be exported because it is the launcher entry, hands every intent it

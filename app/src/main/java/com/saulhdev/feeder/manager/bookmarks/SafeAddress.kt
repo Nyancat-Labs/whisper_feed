@@ -140,13 +140,43 @@ internal fun upgradedUrl(url: okhttp3.HttpUrl): okhttp3.HttpUrl =
 
 class BlockPrivateNetworks : okhttp3.Interceptor {
     override fun intercept(chain: okhttp3.Interceptor.Chain): okhttp3.Response {
-        val host = chain.request().url.host
-        if (!SafeAddress.isPublicHost(host)) {
-            throw java.io.IOException("Refusing to fetch a private address: $host")
+        val route = chain.connection()?.route()
+        if (reachesPrivateNetwork(
+                proxy = route?.proxy?.type(),
+                connected = route?.socketAddress?.address,
+                host = chain.request().url.host,
+                isPublicHost = SafeAddress::isPublicHost,
+            )
+        ) {
+            // No address in the message: it travels into the log with the
+            // exception, and the log into a shared report.
+            throw java.io.IOException("Refusing to fetch a private address")
         }
         return chain.proceed(chain.request())
     }
 }
+
+/**
+ * Whether a connection reaches the reader's own network.
+ *
+ * The address judged is the one the socket is connected to. It used to be the
+ * host looked up a second time, and a name can answer two lookups differently:
+ * public to one, the reader's router to the other. That is DNS rebinding, and
+ * in practice certificates already stop it, since everything here is https and
+ * a router cannot show a valid certificate for somebody else's domain. This
+ * makes the guard right on its own account, and costs a lookup less.
+ *
+ * Through a proxy the socket is the proxy's, and the target is the proxy's to
+ * find, so the name is all there is to judge; which is what happens then.
+ */
+internal fun reachesPrivateNetwork(
+    proxy: java.net.Proxy.Type?,
+    connected: java.net.InetAddress?,
+    host: String,
+    isPublicHost: (String) -> Boolean,
+): Boolean =
+    if (proxy == java.net.Proxy.Type.DIRECT && connected != null) !SafeAddress.isPublic(connected)
+    else !isPublicHost(host)
 
 /**
  * Refuses the reader's own network. The guard every client needs.
