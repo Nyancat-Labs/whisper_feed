@@ -2227,19 +2227,23 @@ harness is not in the repository.
   when it will not fit, the mark alone, which is still the brand. **Done**,
   in one title both headers now share (`BrandTitle`); TalkBack still reads
   the name.
-- **C3 · Medium · Large headlines run above their shade.** The dark gradient
+- ~~**C3 · Medium · Large headlines run above their shade.**~~ The dark gradient
   under a lead story starts 30% of the way down the picture
   (`ArticleCard.kt:225`). A headline that is tall for its card, at 200% text
   or on a narrow screen, reaches above that, and its top line is white text on
   the photograph. **Fix:** draw the gradient behind the text itself, from its
-  measured top, so it grows with the headline.
-- **C4 · Medium · On a short screen the header is the whole first screen.** On
+  measured top, so it grows with the headline. **Done**: the same three stops,
+  anchored to the text, starting 72 dp above its first line. Where the text
+  sits as usual the shade lands where it did.
+- ~~**C4 · Medium · On a short screen the header is the whole first screen.**~~ On
   the Flip cover (about 400 dp tall) the lead story starts at the bottom edge;
   on a phone on its side no story shows at all until a scroll. **Fix:** below
   about 480 dp of height, glance goes and the header scrolls away with the
-  feed.
-- **C5 · Medium · On the inner screens one lead story fills the first
-  screen.** Cards takes a second column only from 720 dp (§20), so the Fold6
+  feed. **Done.** The header already scrolled away; the glance row now steps
+  aside below 480 dp, in both feeds, and the lead story shows on the first
+  screen of the Flip cover and of a phone on its side.
+- ~~**C5 · Medium · On the inner screens one lead story fills the first
+  screen.**~~ Cards takes a second column only from 720 dp (§20), so the Fold6
   (619 dp) and the Pixel 10 Pro Fold (692 dp) get one column, and a lead
   story's picture grows with the width. At 692 × 717 the header and one story
   are the whole screen, its source line pushed off the bottom. There is no
@@ -2247,15 +2251,21 @@ harness is not in the repository.
   opens beside the feed only from 840 dp, so an opened Fold also opens
   articles full screen. It is a large phone, not the tablet. **Fix:** cap a
   lead story at about half the screen's height; and consider two columns from
-  600 dp, 300 dp each.
-- **C6 · Medium · Slow-device tuning misses new budget phones.** Two photo
+  600 dp, 300 dp each. **Done, both.** A lead picture is four by three as
+  before and never taller than half the window, which also helps a phone on
+  its side. And from 600 dp, Android's own line between a phone and an
+  unfolded or tablet window, Cards has two columns: an opened Fold now looks
+  like the tablet upright. No phone is that wide, so none changes.
+- ~~**C6 · Medium · Slow-device tuning misses new budget phones.**~~ Two photo
   decodes at a time instead of four is chosen for Android 11 and older, or a
   phone that calls itself low on memory (`ImageDecodes.kt:33`). A Galaxy A07
   runs Android 15 on an entry-level chip and is neither, so it gets the
   setting that made the Tab S5e stutter, and it is the best-selling Android
   phone of the year so far. **Fix:** also treat a phone with no media
   performance class (Android 12 and up) and 4 GB of memory or less as older.
-  Diagnostics already says which is in force.
+  Diagnostics already says which is in force. **Done**, drawn at 5 GB as
+  reported: a phone sold with 4 GB reports about 3.7, one sold with 6 about
+  5.5.
 - ~~**C7 · Low · Choice lists cut their second line at 200%.**~~ Each row is 48 dp
   high and no more (`StringSelectionPrefDialogUI.kt:131`); "Only on Wi-Fi and
   while charging" shows as "Only on Wi-Fi and". **Fix:** a minimum height.
@@ -2267,8 +2277,9 @@ harness is not in the repository.
   app's info page, and on a Go device say plainly that the panel cannot open
   articles. `PermissionDialog.kt`, which has the same call, is used nowhere
   and can go.
-- **C9 · Low · Split screen at about 220 dp.** Everything at the top is cut
+- ~~**C9 · Low · Split screen at about 220 dp.**~~ Everything at the top is cut
   down to dots. Mostly mended by C1 and C2; below about 280 dp glance can go.
+  **Done** with C4, by the same check.
 
 **Fine as it is.** Mosaic takes three lanes on the inner screens, which suits
 it. The Ultra's QHD+ screen costs nothing extra, because pictures are decoded
