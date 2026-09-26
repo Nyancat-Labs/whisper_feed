@@ -102,6 +102,10 @@ object Diagnostics : KoinComponent {
         runCatching {
             val prefs = get<FeedPreferences>()
             appendLine("Article open mode: ${prefs.articleOpenMode.getValue()}")
+            // Keep, dim or hide. Keep is the default and changes nothing on
+            // screen when an article is read, which reads as marking having
+            // failed; the report has to be able to say which it is.
+            appendLine("Read articles:     ${prefs.readVisibility.getValue()}")
             appendLine("Overlay theme:     ${prefs.overlayTheme.getValue()}")
             // Two different things, easily confused: categoryFilter is what the
             // chips select (include), tagsFilter is what the filter sheet mutes
