@@ -1894,6 +1894,50 @@ still costs it the large slot. This changed the phone too, on purpose.
 **Not done, on purpose.** No bottom navigation bar and no summaries on the lead
 cards: both were offered after a comparison with Feedly and declined.
 
+### 21. From the device, 26 September 2026
+
+Built after a day of use on both devices; each item is on main and in the
+preview build.
+
+- **Read later.** Saving an article downloads the whole of it at once, as its
+  own work so it cancels nothing, on the same network and battery conditions
+  as every other advance download. A save received from the account does the
+  same. Saved articles are never cleaned away, so the text stays until the
+  save is removed. The empty Saved screen, the tour and the header call it
+  Read later. *To confirm on the device:* save, go offline, open.
+- **Mark as read in the filter sheet** — Everything, or older than 1, 24 or
+  48 hours, with counts and an immediate Undo. See §5's list.
+- **"Show articles you have read" remembers Fade.** Turning it off and on in
+  the sheet used to come back as Keep, which is how the phone lost its Fade.
+  Diagnostics now names the setting ("Read articles:").
+- **Backups without a Wi-Fi rule.** A folder on the phone needs no network; a
+  cloud folder needs any connection. Both wait while the battery is low. The
+  page says which rule applies, and no longer says "no folder is chosen" when
+  one is. "Backup and Restore" takes a capital R.
+- **The Data sources search takes focus only when tapped.** A trace showed it
+  gaining focus twenty milliseconds after the page was rebuilt on the way back
+  from Manage categories and the two repair lists, with no tap. The field now
+  refuses focus until pressed; TalkBack and hardware keyboards are never
+  gated. Confirmed on the device.
+- **A test for the stuck-sync notice**, under the debugging switch: the real
+  notice with "Test:" in the title, recording nothing. Confirmed on the device.
+- **Feeds from your reading** is out of Settings and its weekly pass stopped
+  (see "Suggestions, after the device report").
+
+#### Still to test on the device
+
+- Bookmark import from a browser file (§13).
+- A save made on one device arriving on the other, and its text downloading.
+- The daily backup writing on its own, after "Back up now" once.
+
+#### Later
+
+- A feed-options icon for the filter sheet (§5's list), waiting on the asset.
+- A search for a feed whose site moved completely (§18).
+- Mark as read in the launcher panel, once the panel can offer an undo.
+- Release: signing key, then GitHub Releases, F-Droid and Play (§8), after
+  the company registration.
+
 ### 17. Scroll parallax on the feed — parked, at the bottom
 
 Prototyped, demonstrated, and deliberately not built. The image inside a card's
