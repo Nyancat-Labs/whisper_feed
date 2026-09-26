@@ -2096,13 +2096,21 @@ case. *Low*: hardening or tidying.
   With a few hundred saves that is megabytes per sync, on mobile data too.
   **Fix:** ask for the saved ids only (`stream/items/ids`, a few kilobytes),
   and fetch contents only for ids not already known here.
-- **B5 · Medium · Database upgrades are never tested.** Twenty-four steps take
+- ~~**B5 · Medium · Database upgrades are never tested.**~~ Twenty-four steps take
   the database from version 1 to 25, twenty written by hand; twenty-three
   schemas are exported (`app/schemas`); no test runs a single migration. A
   mistake in the next one is found on somebody's phone, at the update, as a
   crash or lost articles. Worth doing before §8 puts updates in front of
   strangers. **Fix:** a `MigrationTestHelper` test from each exported schema to
   the current one, run under Robolectric so it stays in the normal suite.
+  **Done**, with one change of method. Room's helper reads the schemas from
+  assets, and a unit test here only sees the debug app's own, so each old
+  database is built from its schema file's statements directly, which is
+  what the helper does, and opened with Room as the app opens it. Every
+  version from 3 upgrades to 25 with its rows, two in every table, one with
+  every optional column empty. Checked by breaking: a column of the wrong
+  type fails with the error a phone would crash on, and a lost row fails at
+  every version that passes through the migration that lost it.
 - **B6 · Low · Full articles in older encodings come out garbled.** The page is
   decoded with the charset in the response header, or UTF-8
   (`FullTextParser.kt:323`); a page that names its encoding only in a `<meta>`

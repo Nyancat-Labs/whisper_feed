@@ -359,6 +359,7 @@ dependencies {
     ksp(libs.koin.compiler)
     testImplementation(libs.koin.test)
     testImplementation(libs.coroutines.test)
+    testImplementation(libs.robolectric)
 
     //Libs
     implementation(libs.threetenabp)
