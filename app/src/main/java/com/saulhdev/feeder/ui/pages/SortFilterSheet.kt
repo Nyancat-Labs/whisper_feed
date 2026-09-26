@@ -48,7 +48,7 @@ import com.saulhdev.feeder.ui.icons.phosphor.CheckCircle
 import com.saulhdev.feeder.ui.icons.phosphor.SortAscending
 import com.saulhdev.feeder.ui.icons.phosphor.SortDescending
 import com.saulhdev.feeder.utils.READ_HIDE
-import com.saulhdev.feeder.utils.READ_KEEP
+import com.saulhdev.feeder.utils.readVisibilityOnShow
 import com.saulhdev.feeder.utils.extensions.koinNeoViewModel
 import com.saulhdev.feeder.viewmodels.MarkReadRange
 import com.saulhdev.feeder.viewmodels.SortFilterViewModel
@@ -137,13 +137,20 @@ fun SortFilterSheet(
                             sortAscPrefVar = sortAscOption
                             sourcesPrefVar = sourcesOption.toSet()
                             tagsPrefVar = tagsOption.toSet()
-                            // Turning them back on restores Keep rather than
-                            // Fade: Fade is a deliberate choice made in
-                            // Settings, and a switch labelled "show" should
-                            // not quietly pick a different way of showing.
+                            // Turning them back on restores whichever of Keep
+                            // or Fade was set when this switch hid them. It
+                            // used to be Keep every time, which quietly undid
+                            // a Fade chosen in Settings.
                             if (showReadOption) {
-                                if (readVisibility == READ_HIDE) readVisibilityPrefVar = READ_KEEP
+                                if (readVisibility == READ_HIDE) {
+                                    readVisibilityPrefVar = readVisibilityOnShow(
+                                        prefs.readVisibilityBeforeHide.getValue()
+                                    )
+                                }
                             } else {
+                                if (readVisibility != READ_HIDE) {
+                                    prefs.readVisibilityBeforeHide.set(readVisibility)
+                                }
                                 readVisibilityPrefVar = READ_HIDE
                             }
                             onDismiss()

@@ -89,6 +89,14 @@ fun getReadVisibility(context: Context): Map<String, String> {
     )
 }
 
+/**
+ * What "Show articles you have read" turns back on to: the way they were
+ * shown before the sheet hid them. It always came back as Keep, so somebody
+ * who faded read articles found them unfaded after hiding them once.
+ */
+fun readVisibilityOnShow(remembered: String): String =
+    remembered.takeIf { it == READ_KEEP || it == READ_DIM } ?: READ_KEEP
+
 fun getFeedLayouts(context: Context): Map<String, String> {
     return mapOf(
         LAYOUT_CARDS to context.resources.getString(R.string.layout_cards),

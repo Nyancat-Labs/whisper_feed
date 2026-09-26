@@ -664,6 +664,18 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
         entries = getReadVisibility(context)
     )
 
+    /**
+     * Keep or Fade, whichever was set when the filter sheet hid read articles,
+     * so turning them back on there restores it. No row of its own.
+     */
+    var readVisibilityBeforeHide = StringPref(
+        titleId = R.string.pref_read_visibility,
+        icon = Phosphor.EyeSlash,
+        key = READ_VISIBILITY_BEFORE_HIDE,
+        dataStore = dataStore,
+        defaultValue = READ_KEEP,
+    )
+
     var volumeKeyScroll = BooleanPref(
         titleId = R.string.pref_volume_key_scroll,
         summaryId = R.string.pref_volume_key_scroll_summary,
@@ -1112,6 +1124,7 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
         val REMOVE_DUPLICATES = booleanPreferencesKey("pref_remove_duplicates")
         val VOLUME_KEY_SCROLL = booleanPreferencesKey("pref_volume_key_scroll")
         val READ_VISIBILITY = stringPreferencesKey("pref_read_visibility")
+        val READ_VISIBILITY_BEFORE_HIDE = stringPreferencesKey("pref_read_visibility_before_hide")
         val MARK_READ_ON_SCROLL = floatPreferencesKey("pref_mark_read_dwell_seconds")
         val LEARNED = stringPreferencesKey("pref_learned")
         val STATISTICS = stringPreferencesKey("pref_statistics")
