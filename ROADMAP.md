@@ -2145,23 +2145,27 @@ Display size at its largest takes a 360 dp phone to roughly 320 dp.
 **How it was checked.** The top of the feed (header, glance row, category
 chips, the first day heading and a lead story) was rendered off the device at
 each size, at 100%, 130%, 150% and 200% text, at 220 dp for split screen, and
-at the Fold6's and Pixel Fold's inner screens. The render harness is not in the
-repository.
+at the Fold6's and Pixel Fold's inner screens, in Inter, the app's default
+face. A render at the Pixel 10 Pro's own size matched a screenshot from the
+phone to the pixel: the name 255 × 61 px, in the same place. The render
+harness is not in the repository.
 
-- **C1 · High · The glance chips cut their text.** Their height is fixed at
-  84 dp (`GlanceRow.kt:56`). At 130% on a 360 dp phone the third line (the
-  place) is cut in half; at 150% on 412 dp it is a sliver. The rain figure is
-  truncated at 360 dp at *every* text size, "100%" showing as "100", "10" at
-  130% and "1" at 200%, which is the whole budget group and the Galaxy S26 at
-  their default settings. On a phone on its side, a Fold's inner screen or a
-  tablet the two chips stretch to half the width each. **Fix:** a minimum
-  height instead of a fixed one; a number never shortened (the label goes
-  first); chips capped at about 200 dp wide and started from the left.
+- **C1 · High · The glance chips cut their text.** Their height is fixed at 84
+  dp (`GlanceRow.kt:56`). At 130% on a 360 dp phone the third line (the place)
+  is cut in half; at 150% on 412 dp it is a sliver. The rain figure is cut
+  short at 360 dp at *every* text size ("100%" shows as "100", then "10" at
+  130% and "1" at 200%), and at 412 dp from 150%. At 360 dp that is the whole
+  budget group and the Galaxy S26, at their default settings. On a phone on
+  its side, a Fold's inner screen or a tablet the two chips stretch to half
+  the width each. **Fix:** a minimum height instead of a fixed one; a number
+  never shortened (the label goes first); chips capped at about 200 dp wide
+  and started from the left.
 - **C2 · High · The name wraps in the header.** "Whisper", beside the mark and
-  four buttons, needs about 330 dp at 100%. It breaks to "Whisp / er" on the
-  Fold6 cover at 100%, and on a 360 dp phone at 200%; at 220 dp it stands one
-  letter to a line. **Fix:** one line, never wrapped; when it will not fit, the
-  mark alone, which is still the brand.
+  four buttons, needs about 355 dp at 100%, so a 360 dp phone has almost
+  nothing to spare. It breaks to "Whispe / r" on a 360 dp phone at 130%, and
+  to "Whis / per" on the Fold6 cover at 100% and a 360 dp phone at 200%; at
+  220 dp it stands one letter to a line. **Fix:** one line, never wrapped;
+  when it will not fit, the mark alone, which is still the brand.
 - **C3 · Medium · Large headlines run above their shade.** The dark gradient
   under a lead story starts 30% of the way down the picture
   (`ArticleCard.kt:225`). A headline that is tall for its card, at 200% text
@@ -2177,7 +2181,10 @@ repository.
   screen.** Cards takes a second column only from 720 dp (§20), so the Fold6
   (619 dp) and the Pixel 10 Pro Fold (692 dp) get one column, and a lead
   story's picture grows with the width. At 692 × 717 the header and one story
-  are the whole screen, its source line pushed off the bottom. **Fix:** cap a
+  are the whole screen, its source line pushed off the bottom. There is no
+  tablet mode as such: columns come from the width alone, and an article
+  opens beside the feed only from 840 dp, so an opened Fold also opens
+  articles full screen. It is a large phone, not the tablet. **Fix:** cap a
   lead story at about half the screen's height; and consider two columns from
   600 dp, 300 dp each.
 - **C6 · Medium · Slow-device tuning misses new budget phones.** Two photo
