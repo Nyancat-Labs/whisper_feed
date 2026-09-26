@@ -328,6 +328,12 @@ data class ArticleIdWithLink(
     val link: String
 )
 
+/** An article and the address of the feed it came from. */
+data class ArticleFeedUrl(
+    val uuid: String,
+    val url: String,
+)
+
 /** A saved article, as much as keeping its pictures needs. */
 data class SavedArticleRef(
     val uuid: String,

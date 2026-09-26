@@ -1915,6 +1915,19 @@ preview build.
   deletes them. Saves made before this get their pictures at the next start.
   A signal lost halfway is not recorded as done. The empty Saved screen, the tour and the header call it
   Read later. **Confirmed on the device**, text and pictures, offline.
+- **Saves between devices.** A report from a third phone (Sony XQ-BC52,
+  Android 13) showed two saves and no sync that had ever sent one. A save
+  can only go to the server by the server's id for the article, and a device
+  matched only what the server delivered from a little before its last
+  sync — so a save of an older article had no id and was let go unsent, and
+  a save arriving from the server was applied only to an article already
+  matched. Now: a waiting save is looked for in its own feed on the server
+  (a thousand items back) and matched there; one still not found, from a
+  feed the server carries, waits for the next sync instead of being dropped;
+  the saved list is read with addresses and matched as it is read; and every
+  save already on a device is sent once, to recover the ones lost. Unsaving
+  still reaches the server; an unsave from the server is still never applied.
+  *To confirm on the devices.*
 - **Mark as read in the filter sheet** — Everything, or older than 1, 24 or
   48 hours, with counts and an immediate Undo. See §5's list.
 - **"Show articles you have read" remembers Fade.** Turning it off and on in

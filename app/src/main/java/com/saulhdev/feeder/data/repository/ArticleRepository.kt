@@ -586,6 +586,14 @@ class ArticleRepository(db: NeoFeedDb) {
         articlesDao.getSavedArticleIdLinks()
     }
 
+    suspend fun feedUrlsOf(ids: List<String>): Map<String, String> = withContext(cc) {
+        ids.chunked(SQLITE_ARG_LIMIT).flatMap { articlesDao.feedUrlsOf(it) }.associate { it.uuid to it.url }
+    }
+
+    suspend fun savedIds(): List<String> = withContext(cc) {
+        articlesDao.getSavedArticleIdLinks().map { it.uuid }
+    }
+
     suspend fun savedArticleRefs(): List<SavedArticleRef> = withContext(cc) {
         articlesDao.getSavedArticleRefs()
     }

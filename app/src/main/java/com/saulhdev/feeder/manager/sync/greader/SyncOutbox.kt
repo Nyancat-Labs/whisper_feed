@@ -235,6 +235,7 @@ object GoogleReaderState {
     private const val LAST_LOCAL = "last_local"
     private const val EVER_ON_SERVER = "ever_on_server"
     private const val MAPPED_AT = "mapped_at"
+    private const val SAVES_REQUEUED = "saves_requeued_v1"
     private const val ALIASES = "aliases"
     private const val NOT_ON_SERVER = "not_on_server_v2"
     private const val REFUSED = "refused"
@@ -323,6 +324,20 @@ object GoogleReaderState {
     /** When articles were last matched to the server's, or 0 for never. */
     fun mappedAt(context: Context): Long = prefs(context).getLong(MAPPED_AT, 0L)
 
+    /**
+     * Whether every save here has been queued for the server once.
+     *
+     * Saves of articles the server had not matched used to be let go
+     * unsent, so a device could hold saves the server never heard of. Queued
+     * once, after the fix, to send what was lost; after that each save is
+     * queued as it is made.
+     */
+    fun savesRequeued(context: Context): Boolean = prefs(context).getBoolean(SAVES_REQUEUED, false)
+
+    fun setSavesRequeued(context: Context) {
+        prefs(context).edit { putBoolean(SAVES_REQUEUED, true) }
+    }
+
     fun setMappedAt(context: Context, at: Long) {
         prefs(context).edit { putLong(MAPPED_AT, at) }
     }
@@ -334,6 +349,17 @@ object GoogleReaderState {
     private fun prefs(context: Context) =
         context.applicationContext.getSharedPreferences(FILE, Context.MODE_PRIVATE)
 }
+
+/**
+ * Saves and unsaves to hold for the next sync rather than let go.
+ *
+ * Those of articles the server has not matched yet, but whose feed it has:
+ * it may not have fetched the article yet, or it is older than matching
+ * reaches, and either can change. A save of an article from a feed the server
+ * does not carry has nowhere to go, and is let go as before.
+ */
+fun savesToKeep(outbox: Outbox, mapped: Set<String>, feedOnServer: Set<String>): Set<String> =
+    (outbox.star + outbox.unstar).filterTo(HashSet()) { it !in mapped && it in feedOnServer }
 
 /** Why one of Whisper's feeds is not on the server. */
 enum class MissingKind {

@@ -30,6 +30,7 @@ import androidx.room.Upsert
 import com.saulhdev.feeder.data.db.models.Article
 import com.saulhdev.feeder.data.db.models.ArticleIdWithLink
 import com.saulhdev.feeder.data.db.models.SavedArticleRef
+import com.saulhdev.feeder.data.db.models.ArticleFeedUrl
 import com.saulhdev.feeder.data.db.models.DayCount
 import com.saulhdev.feeder.data.db.models.HourCount
 import com.saulhdev.feeder.data.db.models.ReadingTime
@@ -409,6 +410,16 @@ interface FeedArticleDao {
 
     @Query("SELECT uuid, link, imageUrl FROM Article WHERE bookmarked = 1")
     suspend fun getSavedArticleRefs(): List<SavedArticleRef>
+
+    /** Each article's feed address, for finding it in that feed on a server. */
+    @Query(
+        """
+        SELECT Article.uuid AS uuid, Feeds.url AS url FROM Article
+        JOIN Feeds ON Article.feedId = Feeds.id
+        WHERE Article.uuid IN (:ids)
+        """
+    )
+    suspend fun feedUrlsOf(ids: List<String>): List<ArticleFeedUrl>
 
     // Embedded FeedItem
     @Transaction
