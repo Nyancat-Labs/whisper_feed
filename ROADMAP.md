@@ -1927,7 +1927,7 @@ preview build.
   the saved list is read with addresses and matched as it is read; and every
   save already on a device is sent once, to recover the ones lost. Unsaving
   still reaches the server; an unsave from the server is still never applied.
-  *To confirm on the devices.*
+  **Confirmed on the devices.**
 - **Mark as read in the filter sheet** — Everything, or older than 1, 24 or
   48 hours, with counts and an immediate Undo. See §5's list.
 - **"Show articles you have read" remembers Fade.** Turning it off and on in
@@ -1950,7 +1950,6 @@ preview build.
 #### Still to test on the device
 
 - Bookmark import from a browser file (§13).
-- A save made on one device arriving on the other, and its text downloading.
 - The daily backup writing on its own, after "Back up now" once.
 
 #### Later
