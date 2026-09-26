@@ -22,6 +22,7 @@ import com.saulhdev.feeder.data.db.models.MappedArticle
 import com.saulhdev.feeder.data.db.NeoFeedDb
 import com.saulhdev.feeder.data.db.models.Article
 import com.saulhdev.feeder.data.db.models.ArticleIdWithLink
+import com.saulhdev.feeder.data.db.models.SavedArticleRef
 import com.saulhdev.feeder.data.db.models.Feed
 import com.saulhdev.feeder.data.db.models.FeedItem
 import com.saulhdev.feeder.utils.blobInputStream
@@ -77,6 +78,9 @@ class ArticleRepository(db: NeoFeedDb) {
      * whole text can be downloaded for reading later. Set once at startup.
      */
     var onSaved: (() -> Unit)? = null
+
+    /** Told when an article stops being saved, so its kept pictures can go. */
+    var onUnsaved: ((String) -> Unit)? = null
 
     /**
      * Told when the reader changes whether articles are read, by local id.
@@ -538,6 +542,7 @@ class ArticleRepository(db: NeoFeedDb) {
             articlesDao.updateFeedArticle(it.copy(bookmarked = bookmark))
             if (it.bookmarked != bookmark) onStarredChanged?.invoke(articleId, bookmark)
             if (bookmark && !it.bookmarked) onSaved?.invoke()
+            if (!bookmark && it.bookmarked) onUnsaved?.invoke(articleId)
             // A source removed while it still held saved articles is kept
             // only for their sake. Taking the last one back is what ends
             // that, and is what makes "kept until you un-bookmark it" a fact
@@ -579,6 +584,10 @@ class ArticleRepository(db: NeoFeedDb) {
 
     suspend fun savedArticleIdLinks(): List<ArticleIdWithLink> = withContext(cc) {
         articlesDao.getSavedArticleIdLinks()
+    }
+
+    suspend fun savedArticleRefs(): List<SavedArticleRef> = withContext(cc) {
+        articlesDao.getSavedArticleRefs()
     }
 
     fun getBookmarkedFeedItems(): Flow<List<FeedItem>> =

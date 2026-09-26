@@ -1903,7 +1903,17 @@ preview build.
   own work so it cancels nothing, on the same network and battery conditions
   as every other advance download. A save received from the account does the
   same. Saved articles are never cleaned away, so the text stays until the
-  save is removed. The empty Saved screen, the tour and the header call it
+  save is removed.
+
+  **Pictures too.** The first version kept the text only, and offline a saved
+  article came up as text between grey placeholders: the reader asked the web
+  for each picture on opening, and Coil's disk cache, shared with the whole
+  feed, keeps nothing for certain. Each picture is now downloaded with the
+  text — the srcset candidate for the phone's own screen, forty at most, none
+  over 8 MB — into one folder by address, and the reader looks there under
+  every address an image offers before asking the web. Removing the save
+  deletes them. Saves made before this get their pictures at the next start.
+  A signal lost halfway is not recorded as done. The empty Saved screen, the tour and the header call it
   Read later. *To confirm on the device:* save, go offline, open.
 - **Mark as read in the filter sheet** — Everything, or older than 1, 24 or
   48 hours, with counts and an immediate Undo. See §5's list.

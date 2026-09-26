@@ -53,6 +53,8 @@ private val SAFE_ID = Regex("[A-Za-z0-9_-]+")
  * served another article's text — which is a worse bug than the one being
  * prevented, and one this app has already had for different reasons.
  */
+internal fun safeArticleId(itemId: String): String = safeId(itemId)
+
 private fun safeId(itemId: String): String {
     require(SAFE_ID.matches(itemId)) { "Unsafe article id for a file name" }
     return itemId
@@ -86,6 +88,7 @@ fun deleteArticleFiles(itemId: String, filesDir: File) {
     blobFile(itemId, filesDir).delete()
     blobFullFile(itemId, filesDir).delete()
     blobFullFailedFile(itemId, filesDir).delete()
+    SavedImages.delete(itemId, filesDir)
 }
 
 private val ARTICLE_FILE = Regex("""([A-Za-z0-9_-]+)\.(txt\.gz|full\.html\.gz|full\.failed)""")

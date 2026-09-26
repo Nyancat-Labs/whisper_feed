@@ -18,6 +18,9 @@ import com.saulhdev.feeder.data.repository.ArticleRepository
 import com.saulhdev.feeder.manager.bookmarks.onlyPublicHttps
 import com.saulhdev.feeder.utils.HttpIdentity.asArticleReader
 import com.saulhdev.feeder.utils.blobFullFile
+import com.saulhdev.feeder.utils.blobFullInputStream
+import com.saulhdev.feeder.utils.SavedImages
+import com.saulhdev.feeder.utils.usableImageUrl
 import com.saulhdev.feeder.utils.blobFullFailedFile
 import com.saulhdev.feeder.utils.FullTextAttempts
 import com.saulhdev.feeder.utils.HttpStatusException
@@ -141,7 +144,10 @@ class FullTextWorker(
                         shouldPrefetchFullText(now, readAttempts(item.uuid, filesDir))
                 }
         }
-        if (toFetch.isEmpty()) return Result.success()
+        if (toFetch.isEmpty()) {
+            if (savedOnly) keepSavedImages(filesDir)
+            return Result.success()
+        }
 
         val run = SyncLog.started(applicationContext, SyncLog.ORIGIN_FULL_TEXT)
         val receivedBefore = receivedBytes()
@@ -170,10 +176,46 @@ class FullTextWorker(
             run,
             fullTextOutcome(fetched, failed, bytesSince(receivedBefore), unreached),
         )
+        if (savedOnly) keepSavedImages(filesDir)
         // Success whatever happened to individual pages: each failure is
         // remembered against its article, and a retry of the whole run would
         // only fetch the same refusals again.
         return Result.success()
+    }
+
+    /**
+     * The pictures of every saved article whose text is here and whose
+     * pictures are not; see SavedImages.
+     *
+     * Stops at the first sign the network has gone, and forgets the article
+     * it was on, so a signal lost halfway is not recorded as that article's
+     * pictures being done.
+     */
+    private suspend fun keepSavedImages(filesDir: File) {
+        val metrics = context.resources.displayMetrics
+        for (ref in repository.savedArticleRefs()) {
+            if (SavedImages.isDone(ref.uuid, filesDir)) continue
+            if (!blobFullFile(ref.uuid, filesDir).isFile) continue
+            if (!whisperHasNetwork(context)) return
+            val html = withContext(Dispatchers.IO) {
+                runCatching {
+                    blobFullInputStream(ref.uuid, filesDir).bufferedReader().use { it.readText() }
+                }.getOrNull()
+            } ?: continue
+            SavedImages.download(
+                itemId = ref.uuid,
+                html = html,
+                baseUrl = ref.link.orEmpty(),
+                leadImageUrl = usableImageUrl(ref.imageUrl),
+                widthPx = metrics.widthPixels,
+                density = metrics.density,
+                filesDir = filesDir,
+            )
+            if (!whisperHasNetwork(context)) {
+                SavedImages.manifest(ref.uuid, filesDir).delete()
+                return
+            }
+        }
     }
 }
 

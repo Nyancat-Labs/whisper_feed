@@ -327,6 +327,13 @@ data class ArticleIdWithLink(
     val uuid: String,
     val link: String
 )
+
+/** A saved article, as much as keeping its pictures needs. */
+data class SavedArticleRef(
+    val uuid: String,
+    val link: String?,
+    val imageUrl: String?,
+)
 /**
  * How many of one source's articles have been read in a window.
  *

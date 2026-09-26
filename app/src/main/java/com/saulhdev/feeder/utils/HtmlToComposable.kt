@@ -1058,10 +1058,18 @@ private fun TextComposer.handleImage(
                             // decodes no larger than the source at INEXACT, so for a
                             // small image this is the image's own size.
                             var decodedWidth by remember(src) { mutableIntStateOf(0) }
+                            // A saved article's picture, kept on the phone, if
+                            // there is one under any address this image offers:
+                            // what makes Read later readable offline. See
+                            // SavedImages.
+                            val context = LocalContext.current
+                            val kept = remember(src) {
+                                SavedImages.local(context.filesDir, listOf(src) + imageCandidates.allUrls())
+                            }
                             if (imageWidth > 0 && src.isNotBlank()) {
                             AsyncImage(
                                 model = ImageRequest.Builder(LocalContext.current)
-                                    .data(src)
+                                    .data(kept ?: src)
                                     .placeholder(imagePlaceholder)
                                     .error(imagePlaceholder)
                                     .scale(Scale.FIT)
@@ -1490,6 +1498,15 @@ internal class ImageCandidates(
     val absSrc: String
 ) {
     val hasImage: Boolean = srcSet.isNotBlank() || absSrc.isNotBlank()
+
+    /** Every address on offer, resolved: each srcset candidate, then the src. */
+    fun allUrls(): List<String> =
+        (srcSet.splitToSequence(",")
+            .map { it.trim().split(SpaceRegex).first() }
+            .filter { it.isNotBlank() }
+            .map { StringUtil.resolve(baseUrl, it) }
+            .toList() + listOf(absSrc).filter { it.isNotBlank() }.map { StringUtil.resolve(baseUrl, it) })
+            .distinct()
 
     /**
      * Might throw if hasImage returns false

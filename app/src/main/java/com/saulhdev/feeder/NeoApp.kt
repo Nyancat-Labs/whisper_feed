@@ -26,6 +26,7 @@ import com.saulhdev.feeder.data.repository.SourcesRepository
 import com.saulhdev.feeder.manager.discovery.DiscoveryWorker
 import com.saulhdev.feeder.manager.backup.BackupWorker
 import com.saulhdev.feeder.manager.models.scheduleSavedFullText
+import com.saulhdev.feeder.utils.SavedImages
 import com.saulhdev.feeder.manager.service.OverlayBridge
 import com.saulhdev.feeder.utils.ApplicationCoroutineScope
 import com.saulhdev.feeder.utils.Diagnostics
@@ -66,6 +67,9 @@ class NeoApp : MultiDexApplication(), KoinStartup, ImageLoaderFactory {
         // Off while suggestions are out of Settings; see DiscoveryWorker.cancel.
         DiscoveryWorker.cancel(this)
         refreshBackupSchedule()
+        // Saves made before their pictures were kept get them now; a run
+        // with nothing missing is a few file checks.
+        scheduleSavedFullText()
     }
 
     /**
@@ -236,6 +240,7 @@ class NeoApp : MultiDexApplication(), KoinStartup, ImageLoaderFactory {
         val articles: ArticleRepository by inject(ArticleRepository::class.java)
         val sources: SourcesRepository by inject(SourcesRepository::class.java)
         articles.onSaved = { scheduleSavedFullText() }
+        articles.onUnsaved = { id -> runCatching { SavedImages.delete(id, filesDir) } }
         articles.onSavedRemoved = { feedId ->
             applicationCoroutineScope.launch(Dispatchers.IO) {
                 runCatching { sources.reapIfEmpty(feedId) }

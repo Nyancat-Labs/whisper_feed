@@ -29,6 +29,7 @@ import androidx.room.Update
 import androidx.room.Upsert
 import com.saulhdev.feeder.data.db.models.Article
 import com.saulhdev.feeder.data.db.models.ArticleIdWithLink
+import com.saulhdev.feeder.data.db.models.SavedArticleRef
 import com.saulhdev.feeder.data.db.models.DayCount
 import com.saulhdev.feeder.data.db.models.HourCount
 import com.saulhdev.feeder.data.db.models.ReadingTime
@@ -405,6 +406,9 @@ interface FeedArticleDao {
     /** Saved articles, for downloading their whole text the moment they are saved. */
     @Query("SELECT uuid, link FROM Article WHERE bookmarked = 1")
     suspend fun getSavedArticleIdLinks(): List<ArticleIdWithLink>
+
+    @Query("SELECT uuid, link, imageUrl FROM Article WHERE bookmarked = 1")
+    suspend fun getSavedArticleRefs(): List<SavedArticleRef>
 
     // Embedded FeedItem
     @Transaction

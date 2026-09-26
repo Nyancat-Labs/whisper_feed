@@ -13,7 +13,7 @@ disagree.
 [![Licence: GPL v3](https://img.shields.io/badge/licence-GPL--3.0-blue)](LICENSE)
 ![Version 1.0.0](https://img.shields.io/badge/version-1.0.0-informational)
 ![Android 8.0+](https://img.shields.io/badge/Android-8.0%2B-brightgreen)
-![Tests](https://img.shields.io/badge/tests-849%20passing-success)
+![Tests](https://img.shields.io/badge/tests-855%20passing-success)
 ![No trackers](https://img.shields.io/badge/trackers-none-success)
 
 </div>
@@ -56,7 +56,7 @@ Two things are worth knowing:
   FreshRSS server, with 114 feeds, since September 2026, on both devices at
   once. Miniflux and the other Google Reader services speak the same protocol
   and may work, but are not tested or supported.
-- **There are no instrumentation or screenshot tests.** 849 unit tests cover
+- **There are no instrumentation or screenshot tests.** 855 unit tests cover
   the logic; every on-device check has been done by hand.
 
 [`ROADMAP.md`](ROADMAP.md) has the position section by section, including what
@@ -118,8 +118,8 @@ they are not upgradeable to a real release and are not for distribution.
   1, 24 or 48 hours — with Undo straight away
 - Breaking stories: several sources on one story become one lead card, and it
   can stay at the top until you scroll past it
-- **Read later**: save an article and the whole of it is downloaded at once
-  and kept, readable offline, until you remove it
+- **Read later**: save an article and the whole of it, pictures included, is
+  downloaded at once and kept, readable offline, until you remove it
 - Pinning, and full article text fetched per-feed or globally, and kept for
   reading offline
 - A reader and an in-app browser, matched to each other
