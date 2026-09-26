@@ -235,6 +235,13 @@ subscription list built over years existing in exactly one place — is built,
 scheduled and offered on first run, and the app now explains itself to
 somebody opening it for the first time.
 
+**Before §8: the first group in §22.** The deep dive of 26 September found
+things that should not reach people who never agreed to test: a diagnostics
+report that can carry feed addresses and a location, a settings file that can
+stop the app starting, a way for another app to open any page inside Whisper,
+glance text cut on every 360 dp phone, and database upgrades no test has ever
+run. §22d gives the order.
+
 **What to build next: §8, shipping it.** Everything above is being tested by
 three people on builds handed to them directly, which does not scale and does
 not produce the feedback that finds the remaining problems. A release signing
@@ -1959,6 +1966,271 @@ preview build.
 - Mark as read in the launcher panel, once the panel can offer an undo.
 - Release: signing key, then GitHub Releases, F-Droid and Play (§8), after
   the company registration.
+
+### 22. Deep dive, 26 September 2026: security, bugs and screens
+
+A read of the whole app for security and correctness, and renders of the feed
+at the screen sizes of the Android phones that sell most. Nothing here was
+reported from a device; each item says where it is and what the fix is.
+
+**Severity.** *High*: most people who install the app would meet it, or it
+breaks a rule this project set itself. *Medium*: a real fault, in a narrower
+case. *Low*: hardening or tidying.
+
+#### 22a. Security
+
+- **S1 · High · Diagnostics can carry addresses.** The report includes this
+  app's log as it stands (`Diagnostics.kt:430`), and release builds keep
+  warnings and errors (§19a). Three lines put addresses there: every failed
+  feed with its full URL (`RssLocalSync.kt:356`, and the failure message
+  built at `:449`), which for some feeds carries a private token; the weather
+  request with its query (`WeatherRepository.kt:198`), which is the location's
+  coordinates or the place that was typed; and exception messages that quote
+  the sync server's address. This breaks the rule that the report never
+  carries what anybody typed. **Fix:** log the feed title and the reason, not
+  the address; drop the URL from the weather line; and scrub the log section as
+  it is read, turning any `http(s)://…` into `<address>` and any
+  latitude/longitude pair into `<place>`. A test builds a report after
+  failing feeds and a failed forecast, and finds no `://` in it.
+- **S2 · Medium · No limit on the size or type of a download.** A feed is read
+  whole into memory (`RssLocalSync.kt:454`, `body.bytes()`), and so is a page
+  for the full article (`FeedParser.kt:410`, `curl`). A feed address that
+  turns into a 300 MB podcast episode, or an article link to a video, is read
+  in full: out of memory in the middle of a sync, and the data spent on mobile
+  data. **Fix:** refuse audio, video and binary content types before reading;
+  read through a counting stream capped at 10 MB for a feed and 5 MB for a
+  page; and fail that one item, not the sync.
+- **S3 · Medium · A settings file can write anything.** The import says unknown
+  keys are skipped (`SettingsBackup.kt:136`); the code writes every key, as
+  whatever type the file claims (`:142`). A file with the sync frequency as a
+  number rather than text makes the next read of that setting throw, at start,
+  on every start, until the app's data is cleared. The same happens without
+  anybody editing a file: a backup from a version in which a setting had a
+  different type. **Fix:** import only the keys `FeedPreferences` declares,
+  only as the type it declares, and count the rest as skipped. That also makes
+  the comment true.
+- **S4 · Medium · DNS rebinding gets past the private-network guard.**
+  `BlockPrivateNetworks` (`SafeAddress.kt:141`) looks the host up itself;
+  OkHttp has already looked it up again to connect. A hostile feed's domain can
+  give a private address to one lookup and a public one to the other, and the
+  guard passes a request into the reader's own network. It takes a hostile
+  feed the reader has subscribed to, and the answer only shows in the app, so
+  the harm is requests sent blind to a router or a printer. **Fix:** check the
+  address the connection actually went to (`chain.connection()?.route()
+  ?.socketAddress`), which is one lookup and cannot disagree with itself; and
+  add a `Dns` that drops private answers, so the socket is never opened.
+- **S5 · Low · Other apps can open any page inside Whisper.** The web-view
+  screen has a deep link (`NavigationManager.kt:141`), and `MainActivity`, which
+  must be exported because it is the launcher entry, hands every intent it
+  receives to navigation (`MainActivity.kt:274`). Any installed app can open a
+  page of its choosing in Whisper's own browser, JavaScript on: a convincing
+  "sign in to FreshRSS again". Nothing in the app uses that link; the stuck-sync
+  notice, the panel and the settings shortcut use the other three. **Fix:**
+  remove it.
+- **S6 · Low · The account store can stop the app from starting.** The
+  encrypted preferences are created with nothing around them
+  (`SyncAccount.kt:51`). Backups already leave the file out, so a restore
+  cannot cause it, but a failing Keystore (known on some devices after a system
+  update) throws there, and takes the app down with it. The library is also
+  deprecated. **Fix:** catch it, delete the file, start signed out, and say so
+  on the account screen; later, keep the token in DataStore under a Keystore
+  key of our own.
+- **S7 · Low · Feed passwords answer any challenge.** A feed address with
+  `user:password@` in it gets an authenticator (`FeedParser.kt:371`) that sends
+  those details to whoever asks for them, including a different host the feed
+  redirected to, and to any proxy (`:384`). **Fix:** answer only a challenge
+  from the feed's own host, over https; remove the proxy authenticator.
+- **S8 · Low · Signing in follows a redirect with the password.** OkHttp
+  follows a 307 or 308 by sending the same body again, so a server that
+  redirects `accounts/ClientLogin` elsewhere hands the email address and
+  password to the new host (`GoogleReaderApi.kt:99`). Only the reader's own
+  server could do this, so the case is a server set up wrongly or taken over.
+  **Fix:** do not follow redirects for the sign-in; report one as "the address
+  has moved" and show the new host.
+
+**Checked and fine.** Deeply nested HTML (jsoup's depth limit), cleartext
+(off everywhere), file access in the WebViews (off), credentials in backups
+(left out of every route), and the intent-redirection shape (removed from
+`MainActivity` earlier).
+
+#### 22b. Bugs
+
+- **B1 · Medium · Unsaving one article can take another's pictures.** Saved
+  pictures are stored once per address, so two saved articles that carry the
+  same picture (one story in two feeds, a site's standard header) share a
+  file. Unsaving either deletes it (`SavedImages.kt:112`), and the other shows
+  grey boxes offline. **Fix:** before deleting, keep any file another saved
+  article's list still names.
+- **B2 · Medium · Saved-article downloads pile up while they wait.** Each one
+  is appended to the last (`FullTextParser.kt:85`). While the conditions are
+  not met (no Wi-Fi with full articles off on mobile data, or the battery low)
+  every save, and every sync that brings a save from another device, adds
+  another. Nothing is lost, but the queue has no limit, and all of it runs back
+  to back once the phone is on Wi-Fi. **Fix:** if one is already waiting, add
+  nothing; append only behind one that is running.
+- **B3 · Medium · A save the server no longer has is looked for on every sync,
+  for ever.** A waiting save whose feed is on the server but whose article is
+  not found is kept for next time (`SyncOutbox.kt:361`), and each sync searches
+  up to a thousand items of that feed again (`GoogleReaderService.kt:423`). An
+  article the server has already purged will never be found. **Fix:** count
+  the attempts; after five syncs or seven days, stop, keep the save here, and
+  say so in the sync summary ("2 saves are not on the server").
+- **B4 · Medium · The saved list is downloaded whole on every sync.**
+  `pullStars` (`GoogleReaderService.kt:531`) reads up to eight pages of 250
+  saved articles, contents included, and writes an id for each, every sync.
+  With a few hundred saves that is megabytes per sync, on mobile data too.
+  **Fix:** ask for the saved ids only (`stream/items/ids`, a few kilobytes),
+  and fetch contents only for ids not already known here.
+- **B5 · Medium · Database upgrades are never tested.** Twenty-four steps take
+  the database from version 1 to 25, twenty written by hand; twenty-three
+  schemas are exported (`app/schemas`); no test runs a single migration. A
+  mistake in the next one is found on somebody's phone, at the update, as a
+  crash or lost articles. Worth doing before §8 puts updates in front of
+  strangers. **Fix:** a `MigrationTestHelper` test from each exported schema to
+  the current one, run under Robolectric so it stays in the normal suite.
+- **B6 · Low · Full articles in older encodings come out garbled.** The page is
+  decoded with the charset in the response header, or UTF-8
+  (`FullTextParser.kt:323`); a page that names its encoding only in a `<meta>`
+  tag (windows-1252, Shift_JIS) is decoded wrongly. There is a TODO on the
+  next line. **Fix:** read the bytes, within S2's cap, and let jsoup find the
+  charset (`Jsoup.parse(stream, null, url)`).
+- **B7 · Low · A sync stops the advance download in progress.** The download
+  replaces itself (`FullTextParser.kt:58`) and every sync asks for one
+  (`RssLocalSync.kt:407`), so a pull to refresh or a sync on opening the app
+  cancels a pass partway. The next pass picks up what is still missing, so
+  little is lost but the article that was mid-download. **Fix:** keep a
+  waiting one; append behind a running one.
+- **B8 · Low · "1 sources".** Seven strings put a number in front of a plural
+  noun without a plurals resource: `sources_deleted`,
+  `sources_articles_cleared`, `category_in_use`, `backup_restored`,
+  `covered_by_sources`, `starter_add` and `starter_added`. **Fix:**
+  `<plurals>`, like the fifteen that already are.
+- **B9 · Low · The panel sizes itself from Android's private values.**
+  `OverlayView.kt:408` and `:414` read `status_bar_height` and
+  `navigation_bar_height` from the system's own resources by name. They are
+  not an API, and with a tall camera cutout or gesture navigation they are not
+  the real insets. **Fix:** take the insets from the window, as the app does.
+- **B10 · Low · Interrupted picture downloads leave files behind.** A download
+  that fails partway leaves its `.part` file (`SavedImages.kt:132`); only the
+  too-large case removes it. **Fix:** delete the part file whenever it is not
+  renamed, and sweep old ones at start.
+
+#### 22c. Screens: the phones that sell most
+
+Twenty Android phones: every Android model in Counterpoint's best-seller lists
+for the first half of 2026, last year's leaders, and the makers and shapes
+those lists leave out (Pixel, OPPO, vivo, Infinix, the foldables). Plus the
+tablet here. Android lays apps out in dp, so the table gives width × height
+in dp. **~** means worked out from the panel's pixels, not published.
+
+| Group | Phones | dp |
+|---|---|---|
+| Budget, HD+ | Galaxy A07, Galaxy A06, Redmi A5, Redmi 14C, Infinix Hot 70 | 360 × 788–820 |
+| Samsung's base flagship | Galaxy S26 | 360 × 780 |
+| Samsung A series, FHD+ | Galaxy A17 5G, A17 4G, A16 5G, A36, A56 | ~412 × 892 |
+| Samsung's Ultra | Galaxy S26 Ultra | 384–412, with the resolution setting |
+| Chinese flagships | OPPO Find X8 Pro, vivo X200 Pro | 394–395 × 869–875 |
+| Pixel | Pixel 10, Pixel 10 Pro | 410–412 × 914–923 |
+| Fold, cover screen | Galaxy Z Fold6; Fold7 | 323 × 792; ~360 × 840 |
+| Fold, inner screen | Galaxy Z Fold6; Fold7; Pixel 10 Pro Fold | 619 × 720; ~656 × 728; 692 × 717 |
+| Flip | Galaxy Z Flip7; its FlexWindow cover | ~393 × 916; ~350 × 390 |
+| Tablet | Galaxy Tab S5e (tested here) | 1280 × 800 |
+
+Three widths cover most of the list: 360, about 395, and 412. The outliers are
+narrow (the Fold6 cover), short (the Flip cover, and any phone on its side,
+which is 360–412 dp tall), and wide (the inner screens, tablets). Text size
+moves every one of them: 130% is a common choice, Android 14 allows 200%, and
+Display size at its largest takes a 360 dp phone to roughly 320 dp.
+
+**How it was checked.** The top of the feed (header, glance row, category
+chips, the first day heading and a lead story) was rendered off the device at
+each size, at 100%, 130%, 150% and 200% text, at 220 dp for split screen, and
+at the Fold6's and Pixel Fold's inner screens. The render harness is not in the
+repository.
+
+- **C1 · High · The glance chips cut their text.** Their height is fixed at
+  84 dp (`GlanceRow.kt:56`). At 130% on a 360 dp phone the third line (the
+  place) is cut in half; at 150% on 412 dp it is a sliver. The rain figure is
+  truncated at 360 dp at *every* text size, "100%" showing as "100", "10" at
+  130% and "1" at 200%, which is the whole budget group and the Galaxy S26 at
+  their default settings. On a phone on its side, a Fold's inner screen or a
+  tablet the two chips stretch to half the width each. **Fix:** a minimum
+  height instead of a fixed one; a number never shortened (the label goes
+  first); chips capped at about 200 dp wide and started from the left.
+- **C2 · High · The name wraps in the header.** "Whisper", beside the mark and
+  four buttons, needs about 330 dp at 100%. It breaks to "Whisp / er" on the
+  Fold6 cover at 100%, and on a 360 dp phone at 200%; at 220 dp it stands one
+  letter to a line. **Fix:** one line, never wrapped; when it will not fit, the
+  mark alone, which is still the brand.
+- **C3 · Medium · Large headlines run above their shade.** The dark gradient
+  under a lead story starts 30% of the way down the picture
+  (`ArticleCard.kt:225`). A headline that is tall for its card, at 200% text
+  or on a narrow screen, reaches above that, and its top line is white text on
+  the photograph. **Fix:** draw the gradient behind the text itself, from its
+  measured top, so it grows with the headline.
+- **C4 · Medium · On a short screen the header is the whole first screen.** On
+  the Flip cover (about 400 dp tall) the lead story starts at the bottom edge;
+  on a phone on its side no story shows at all until a scroll. **Fix:** below
+  about 480 dp of height, glance goes and the header scrolls away with the
+  feed.
+- **C5 · Medium · On the inner screens one lead story fills the first
+  screen.** Cards takes a second column only from 720 dp (§20), so the Fold6
+  (619 dp) and the Pixel 10 Pro Fold (692 dp) get one column, and a lead
+  story's picture grows with the width. At 692 × 717 the header and one story
+  are the whole screen, its source line pushed off the bottom. **Fix:** cap a
+  lead story at about half the screen's height; and consider two columns from
+  600 dp, 300 dp each.
+- **C6 · Medium · Slow-device tuning misses new budget phones.** Two photo
+  decodes at a time instead of four is chosen for Android 11 and older, or a
+  phone that calls itself low on memory (`ImageDecodes.kt:33`). A Galaxy A07
+  runs Android 15 on an entry-level chip and is neither, so it gets the
+  setting that made the Tab S5e stutter, and it is the best-selling Android
+  phone of the year so far. **Fix:** also treat a phone with no media
+  performance class (Android 12 and up) and 4 GB of memory or less as older.
+  Diagnostics already says which is in force.
+- **C7 · Low · Choice lists cut their second line at 200%.** Each row is 48 dp
+  high and no more (`StringSelectionPrefDialogUI.kt:131`); "Only on Wi-Fi and
+  while charging" shows as "Only on Wi-Fi and". **Fix:** a minimum height.
+- **C8 · Low · The panel permission button can crash on the cheapest
+  phones.** It starts Android's overlay settings with nothing around it
+  (`LauncherPage.kt:173`). Android Go editions cannot grant that permission,
+  and a phone without the screen throws. **Fix:** guard it, fall back to the
+  app's info page, and on a Go device say plainly that the panel cannot open
+  articles. `PermissionDialog.kt`, which has the same call, is used nowhere
+  and can go.
+- **C9 · Low · Split screen at about 220 dp.** Everything at the top is cut
+  down to dots. Mostly mended by C1 and C2; below about 280 dp glance can go.
+
+**Fine as it is.** Mosaic takes three lanes on the inner screens, which suits
+it. The Ultra's QHD+ screen costs nothing extra, because pictures are decoded
+at the size they are shown. A sync server on the home network over http, or
+with a self-signed certificate, is still refused, which is a choice made in §7
+rather than a fault.
+
+Sources: [Counterpoint, Q2 2026](https://counterpointresearch.com/en/insights/iphone-17-global-best-selling-smartphone-in-q2-2026);
+[Android Authority, Q1 2026](https://www.androidauthority.com/q1-2026-best-selling-phones-3663434/);
+[Android Headlines, Q2 2026](https://www.androidheadlines.com/2026/08/apple-and-samsung-owned-every-spot-in-the-q2-2026-best-selling-smartphone-list.html);
+[GSMArena on the Galaxy A06](https://m.gsmarena.com/counterpoint_samsung_galaxy_a06_was_the_bestselling_phone_in_latam_for_2025-news-71620.php);
+dp sizes from [screensizechecker](https://screensizechecker.com/devices/android-viewport-sizes),
+[webmobilefirst](https://www.webmobilefirst.com/en/devices/samsung-galaxy-a17-2025/) and
+[viewpo](https://viewpo.io/tools/device-viewports/samsung-galaxy-s25/); panels from
+[Samsung](https://www.samsung.com/ae/support/mobile-devices/what-is-the-display-size-resolution-of-galaxy-flip-7-galaxy-fold-7/).
+
+#### 22d. Order of work
+
+Small and certain first, then what the most phones see, then the rest.
+
+1. **S1** the report scrub, and **S5** the web-view link: an hour between
+   them, and S1 breaks a rule of our own.
+2. **S3** the settings import: a crash on every start from one file.
+3. **C1** and **C7**, the minimum heights and the rain figure (every 360 dp
+   phone, at default settings), then **C2**, the name.
+4. **B5** migration tests, before §8.
+5. **S2** download limits with **B6** the charset: the same code.
+6. **S4**, the address check.
+7. **B1** to **B4**, Read later and sync.
+8. **C3** to **C6**, the screens.
+9. The Lows, as they are passed.
 
 ### 17. Scroll parallax on the feed — parked, at the bottom
 
