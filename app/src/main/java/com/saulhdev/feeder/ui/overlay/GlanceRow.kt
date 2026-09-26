@@ -40,6 +40,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.Alignment
@@ -131,6 +132,13 @@ fun GlanceRow(
     modifier: Modifier = Modifier,
 ) {
     if (!state.enabled) return
+    val window = LocalWindowInfo.current.containerSize
+    val density = LocalDensity.current
+    if (!glanceFits(
+            widthDp = with(density) { window.width.toDp() }.value,
+            heightDp = with(density) { window.height.toDp() }.value,
+        )
+    ) return
 
     val weather = state.weather
 
@@ -145,7 +153,6 @@ fun GlanceRow(
         val labelStyle = MaterialTheme.typography.labelMedium
         val valueStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold)
         val measurer = rememberTextMeasurer()
-        val density = LocalDensity.current
 
         // A line of each, measured rather than worked out from the style.
         // Under Android's non-linear text scaling the line height grows with
@@ -252,6 +259,22 @@ fun GlanceRow(
         }
     }
 }
+
+/**
+ * Whether the window has room for the glance row at all.
+ *
+ * On a short screen, a Flip's cover or any phone on its side, the header,
+ * this row and the chips were the whole first screen, and not one story
+ * showed without a scroll. In a split screen a fifth of the width, every chip
+ * was cut to dots. The row is the tallest part of the header and the least
+ * needed, so there it steps aside; it comes back with the room.
+ */
+internal fun glanceFits(widthDp: Float, heightDp: Float): Boolean =
+    heightDp >= GLANCE_MIN_HEIGHT_DP && widthDp >= GLANCE_MIN_WIDTH_DP
+
+/** The shortest window, and the narrowest, that keeps the glance row. */
+private const val GLANCE_MIN_HEIGHT_DP = 480f
+private const val GLANCE_MIN_WIDTH_DP = 280f
 
 /**
  * Half the width less the margins and the gap, up to [CHIP_MAX_WIDTH].

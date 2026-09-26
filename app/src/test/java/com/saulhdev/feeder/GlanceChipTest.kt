@@ -20,6 +20,8 @@ package com.saulhdev.feeder
 import androidx.compose.ui.unit.dp
 import com.saulhdev.feeder.ui.overlay.glanceChipHeight
 import com.saulhdev.feeder.ui.overlay.glanceChipWidth
+import com.saulhdev.feeder.ui.overlay.glanceFits
+import com.saulhdev.feeder.ui.overlay.leadPictureHeight
 import com.saulhdev.feeder.ui.overlay.glanceTextWidth
 import com.saulhdev.feeder.ui.overlay.rainFitsBeside
 import org.junit.Assert.assertEquals
@@ -65,6 +67,28 @@ class GlanceChipTest {
     fun `the text has the chip less its padding and artwork`() {
         // 159 less 16 each side, the 32 dp artwork and its 10 dp gap.
         assertEquals(85.dp, glanceTextWidth(159.dp))
+    }
+
+    @Test
+    fun `the glance row steps aside on a short screen and in a narrow split`() {
+        assertTrue(glanceFits(widthDp = 360f, heightDp = 780f))
+        assertTrue(glanceFits(widthDp = 323f, heightDp = 792f))
+        // A Flip's cover screen, and a phone on its side.
+        assertFalse(glanceFits(widthDp = 361f, heightDp = 399f))
+        assertFalse(glanceFits(widthDp = 892f, heightDp = 412f))
+        // A fifth of the screen in a split.
+        assertFalse(glanceFits(widthDp = 220f, heightDp = 780f))
+    }
+
+    @Test
+    fun `a lead picture is four by three, but never taller than half the window`() {
+        // A phone: unchanged.
+        assertEquals(810, leadPictureHeight(widthPx = 1080, windowHeightPx = 2410))
+        // A Pixel 10 Pro Fold at 3 px a dp: 692 wide would be 519 tall of a
+        // 717 dp window; capped at half of it.
+        assertEquals(717 * 3 / 2, leadPictureHeight(widthPx = 692 * 3, windowHeightPx = 717 * 3))
+        // Before the window is known, nothing is capped.
+        assertEquals(810, leadPictureHeight(widthPx = 1080, windowHeightPx = 0))
     }
 
     @Test

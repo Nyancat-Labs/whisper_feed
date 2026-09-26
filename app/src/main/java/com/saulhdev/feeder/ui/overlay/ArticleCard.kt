@@ -17,6 +17,14 @@
  */
 package com.saulhdev.feeder.ui.overlay
 
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -189,6 +197,7 @@ fun ArticleHeroCard(
     // already read out; what was missing was any hint that the thing read
     // out can be opened at all.
     val openLabel = stringResource(R.string.action_open_article)
+    val windowHeight = LocalWindowInfo.current.containerSize.height
 
     Box(
         modifier = modifier
@@ -199,7 +208,9 @@ fun ArticleHeroCard(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .aspectRatio(4f / 3f)
+                .leadPicture(windowHeight)
+                // The shade reaches above the text; never above the picture.
+                .clipToBounds()
         ) {
             AsyncImage(
                 model = item.imageUrl,
@@ -209,29 +220,18 @@ fun ArticleHeroCard(
                 error = painterResource(articlePlaceholder()),
                 modifier = Modifier.fillMaxSize(),
             )
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        // Three stops rather than two. With a single ramp from
-                        // 35% to the bottom, the alpha where the text actually
-                        // sits — a two or three line headline reaching ~40% up
-                        // the card — was still close to nothing, so a white
-                        // headline over a bright image was unreadable on its
-                        // upper lines while the bottom of the card was pitch
-                        // dark. The middle stop puts real coverage under the
-                        // whole text block and leaves the top of the picture
-                        // alone, which is what the gradient was for.
-                        Brush.verticalGradient(
-                            0.30f to Color.Transparent,
-                            0.62f to Color.Black.copy(alpha = 0.45f),
-                            1f to Color.Black.copy(alpha = 0.88f),
-                        )
-                    )
-            )
+            // The shade follows the text, not the picture: clear until a
+            // little above the first line, then deepening to the bottom. It
+            // was fixed to the card, clear down to 30% of it, and a headline
+            // that ran taller (at 200% text, or on a narrow screen) put its
+            // top line in white on the bare photograph. Where the text sits
+            // as it usually does, the shade lands where the old one did, and
+            // the top of the picture is still left alone.
             Column(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
+                    .fillMaxWidth()
+                    .drawBehind { drawTextShade() }
                     .padding(16.dp)
             ) {
                 if (item.pinned) {
@@ -287,6 +287,51 @@ fun ArticleHeroCard(
             }
         }
     }
+}
+
+/**
+ * Four by three, as a lead story's picture always was, and never taller than
+ * half the window.
+ *
+ * Four by three of a phone is a third of its screen. Of a Fold opened out it
+ * was most of it: at 692 by 717 the header and one story were the whole
+ * screen, the story's source line pushed off the bottom. On a phone on its
+ * side the same. Past the cap the picture is cropped wider, as a photograph
+ * across a wide screen should be.
+ */
+private fun Modifier.leadPicture(windowHeightPx: Int): Modifier = layout { measurable, constraints ->
+    val width = if (constraints.hasBoundedWidth) constraints.maxWidth else constraints.minWidth
+    val height = leadPictureHeight(width, windowHeightPx)
+    val placeable = measurable.measure(Constraints.fixed(width, height))
+    layout(width, height) { placeable.place(0, 0) }
+}
+
+/** See [leadPicture]; a window height of nothing, before one is known, caps nothing. */
+internal fun leadPictureHeight(widthPx: Int, windowHeightPx: Int): Int {
+    val fourByThree = widthPx * 3 / 4
+    return if (windowHeightPx <= 0) fourByThree else minOf(fourByThree, windowHeightPx / 2)
+}
+
+/** How far above the text the shade starts to show. */
+private val SHADE_HEADROOM = 72.dp
+
+/**
+ * Behind a lead story's text, from [SHADE_HEADROOM] above it to the bottom:
+ * the three stops the card had, anchored to the text instead of the card.
+ */
+private fun DrawScope.drawTextShade() {
+    val headroom = SHADE_HEADROOM.toPx()
+    drawRect(
+        brush = Brush.verticalGradient(
+            0f to Color.Transparent,
+            headroom / (headroom + size.height) to Color.Black.copy(alpha = 0.45f),
+            1f to Color.Black.copy(alpha = 0.88f),
+            startY = -headroom,
+            endY = size.height,
+        ),
+        topLeft = Offset(0f, -headroom),
+        size = Size(size.width, size.height + headroom),
+    )
 }
 
 /**

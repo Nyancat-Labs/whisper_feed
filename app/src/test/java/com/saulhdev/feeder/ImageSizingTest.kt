@@ -75,8 +75,13 @@ class ImageSizingTest {
             // up, and looking only at the call site would call it unbounded.
             val ownBound = site.contains("aspectRatio(") ||
                     Regex("""\.size\([^)]""").containsMatchIn(site)
+            // The lead picture's Box is sized by leadPicture since C5: four by
+            // three, capped at half the window, measured with fixed
+            // constraints. Just as much a stated shape as aspectRatio.
             val parentBound = site.contains("fillMaxSize()") &&
-                    source.substring(maxOf(0, start - 500), start).contains("aspectRatio(")
+                    source.substring(maxOf(0, start - 500), start).let {
+                        it.contains("aspectRatio(") || it.contains(".leadPicture(")
+                    }
 
             assertTrue(
                 "feed image $index has no bound, so it decodes at the picture's own size",

@@ -142,13 +142,19 @@ fun feedLayoutIsGrid(layout: String): Boolean = layout == LAYOUT_MOSAIC
  *
  * Mosaic keeps its two lanes on a phone and gains more on a wide screen; the
  * other layouts stay a single column until there is room for a second card at
- * a phone's width.
+ * a phone's width, or the window is wider than any phone at all.
+ *
+ * That second rule is for foldables opened out. At 619 dp (a Galaxy Z Fold6)
+ * to 692 dp (a Pixel 10 Pro Fold) there was not room for two cards of 360, so
+ * the feed was one column the width of the screen, and a lead story's picture
+ * grew with it until it filled the screen. From [TWO_COLUMNS_FROM_DP] the
+ * feed has two columns, each about a small phone's width.
  *
  * @param widthDp the width the feed has, in dp.
  */
 fun feedColumns(layout: String, widthDp: Int): Int =
     if (feedLayoutIsGrid(layout)) (widthDp / MOSAIC_LANE_DP).coerceIn(2, 4)
-    else (widthDp / CARD_COLUMN_DP).coerceIn(1, 3)
+    else maxOf(widthDp / CARD_COLUMN_DP, if (widthDp >= TWO_COLUMNS_FROM_DP) 2 else 1).coerceIn(1, 3)
 
 /**
  * Whether a lead story spans the whole row: in Mosaic, and only while the row
@@ -158,8 +164,14 @@ fun feedColumns(layout: String, widthDp: Int): Int =
 fun leadSpansRow(layout: String, columns: Int): Boolean =
     feedLayoutIsGrid(layout) && columns <= 2
 
-/** About a phone's width: a card never gets narrower than it is on one. */
+/** About a phone's width: a column of cards past this makes room for another. */
 const val CARD_COLUMN_DP = 360
+
+/**
+ * Wider than any phone: Android's own line between a phone's window and a
+ * foldable opened out or a tablet. See [feedColumns].
+ */
+const val TWO_COLUMNS_FROM_DP = 600
 
 /** Half of that, for Mosaic's tiles. */
 const val MOSAIC_LANE_DP = 200

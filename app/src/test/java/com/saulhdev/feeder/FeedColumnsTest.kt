@@ -29,6 +29,19 @@ class FeedColumnsTest {
     }
 
     @Test
+    fun `a foldable opened out has two columns, like a tablet upright`() {
+        // Galaxy Z Fold6, Fold7 (about 656) and Pixel 10 Pro Fold: one column
+        // the width of the screen, until the second column came at 600.
+        assertEquals(2, feedColumns(LAYOUT_CARDS, 619))
+        assertEquals(2, feedColumns(LAYOUT_CARDS, 656))
+        assertEquals(2, feedColumns(LAYOUT_CARDS, 692))
+        assertEquals(3, feedColumns(LAYOUT_MOSAIC, 619))
+        // The widest phones stay one column.
+        assertEquals(1, feedColumns(LAYOUT_CARDS, 414))
+        assertEquals(1, feedColumns(LAYOUT_CARDS, 599))
+    }
+
+    @Test
     fun `there are never more than three columns of cards, or four of tiles`() {
         assertEquals(3, feedColumns(LAYOUT_CARDS, 2560))
         assertEquals(4, feedColumns(LAYOUT_MOSAIC, 2560))
