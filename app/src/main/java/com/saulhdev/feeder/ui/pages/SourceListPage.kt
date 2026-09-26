@@ -68,6 +68,7 @@ import com.saulhdev.feeder.ui.components.PreferenceGroupHeading
 import com.saulhdev.feeder.ui.components.SourceItem
 import com.saulhdev.feeder.ui.components.ViewWithActionBar
 import com.saulhdev.feeder.ui.components.traceFocus
+import com.saulhdev.feeder.ui.components.focusOnlyWhenTapped
 import com.saulhdev.feeder.ui.icons.Phosphor
 import com.saulhdev.feeder.ui.icons.phosphor.BookBookmark
 import com.saulhdev.feeder.ui.icons.phosphor.Bookmarks
@@ -631,6 +632,7 @@ fun SourceListPage(
                                 singleLine = true,
                                 modifier = Modifier
                                     .fillMaxWidth()
+                                    .focusOnlyWhenTapped()
                                     .traceFocus("sources search"),
                                 shape = MaterialTheme.shapes.large,
                                 label = { Text(stringResource(R.string.sources_search)) },
