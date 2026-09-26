@@ -505,9 +505,11 @@ Two interactions that had to be right, and are:
   where you are when you want it, and its undo waited for half a minute of
   stillness meant for scroll marks, so nobody saw it. Not in the launcher
   panel yet: the panel has no undo for a batch of reads.
-- **The filter icon now opens more than filters.** Kept as the funnel for
-  now: the provided icons have no other pair with an "active" twin, and the
-  funnel's filled form is how the header says the feed is narrowed.
+- **Later: a new icon for the filter sheet.** It now sorts, filters, shows or
+  hides read articles and marks as read, which is "feed options" rather than
+  a filter. The candidate is Phosphor's SlidersHorizontal, with a dot for
+  "the feed is narrowed" in place of the funnel's filled twin. Not in the
+  provided icons, so it waits for the asset; the funnel stays until then.
 - ~~**An undo window on a scroll-produced batch.**~~ **Built.** A run of scroll
   marks, or a mark-all, is offered back as one batch in the feed's snackbar.
 - **A debug readout of accrued dwell**, showing what each card banked as it
