@@ -229,7 +229,7 @@ fun BookmarkImportPage(
                                         val added = viewModel.addSelected()
                                         Toast.makeText(
                                             context,
-                                            context.getString(R.string.starter_added, added),
+                                            context.resources.getQuantityString(R.plurals.starter_added, added, added),
                                             Toast.LENGTH_SHORT,
                                         ).show()
                                         navController.popBackStack()

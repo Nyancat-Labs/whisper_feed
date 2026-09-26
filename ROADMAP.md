@@ -2056,26 +2056,34 @@ case. *Low*: hardening or tidying.
   notice, the panel and the settings shortcut use the other three. **Fix:**
   remove it. **Done**, and a test fails if a deep link takes an address
   again.
-- **S6 · Low · The account store can stop the app from starting.** The
+- ~~**S6 · Low · The account store can stop the app from starting.**~~ The
   encrypted preferences are created with nothing around them
   (`SyncAccount.kt:51`). Backups already leave the file out, so a restore
   cannot cause it, but a failing Keystore (known on some devices after a system
   update) throws there, and takes the app down with it. The library is also
   deprecated. **Fix:** catch it, delete the file, start signed out, and say so
   on the account screen; later, keep the token in DataStore under a Keystore
-  key of our own.
-- **S7 · Low · Feed passwords answer any challenge.** A feed address with
+  key of our own. **Done**, the first half: the file and its key are deleted,
+  the store starts again, and the account screen says why the reader is
+  signed out. If even a new store will not open, the account is kept in
+  memory while the app runs, never written down unencrypted. Robolectric,
+  which has no Keystore at all, is the test: the old code threw at start.
+- ~~**S7 · Low · Feed passwords answer any challenge.**~~ A feed address with
   `user:password@` in it gets an authenticator (`FeedParser.kt:371`) that sends
   those details to whoever asks for them, including a different host the feed
   redirected to, and to any proxy (`:384`). **Fix:** answer only a challenge
   from the feed's own host, over https; remove the proxy authenticator.
-- **S8 · Low · Signing in follows a redirect with the password.** OkHttp
+  **Done.**
+- ~~**S8 · Low · Signing in follows a redirect with the password.**~~ OkHttp
   follows a 307 or 308 by sending the same body again, so a server that
   redirects `accounts/ClientLogin` elsewhere hands the email address and
   password to the new host (`GoogleReaderApi.kt:99`). Only the reader's own
   server could do this, so the case is a server set up wrongly or taken over.
   **Fix:** do not follow redirects for the sign-in; report one as "the address
-  has moved" and show the new host.
+  has moved" and show the new host. **Done**, with one allowance: a redirect
+  to the same server (a trailing slash, a moved folder) is still followed,
+  since the password goes nowhere new. Tested against a local server that
+  redirects to another name for the same machine.
 
 **Checked and fine.** Deeply nested HTML (jsoup's depth limit), cleartext
 (off everywhere), file access in the WebViews (off), credentials in backups
@@ -2151,16 +2159,24 @@ case. *Low*: hardening or tidying.
   little is lost but the article that was mid-download. **Fix:** keep a
   waiting one; append behind a running one. **Done** with B2, by the same
   rule.
-- **B8 · Low · "1 sources".** Seven strings put a number in front of a plural
+- ~~**B8 · Low · "1 sources".**~~ Seven strings put a number in front of a plural
   noun without a plurals resource: `sources_deleted`,
   `sources_articles_cleared`, `category_in_use`, `backup_restored`,
   `covered_by_sources`, `starter_add` and `starter_added`. **Fix:**
-  `<plurals>`, like the fifteen that already are.
-- **B9 · Low · The panel sizes itself from Android's private values.**
+  `<plurals>`, like the fifteen that already are. **Done**, and three more
+  found on the way: "Restored 1 settings", and two strings with two counts
+  each, now built from plural parts. A test finds any new one.
+- ~~**B9 · Low · The panel sizes itself from Android's private values.**~~
   `OverlayView.kt:408` and `:414` read `status_bar_height` and
   `navigation_bar_height` from the system's own resources by name. They are
   not an API, and with a tall camera cutout or gesture navigation they are not
   the real insets. **Fix:** take the insets from the window, as the app does.
+  **Done**, more narrowly than written. The window's insets were already
+  read; the private values were a floor under them, so with gesture
+  navigation the bottom kept a 48 dp button bar's room. Each edge now trusts
+  the window once the window has reported it, and the private values stand
+  in only for a window that reports nothing, which some launchers' overlay
+  windows do. Not checked on a device.
 - ~~**B10 · Low · Interrupted picture downloads leave files behind.**~~ A download
   that fails partway leaves its `.part` file (`SavedImages.kt:132`); only the
   too-large case removes it. **Fix:** delete the part file whenever it is not
@@ -2270,13 +2286,15 @@ harness is not in the repository.
   high and no more (`StringSelectionPrefDialogUI.kt:131`); "Only on Wi-Fi and
   while charging" shows as "Only on Wi-Fi and". **Fix:** a minimum height.
   **Done.**
-- **C8 · Low · The panel permission button can crash on the cheapest
-  phones.** It starts Android's overlay settings with nothing around it
+- ~~**C8 · Low · The panel permission button can crash on the cheapest
+  phones.**~~ It starts Android's overlay settings with nothing around it
   (`LauncherPage.kt:173`). Android Go editions cannot grant that permission,
   and a phone without the screen throws. **Fix:** guard it, fall back to the
   app's info page, and on a Go device say plainly that the panel cannot open
   articles. `PermissionDialog.kt`, which has the same call, is used nowhere
-  and can go.
+  and can go. **Done**, and a third copy found in Settings, where anybody
+  without the permission could reach it. All three go through one guarded
+  helper; the dialog is deleted.
 - ~~**C9 · Low · Split screen at about 220 dp.**~~ Everything at the top is cut
   down to dots. Mostly mended by C1 and C2; below about 280 dp glance can go.
   **Done** with C4, by the same check.

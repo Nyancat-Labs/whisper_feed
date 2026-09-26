@@ -62,6 +62,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -967,7 +968,7 @@ private fun CoverageLine(
         )
         Spacer(Modifier.width(4.dp))
         Text(
-            text = stringResource(R.string.covered_by_sources, sources),
+            text = pluralStringResource(R.plurals.covered_by_sources, sources, sources),
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.SemiBold,
             color = color,

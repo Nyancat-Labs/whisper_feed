@@ -415,9 +415,24 @@ class OverlayView(val context: Context) :
         return if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else 0
     }
 
+    /**
+     * Whether this window has reported each edge yet.
+     *
+     * The platform's own bar sizes are not an API, only a stand-in for a
+     * window that says nothing, which some launchers' overlay windows do.
+     * They were the floor for every edge, always, so with gesture navigation
+     * the bottom kept the old 48 dp button bar's room above a bar a third of
+     * that. Now an edge the window has reported is taken from the window, and
+     * the stand-in holds only until it has.
+     */
+    private var windowReportedTop = false
+    private var windowReportedBottom = false
+
     private fun applyInsets(statusBarTop: Int, navBarBottom: Int, left: Int = 0, right: Int = 0) {
-        topInsetPx.value = maxOf(statusBarTop, getStatusBarHeight())
-        bottomInsetPx.value = maxOf(navBarBottom, getNavigationBarHeight())
+        if (statusBarTop > 0) windowReportedTop = true
+        if (navBarBottom > 0) windowReportedBottom = true
+        topInsetPx.value = if (windowReportedTop) statusBarTop else getStatusBarHeight()
+        bottomInsetPx.value = if (windowReportedBottom) navBarBottom else getNavigationBarHeight()
     }
 
     private fun initInsets() {

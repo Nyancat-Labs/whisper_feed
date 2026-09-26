@@ -224,8 +224,9 @@ fun SourceListPage(
     LaunchedEffect(recentlyDeletedMany) {
         if (recentlyDeletedMany.isEmpty()) return@LaunchedEffect
         val result = snackbarHostState.showSnackbar(
-            message = context.getString(
-                R.string.sources_deleted,
+            message = context.resources.getQuantityString(
+                R.plurals.sources_deleted,
+                recentlyDeletedMany.size,
                 recentlyDeletedMany.size,
             ),
             actionLabel = undoLabel,
@@ -242,7 +243,7 @@ fun SourceListPage(
         // articles: "done" would leave someone counting rows to find out
         // whether their saved items had just gone.
         snackbarHostState.showSnackbar(
-            message = context.getString(R.string.sources_articles_cleared, count),
+            message = context.resources.getQuantityString(R.plurals.sources_articles_cleared, count, count),
             withDismissAction = true,
         )
         viewModel.forgetArticlesCleared()

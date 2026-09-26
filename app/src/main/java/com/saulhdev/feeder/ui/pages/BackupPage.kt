@@ -374,17 +374,19 @@ private fun report(
                 }
 
             is BackupStore.Result.SettingsRestored ->
-                context.getString(R.string.backup_settings_restored, result.count)
+                context.resources.getQuantityString(R.plurals.backup_settings_restored, result.count, result.count)
 
             is BackupStore.Result.Restored ->
                 if (result.feeds > 0) {
-                    context.getString(R.string.backup_restored, result.feeds)
+                    context.resources.getQuantityString(R.plurals.backup_restored, result.feeds, result.feeds)
                 } else {
                     context.getString(R.string.backup_restored_none)
                 }
 
             is BackupStore.Result.FolderRestored -> context.getString(
-                R.string.backup_folder_restored, result.feeds, result.settings
+                R.string.backup_folder_restored,
+                context.resources.getQuantityString(R.plurals.backup_folder_sources, result.feeds, result.feeds),
+                context.resources.getQuantityString(R.plurals.backup_folder_settings, result.settings, result.settings),
             )
 
             BackupStore.Result.NothingFound -> context.getString(R.string.backup_nothing_found)

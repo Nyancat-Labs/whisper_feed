@@ -333,6 +333,10 @@ class FeedParser {
     class FeedParsingError(val url: URL, e: Throwable) : Exception(e.message, e)
 }
 
+/** Whether a password written into a feed's address may answer this challenge. */
+internal fun answersFeedChallenge(asking: okhttp3.HttpUrl, feedHost: String): Boolean =
+    asking.isHttps && asking.host.equals(feedHost, ignoreCase = true)
+
 suspend fun OkHttpClient.getResponse(
     url: URL,
     forceNetwork: Boolean = false,
@@ -372,31 +376,19 @@ suspend fun OkHttpClient.getResponse(
             URLDecoder.decode(pass, "UTF-8")
         }
         val credentials = Credentials.basic(decodedUser, decodedPass)
+        val feedHost = url.host
+        // The feed's own server asks, over https, and nobody else. These
+        // answered any challenge: a host the feed redirected to got the
+        // feed's password for asking, and so did any proxy on the way,
+        // which is a different thing with its own credentials.
         newBuilder()
             .authenticator { _, response ->
                 when {
-                    response.request.header("Authorization") != null -> {
-                        null
-                    }
-
-                    else -> {
-                        response.request.newBuilder()
-                            .header("Authorization", credentials)
-                            .build()
-                    }
-                }
-            }
-            .proxyAuthenticator { _, response ->
-                when {
-                    response.request.header("Proxy-Authorization") != null -> {
-                        null
-                    }
-
-                    else -> {
-                        response.request.newBuilder()
-                            .header("Proxy-Authorization", credentials)
-                            .build()
-                    }
+                    response.request.header("Authorization") != null -> null
+                    !answersFeedChallenge(response.request.url, feedHost) -> null
+                    else -> response.request.newBuilder()
+                        .header("Authorization", credentials)
+                        .build()
                 }
             }
             .build()

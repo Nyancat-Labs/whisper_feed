@@ -41,12 +41,18 @@
     <string name="sources_replace_tags">Replace categories</string>
     <string name="sources_enable">Enable</string>
     <string name="sources_disable">Disable</string>
-    <string name="sources_deleted">Removed %1$d sources</string>
+    <plurals name="sources_deleted">
+        <item quantity="one">Removed %1$d source</item>
+        <item quantity="other">Removed %1$d sources</item>
+    </plurals>
     <string name="sources_delete_selected">Delete</string>
     <string name="sources_clear_selection">Clear selection</string>
     <string name="sources_more_actions">More actions</string>
     <string name="sources_clear_articles">Clear articles</string>
-    <string name="sources_articles_cleared">Removed %1$d articles. Saved ones kept.</string>
+    <plurals name="sources_articles_cleared">
+        <item quantity="one">Removed %1$d article. Saved ones kept.</item>
+        <item quantity="other">Removed %1$d articles. Saved ones kept.</item>
+    </plurals>
     <string name="sources_full_text_on">Fetch full articles</string>
     <string name="sources_full_text_off">Summaries only</string>
     <string name="sources_find_duplicates">Find duplicates</string>
@@ -73,7 +79,10 @@
     <string name="category_rename">Rename</string>
     <string name="category_delete">Delete category</string>
     <string name="category_delete_desc">Removes “%1$s” from every source. The sources themselves are kept.</string>
-    <string name="category_in_use">%1$d sources</string>
+    <plurals name="category_in_use">
+        <item quantity="one">%1$d source</item>
+        <item quantity="other">%1$d sources</item>
+    </plurals>
     <string name="category_merge_hint">Renaming onto an existing category merges the two.</string>
     <string name="source_address_taken">%1$s was not saved \u2014 another source already uses that address.</string>
     <string name="source_hidden">Hiding %1$s</string>
@@ -324,13 +333,19 @@
     <string name="backup_now">Back up now</string>
     <string name="backup_restore">Restore sources from a backup</string>
     <string name="backup_restore_settings">Restore your settings</string>
-    <string name="backup_settings_restored">Restored %1$d settings</string>
+    <plurals name="backup_settings_restored">
+        <item quantity="one">Restored %1$d setting</item>
+        <item quantity="other">Restored %1$d settings</item>
+    </plurals>
     <string name="backup_none">No folder chosen yet</string>
     <string name="backup_never">Not backed up yet</string>
     <string name="backup_last">Last backed up %1$s</string>
     <string name="backup_written">Backed up. Subscriptions saved as %1$s, settings as %2$s</string>
     <string name="backup_written_sources_only">Subscriptions saved as %1$s. Your settings could not be written.</string>
-    <string name="backup_restored">Added %1$d sources</string>
+    <plurals name="backup_restored">
+        <item quantity="one">Added %1$d source</item>
+        <item quantity="other">Added %1$d sources</item>
+    </plurals>
     <string name="backup_restored_none">Everything in that backup is already here</string>
     <string name="backup_lost">Whisper can no longer write to that folder. Choose it again.</string>
     <string name="backup_failed">That did not work</string>
@@ -355,6 +370,7 @@
     <string name="account_problem_server_error">The server reported a problem of its own (%1$s). Nothing is wrong at this end — try again later.</string>
     <string name="account_problem_no_token">The server answered, but not the way a Google Reader service does. Check the address points at the API rather than the website.</string>
     <string name="account_problem_signed_out">The server no longer accepts that sign-in. Sign in again.</string>
+    <string name="account_problem_moved">That address passed the sign-in on to another server, %1$s. Whisper does not send your password on to a server you did not type. If that is the right one, sign in with its address.</string>
     <string name="account_problem_unknown">Could not reach that server. %1$s</string>
     <string name="account_problem_unknown_bare">Could not reach that server.</string>
     <string name="feed_day_today">Today</string>
@@ -380,6 +396,7 @@
     <string name="account_sign_in">Sign in</string>
     <string name="account_sign_out">Sign out</string>
     <string name="account_sign_out_keeps">Signing out keeps your feeds and articles on this phone.</string>
+    <string name="account_store_reset">This phone\'s secure storage could not be read, so the account was signed out. Sign in again: your feeds and articles are all still here.</string>
     <string name="account_sync_now">Sync now</string>
     <string name="account_never_synced">Not synced yet</string>
     <string name="account_last_sync">Last synced %1$s</string>
@@ -392,7 +409,10 @@
     <string name="learned_forget">Forget this source\'s score</string>
     <string name="learned_unhide">Show this source again</string>
     <string name="learned_reset_all">Forget everything</string>
-    <string name="covered_by_sources">Covered by %1$d sources</string>
+    <plurals name="covered_by_sources">
+        <item quantity="one">Covered by %1$d source</item>
+        <item quantity="other">Covered by %1$d sources</item>
+    </plurals>
     <string name="learned_reset_all_desc">Clears every More/Less score, restarts the reading counts from zero, and shows any hidden sources again. Your subscriptions, saved articles and what you have already read are not touched.</string>
     <string name="mark_read_title">Mark as read</string>
     <string name="mark_read_explained">Acts straight away, unlike the choices above, and you can undo it.</string>
@@ -537,6 +557,7 @@
     <string name="launcher_permission_body">Without this, the page appears but tapping an article does nothing. On a sideloaded build the switch is greyed out until you allow it: Settings → Apps → Whisper → ⋮ → Allow restricted settings.</string>
     <string name="launcher_permission_granted">Granted. Articles will open when you tap them.</string>
     <string name="launcher_permission_open">Grant the permission</string>
+    <string name="overlay_not_on_go">This phone runs Android Go, which does not let apps show over others. The launcher page can still show your feed, but tapping a story there cannot open it: open Whisper to read it.</string>
 
     <!-- Starter sources -->
     <string name="starter_category_world">World</string>
@@ -545,10 +566,15 @@
     <string name="starter_category_australia">Australia</string>
     <string name="starter_title">A few feeds to start with</string>
     <string name="starter_body">Take off anything you do not want. These become ordinary sources — add more or remove any of them whenever you like.</string>
-    <string name="starter_add">Add %1$d feeds</string>
-    <string name="starter_add_one">Add 1 feed</string>
+    <plurals name="starter_add">
+        <item quantity="one">Add %1$d feed</item>
+        <item quantity="other">Add %1$d feeds</item>
+    </plurals>
     <string name="starter_none">Skip — I\'ll add my own</string>
-    <string name="starter_added">%1$d sources added</string>
+    <plurals name="starter_added">
+        <item quantity="one">%1$d source added</item>
+        <item quantity="other">%1$d sources added</item>
+    </plurals>
     <string name="starter_all_added">You are already subscribed to all of these.</string>
     <string name="pref_sources_summary">The feeds you follow, and their categories</string>
     <string name="pref_broken_feeds">Feeds that stopped working</string>
@@ -643,7 +669,15 @@
     <string name="stats_by_day_caption">Articles that reached your screen, over the last %1$d days.</string>
     <string name="stats_by_hour">Time of day</string>
     <string name="stats_by_hour_caption">When you read, summed across the whole month.</string>
-    <string name="stats_by_day_description">%1$d articles seen and %2$d opened over %3$d days.</string>
+    <string name="stats_by_day_description">%1$s and %2$d opened over %3$s.</string>
+    <plurals name="stats_articles_seen">
+        <item quantity="one">%1$d article seen</item>
+        <item quantity="other">%1$d articles seen</item>
+    </plurals>
+    <plurals name="stats_days">
+        <item quantity="one">%1$d day</item>
+        <item quantity="other">%1$d days</item>
+    </plurals>
     <string name="stats_by_hour_description">Busiest around %1$s:00.</string>
     <string name="stats_by_hour_empty">No reading recorded yet.</string>
     <string name="stats_example_title">This is an example</string>
@@ -671,7 +705,15 @@
     </plurals>
 
     <!-- Restoring during onboarding -->
-    <string name="backup_folder_restored">%1$d sources and %2$d settings restored</string>
+    <string name="backup_folder_restored">%1$s and %2$s restored</string>
+    <plurals name="backup_folder_sources">
+        <item quantity="one">%1$d source</item>
+        <item quantity="other">%1$d sources</item>
+    </plurals>
+    <plurals name="backup_folder_settings">
+        <item quantity="one">%1$d setting</item>
+        <item quantity="other">%1$d settings</item>
+    </plurals>
     <string name="backup_nothing_found">No backup was found in that folder</string>
     <string name="starter_returning_title">Used Whisper before?</string>
     <string name="starter_returning_body">If you have a backup folder, this is the moment to use it — your sources and settings come back exactly as they were.</string>

@@ -56,6 +56,8 @@ data class AccountState(
     val tally: AccountTally? = null,
     val today: DayTotals? = null,
     val notOnServer: List<MissingFeed> = emptyList(),
+    /** The phone's secure storage could not be read, and the account was signed out. */
+    val storeReset: Boolean = false,
     val busy: Boolean = false,
     /**
      * Set when something went wrong, cleared when the reader changes anything.
@@ -86,6 +88,7 @@ class AccountViewModel(
         tally = if (account.isSignedIn) AccountTallyStore.read(app) else null,
         today = if (account.isSignedIn) AccountTallyStore.today(app) else null,
         notOnServer = if (account.isSignedIn) GoogleReaderState.notOnServer(app) else emptyList(),
+        storeReset = account.wasReset && !account.isSignedIn,
     )
 
     fun clearError() {

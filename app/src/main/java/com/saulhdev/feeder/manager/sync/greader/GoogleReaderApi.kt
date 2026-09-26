@@ -29,6 +29,7 @@ import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.Response
 import java.io.IOException
 
 /**
@@ -96,25 +97,47 @@ class GoogleReaderApi(
                 .build()
 
             try {
-                client.newCall(Request.Builder().url(url).post(body).build()).execute().use { r ->
-                    if (!r.isSuccessful) {
-                        return@withContext AuthResult.Failed(
-                            problem = problemFromStatus(r.code),
-                            detail = r.code.toString(),
-                        )
-                    }
-                    val auth = r.body.string()
-                        .lineSequence()
-                        .firstOrNull { it.startsWith("Auth=") }
-                        ?.removePrefix("Auth=")
-                        ?.trim()
-                    if (auth.isNullOrEmpty()) AuthResult.Failed(AccountProblem.NO_TOKEN)
-                    else AuthResult.Success(auth)
-                }
+                postSignIn(url, body)
             } catch (t: Throwable) {
                 AuthResult.Failed(problemFrom(t), t.message)
             }
         }
+
+    /**
+     * The sign-in request, following a redirect only to the same server.
+     *
+     * OkHttp follows a 307 or 308 by sending the same request again, body and
+     * all, so a server that pointed the sign-in elsewhere handed the email
+     * address and password to wherever it pointed. The same server moving its
+     * own path (a trailing slash, a new folder) is still followed, since the
+     * password goes nowhere new.
+     */
+    private fun postSignIn(url: HttpUrl, body: FormBody): AuthResult {
+        val signInClient = client.newBuilder().followRedirects(false).followSslRedirects(false).build()
+        var target = url
+        repeat(MAX_SIGN_IN_REDIRECTS + 1) {
+            signInClient.newCall(Request.Builder().url(target).post(body).build()).execute().use { r ->
+                if (!r.isRedirect) return readSignIn(r)
+                val next = r.header("Location")?.let { target.resolve(it) }
+                    ?: return AuthResult.Failed(AccountProblem.NO_TOKEN)
+                if (!sameServer(target, next)) return AuthResult.Failed(AccountProblem.MOVED, next.host)
+                target = next
+            }
+        }
+        return AuthResult.Failed(AccountProblem.UNKNOWN, "Too many redirects")
+    }
+
+    private fun readSignIn(r: Response): AuthResult {
+        if (!r.isSuccessful) {
+            return AuthResult.Failed(problem = problemFromStatus(r.code), detail = r.code.toString())
+        }
+        val auth = r.body.string()
+            .lineSequence()
+            .firstOrNull { it.startsWith("Auth=") }
+            ?.removePrefix("Auth=")
+            ?.trim()
+        return if (auth.isNullOrEmpty()) AuthResult.Failed(AccountProblem.NO_TOKEN) else AuthResult.Success(auth)
+    }
 
     /**
      * The write token, which is separate from the auth token and short-lived.
@@ -464,3 +487,10 @@ data class StreamLink(val href: String? = null, val type: String? = null)
  */
 fun isCatchAllFolder(name: String): Boolean =
     name.trim().lowercase() in setOf("uncategorized", "uncategorised")
+
+/** More than a server moving its own path needs. */
+private const val MAX_SIGN_IN_REDIRECTS = 3
+
+/** Same scheme, host and port: a redirect the password may follow. */
+internal fun sameServer(from: HttpUrl, to: HttpUrl): Boolean =
+    to.scheme == from.scheme && to.host.equals(from.host, ignoreCase = true) && to.port == from.port

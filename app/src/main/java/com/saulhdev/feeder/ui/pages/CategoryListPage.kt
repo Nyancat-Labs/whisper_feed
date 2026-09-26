@@ -40,6 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.saulhdev.feeder.R
@@ -95,7 +96,7 @@ fun CategoryListPage(
                     ),
                     headlineContent = { Text(tag) },
                     supportingContent = {
-                        Text(stringResource(R.string.category_in_use, count))
+                        Text(pluralStringResource(R.plurals.category_in_use, count, count))
                     },
                     trailingContent = {
                         androidx.compose.foundation.layout.Row {

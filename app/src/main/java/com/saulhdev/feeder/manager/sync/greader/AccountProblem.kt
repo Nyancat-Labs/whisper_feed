@@ -75,6 +75,13 @@ enum class AccountProblem {
     /** A credential that used to work has stopped being accepted. */
     SIGNED_OUT,
 
+    /**
+     * The sign-in was sent on to a different server. Not followed: a 307 or
+     * 308 re-sends the whole request, the password with it, to wherever the
+     * first server points.
+     */
+    MOVED,
+
     /** Everything else, which keeps the original text rather than losing it. */
     UNKNOWN,
 }

@@ -167,6 +167,15 @@ fun AccountPage(
                     )
                 }
             } else {
+                if (state.storeReset) {
+                    item {
+                        Text(
+                            text = stringResource(R.string.account_store_reset),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.error,
+                        )
+                    }
+                }
                 item {
                     OutlinedTextField(
                         value = server,
@@ -333,6 +342,7 @@ private fun accountProblemText(problem: AccountProblem, detail: String?): String
     AccountProblem.NOT_FOUND -> stringResource(R.string.account_problem_not_found)
     AccountProblem.NO_TOKEN -> stringResource(R.string.account_problem_no_token)
     AccountProblem.SIGNED_OUT -> stringResource(R.string.account_problem_signed_out)
+    AccountProblem.MOVED -> stringResource(R.string.account_problem_moved, detail.orEmpty())
 
     AccountProblem.SERVER_ERROR ->
         stringResource(R.string.account_problem_server_error, detail.orEmpty())

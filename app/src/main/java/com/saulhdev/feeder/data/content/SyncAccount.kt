@@ -20,6 +20,8 @@ package com.saulhdev.feeder.data.content
 import com.saulhdev.feeder.manager.sync.greader.AccountTallyStore
 import com.saulhdev.feeder.manager.sync.greader.GoogleReaderState
 import android.content.Context
+import android.content.SharedPreferences
+import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 
@@ -48,10 +50,48 @@ class SyncAccount(context: Context) {
 
     private val appContext = context.applicationContext
 
-    private val prefs = EncryptedSharedPreferences.create(
-        context,
-        "whisper_account",
-        MasterKey.Builder(context)
+    /**
+     * Whether the store could not be read and was started again, empty. The
+     * account screen says so, so a reader signed out this way knows why.
+     */
+    var wasReset: Boolean = false
+        private set
+
+    private val prefs: SharedPreferences = openStore()
+
+    /**
+     * The encrypted store, and what to do when the Keystore will not open it.
+     *
+     * Backups leave this file out, so a restore cannot cause that; but a
+     * Keystore that loses or refuses its key, known on some phones after a
+     * system update, threw here with nothing around it, and the app stopped
+     * at start, every start, until its data was cleared. Now the file and its
+     * key are deleted and the store starts again, signed out. Should even a
+     * new one fail, the account is kept in memory for as long as the app
+     * runs: never written down unencrypted.
+     */
+    private fun openStore(): SharedPreferences = try {
+        encryptedStore()
+    } catch (e: Exception) {
+        Log.w(TAG, "The account store could not be read; starting it again, signed out", e)
+        wasReset = true
+        runCatching { appContext.deleteSharedPreferences(FILE) }
+        runCatching {
+            java.security.KeyStore.getInstance("AndroidKeyStore").apply { load(null) }
+                .deleteEntry(MasterKey.DEFAULT_MASTER_KEY_ALIAS)
+        }
+        try {
+            encryptedStore()
+        } catch (again: Exception) {
+            Log.w(TAG, "The Keystore will not open a new store either; keeping the account in memory", again)
+            MemoryPreferences()
+        }
+    }
+
+    private fun encryptedStore(): SharedPreferences = EncryptedSharedPreferences.create(
+        appContext,
+        FILE,
+        MasterKey.Builder(appContext)
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
             .build(),
         EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
@@ -105,9 +145,75 @@ class SyncAccount(context: Context) {
     }
 
     private companion object {
+        const val TAG = "SyncAccount"
+
+        /** Named in the backup rules, which leave it out of every route. */
+        const val FILE = "whisper_account"
+
         const val KEY_SERVER = "server_url"
         const val KEY_USER = "username"
         const val KEY_TOKEN = "auth_token"
         const val KEY_LAST_SYNC = "last_sync"
+    }
+}
+
+/**
+ * Preferences that last as long as the app runs, and no longer: the account's
+ * last resort when the Keystore will not open an encrypted store at all.
+ */
+private class MemoryPreferences : SharedPreferences {
+    private val values = HashMap<String, Any>()
+
+    override fun getAll(): Map<String, *> = synchronized(values) { HashMap(values) }
+    override fun getString(key: String?, defValue: String?): String? = get(key) as? String ?: defValue
+
+    @Suppress("UNCHECKED_CAST")
+    override fun getStringSet(key: String?, defValues: MutableSet<String>?): MutableSet<String>? =
+        get(key) as? MutableSet<String> ?: defValues
+
+    override fun getInt(key: String?, defValue: Int): Int = get(key) as? Int ?: defValue
+    override fun getLong(key: String?, defValue: Long): Long = get(key) as? Long ?: defValue
+    override fun getFloat(key: String?, defValue: Float): Float = get(key) as? Float ?: defValue
+    override fun getBoolean(key: String?, defValue: Boolean): Boolean = get(key) as? Boolean ?: defValue
+    override fun contains(key: String?): Boolean = get(key) != null
+    override fun edit(): SharedPreferences.Editor = Changes()
+    override fun registerOnSharedPreferenceChangeListener(l: SharedPreferences.OnSharedPreferenceChangeListener?) = Unit
+    override fun unregisterOnSharedPreferenceChangeListener(l: SharedPreferences.OnSharedPreferenceChangeListener?) = Unit
+
+    private fun get(key: String?): Any? = synchronized(values) { values[key] }
+
+    private inner class Changes : SharedPreferences.Editor {
+        private val puts = HashMap<String, Any?>()
+        private var clearFirst = false
+
+        private fun put(key: String?, value: Any?): SharedPreferences.Editor {
+            if (key != null) puts[key] = value
+            return this
+        }
+
+        override fun putString(key: String?, value: String?) = put(key, value)
+        override fun putStringSet(key: String?, values: MutableSet<String>?) = put(key, values?.toMutableSet())
+        override fun putInt(key: String?, value: Int) = put(key, value)
+        override fun putLong(key: String?, value: Long) = put(key, value)
+        override fun putFloat(key: String?, value: Float) = put(key, value)
+        override fun putBoolean(key: String?, value: Boolean) = put(key, value)
+        override fun remove(key: String?) = put(key, null)
+
+        override fun clear(): SharedPreferences.Editor {
+            clearFirst = true
+            return this
+        }
+
+        override fun commit(): Boolean {
+            apply()
+            return true
+        }
+
+        override fun apply() {
+            synchronized(values) {
+                if (clearFirst) values.clear()
+                puts.forEach { (key, value) -> if (value == null) values.remove(key) else values[key] = value }
+            }
+        }
     }
 }

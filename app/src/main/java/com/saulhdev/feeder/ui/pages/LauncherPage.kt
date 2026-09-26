@@ -17,8 +17,6 @@
  */
 package com.saulhdev.feeder.ui.pages
 
-import android.content.Intent
-import android.net.Uri
 import android.provider.Settings
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -48,6 +46,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.saulhdev.feeder.utils.openOverlaySettings
+import com.saulhdev.feeder.utils.canGrantOverlay
 import com.saulhdev.feeder.R
 import com.saulhdev.feeder.manager.service.LauncherLink
 import com.saulhdev.feeder.ui.components.ActionButton
@@ -163,20 +163,21 @@ fun LauncherPage() {
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            if (!canDrawOverlays) {
+            if (!canDrawOverlays && canGrantOverlay(context)) {
                 item {
                     OutlinedActionButton(
                         modifier = Modifier.fillMaxWidth(),
                         text = stringResource(R.string.launcher_permission_open),
                         icon = Phosphor.Info,
-                        onClick = {
-                            context.startActivity(
-                                Intent(
-                                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                                    Uri.parse("package:${context.packageName}"),
-                                )
-                            )
-                        },
+                        onClick = { openOverlaySettings(context) },
+                    )
+                }
+            } else if (!canDrawOverlays) {
+                item {
+                    Text(
+                        text = stringResource(R.string.overlay_not_on_go),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             }

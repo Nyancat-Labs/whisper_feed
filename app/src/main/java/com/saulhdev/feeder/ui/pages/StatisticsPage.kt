@@ -416,11 +416,12 @@ private fun DayChart(days: List<DayCount>) {
     val passed = passedColor()
     val max = days.maxOf { it.seen }.coerceAtLeast(1)
 
+    val seen = days.sumOf { it.seen }
     val description = stringResource(
         R.string.stats_by_day_description,
-        days.sumOf { it.seen },
+        pluralStringResource(R.plurals.stats_articles_seen, seen, seen),
         days.sumOf { it.opened },
-        days.size,
+        pluralStringResource(R.plurals.stats_days, days.size, days.size),
     )
 
     Canvas(

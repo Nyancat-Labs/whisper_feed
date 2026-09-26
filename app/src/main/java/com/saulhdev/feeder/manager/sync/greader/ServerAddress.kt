@@ -115,6 +115,7 @@ suspend fun signInAtAny(
 private val NOTHING_THERE = setOf(AccountProblem.NOT_FOUND, AccountProblem.NO_TOKEN)
 
 private val SERVER_ANSWERED = NOTHING_THERE + setOf(
+    AccountProblem.MOVED,
     AccountProblem.CREDENTIALS,
     AccountProblem.SERVER_ERROR,
     AccountProblem.UNKNOWN,

@@ -18,8 +18,6 @@
 
 package com.saulhdev.feeder.ui.pages
 
-import android.content.Intent
-import android.net.Uri
 import android.provider.Settings
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -44,6 +42,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import com.saulhdev.feeder.utils.openOverlaySettings
+import com.saulhdev.feeder.utils.canGrantOverlay
 import com.saulhdev.feeder.R
 import java.util.Date
 import java.text.DateFormat
@@ -279,20 +279,17 @@ fun PreferencesPage(
                     Spacer(modifier = Modifier.height(8.dp))
                     Card {
                         Column(modifier = Modifier.padding(16.dp)) {
-                            Text(text = stringResource(R.string.draw_permission_required))
-                            Spacer(modifier = Modifier.height(12.dp))
-                            ActionButton(
-                                text = stringResource(R.string.go_to_settings),
-                                icon = Phosphor.GearSix,
-                                onClick = {
-                                    context.startActivity(
-                                        Intent(
-                                            Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                                            Uri.parse("package:${context.packageName}")
-                                        )
-                                    )
-                                },
-                            )
+                            if (canGrantOverlay(context)) {
+                                Text(text = stringResource(R.string.draw_permission_required))
+                                Spacer(modifier = Modifier.height(12.dp))
+                                ActionButton(
+                                    text = stringResource(R.string.go_to_settings),
+                                    icon = Phosphor.GearSix,
+                                    onClick = { openOverlaySettings(context) },
+                                )
+                            } else {
+                                Text(text = stringResource(R.string.overlay_not_on_go))
+                            }
                         }
                     }
                 }
