@@ -1914,7 +1914,7 @@ preview build.
   every address an image offers before asking the web. Removing the save
   deletes them. Saves made before this get their pictures at the next start.
   A signal lost halfway is not recorded as done. The empty Saved screen, the tour and the header call it
-  Read later. *To confirm on the device:* save, go offline, open.
+  Read later. **Confirmed on the device**, text and pictures, offline.
 - **Mark as read in the filter sheet** — Everything, or older than 1, 24 or
   48 hours, with counts and an immediate Undo. See §5's list.
 - **"Show articles you have read" remembers Fade.** Turning it off and on in
