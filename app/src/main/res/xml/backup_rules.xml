@@ -4,14 +4,14 @@
     happens is PlatformBackupAgent's decision; this is what is in it when it
     does.
 
-    The encrypted preference file never travels, on any route and whatever
-    the reader chose. EncryptedSharedPreferences keeps its key in the
-    hardware-backed Keystore, and the Keystore is not part of a backup — so a
-    restored device would get the ciphertext without the key, and the first
-    read would throw rather than return empty. That is a crash on launch for
-    somebody who did the right thing and restored their phone. Signing in
-    again is a far better outcome.
+    The account files never travel, on any route and whatever the reader
+    chose: whisper_account_sealed, and whisper_account, the older
+    EncryptedSharedPreferences file it replaced. Both are sealed with a key in
+    the hardware-backed Keystore, and the Keystore is not part of a backup — so
+    a restored device would get the ciphertext without the key, which could
+    never be opened. Signing in again is the honest outcome.
 -->
 <full-backup-content>
     <exclude domain="sharedpref" path="whisper_account.xml" />
+    <exclude domain="sharedpref" path="whisper_account_sealed.xml" />
 </full-backup-content>

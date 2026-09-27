@@ -1978,9 +1978,9 @@ breaks a rule this project set itself. *Medium*: a real fault, in a narrower
 case. *Low*: hardening or tidying.
 
 **Status: all done, the same day**, in the order of §22d, each with a test
-that fails with the fix taken out. Two things are left, on purpose: the second
-half of S6 (moving the token off the deprecated library), and a device check
-of B9 (the launcher panel's insets), which renders cannot show.
+that fails with the fix taken out. One thing is left, on purpose: a device check
+of B9 (the launcher panel's insets), which renders cannot show. The second
+halves of S4 and S6 followed the next day.
 
 #### 22a. Security
 
@@ -2076,6 +2076,19 @@ of B9 (the launcher panel's insets), which renders cannot show.
   signed out. If even a new store will not open, the account is kept in
   memory while the app runs, never written down unencrypted. Robolectric,
   which has no Keystore at all, is the test: the old code threw at start.
+  **The second half followed on 27 September.** The account now has its own
+  AES-GCM key in the Keystore (`AccountCipher.kt`); each value is sealed
+  with the name it is stored under and written to a plain file,
+  `whisper_account_sealed`, which the backup rules leave out as they did the
+  old one. At the first start after the update the account moves across and
+  the old file and the library's master key are deleted. An old file that
+  will not open is deleted and the reader told, as before; one that opens
+  but cannot be sealed again is kept for the next start, with the account in
+  memory meanwhile. A key the Keystore has lost shows at start as a reset,
+  not as a sync that finds itself signed out. The library stays in the build
+  only to read the old file; it can go once nobody is on a version from
+  before this (**to do**, in a release or two). Eleven tests, with a
+  software key in place of the Keystore.
 - ~~**S7 · Low · Feed passwords answer any challenge.**~~ A feed address with
   `user:password@` in it gets an authenticator (`FeedParser.kt:371`) that sends
   those details to whoever asks for them, including a different host the feed

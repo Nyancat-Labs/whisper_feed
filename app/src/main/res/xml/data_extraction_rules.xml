@@ -3,18 +3,19 @@
     What may travel on each route, once PlatformBackupAgent has decided the
     reader agreed to that route at all.
 
-    The encrypted credential file is excluded from both. Its key lives in
-    the Keystore, and restoring the ciphertext without it means the first read
-    throws — an app that will not start, for exactly the person who restored
-    their phone properly. This is excluded even from device transfer, where the
-    Keystore does move: one rule that always holds is easier to trust than one
-    with a case in it.
+    The account files, whisper_account_sealed and the older encrypted
+    whisper_account, are excluded from both. Their keys live in the Keystore,
+    and ciphertext restored without its key can never be opened. They are
+    excluded even from device transfer, where the Keystore does move: one rule
+    that always holds is easier to trust than one with a case in it.
 -->
 <data-extraction-rules>
     <cloud-backup>
     <exclude domain="sharedpref" path="whisper_account.xml" />
+    <exclude domain="sharedpref" path="whisper_account_sealed.xml" />
     </cloud-backup>
     <device-transfer>
     <exclude domain="sharedpref" path="whisper_account.xml" />
+    <exclude domain="sharedpref" path="whisper_account_sealed.xml" />
     </device-transfer>
 </data-extraction-rules>
