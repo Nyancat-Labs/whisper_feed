@@ -40,7 +40,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -434,7 +433,6 @@ fun ArticleCard(
                 }
             }
         }
-        ArticleDivider()
     }
 }
 
@@ -525,7 +523,6 @@ fun ArticleCompactRow(
                 )
             }
         }
-        ArticleDivider()
     }
 }
 
@@ -557,7 +554,10 @@ fun ArticleTextRow(
             .clickable(onClickLabel = openLabel, role = Role.Button, onClick = onClick)
     ) {
         Row(
-            modifier = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 12.dp),
+            // The end margin too: CardActions reaches 13dp into it to line
+            // its glyphs up with the text's edge, and without one the last
+            // glyph was cut off at the screen's edge.
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(modifier = Modifier.weight(1f)) {
@@ -590,7 +590,6 @@ fun ArticleTextRow(
                 menu(null)
             }
         }
-        ArticleDivider()
     }
 }
 
@@ -850,24 +849,6 @@ private fun ArticleMeta(
             maxLines = 1,
         )
     }
-}
-
-/**
- * The hairline between articles.
- *
- * Replaces the rounded container each article used to sit in. A column of
- * filled boxes puts a border around every headline and reads as a stack of
- * separate objects; a divider says "next item" with one line and lets the
- * content own the width. Inset from the left so it starts under the text
- * rather than cutting across the whole page.
- */
-@Composable
-private fun ArticleDivider() {
-    HorizontalDivider(
-        modifier = Modifier.padding(start = 16.dp),
-        thickness = 1.dp,
-        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
-    )
 }
 
 /**
