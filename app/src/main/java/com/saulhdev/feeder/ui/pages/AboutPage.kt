@@ -20,6 +20,7 @@
 package com.saulhdev.feeder.ui.pages
 
 
+import android.annotation.SuppressLint
 import androidx.core.graphics.createBitmap
 import androidx.compose.ui.platform.LocalResources
 import android.content.ActivityNotFoundException
@@ -422,7 +423,11 @@ fun ChangelogPage() {
  * asset page cannot be pointed somewhere else by anything the reader does,
  * and a link inside one goes to the system browser rather than opening a
  * remote page inside a WebView that trusts its own assets.
+ *
+ * JavaScript is on only to inject the stylesheet into that asset page, and
+ * off again once it has run.
  */
+@SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun PreferencesWebView(url: String) {
     val context = LocalContext.current

@@ -1,5 +1,6 @@
 package com.saulhdev.feeder.manager.service
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.mutableIntStateOf
 import com.saulhdev.feeder.utils.SyncLog
 import android.content.BroadcastReceiver
@@ -405,11 +406,15 @@ class OverlayView(val context: Context) :
         setCustomTheme()
     }
 
+    // The platform's private bar sizes, read by name: only the stand-in for a
+    // window that has not reported its insets. See windowReportedTop.
+    @SuppressLint("InternalInsetResource", "DiscouragedApi")
     private fun getStatusBarHeight(): Int {
         val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
         return if (resourceId > 0) context.resources.getDimensionPixelSize(resourceId) else 0
     }
 
+    @SuppressLint("InternalInsetResource", "DiscouragedApi")
     private fun getNavigationBarHeight(): Int {
         val resourceId =
             context.resources.getIdentifier("navigation_bar_height", "dimen", "android")

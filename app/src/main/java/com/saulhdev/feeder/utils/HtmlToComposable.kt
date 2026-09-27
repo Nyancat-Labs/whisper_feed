@@ -1083,7 +1083,7 @@ private fun TextComposer.handleImage(
                                     decodedWidth = state.painter.intrinsicSize.width
                                         .takeIf { it.isFinite() }?.roundToInt() ?: 0
                                 },
-                                modifier = articleImageWidth(decodedWidth, imageWidth)
+                                modifier = Modifier.articleImageWidth(decodedWidth, imageWidth)
                             )
                             }
                         }
@@ -1469,11 +1469,11 @@ fun BoxWithConstraintsScope.maxImageWidth() = with(LocalDensity.current) {
  * small and grows; only an image that turns out to be small shrinks, once.
  */
 @Composable
-private fun articleImageWidth(decodedPx: Int, columnPx: Int): Modifier =
+private fun Modifier.articleImageWidth(decodedPx: Int, columnPx: Int): Modifier =
     if (isTooSmallToStretch(decodedPx, columnPx)) {
-        with(LocalDensity.current) { Modifier.width(decodedPx.toDp()) }
+        with(LocalDensity.current) { width(decodedPx.toDp()) }
     } else {
-        Modifier.fillMaxWidth()
+        fillMaxWidth()
     }
 
 /** Whether filling [columnPx] would stretch a [decodedPx]-wide image past [MAX_IMAGE_UPSCALE]x. */

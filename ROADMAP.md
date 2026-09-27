@@ -2602,7 +2602,7 @@ Small, and cheaper now than later.
   from the code and measured where it could be measured — text widths against
   the real font, icon alpha, migration SQL. The on-device checks have all been
   yours. Emulator-based screenshot tests would change that.
-- **Test coverage is 936 unit tests** (September 2026), across article age, tag splitting, feed
+- **Test coverage is 952 unit tests** (September 2026), across article age, tag splitting, feed
   layout and weighting, clustering, the settings backup format, the tour's step
   machine, the starter list, bookmark import, link harvesting, the Google Reader
   id shapes, the source list's filters and range selection, and the URL scheme
@@ -2610,6 +2610,11 @@ Small, and cheaper now than later.
   untested and still the shape that would benefit: theme resolution, the
   day/night rule, and the sync and filter performance work. Nothing on a device
   — see the first item.
+- **Lint is at zero warnings** (27 September 2026, from 202). Four are
+  suppressed where they are made, each with its reason: JavaScript in the
+  article page and in the changelog's stylesheet injection, the platform's
+  private bar sizes as the overlay's fallback before its window reports
+  insets, and the overlay service exported for launchers to bind.
 - ~~**Dead code**~~ — cleared. Nine unreferenced files and eight drawables
   removed, along with eight unused DAO methods, one of which had an
   `@Relation` without `@Transaction`: the same shape as the OPML crash fixed

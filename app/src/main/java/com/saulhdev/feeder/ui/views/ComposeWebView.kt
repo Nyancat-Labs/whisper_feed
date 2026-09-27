@@ -18,6 +18,7 @@
 
 package com.saulhdev.feeder.ui.views
 
+import android.annotation.SuppressLint
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
@@ -50,6 +51,12 @@ import com.saulhdev.feeder.ui.overlay.CARD_MARGIN
 import com.saulhdev.feeder.utils.extensions.launchView
 import com.saulhdev.feeder.utils.isBrowsable
 
+/**
+ * An article's web page, opened inside the app. Most pages need their scripts
+ * to show at all, so JavaScript is on; what else a page can reach is turned
+ * off below.
+ */
+@SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun ComposeWebView(
     pageUrl: String

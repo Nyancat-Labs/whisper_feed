@@ -18,7 +18,6 @@
 package com.saulhdev.feeder
 
 import android.widget.Toast
-import androidx.lifecycle.SavedStateHandle
 import androidx.work.WorkManager
 import com.saulhdev.feeder.data.content.SyncAccount
 import com.saulhdev.feeder.data.db.NeoFeedDb
@@ -82,7 +81,6 @@ import org.koin.dsl.module
  * verification test see what each one needs.
  */
 val modelModule = module {
-    single { SavedStateHandle() }
     viewModelOf(::SourceEditViewModel)
     viewModelOf(::LearnedViewModel)
     viewModelOf(::StatisticsViewModel)

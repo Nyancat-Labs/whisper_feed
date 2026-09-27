@@ -134,10 +134,16 @@
 
         </activity>
 
+        <!--
+            Exported without a permission on purpose: this is the -1 screen a
+            launcher binds to, and launchers bind with no permission of ours to
+            hold. OverlayService.onBind admits only a launcher.
+        -->
         <service
             android:name=".manager.service.OverlayService"
             android:enabled="true"
-            android:exported="true">
+            android:exported="true"
+            tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="com.android.launcher3.WINDOW_OVERLAY" />
                 <action android:name="com.google.android.apps.gsa.sidekick.SidekickService" />

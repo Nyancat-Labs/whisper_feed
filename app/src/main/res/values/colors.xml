@@ -7,7 +7,6 @@
     <!-- The splash sits on the app icon's own ground, so launching the
          app is the icon growing into it. -->
     <color name="whisper_splash_bg">#FBFCFE</color>
-    <color name="globalAccent">#4285f4</color>
 
     <color name="grey_100">#fff5f5f5</color>
     <color name="bottom_sheet_background">#80000000</color>

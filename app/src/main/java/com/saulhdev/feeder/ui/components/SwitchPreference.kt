@@ -54,7 +54,7 @@ fun SwitchPreference(
         // no name. The row is the switch now, and it says which way it is set.
         role = Role.Switch,
         stateDescription = stringResource(
-            if (checked) R.string.state_on else R.string.state_off
+            if (checked) R.string.switch_on else R.string.switch_off
         ),
         endWidget = {
             Switch(
