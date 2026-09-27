@@ -944,6 +944,19 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
      * Feed ids as strings, because DataStore has no set of longs and every
      * other multi-value preference here is already a string set.
      */
+    /**
+     * The reader's order for categories, one name to a line; empty is
+     * alphabetical. See CategoryOrder. Travels with a settings backup, since
+     * it describes the reader's categories rather than this phone.
+     */
+    var categoryOrder = StringPref(
+        titleId = R.string.manage_categories,
+        icon = Phosphor.Hash,
+        key = CATEGORY_ORDER,
+        dataStore = dataStore,
+        defaultValue = "",
+    )
+
     var pinnedSources = StringSetPref(
         titleId = R.string.title_sources,
         icon = Phosphor.Asterisk,
@@ -1192,6 +1205,7 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
         // is not a rename, it is a deletion plus an empty new setting, and
         // nobody's pinned sources are worth tidier spelling.
         val PINNED_SOURCES = stringSetKey("pref_favourite_sources")
+        val CATEGORY_ORDER = stringKey("pref_category_order")
         val HIDDEN_SOURCES = stringSetKey("pref_hidden_sources")
         val LEARNED_RESET_AT = longKey("pref_learned_reset_at")
         val BACKUP_STOPPED_AT = longKey("pref_backup_stopped_at")

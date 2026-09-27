@@ -18,6 +18,23 @@
 
 package com.saulhdev.feeder.ui.pages
 
+import androidx.compose.runtime.key
+import android.os.SystemClock
+import com.saulhdev.feeder.utils.CategoryOrder
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.zIndex
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.ui.platform.LocalResources
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -692,6 +709,7 @@ fun SourceListPage(
                                     tags = state.allTags,
                                     chosen = category,
                                     onPick = viewModel::setCategory,
+                                    onReorder = viewModel::setCategoryOrder,
                                 )
                             }
                         }
@@ -947,38 +965,134 @@ private fun SelectionActions(
 }
 
 /**
- * The categories in use, as a row that filters the list.
+ * The categories in use, as a row that filters the list, and the place their
+ * order is set.
  *
  * Single-choice: two categories at once is either "and", which is usually
  * empty, or "or", which is usually the whole list, and a chip row cannot say
  * which one it meant. Tapping the chosen chip again clears it, so the row
  * needs no All chip explaining how to get back.
+ *
+ * Press and hold a chip to pick it up, drag it along the row, and let go: the
+ * order is kept, and both feeds' chips follow it. A quick swipe still scrolls
+ * the row, since nothing moves until the hold. Screen readers get Move left
+ * and Move right instead of the drag.
  */
 @Composable
-private fun CategoryChips(
+internal fun CategoryChips(
     tags: List<String>,
     chosen: String?,
     onPick: (String) -> Unit,
+    onReorder: (List<String>) -> Unit,
 ) {
+    val haptics = LocalHapticFeedback.current
+    val gap = 8.dp
+    val gapPx = with(LocalDensity.current) { gap.toPx() }
+    // The row as it is being dragged; the stored order once it is let go.
+    var working by remember(tags) { mutableStateOf(tags) }
+    var dragging by remember { mutableStateOf<String?>(null) }
+    var offset by remember { mutableFloatStateOf(0f) }
+    val widths = remember { mutableStateMapOf<String, Int>() }
+    // A drag ends with the finger lifting over the chip it carried, which
+    // reads as a tap on it. A tap that soon after a drop is that lift.
+    var droppedAt by remember { mutableLongStateOf(0L) }
+    val moveLeft = stringResource(R.string.category_move_left)
+    val moveRight = stringResource(R.string.category_move_right)
+
+    fun commit(order: List<String>) {
+        if (order != tags) onReorder(order)
+    }
+
     Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(gap),
         modifier = Modifier
             .fillMaxWidth()
             .horizontalScroll(rememberScrollState())
             .padding(vertical = 4.dp),
     ) {
-        tags.forEach { tag ->
+        working.forEachIndexed { index, tag ->
+          // Keyed, so a chip that changes place during the drag is still the
+          // same chip, and its gesture is not restarted under the finger.
+          key(tag) {
+            val lifted = tag == dragging
             FilterChip(
                 selected = tag == chosen,
-                onClick = { onPick(tag) },
+                onClick = {
+                    val lift = droppedAt != 0L && SystemClock.uptimeMillis() - droppedAt <= DROP_TAP_MS
+                    if (!lift) onPick(tag)
+                },
                 label = { Text(tag) },
                 leadingIcon = if (tag == chosen) {
                     { Icon(Phosphor.Check, null) }
                 } else null,
+                elevation = FilterChipDefaults.filterChipElevation(
+                    elevation = if (lifted) 6.dp else 0.dp,
+                ),
+                modifier = Modifier
+                    .onSizeChanged { widths[tag] = it.width }
+                    .zIndex(if (lifted) 1f else 0f)
+                    .graphicsLayer {
+                        if (lifted) {
+                            translationX = offset
+                            scaleX = 1.05f
+                            scaleY = 1.05f
+                        }
+                    }
+                    .semantics {
+                        customActions = buildList {
+                            if (index > 0) add(CustomAccessibilityAction(moveLeft) {
+                                commit(CategoryOrder.move(working, index, index - 1)); true
+                            })
+                            if (index < working.lastIndex) add(CustomAccessibilityAction(moveRight) {
+                                commit(CategoryOrder.move(working, index, index + 1)); true
+                            })
+                        }
+                    }
+                    .pointerInput(tag) {
+                        detectDragGesturesAfterLongPress(
+                            onDragStart = {
+                                haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                                dragging = tag
+                                offset = 0f
+                            },
+                            onDrag = { change, amount ->
+                                change.consume()
+                                offset += amount.x
+                                // Swap with a neighbour once the chip is more
+                                // than halfway over it, and carry the offset
+                                // across so the chip stays under the finger.
+                                val at = working.indexOf(tag)
+                                val right = working.getOrNull(at + 1)
+                                val left = working.getOrNull(at - 1)
+                                if (right != null && offset > (widths[right] ?: 0) / 2f) {
+                                    offset -= (widths[right] ?: 0) + gapPx
+                                    working = CategoryOrder.move(working, at, at + 1)
+                                } else if (left != null && offset < -(widths[left] ?: 0) / 2f) {
+                                    offset += (widths[left] ?: 0) + gapPx
+                                    working = CategoryOrder.move(working, at, at - 1)
+                                }
+                            },
+                            onDragEnd = {
+                                dragging = null
+                                offset = 0f
+                                droppedAt = SystemClock.uptimeMillis()
+                                commit(working)
+                            },
+                            onDragCancel = {
+                                dragging = null
+                                offset = 0f
+                                working = tags
+                            },
+                        )
+                    },
             )
+          }
         }
     }
 }
+
+/** How long after a drop a tap on the dropped chip is taken to be the lift. */
+private const val DROP_TAP_MS = 400L
 
 /**
  * Says that some feeds are subscribed twice, before anybody thinks to ask.

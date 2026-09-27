@@ -483,6 +483,9 @@ class SourceListViewModel(
 
     /* Category management */
 
+    /** The categories in [order], as the reader dragged them. */
+    fun setCategoryOrder(order: List<String>) = feedsRepo.setCategoryOrder(order)
+
     fun renameTag(from: String, to: String) {
         viewModelScope.launch { feedsRepo.renameTag(from, to) }
     }

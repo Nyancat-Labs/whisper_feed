@@ -81,6 +81,8 @@
     <string name="sources_duplicates_remove_extra">Remove extra copies</string>
     <string name="sources_duplicates_none">No duplicate sources</string>
     <string name="sources_show_all">Show all</string>
+    <string name="category_move_left">Move left</string>
+    <string name="category_move_right">Move right</string>
     <string name="manage_categories">Manage categories</string>
     <string name="category_rename">Rename</string>
     <string name="category_delete">Delete category</string>

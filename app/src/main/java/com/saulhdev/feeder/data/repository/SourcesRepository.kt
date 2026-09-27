@@ -18,6 +18,9 @@
 
 package com.saulhdev.feeder.data.repository
 
+import kotlinx.coroutines.flow.combine
+import com.saulhdev.feeder.utils.CategoryOrder
+import com.saulhdev.feeder.data.content.FeedPreferences
 import com.saulhdev.feeder.utils.SyncLog
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
@@ -63,6 +66,7 @@ class SourcesRepository(db: NeoFeedDb) {
     private val feedsDao = db.feedSourceDao()
     private val articlesDao = db.feedArticleDao()
     private val workManager: WorkManager by inject(WorkManager::class.java)
+    private val prefs: FeedPreferences by inject(FeedPreferences::class.java)
 
     /**
      * Adds a source, resurrecting a removed one at the same address.
@@ -265,13 +269,26 @@ class SourcesRepository(db: NeoFeedDb) {
         return feedsDao.getAllTags()
     }
 
+    /**
+     * Every category in use, in the reader's order: see CategoryOrder. The
+     * one list every chip row reads, so the sources screen and both feeds
+     * show the same order.
+     */
     fun getAllTagsFlow(): Flow<List<String>> = feedsDao.getAllTagsFlow()
         .map { rawTags ->
             rawTags.flatMap { tagString ->
                 tagString.split(",").map { it.trim() }.filter { it.isNotEmpty() }
             }.distinct()
         }
+        .combine(prefs.categoryOrder.get()) { tags, stored ->
+            CategoryOrder.arrange(tags, CategoryOrder.decode(stored))
+        }
         .flowOn(cc)
+
+    /** Keeps [order] as the reader's order for categories. */
+    fun setCategoryOrder(order: List<String>) {
+        prefs.categoryOrder.set(CategoryOrder.encode(order))
+    }
 
     suspend fun loadFeedIds(): List<Long> = withContext(jcc) {
         feedsDao.loadFeedIds()
@@ -476,6 +493,10 @@ class SourcesRepository(db: NeoFeedDb) {
                 feed.copy(tag = tags.joinToString(","))
             }
         if (updated.isNotEmpty()) feedsDao.updateAll(updated)
+        // The renamed category keeps its place rather than dropping to the
+        // end as a newcomer.
+        val order = CategoryOrder.decode(prefs.categoryOrder.getValue())
+        if (from in order) prefs.categoryOrder.setValue(CategoryOrder.encode(CategoryOrder.renamed(order, from, to)))
     }
 
     /** Removes a category from every source, leaving the sources themselves. */
