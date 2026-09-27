@@ -40,15 +40,16 @@ That is a bonus rather than the point — see
 
 The feature work is done, the app has been through a full security,
 correctness and performance audit — see [`docs/AUDIT_2026-09.md`](docs/AUDIT_2026-09.md) —
-and it is in daily use on two devices:
+and it is in daily use on three devices:
 
 | Device | Android | Screen |
 |---|---|---|
 | Google Pixel 10 Pro | 17 | Phone |
+| Sony Xperia (XQ-BC52) | 13 | Phone |
 | Samsung Galaxy Tab S5e | 11 | 10.5" tablet |
 
-What is left before a public release is a signed build, then GitHub Releases,
-F-Droid and Play, in that order.
+What is left before a public release is a release signing key and the two
+store listings: **Google Play and F-Droid**, together.
 
 Two things are worth knowing:
 
@@ -87,8 +88,7 @@ leaves the phone.
 
 ## Download
 
-No public release yet. When there is one it will be on the
-[Releases](https://github.com/defsix/whisper_feed/releases) page.
+No public release yet. The first will be on **Google Play** and **F-Droid**.
 
 Until then, build it yourself — see [Building](#building). Test builds are
 handed out privately and are signed with the repository's public test key, so
@@ -102,6 +102,13 @@ they are not upgradeable to a real release and are not for distribution.
 - Import OPML, or point it at your **browser's bookmarks** and it works out
   which of those sites publish feeds, grouped by site, probed at the origin
 - A starter list you can take or leave, and remove entirely
+- A **feed library** that ships with the app, so browsing it tells nobody what
+  you are looking for: 39 topics — including Rugby, Formula 1 & Motorsport,
+  Golf, Forex and Crypto — and 50 countries. A collection opens with nothing
+  ticked; tick what you want, or select all. Every address in the newest
+  collections was fetched and checked before it went in
+- **Your order for categories**: hold a category on the sources screen and
+  drag it; the chips in the feed and on the launcher panel follow
 - Multi-select for bulk work: categories, enable, disable, delete, clear
   articles, and find feeds you have added twice under different names
 - Broken feeds are surfaced rather than left looking quiet, and Whisper will
@@ -109,6 +116,7 @@ they are not upgradeable to a real release and are not for distribution.
 
 **Reading**
 - Four layouts — Cards, Magazine, List, Mosaic
+- Each article's category, source and age on one line under the headline
 - Article size earned rather than positional: recency, your own reading habits
   and whether several sources are covering one story
 - **Today**, **Yesterday** and the days before as headings, with the time of

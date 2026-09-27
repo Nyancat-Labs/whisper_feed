@@ -126,8 +126,10 @@ If you connect a Google Reader–compatible server — FreshRSS, Miniflux, or
 similar — Whisper signs in with the username and password you give it and
 syncs read state and subscriptions with **your** server. Plaintext HTTP is
 refused outright, so those credentials cannot cross the network unencrypted.
-The credentials are stored encrypted on the device, behind a key held in
-Android's hardware-backed keystore.
+The password is used to sign in and is not kept: what is stored is the
+server's sign-in token, which the server can revoke. It is sealed on the device
+with a key of Whisper's own, held in Android's hardware-backed keystore, and
+is left out of every backup.
 
 If you type the address as `http://`, Whisper corrects it to `https://` in
 the field, before the password is sent, and tells you it did. Nothing is

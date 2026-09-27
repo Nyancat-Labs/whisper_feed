@@ -242,10 +242,11 @@ starting, a way for another app to open any page inside Whisper, glance text
 cut on every 360 dp phone, and database upgrades no test had ever run. All of
 it, and the rest of §22, is fixed and on main.
 
-**What to build next: §8, shipping it.** Everything above is being tested by
-three people on builds handed to them directly, which does not scale and does
-not produce the feedback that finds the remaining problems. A release signing
-key and a GitHub release are a day's work and change who can find the app.
+**What to build next: §8, shipping it — straight to Google Play and F-Droid**
+(decided 27 September 2026; a GitHub release first is skipped). Everything
+above is being tested by three people on builds handed to them directly,
+which does not scale and does not produce the feedback that finds the
+remaining problems. See §8 for what each store needs and the order of work.
 
 **§7 is done.** Sync runs both ways against a live FreshRSS server, and the
 account screen says what each sync did. That leaves §8 as the one large thing
@@ -983,8 +984,30 @@ or an explicit note saying why it is exempt.
 - **The Lawnchair whitelist PR** — see below. Worth doing, and no longer the
   gate it was recorded as: see "What this is now". The app is usable without
   ever touching a launcher.
-- Release signing key, then GitHub Releases → F-Droid → Play, per the staged
-  plan in `docs/brand/ASSET_SPEC.md` §8.
+- **Play and F-Droid together**, decided 27 September 2026, rather than the
+  staged GitHub → F-Droid → Play in `docs/brand/ASSET_SPEC.md` §8. The repo is
+  `defsix/whisper_feed` (renamed from `076feed`; GitHub redirects the old
+  name). What is needed, and who:
+  - **Release signing key** — the reader's to create and keep. The build
+    already signs with it when `keystore.properties` is present, and the key
+    never comes into the repo. Play uses it as the upload key and holds the
+    app key itself.
+  - **Play Console account** — the reader's. A *personal* account opened since
+    November 2023 must run a closed test with **12 testers for 14 days** before
+    it can publish to everybody; an organisation account (D-U-N-S) is exempt.
+    This is the longest step and wants starting first.
+  - **Play forms** — privacy policy URL (`PRIVACY.md`), Data safety, content
+    rating, and declarations for the data-sync foreground service and
+    `SYSTEM_ALERT_WINDOW`.
+  - **F-Droid** — no proprietary code (checked: none), Fastlane metadata in
+    the repo, a version tag, the APK's Google dependency-info block turned off
+    (F-Droid rejects it), and a merge request to `fdroiddata`.
+  - **Artwork** — Play needs a 512 px icon and a 1024 × 500 banner, both from
+    the brand kit, not made up; both stores take 2–8 phone screenshots at
+    1080 × 2400, real captures.
+  - **Later** — reproducible builds, so F-Droid can ship the same signature as
+    Play and one can update the other. Without them a reader moving between
+    the two stores must reinstall.
 
 ### 9. Search, and a filter that explains itself
 
@@ -2365,6 +2388,35 @@ Small and certain first, then what the most phones see, then the rest.
   same way. Now hex only with the prefix or a letter in it. The next sync puts
   back what the server has unread: those reads were never sent up, so nothing
   on the server needs mending.
+- **Every collection in the feed library opened empty.** Since 22 September:
+  the hardened pack parser switched XInclude off, and Android's parser throws
+  at that call, even to turn it off. The throw was swallowed and each pack
+  came back with no feeds, which also left the weekly discovery pass nothing
+  to suggest from. The tests ran on the desktop's parser, which allows it.
+  Now asked in its own `runCatching`, a pack that cannot be read is logged,
+  and a test reads all of them on a parser that refuses what Android's does.
+- **Some cards showed their category and some did not.** Only the lead story
+  and the compact row drew it, each on a line of its own. All five shapes now
+  put it on the source's line — mark, CATEGORY · Source · age — a line less on
+  the cards that had it.
+- **The line between articles**, added on 7 September when the cards lost
+  their boxes, is gone: the brand's feed mockup separates by space alone, as
+  Discover does. The text-only row, which had no end margin, now has one; its
+  buttons were running off the screen.
+- **The gap under the chips.** The first day heading took the 16dp meant for
+  between days and floated between the chips and the story. It now sits close
+  to the story.
+- **Library packs opened with everything ticked**, so one tap subscribed the
+  reader to somebody else's twenty-two feeds. They open empty now, with
+  Select all.
+- **Categories in the reader's order.** Hold a category chip on the sources
+  screen and drag it; the order is kept, travels with a settings backup, and
+  every chip row reads it. A new category goes after the placed ones.
+- **Five new library packs**: Rugby, Formula 1 & Motorsport, Golf, Forex and
+  Crypto, 70 feeds, each fetched and checked before it went in; see
+  `docs/FEED_LIBRARY.md`.
+- **Lint and the compiler are both at zero warnings**, from 202 and 30. See
+  Debt.
 
 ### 17. Scroll parallax on the feed — parked, at the bottom
 
@@ -2610,11 +2662,12 @@ Small, and cheaper now than later.
   untested and still the shape that would benefit: theme resolution, the
   day/night rule, and the sync and filter performance work. Nothing on a device
   — see the first item.
-- **Lint is at zero warnings** (27 September 2026, from 202). Four are
-  suppressed where they are made, each with its reason: JavaScript in the
-  article page and in the changelog's stylesheet injection, the platform's
-  private bar sizes as the overlay's fallback before its window reports
-  insets, and the overlay service exported for launchers to bind.
+- **Lint and the Kotlin compiler are at zero warnings** (27 September 2026,
+  from 202 and 30). Four lint checks are suppressed where they are made, each
+  with its reason: JavaScript in the article page and in the changelog's
+  stylesheet injection, the platform's private bar sizes as the overlay's
+  fallback before its window reports insets, and the overlay service exported
+  for launchers to bind.
 - ~~**Dead code**~~ — cleared. Nine unreferenced files and eight drawables
   removed, along with eight unused DAO methods, one of which had an
   `@Relation` without `@Transaction`: the same shape as the OPML crash fixed
