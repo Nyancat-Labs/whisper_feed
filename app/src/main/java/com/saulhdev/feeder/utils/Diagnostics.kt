@@ -141,6 +141,9 @@ object Diagnostics : KoinComponent {
             // screen when an article is read, which reads as marking having
             // failed; the report has to be able to say which it is.
             appendLine("Read articles:     ${prefs.readVisibility.getValue()}")
+            // Fades a whole source to the same shade as a read article, so a
+            // report of "unread articles showing as read" turns on this.
+            appendLine("Fade skipped:      ${yesNo(prefs.dimSkipped.getValue())}")
             appendLine("Overlay theme:     ${prefs.overlayTheme.getValue()}")
             // Two different things, easily confused: categoryFilter is what the
             // chips select (include), tagsFilter is what the filter sheet mutes
