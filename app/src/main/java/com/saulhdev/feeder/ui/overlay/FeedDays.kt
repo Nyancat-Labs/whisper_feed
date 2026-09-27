@@ -121,11 +121,17 @@ fun dayName(day: LocalDate, today: LocalDate): DayName = when {
  * The first heading carries "Updated 12m ago" there: on its own line under
  * the chips it left a row that was empty from a few words in, directly above
  * a heading that was empty from one word in.
+ *
+ * The first heading sits close under the chips and closer still to the story
+ * it names. The 16dp above the others is the gap between one day and the
+ * next; under the chips it stacked with their own padding and left the
+ * heading floating halfway between the two, belonging to neither.
  */
 @Composable
 fun DayHeading(
     day: LocalDate,
     modifier: Modifier = Modifier,
+    first: Boolean = false,
     trailing: (@Composable (Modifier) -> Unit)? = null,
 ) {
     // From the configuration, so a change of language redraws the headings.
@@ -143,7 +149,12 @@ fun DayHeading(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier
             .fillMaxWidth()
-            .padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 6.dp),
+            .padding(
+                start = 20.dp,
+                end = 20.dp,
+                top = if (first) 8.dp else 16.dp,
+                bottom = if (first) 2.dp else 6.dp,
+            ),
     ) {
         Text(
             text = text,

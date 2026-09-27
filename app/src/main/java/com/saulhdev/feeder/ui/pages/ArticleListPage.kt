@@ -723,6 +723,7 @@ fun ArticleListPage(
                                                     ) {
                                                         DayHeading(
                                                             day,
+                                                            first = segment.from == 0,
                                                             trailing = firstHeadingTrailing
                                                                 .takeIf { segment.from == 0 },
                                                         )
@@ -804,6 +805,7 @@ fun ArticleListPage(
                                                         item(key = dayHeadingKey(day), contentType = "day") {
                                                             DayHeading(
                                                                 day,
+                                                                first = segment.from == 0,
                                                                 trailing = firstHeadingTrailing
                                                                     .takeIf { segment.from == 0 },
                                                             )
