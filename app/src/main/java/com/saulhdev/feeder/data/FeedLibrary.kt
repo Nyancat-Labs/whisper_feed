@@ -18,6 +18,7 @@
 package com.saulhdev.feeder.data
 
 import android.content.Context
+import android.util.Log
 import com.saulhdev.feeder.data.db.models.Feed
 import com.saulhdev.feeder.data.repository.SourcesRepository
 import com.saulhdev.feeder.manager.models.escapingBareAmpersands
@@ -70,6 +71,7 @@ data class LibraryFeed(
 object FeedLibrary {
 
     private const val DIR = "library"
+    private const val TAG = "FeedLibrary"
 
     /** The packs, in the order the manifest lists them. */
     suspend fun packs(context: Context): List<LibraryPack> = withContext(Dispatchers.IO) {
@@ -114,28 +116,44 @@ object FeedLibrary {
      *
      * Each feature is set on its own, because a parser that refuses one
      * unknown feature must not lose the others with it.
+     *
+     * XInclude too. Android's factory throws at the very question, even to
+     * turn it off, and it has no XInclude to turn off. Asked outside a
+     * runCatching, that throw emptied every pack in the library on a phone
+     * from 22 September, while the tests, on the desktop's parser, passed.
      */
-    private fun hardenedSaxParser() = SAXParserFactory.newInstance().apply {
-        listOf(
-            "http://apache.org/xml/features/disallow-doctype-decl" to true,
-            "http://xml.org/sax/features/external-general-entities" to false,
-            "http://xml.org/sax/features/external-parameter-entities" to false,
-        ).forEach { (feature, value) ->
-            runCatching { setFeature(feature, value) }
-        }
-        isXIncludeAware = false
-    }.newSAXParser()
+    internal fun hardenedSaxParser(factory: SAXParserFactory = SAXParserFactory.newInstance()) =
+        factory.apply {
+            listOf(
+                "http://apache.org/xml/features/disallow-doctype-decl" to true,
+                "http://xml.org/sax/features/external-general-entities" to false,
+                "http://xml.org/sax/features/external-parameter-entities" to false,
+            ).forEach { (feature, value) ->
+                runCatching { setFeature(feature, value) }
+            }
+            runCatching { isXIncludeAware = false }
+        }.newSAXParser()
+
+    /** The feeds in one pack's OPML, read as [feeds] reads them. */
+    internal fun parsePack(
+        stream: java.io.InputStream,
+        factory: SAXParserFactory = SAXParserFactory.newInstance(),
+    ): List<LibraryFeed> {
+        val handler = PackHandler()
+        hardenedSaxParser(factory).parse(InputSource(escapingBareAmpersands(stream)), handler)
+        return handler.feeds
+    }
 
     suspend fun feeds(context: Context, pack: LibraryPack): List<LibraryFeed> =
         withContext(Dispatchers.IO) {
             runCatching {
-                val handler = PackHandler()
-                context.assets.open("$DIR/${pack.slug}.opml").use { stream ->
-                    hardenedSaxParser()
-                        .parse(InputSource(escapingBareAmpersands(stream)), handler)
-                }
-                handler.feeds
-            }.getOrDefault(emptyList())
+                context.assets.open("$DIR/${pack.slug}.opml").use { parsePack(it) }
+            }.getOrElse {
+                // Said, at least. This used to be silent, which is how every
+                // pack could be empty for five days with nothing in a report.
+                Log.w(TAG, "Could not read the ${pack.name} pack", it)
+                emptyList()
+            }
         }
 
     /**

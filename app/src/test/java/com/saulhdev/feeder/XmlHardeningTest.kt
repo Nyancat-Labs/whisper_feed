@@ -69,7 +69,7 @@ class XmlHardeningTest {
         // A parser implementation that refuses a feature throws, and setting
         // them in one block would drop the rest with it.
         val library = read("data/FeedLibrary.kt")
-        val at = library.indexOf("private fun hardenedSaxParser")
+        val at = library.indexOf("fun hardenedSaxParser")
         assertTrue("the hardened parser is gone", at > 0)
         val body = library.substring(at, library.indexOf("\n    }", at))
         assertTrue(
