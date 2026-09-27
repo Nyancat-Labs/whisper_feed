@@ -37,7 +37,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.saulhdev.feeder.ui.theme.GroupItemShape
+import com.saulhdev.feeder.ui.theme.groupItemShape
 import com.saulhdev.feeder.utils.extensions.addIf
 
 @Composable
@@ -68,7 +68,7 @@ fun BasePreference(
         modifier = modifier
             .fillMaxWidth()
             .clip(
-                GroupItemShape(index, groupSize - 1)
+                groupItemShape(index, groupSize - 1)
             )
             .addIf(onClick != null) {
                 clickable(enabled = isEnabled, onClick = onClick!!)

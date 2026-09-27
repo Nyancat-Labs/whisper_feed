@@ -10,7 +10,6 @@
     <string name="title_plugin_list">Programtilleggsliste</string>
     <string name="title_settings">Innstillinger</string>
     <string name="title_sources">Datakilder</string>
-    <string name="add_input_hint">Nettadresse</string>
     <string name="title_about">Om</string>
     <string name="author_role">Utvikler</string>
     <string name="about_source_code">Kildekode</string>

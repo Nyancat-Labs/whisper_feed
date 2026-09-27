@@ -18,6 +18,7 @@
 
 package com.saulhdev.feeder.ui.pages
 
+import androidx.compose.ui.platform.LocalResources
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -134,6 +135,7 @@ fun SourceListPage(
     viewModel: SourceListViewModel = koinNeoViewModel(),
 ) {
     val context = LocalContext.current
+    val resources = LocalResources.current
     val navController = LocalNavController.current
     val scope = rememberCoroutineScope()
     val localTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
@@ -224,7 +226,7 @@ fun SourceListPage(
     LaunchedEffect(recentlyDeletedMany) {
         if (recentlyDeletedMany.isEmpty()) return@LaunchedEffect
         val result = snackbarHostState.showSnackbar(
-            message = context.resources.getQuantityString(
+            message = resources.getQuantityString(
                 R.plurals.sources_deleted,
                 recentlyDeletedMany.size,
                 recentlyDeletedMany.size,
@@ -243,7 +245,7 @@ fun SourceListPage(
         // articles: "done" would leave someone counting rows to find out
         // whether their saved items had just gone.
         snackbarHostState.showSnackbar(
-            message = context.resources.getQuantityString(R.plurals.sources_articles_cleared, count, count),
+            message = resources.getQuantityString(R.plurals.sources_articles_cleared, count, count),
             withDismissAction = true,
         )
         viewModel.forgetArticlesCleared()
@@ -371,7 +373,7 @@ fun SourceListPage(
                     // destructive action that has to be discovered by swiping
                     // is one that will be found by accident.
                     title = if (selecting) {
-                        stringResource(R.string.sources_selected, selection.size)
+                        pluralStringResource(R.plurals.sources_selected, selection.size, selection.size)
                     } else {
                         stringResource(id = R.string.title_sources)
                     },
@@ -776,8 +778,9 @@ fun SourceListPage(
                                     scope.launch {
                                         if (!viewModel.togglePinned(it.id)) {
                                             snackbarHostState.showSnackbar(
-                                                context.getString(
-                                                    R.string.source_pin_full,
+                                                resources.getQuantityString(
+                                                    R.plurals.source_pin_full,
+                                                    MAX_PINNED_SOURCES,
                                                     MAX_PINNED_SOURCES,
                                                 ),
                                                 withDismissAction = true,

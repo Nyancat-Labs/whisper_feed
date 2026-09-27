@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="remove_title">Aktion bestätigen</string>
-    <string name="add_input_hint">URL</string>
     <string name="remove_desc">%s aus Feedquellen entfernen\?</string>
     <string name="title_about">Über</string>
     <string name="title_sources">Datenquellen</string>

@@ -8,7 +8,7 @@
     <string name="title_sources">Fuentes de datos</string>
     <string name="title_settings">Configuraciones</string>
     <string name="title_plugin_list">Lista de plugins</string>
-    <string name="remove_title">Confirmar accion</string>
+    <string name="remove_title">Confirmar acción</string>
     <string name="add_rss">Añadir RSS nuevo</string>
     <string name="failed_to_parse">No se puede leer %1$s</string>
     <string name="edit_rss">Editar elemento de suministro</string>
@@ -18,7 +18,6 @@
     <string name="theme_auto_system">Automáticamente (del sistema)</string>
     <string name="pref_transparency">Opacidad del fondo</string>
     <string name="pref_ovr_theme">Tema de la superposición</string>
-    <string name="add_input_hint">URL</string>
     <string name="remove_desc">¿Eliminar %s de las fuentes\?</string>
     <string name="debug_logcat_printing">Muestra ampliada del registro de los mensajes del sistema</string>
     <string name="about_licenses">Licencia</string>

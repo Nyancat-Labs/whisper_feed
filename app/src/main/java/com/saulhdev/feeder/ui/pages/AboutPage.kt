@@ -20,8 +20,9 @@
 package com.saulhdev.feeder.ui.pages
 
 
+import androidx.core.graphics.createBitmap
+import androidx.compose.ui.platform.LocalResources
 import android.content.ActivityNotFoundException
-import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.util.Base64
 import android.view.ViewGroup
@@ -122,15 +123,11 @@ fun AboutPage() {
                         ),
                         leadingContent = {
                             ResourcesCompat.getDrawable(
-                                LocalContext.current.resources,
+                                LocalResources.current,
                                 R.mipmap.ic_launcher,
                                 LocalContext.current.theme
                             )?.let { drawable ->
-                                val bitmap = Bitmap.createBitmap(
-                                    drawable.intrinsicWidth,
-                                    drawable.intrinsicHeight,
-                                    Bitmap.Config.ARGB_8888
-                                )
+                                val bitmap = createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight)
                                 val canvas = Canvas(bitmap)
                                 drawable.setBounds(0, 0, canvas.width, canvas.height)
                                 drawable.draw(canvas)

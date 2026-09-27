@@ -55,9 +55,9 @@ import com.saulhdev.feeder.ui.icons.phosphor.ArrowLeft
 @Composable
 fun ViewWithActionBar(
     title: String,
+    modifier: Modifier = Modifier,
     titleSize: TextUnit = 18.sp,
     subTitle: String = "",
-    modifier: Modifier = Modifier,
     bottomBar: @Composable () -> Unit = {},
     snackbarHost: @Composable () -> Unit = {},
     floatingActionButton: @Composable () -> Unit = {},

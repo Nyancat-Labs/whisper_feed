@@ -1,5 +1,6 @@
 package com.saulhdev.feeder.ui.components
 
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -51,7 +52,7 @@ private const val MIN_VISIBLE_MS = 600L
  */
 @Composable
 private fun rememberRefreshing(isRefreshing: Boolean): Pair<Boolean, () -> Unit> {
-    var pulledAt by remember { mutableStateOf(0L) }
+    var pulledAt by remember { mutableLongStateOf(0L) }
     var settled by remember { mutableStateOf(false) }
 
     LaunchedEffect(pulledAt) {

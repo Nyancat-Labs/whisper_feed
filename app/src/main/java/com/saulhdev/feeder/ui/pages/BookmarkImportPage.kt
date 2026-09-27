@@ -17,6 +17,7 @@
  */
 package com.saulhdev.feeder.ui.pages
 
+import androidx.compose.ui.platform.LocalResources
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -83,6 +84,7 @@ fun BookmarkImportPage(
     viewModel: BookmarkImportViewModel = koinNeoViewModel<BookmarkImportViewModel>(),
 ) {
     val context = LocalContext.current
+    val resources = LocalResources.current
     val scope = rememberCoroutineScope()
     val navController = LocalNavController.current
     val stage by viewModel.stage.collectAsState()
@@ -229,7 +231,7 @@ fun BookmarkImportPage(
                                         val added = viewModel.addSelected()
                                         Toast.makeText(
                                             context,
-                                            context.resources.getQuantityString(R.plurals.starter_added, added, added),
+                                            resources.getQuantityString(R.plurals.starter_added, added, added),
                                             Toast.LENGTH_SHORT,
                                         ).show()
                                         navController.popBackStack()

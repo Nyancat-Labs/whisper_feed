@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="title_settings">Impostazioni</string>
-    <string name="add_input_hint">URL</string>
     <string name="remove_title">Conferma azione</string>
     <string name="title_about">Informazioni su</string>
     <string name="title_sources">Fonti dei dati</string>

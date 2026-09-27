@@ -68,40 +68,16 @@ fun fontFamilyFor(pref: String): FontFamily = when (pref) {
 val Typography = typographyFor(InterFontFamily)
 
 @Composable
-fun LinkTextStyle(): TextStyle =
+fun linkTextStyle(): TextStyle =
     TextStyle(
         color = MaterialTheme.colorScheme.primary,
         textDecoration = TextDecoration.Underline
     )
 
 @Composable
-fun FeedListItemTitleStyle(): SpanStyle =
-    FeedListItemTitleTextStyle().toSpanStyle()
-
-@Composable
-fun FeedListItemTitleTextStyle(): TextStyle =
-    MaterialTheme.typography.titleMedium
-
-@Composable
-fun FeedListItemStyle(): TextStyle =
-    MaterialTheme.typography.bodyLarge
-
-@Composable
-fun FeedListItemFeedTitleStyle(): TextStyle =
-    FeedListItemDateStyle()
-
-@Composable
-fun FeedListItemDateStyle(): TextStyle =
-    MaterialTheme.typography.labelMedium
-
-@Composable
-fun TTSPlayerStyle(): TextStyle =
-    MaterialTheme.typography.titleMedium
-
-@Composable
-fun CodeInlineStyle(): SpanStyle =
+fun codeInlineStyle(): SpanStyle =
     SpanStyle(
-        background = CodeBlockBackground(),
+        background = codeBlockBackground(),
         fontFamily = FontFamily.Monospace
     )
 
@@ -109,7 +85,7 @@ fun CodeInlineStyle(): SpanStyle =
  * Has no background because it is meant to be put over a Surface which has the proper background.
  */
 @Composable
-fun CodeBlockStyle(): TextStyle =
+fun codeBlockStyle(): TextStyle =
     MaterialTheme.typography.bodyMedium.merge(
         SpanStyle(
             fontFamily = FontFamily.Monospace
@@ -117,11 +93,11 @@ fun CodeBlockStyle(): TextStyle =
     )
 
 @Composable
-fun CodeBlockBackground(): Color =
+fun codeBlockBackground(): Color =
     MaterialTheme.colorScheme.surfaceVariant
 
 @Composable
-fun BlockQuoteStyle(): SpanStyle =
+fun blockQuoteStyle(): SpanStyle =
     MaterialTheme.typography.bodyLarge.toSpanStyle().merge(
         SpanStyle(
             fontWeight = FontWeight.Bold,

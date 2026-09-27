@@ -30,13 +30,10 @@ class CountWordsTest {
     @Test
     fun `no plain string puts a count in front of a plural noun`() {
         val strings = File("src/main/res/values/strings.xml").readText()
-        // A count, then a word ending in s: "%1$d sources". The two that
-        // carry a fixed number above one are allowed by name.
-        val allowed = setOf("source_pin_full", "stats_by_day_caption")
+        // A count, then a word ending in s: "%1$d sources".
         val offenders = Regex("""<string name="([^"]+)">[^<]*%\d\${'$'}d [a-z]+s\b""")
             .findAll(strings)
             .map { it.groupValues[1] }
-            .filter { it !in allowed }
             .toList()
         assertEquals("these want plurals: $offenders", emptyList<String>(), offenders)
     }

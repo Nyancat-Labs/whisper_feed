@@ -17,10 +17,10 @@
  */
 package com.saulhdev.feeder.utils
 
+import androidx.core.net.toUri
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.provider.Settings
 
 /**
@@ -41,7 +41,7 @@ fun canGrantOverlay(context: Context): Boolean =
  * @return whether either screen opened.
  */
 fun openOverlaySettings(context: Context): Boolean {
-    val app = Uri.parse("package:${context.packageName}")
+    val app = "package:${context.packageName}".toUri()
     return listOf(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
         .any { action -> runCatching { context.startActivity(Intent(action, app)) }.isSuccess }
 }

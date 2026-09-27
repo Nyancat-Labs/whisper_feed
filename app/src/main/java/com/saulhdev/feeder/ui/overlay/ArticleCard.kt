@@ -162,15 +162,15 @@ fun FeedArticleItem(
     }
     when (feedCardShape(index, hasImage, layout, emphasis)) {
         FeedCardShape.Hero    -> ArticleHeroCard(
-            item, onClick, onBookmark, onShare, menu, shapeModifier, coverage,
+            item, onClick, onBookmark, onShare, menu = menu, modifier = shapeModifier, coverage = coverage,
         )
         FeedCardShape.Card    -> ArticleCard(
-            item, onClick, onBookmark, onShare, menu, shapeModifier, coverage,
+            item, onClick, onBookmark, onShare, menu = menu, modifier = shapeModifier, coverage = coverage,
         )
-        FeedCardShape.Compact -> ArticleCompactRow(item, onClick, onBookmark, menu, shapeModifier)
-        FeedCardShape.Text    -> ArticleTextRow(item, onClick, onBookmark, menu, shapeModifier)
+        FeedCardShape.Compact -> ArticleCompactRow(item, onClick, onBookmark, menu = menu, modifier = shapeModifier)
+        FeedCardShape.Text    -> ArticleTextRow(item, onClick, onBookmark, menu = menu, modifier = shapeModifier)
         FeedCardShape.Tile    -> ArticleMosaicTile(
-            item, onClick, onBookmark, menu, shapeModifier,
+            item, onClick, onBookmark, menu = menu, modifier = shapeModifier,
             size = emphasis,
             coverage = coverage,
         )
@@ -189,8 +189,8 @@ fun ArticleHeroCard(
     onClick: () -> Unit,
     onBookmark: (Boolean) -> Unit,
     onShare: () -> Unit,
-    menu: @Composable (Color?) -> Unit = {},
     modifier: Modifier = Modifier,
+    menu: @Composable (Color?) -> Unit = {},
     coverage: Int? = null,
 ) {
     val context = LocalContext.current
@@ -345,8 +345,8 @@ fun ArticleCard(
     onClick: () -> Unit,
     onBookmark: (Boolean) -> Unit,
     onShare: () -> Unit,
-    menu: @Composable (Color?) -> Unit = {},
     modifier: Modifier = Modifier,
+    menu: @Composable (Color?) -> Unit = {},
     coverage: Int? = null,
 ) {
     val context = LocalContext.current
@@ -455,8 +455,8 @@ fun ArticleCompactRow(
     item: FeedItem,
     onClick: () -> Unit,
     onBookmark: (Boolean) -> Unit,
-    menu: @Composable (Color?) -> Unit = {},
     modifier: Modifier = Modifier,
+    menu: @Composable (Color?) -> Unit = {},
 ) {
     val context = LocalContext.current
     // Cards merge their texts for a screen reader, so the headline is
@@ -559,8 +559,8 @@ fun ArticleTextRow(
     item: FeedItem,
     onClick: () -> Unit,
     onBookmark: (Boolean) -> Unit,
-    menu: @Composable (Color?) -> Unit = {},
     modifier: Modifier = Modifier,
+    menu: @Composable (Color?) -> Unit = {},
 ) {
     val context = LocalContext.current
     // Cards merge their texts for a screen reader, so the headline is
@@ -628,8 +628,8 @@ fun ArticleMosaicTile(
     item: FeedItem,
     onClick: () -> Unit,
     onBookmark: (Boolean) -> Unit,
-    menu: @Composable (Color?) -> Unit = {},
     modifier: Modifier = Modifier,
+    menu: @Composable (Color?) -> Unit = {},
     size: FeedEmphasis = FeedEmphasis.Medium,
     coverage: Int? = null,
 ) {
@@ -919,8 +919,8 @@ private const val READ_ALPHA = 0.55f
  */
 @Composable
 private fun PinnedLine(
-    color: Color = MaterialTheme.colorScheme.primary,
     modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colorScheme.primary,
 ) {
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
         Icon(
@@ -953,8 +953,8 @@ private fun clusterOf(item: FeedItem, cluster: StoryCluster?): Map<String, Story
 @Composable
 private fun CoverageLine(
     sources: Int,
-    color: Color = MaterialTheme.colorScheme.primary,
     modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colorScheme.primary,
 ) {
     Row(
         modifier = modifier,

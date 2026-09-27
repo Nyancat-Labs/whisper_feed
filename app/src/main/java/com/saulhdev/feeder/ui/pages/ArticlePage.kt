@@ -1,8 +1,8 @@
 package com.saulhdev.feeder.ui.pages
 
 
+import androidx.core.net.toUri
 import com.saulhdev.feeder.utils.usableImageUrl
-import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Column
@@ -136,7 +136,7 @@ fun ArticlePage(
     val currentUrl by remember { derivedStateOf { state?.article?.link.orEmpty() } }
     val subTitle by remember {
         derivedStateOf {
-            Uri.parse(currentUrl).host
+            currentUrl.toUri().host
                 ?: state?.source?.title
                 ?: appName
         }

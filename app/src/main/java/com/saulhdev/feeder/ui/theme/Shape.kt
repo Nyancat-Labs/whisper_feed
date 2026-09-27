@@ -35,7 +35,7 @@ val WhisperShapes = Shapes(
 )
 
 @Composable
-fun GroupItemShape(index: Int, lastIndex: Int) = RoundedCornerShape(
+fun groupItemShape(index: Int, lastIndex: Int) = RoundedCornerShape(
     topStart = if (index == 0) MaterialTheme.shapes.large.topStart
     else MaterialTheme.shapes.extraSmall.topStart,
     topEnd = if (index == 0) MaterialTheme.shapes.large.topEnd

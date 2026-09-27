@@ -17,6 +17,7 @@
  */
 package com.saulhdev.feeder.ui.pages
 
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -77,6 +78,7 @@ import org.koin.compose.koinInject
 @Composable
 fun FeedLibraryPage() {
     val context = LocalContext.current
+    val resources = LocalResources.current
     val sources: SourcesRepository = koinInject()
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -158,7 +160,7 @@ fun FeedLibraryPage() {
                                 val added = FeedLibrary.subscribe(sources, picked)
                                 open = null
                                 snackbarHostState.showSnackbar(
-                                    context.resources.getQuantityString(
+                                    resources.getQuantityString(
                                         R.plurals.library_added, added, added
                                     ),
                                     withDismissAction = true,

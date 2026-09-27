@@ -85,11 +85,11 @@ import com.saulhdev.feeder.ui.components.withParagraph
 import com.saulhdev.feeder.ui.components.withStyle
 import com.saulhdev.feeder.ui.icons.Phosphor
 import com.saulhdev.feeder.ui.icons.phosphor.Play
-import com.saulhdev.feeder.ui.theme.BlockQuoteStyle
-import com.saulhdev.feeder.ui.theme.CodeBlockBackground
-import com.saulhdev.feeder.ui.theme.CodeBlockStyle
-import com.saulhdev.feeder.ui.theme.CodeInlineStyle
-import com.saulhdev.feeder.ui.theme.LinkTextStyle
+import com.saulhdev.feeder.ui.theme.blockQuoteStyle
+import com.saulhdev.feeder.ui.theme.codeBlockBackground
+import com.saulhdev.feeder.ui.theme.codeBlockStyle
+import com.saulhdev.feeder.ui.theme.codeInlineStyle
+import com.saulhdev.feeder.ui.theme.linkTextStyle
 import com.saulhdev.feeder.ui.theme.LocalDimens
 import org.jsoup.Jsoup
 import org.jsoup.internal.StringUtil
@@ -470,7 +470,7 @@ private fun LazyListScope.formatCodeBlock(
             val dimens = LocalDimens.current
             val scrollState = rememberScrollState()
             Surface(
-                color = CodeBlockBackground(),
+                color = codeBlockBackground(),
                 shape = MaterialTheme.shapes.small,
                 modifier = Modifier
                     .width(dimens.maxContentWidth)
@@ -483,7 +483,7 @@ private fun LazyListScope.formatCodeBlock(
                 ) {
                     Text(
                         text = paragraphBuilder.toComposableAnnotatedString(),
-                        style = CodeBlockStyle(),
+                        style = codeBlockStyle(),
                         softWrap = false
                     )
                 }
@@ -545,7 +545,7 @@ private fun TextComposer.appendTextChildren(
                             element.hasClass("blockextract")       -> {
                                 withParagraph {
                                     withComposableStyle(
-                                        style = { BlockQuoteStyle() }
+                                        style = { blockQuoteStyle() }
                                     ) {
                                         appendTextChildren(
                                             element.childNodes(),
@@ -819,7 +819,7 @@ private fun TextComposer.appendTextChildren(
                         } else {
                             // inline code
                             withComposableStyle(
-                                style = { CodeInlineStyle() }
+                                style = { codeInlineStyle() }
                             ) {
                                 appendTextChildren(
                                     element.childNodes(),
@@ -836,7 +836,7 @@ private fun TextComposer.appendTextChildren(
                     "blockquote"             -> {
                         withParagraph {
                             withComposableStyle(
-                                style = { BlockQuoteStyle() }
+                                style = { blockQuoteStyle() }
                             ) {
                                 appendTextChildren(
                                     element.childNodes(),
@@ -851,7 +851,7 @@ private fun TextComposer.appendTextChildren(
 
                     "a"                      -> {
                         withComposableStyle(
-                            style = { LinkTextStyle().toSpanStyle() }
+                            style = { linkTextStyle().toSpanStyle() }
                         ) {
                             withAnnotation("URL", element.attr("abs:href") ?: "") {
                                 appendTextChildren(

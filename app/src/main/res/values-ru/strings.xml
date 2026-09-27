@@ -8,7 +8,6 @@
     <string name="pref_cat_overlay">Внешний вид</string>
     <string name="pref_transparency">Прозрачность фона оверлея</string>
     <string name="pref_ovr_theme">Тема</string>
-    <string name="add_input_hint">URL</string>
     <string name="remove_title">Подтвердите действие</string>
     <string name="remove_desc">Удалить %s из источников\?</string>
     <string name="sync_three_hours">Три часа</string>

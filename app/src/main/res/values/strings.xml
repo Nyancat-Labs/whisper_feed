@@ -25,12 +25,18 @@
     <string name="layout_mosaic">Mosaic</string>
     <string name="source_pin">Pin to the top</string>
     <string name="source_unpin">Unpin from the top</string>
-    <string name="source_pin_full">You can pin %1$d sources to the top. Unpin one first.</string>
+    <plurals name="source_pin_full">
+        <item quantity="one">You can pin %1$d source to the top. Unpin it first.</item>
+        <item quantity="other">You can pin %1$d sources to the top. Unpin one first.</item>
+    </plurals>
     <string name="source_never_updated">Never updated</string>
     <string name="source_not_updating">Not updating</string>
     <string name="sources_clear_search">Clear the search</string>
     <string name="sources_search">Search sources</string>
-    <string name="sources_selected">%1$d selected</string>
+    <plurals name="sources_selected">
+        <item quantity="one">%1$d selected</item>
+        <item quantity="other">%1$d selected</item>
+    </plurals>
     <string name="sources_select_all">Select all</string>
     <string name="sort_by_title">Name</string>
     <string name="sort_by_category">Category</string>
@@ -329,11 +335,11 @@
     <string name="account_tally_title">Last sync with the server</string>
     <string name="account_today_title">Today</string>
     <string name="account_tally_feeds">Feeds on the server: %1$d</string>
-    <string name="account_tally_feed_changes">Feeds changed: %1$d sent, %2$d removed from the server, %3$d added here</string>
+    <string name="account_tally_feed_changes">Feeds changed · sent: %1$d, removed from the server: %2$d, added here: %3$d</string>
     <string name="account_tally_matched">Articles the server knows: %1$d</string>
-    <string name="account_tally_sent">Sent: %1$d read, %2$d unread, %3$d saved, %4$d unsaved</string>
+    <string name="account_tally_sent">Sent · read: %1$d, unread: %2$d, saved: %3$d, unsaved: %4$d</string>
     <string name="account_tally_kept">Not accepted, sent again next time: %1$d</string>
-    <string name="account_tally_received">Received: %1$d read, %2$d unread, %3$d saved</string>
+    <string name="account_tally_received">Received · read: %1$d, unread: %2$d, saved: %3$d</string>
     <string name="account_phone_only_title">On this phone only: %1$d</string>
     <string name="account_phone_only_explained">Your server could not fetch these feeds, usually because the site blocks servers. They still update here as normal, but reading them will not sync to your other devices. Whisper tries again once a week, and whenever you tap Sync now.</string>
     <string name="account_phone_only_admin">If you run the server, giving it a browser-like user agent usually fixes this.</string>
@@ -355,7 +361,7 @@
     <string name="pref_learned">What Whisper has learned</string>
     <string name="pref_learned_summary">Every score the feed reads from your own behaviour, and the way to undo any of it.</string>
     <string name="learned_explanation">Nothing here is guessed. These are counts of what you pressed, what reached your screen, and what you opened — and the effect each has on how prominently a source appears. An article you opened counts for a great deal more than one you scrolled past. None of it leaves your phone.</string>
-    <string name="learned_detail">More/Less score %1$d · %2$d opened of %3$d seen</string>
+    <string name="learned_detail">More/Less score %1$d · seen: %3$d, opened: %2$d</string>
     <string name="learned_nudge">Weight: %1$+.2f</string>
     <string name="learned_forget">Forget this source\'s score</string>
     <string name="learned_unhide">Show this source again</string>
@@ -595,10 +601,17 @@
     <string name="stats_band_afternoon">Afternoon</string>
     <string name="stats_band_evening">Evening</string>
     <string name="stats_by_day">Reading over time</string>
-    <string name="stats_by_day_caption">Articles that reached your screen, over the last %1$d days.</string>
+    <plurals name="stats_by_day_caption">
+        <item quantity="one">Articles that reached your screen, over the last day.</item>
+        <item quantity="other">Articles that reached your screen, over the last %1$d days.</item>
+    </plurals>
     <string name="stats_by_hour">Time of day</string>
     <string name="stats_by_hour_caption">When you read, summed across the whole month.</string>
-    <string name="stats_by_day_description">%1$s and %2$d opened over %3$s.</string>
+    <string name="stats_by_day_description">%1$s and %2$s over %3$s.</string>
+    <plurals name="stats_articles_opened">
+        <item quantity="one">%1$d opened</item>
+        <item quantity="other">%1$d opened</item>
+    </plurals>
     <plurals name="stats_articles_seen">
         <item quantity="one">%1$d article seen</item>
         <item quantity="other">%1$d articles seen</item>

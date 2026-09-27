@@ -116,7 +116,7 @@ fun StatisticsPage() {
             item {
                 ChartCard(
                     title = stringResource(R.string.stats_by_day),
-                    caption = stringResource(R.string.stats_by_day_caption, STATS_WINDOW_DAYS),
+                    caption = pluralStringResource(R.plurals.stats_by_day_caption, STATS_WINDOW_DAYS, STATS_WINDOW_DAYS),
                 ) {
                     DayChart(state.byDay)
                 }
@@ -417,10 +417,11 @@ private fun DayChart(days: List<DayCount>) {
     val max = days.maxOf { it.seen }.coerceAtLeast(1)
 
     val seen = days.sumOf { it.seen }
+    val openedTotal = days.sumOf { it.opened }
     val description = stringResource(
         R.string.stats_by_day_description,
         pluralStringResource(R.plurals.stats_articles_seen, seen, seen),
-        days.sumOf { it.opened },
+        pluralStringResource(R.plurals.stats_articles_opened, openedTotal, openedTotal),
         pluralStringResource(R.plurals.stats_days, days.size, days.size),
     )
 

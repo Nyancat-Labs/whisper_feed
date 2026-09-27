@@ -147,7 +147,7 @@ class SyncResultTest {
         val page = source("ui/pages/ArticlePage.kt")
         val name = page.substring(page.indexOf("WithBidiDeterminedLayoutDirection(paragraph = feedTitle)"))
             .substringBefore("if (authorDate != null)")
-        assertFalse(name.contains("LinkTextStyle"))
+        assertFalse(name.contains("linkTextStyle"))
         assertFalse(name.contains("clickable"))
     }
 }

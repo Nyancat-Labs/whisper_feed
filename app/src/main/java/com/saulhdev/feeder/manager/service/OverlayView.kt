@@ -1,5 +1,6 @@
 package com.saulhdev.feeder.manager.service
 
+import androidx.compose.runtime.mutableIntStateOf
 import com.saulhdev.feeder.utils.SyncLog
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -189,8 +190,8 @@ class OverlayView(val context: Context) :
      * is created against the launcher's token with an unusual flag set, and the
      * overlay's own inset listener is the value already known to be right.
      */
-    private val topInsetPx = mutableStateOf(0)
-    private val bottomInsetPx = mutableStateOf(0)
+    private val topInsetPx = mutableIntStateOf(0)
+    private val bottomInsetPx = mutableIntStateOf(0)
 
     private var pendingCloseOnResume = false
 
@@ -431,8 +432,8 @@ class OverlayView(val context: Context) :
     private fun applyInsets(statusBarTop: Int, navBarBottom: Int, left: Int = 0, right: Int = 0) {
         if (statusBarTop > 0) windowReportedTop = true
         if (navBarBottom > 0) windowReportedBottom = true
-        topInsetPx.value = if (windowReportedTop) statusBarTop else getStatusBarHeight()
-        bottomInsetPx.value = if (windowReportedBottom) navBarBottom else getNavigationBarHeight()
+        topInsetPx.intValue = if (windowReportedTop) statusBarTop else getStatusBarHeight()
+        bottomInsetPx.intValue = if (windowReportedBottom) navBarBottom else getNavigationBarHeight()
     }
 
     private fun initInsets() {
@@ -504,8 +505,8 @@ class OverlayView(val context: Context) :
                         isFilterActive = isFilterActive.value,
                         isShowingBookmarks = showBookmarks.value,
                         glanceState = glanceState.value,
-                        topInset = with(density) { topInsetPx.value.toDp() },
-                        bottomInset = with(density) { bottomInsetPx.value.toDp() },
+                        topInset = with(density) { topInsetPx.intValue.toDp() },
+                        bottomInset = with(density) { bottomInsetPx.intValue.toDp() },
                         // setValue blocks on the datastore write, so keep it off the
                         // main thread; the feed updates through the existing flow.
                         onCategoriesChange = { syncScope.launch { prefs.categoryFilter.setValue(it) } },

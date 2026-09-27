@@ -150,6 +150,7 @@ fun FeedScaffold(
     onSearchQueryChange: (String) -> Unit,
     isSearching: Boolean,
     onSearchingChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
     /** The one source the feed is narrowed to, or null for all of them. */
     focusedSource: String? = null,
     /**
@@ -173,7 +174,6 @@ fun FeedScaffold(
     onPin: (FeedItem, Boolean) -> Unit = { _, _ -> },
     /** Gives back a breaking story's promotion. See `Article.dismissedAt`. */
     onDismissStory: (FeedItem) -> Unit = {},
-    modifier: Modifier = Modifier,
 ) {
     val listState = rememberLazyListState()
     val gridState = rememberLazyStaggeredGridState()

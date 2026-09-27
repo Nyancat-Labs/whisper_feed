@@ -18,6 +18,7 @@
 
 package com.saulhdev.feeder.utils
 
+import androidx.core.view.isVisible
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
@@ -173,7 +174,7 @@ class PopupContentAnimator(private val g: View) {
 
     private fun a(): Boolean {
         if (this.b == null) {
-            if (this.g.visibility == View.VISIBLE) {
+            if (this.g.isVisible) {
                 if (this.c == null) {
                     return true
                 }

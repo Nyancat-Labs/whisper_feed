@@ -63,7 +63,7 @@ class HtmlToPlainTextConverter : ContentHandler {
         }
 
         // Replace non-breaking space (160) with normal space
-        return builder!!.toString().replace(160.toChar(), ' ').trim { it <= ' ' }
+        return builder!!.toString().replace(160.toChar(), ' ').trim()
     }
 
     override fun setDocumentLocator(locator: Locator) {

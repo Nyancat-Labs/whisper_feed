@@ -99,7 +99,7 @@ fun TourOverlay(
     val density = LocalDensity.current
     val animate = !reducedMotion()
 
-    var current by remember { mutableStateOf(-1) }
+    var current by remember { mutableIntStateOf(-1) }
     var rect by remember { mutableStateOf<Rect?>(null) }
 
     // What is actually on screen. Read fresh at every step rather than once at
