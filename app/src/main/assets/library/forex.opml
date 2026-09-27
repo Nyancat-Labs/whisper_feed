@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<opml version="1.0">
+  <head>
+    <title>Forex</title>
+  </head>
+  <body>
+    <outline text="Forex" title="Forex">
+      <outline text="Action Forex" title="Action Forex" xmlUrl="https://www.actionforex.com/feed/" type="rss" />
+      <outline text="BabyPips" title="BabyPips" xmlUrl="https://www.babypips.com/feed.rss" type="rss" />
+      <outline text="Bank of England - News" title="Bank of England - News" xmlUrl="https://www.bankofengland.co.uk/rss/news" type="rss" />
+      <outline text="European Central Bank - Press" title="European Central Bank - Press" xmlUrl="https://www.ecb.europa.eu/rss/press.html" type="rss" />
+      <outline text="Federal Reserve - Press releases" title="Federal Reserve - Press releases" xmlUrl="https://www.federalreserve.gov/feeds/press_all.xml" type="rss" />
+      <outline text="Finance Magnates - Forex" title="Finance Magnates - Forex" xmlUrl="https://www.financemagnates.com/forex/feed/" type="rss" />
+      <outline text="investingLive (was ForexLive)" title="investingLive (was ForexLive)" xmlUrl="https://investinglive.com/feed" type="rss" />
+      <outline text="Investing.com - Forex Analysis" title="Investing.com - Forex Analysis" xmlUrl="https://www.investing.com/rss/forex.rss" type="rss" />
+      <outline text="Investing.com - Forex News" title="Investing.com - Forex News" xmlUrl="https://www.investing.com/rss/news_1.rss" type="rss" />
+      <outline text="MarketPulse" title="MarketPulse" xmlUrl="https://www.marketpulse.com/feed/" type="rss" />
+      <outline text="Orbex" title="Orbex" xmlUrl="https://www.orbex.com/blog/en/feed" type="rss" />
+    </outline>
+  </body>
+</opml>

@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<opml version="1.0">
+  <head>
+    <title>Crypto</title>
+  </head>
+  <body>
+    <outline text="Crypto" title="Crypto">
+      <outline text="BeInCrypto" title="BeInCrypto" xmlUrl="https://beincrypto.com/feed/" type="rss" />
+      <outline text="Bitcoin Magazine" title="Bitcoin Magazine" xmlUrl="https://bitcoinmagazine.com/feed" type="rss" />
+      <outline text="Bitcoinist" title="Bitcoinist" xmlUrl="https://bitcoinist.com/feed/" type="rss" />
+      <outline text="Blockworks" title="Blockworks" xmlUrl="https://blockworks.com/feed" type="rss" />
+      <outline text="CoinDesk" title="CoinDesk" xmlUrl="https://www.coindesk.com/arc/outboundfeeds/rss" type="rss" />
+      <outline text="Cointelegraph" title="Cointelegraph" xmlUrl="https://cointelegraph.com/rss" type="rss" />
+      <outline text="Cryptonews" title="Cryptonews" xmlUrl="https://cryptonews.com/news/feed/" type="rss" />
+      <outline text="CryptoPotato" title="CryptoPotato" xmlUrl="https://cryptopotato.com/feed/" type="rss" />
+      <outline text="CryptoSlate" title="CryptoSlate" xmlUrl="https://cryptoslate.com/feed/" type="rss" />
+      <outline text="Decrypt" title="Decrypt" xmlUrl="https://decrypt.co/feed" type="rss" />
+      <outline text="Ethereum Foundation Blog" title="Ethereum Foundation Blog" xmlUrl="https://blog.ethereum.org/en/feed.xml" type="rss" />
+      <outline text="Kraken Blog" title="Kraken Blog" xmlUrl="https://blog.kraken.com/feed" type="rss" />
+      <outline text="NewsBTC" title="NewsBTC" xmlUrl="https://www.newsbtc.com/feed/" type="rss" />
+      <outline text="Protos" title="Protos" xmlUrl="https://protos.com/feed/" type="rss" />
+      <outline text="The Block" title="The Block" xmlUrl="https://www.theblock.co/rss.xml" type="rss" />
+      <outline text="The Defiant" title="The Defiant" xmlUrl="https://thedefiant.io/api/feed" type="rss" />
+      <outline text="Unchained" title="Unchained" xmlUrl="https://unchainedcrypto.com/feed/" type="rss" />
+    </outline>
+  </body>
+</opml>

@@ -212,6 +212,45 @@ publication's name.
 **And one plain filing error**: the Gaming pack contained a makeup blog. It is
 in Beauty now.
 
+## The specialist packs
+
+Five topics nobody had covered, asked for by the reader on 27 September 2026:
+**Rugby**, **Formula 1 & Motorsport**, **Golf**, **Forex** and **Crypto**.
+Assembled by hand, and held to a stricter bar than the tranches above: a feed
+ships only if it was fetched and verified, never on the strength of being
+unreachable.
+
+| | |
+|---|---|
+| Probed, over two rounds | 115 |
+| Verified and shipped | 70 |
+| Dropped | 45 |
+
+**Verified** means the address answered 200 over https after any redirects,
+parsed as RSS or Atom, carried items, and had posted within 45 days. Each one's
+own title and newest headline were read as well, which is how a Sky Sports
+section id is confirmed to be rugby and not darts. Where a feed redirects, the
+pack carries the address it lands on, so a phone does not follow the hop on
+every sync.
+
+**Dropped**: 404s, most of them publications that moved or retired a feed
+(Golf Digest, Golfweek, RugbyPass, Rugby365, GPblog); 403s from bot walls
+(FXStreet, Forex Factory, FX Leaders, GolfWRX, bunkered, F1Technical), which
+the older tranches would have kept; ESPN's 202s; a redirect to plain http
+(Bitcoin Magazine's old address; its current one ships); and three feeds that
+answered but had gone quiet — DL News at 143 days, The Roar's rugby section at
+249, FXEmpire at 54.
+
+The category a subscribed feed is filed under is the pack's name, except
+Formula 1 & Motorsport, which files as **Motorsport**: the name is on every
+card, and the full one would crowd the source out of it. ForexLive has
+become investingLive and its feed redirects there; it is listed under the new
+name with the old one beside it.
+
+Two packs lean on central banks rather than the trade press, deliberately.
+Forex news moves on what the ECB, the Federal Reserve and the Bank of England
+publish, and their own feeds are the source the brokers' blogs are quoting.
+
 ## Refreshing it
 
 Re-run the fetch and verification against the upstream repository, then

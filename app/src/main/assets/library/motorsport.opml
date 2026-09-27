@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<opml version="1.0">
+  <head>
+    <title>Formula 1 &amp; Motorsport</title>
+  </head>
+  <body>
+    <outline text="Motorsport" title="Motorsport">
+      <outline text="Autosport - F1" title="Autosport - F1" xmlUrl="https://www.autosport.com/rss/f1/news/" type="rss" />
+      <outline text="BBC Sport - Formula 1" title="BBC Sport - Formula 1" xmlUrl="https://feeds.bbci.co.uk/sport/formula1/rss.xml" type="rss" />
+      <outline text="Crash.net - F1" title="Crash.net - F1" xmlUrl="https://www.crash.net/rss/f1" type="rss" />
+      <outline text="Crash.net - MotoGP" title="Crash.net - MotoGP" xmlUrl="https://www.crash.net/rss/motogp" type="rss" />
+      <outline text="DirtFish" title="DirtFish" xmlUrl="https://dirtfish.com/feed/" type="rss" />
+      <outline text="Formula 1" title="Formula 1" xmlUrl="https://www.formula1.com/en/latest/all.xml" type="rss" />
+      <outline text="GPFans" title="GPFans" xmlUrl="https://www.gpfans.com/en/rss.xml" type="rss" />
+      <outline text="Motorsport.com - F1" title="Motorsport.com - F1" xmlUrl="https://www.motorsport.com/rss/f1/news/" type="rss" />
+      <outline text="Motorsport.com - MotoGP" title="Motorsport.com - MotoGP" xmlUrl="https://www.motorsport.com/rss/motogp/news/" type="rss" />
+      <outline text="Motorsport.com - WRC" title="Motorsport.com - WRC" xmlUrl="https://www.motorsport.com/rss/wrc/news/" type="rss" />
+      <outline text="PlanetF1" title="PlanetF1" xmlUrl="https://www.planetf1.com/rss" type="rss" />
+      <outline text="RaceFans" title="RaceFans" xmlUrl="https://www.racefans.net/feed/" type="rss" />
+      <outline text="Sky Sports - F1" title="Sky Sports - F1" xmlUrl="https://www.skysports.com/rss/12433" type="rss" />
+      <outline text="The Guardian - Formula One" title="The Guardian - Formula One" xmlUrl="https://www.theguardian.com/sport/formulaone/rss" type="rss" />
+      <outline text="The Race" title="The Race" xmlUrl="https://www.the-race.com/rss/" type="rss" />
+    </outline>
+  </body>
+</opml>

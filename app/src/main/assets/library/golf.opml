@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<opml version="1.0">
+  <head>
+    <title>Golf</title>
+  </head>
+  <body>
+    <outline text="Golf" title="Golf">
+      <outline text="BBC Sport - Golf" title="BBC Sport - Golf" xmlUrl="https://feeds.bbci.co.uk/sport/golf/rss.xml" type="rss" />
+      <outline text="Daily Mail - Golf" title="Daily Mail - Golf" xmlUrl="https://www.dailymail.com/sport/golf/index.rss" type="rss" />
+      <outline text="Golf Magic" title="Golf Magic" xmlUrl="https://www.golfmagic.com/rss" type="rss" />
+      <outline text="Golf Monthly" title="Golf Monthly" xmlUrl="https://www.golfmonthly.com/feeds.xml" type="rss" />
+      <outline text="Golf.com" title="Golf.com" xmlUrl="https://golf.com/feed/" type="rss" />
+      <outline text="Golf365" title="Golf365" xmlUrl="https://www.golf365.com/feed" type="rss" />
+      <outline text="MyGolfSpy" title="MyGolfSpy" xmlUrl="https://feeds.feedburner.com/Mygolfspy" type="rss" />
+      <outline text="National Club Golfer" title="National Club Golfer" xmlUrl="https://www.nationalclubgolfer.com/feed/" type="rss" />
+      <outline text="RTÉ Sport - Golf" title="RTÉ Sport - Golf" xmlUrl="https://www.rte.ie/feeds/rss/?index=/sport/golf/" type="rss" />
+      <outline text="Sky Sports - Golf" title="Sky Sports - Golf" xmlUrl="https://www.skysports.com/rss/12176" type="rss" />
+      <outline text="The Guardian - Golf" title="The Guardian - Golf" xmlUrl="https://www.theguardian.com/sport/golf/rss" type="rss" />
+      <outline text="The Telegraph - Golf" title="The Telegraph - Golf" xmlUrl="https://www.telegraph.co.uk/golf/rss.xml" type="rss" />
+    </outline>
+  </body>
+</opml>

@@ -54,6 +54,12 @@
     "count": 19
   },
   {
+    "slug": "crypto",
+    "name": "Crypto",
+    "kind": "topic",
+    "count": 17
+  },
+  {
     "slug": "diy",
     "name": "DIY",
     "kind": "topic",
@@ -78,6 +84,18 @@
     "count": 7
   },
   {
+    "slug": "forex",
+    "name": "Forex",
+    "kind": "topic",
+    "count": 11
+  },
+  {
+    "slug": "motorsport",
+    "name": "Formula 1 & Motorsport",
+    "kind": "topic",
+    "count": 15
+  },
+  {
     "slug": "funny",
     "name": "Funny",
     "kind": "topic",
@@ -88,6 +106,12 @@
     "name": "Gaming",
     "kind": "topic",
     "count": 13
+  },
+  {
+    "slug": "golf",
+    "name": "Golf",
+    "kind": "topic",
+    "count": 12
   },
   {
     "slug": "history",
@@ -136,6 +160,12 @@
     "name": "Programming",
     "kind": "topic",
     "count": 37
+  },
+  {
+    "slug": "rugby",
+    "name": "Rugby",
+    "kind": "topic",
+    "count": 15
   },
   {
     "slug": "science",
