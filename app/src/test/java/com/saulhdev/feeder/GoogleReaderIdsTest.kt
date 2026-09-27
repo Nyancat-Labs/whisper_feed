@@ -22,6 +22,27 @@ class GoogleReaderIdsTest {
     }
 
     @Test
+    fun `a FreshRSS id, sixteen digits, stays decimal`() {
+        // Microseconds since 1970: sixteen digits since 2001. Read as hex it
+        // became 1682259387568239702, and nothing matched it.
+        assertEquals("1758960000123456", GoogleReaderIds.itemId("1758960000123456"))
+    }
+
+    @Test
+    fun `the unread list and the matched articles agree on a real id`() {
+        // Matched from the contents stream, in the long form; listed as
+        // unread by the ids stream, in decimal. Both must name one article.
+        val decimal = "1758960000123456"
+        val long = GoogleReaderIds.longItemId(decimal)!!
+        assertEquals(GoogleReaderIds.itemId(decimal), GoogleReaderIds.itemId(long))
+    }
+
+    @Test
+    fun `sixteen hex characters without the prefix are still read as hex`() {
+        assertEquals("3405691582", GoogleReaderIds.itemId("00000000cafebabe"))
+    }
+
+    @Test
     fun `a decimal id is already what we want`() {
         assertEquals("3405691582", GoogleReaderIds.itemId("3405691582"))
     }

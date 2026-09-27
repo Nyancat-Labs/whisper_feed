@@ -2335,6 +2335,21 @@ Small and certain first, then what the most phones see, then the rest.
 8. **C3** to **C6**, the screens.
 9. The Lows, as they are passed.
 
+### 23. From the device, 27 September 2026
+
+- **Articles marked read that nobody read.** The Sony showed most of the
+  morning's articles read, straight after a sync, with no other device used
+  and the same articles unread in FreshRSS. The server's unread list comes
+  as decimal ids, and FreshRSS's are microsecond timestamps: sixteen digits.
+  `GoogleReaderIds.itemId` took any sixteen characters for hex, so every id
+  in the list became another number, nothing here matched it, and each sync
+  marked every article already matched to the server as read. New articles
+  not yet matched stayed unread, which is why it looked partial. There since
+  sync was first written; the saved list's ids (B4, the day before) went the
+  same way. Now hex only with the prefix or a letter in it. The next sync puts
+  back what the server has unread: those reads were never sent up, so nothing
+  on the server needs mending.
+
 ### 17. Scroll parallax on the feed — parked, at the bottom
 
 Prototyped, demonstrated, and deliberately not built. The image inside a card's

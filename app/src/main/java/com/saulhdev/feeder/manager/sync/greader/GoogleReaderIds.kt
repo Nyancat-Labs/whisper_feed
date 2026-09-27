@@ -58,8 +58,15 @@ object GoogleReaderIds {
     fun itemId(raw: String): String? {
         val trimmed = raw.trim()
         if (trimmed.isEmpty()) return null
+        val prefixed = trimmed.startsWith(ITEM_PREFIX)
         val hex = trimmed.removePrefix(ITEM_PREFIX)
-        return if (hex !== trimmed || hex.length == 16) {
+        // Hex only with the prefix, or with a letter in it. It used to be any
+        // sixteen characters too, and FreshRSS's decimal ids are timestamps
+        // in microseconds: sixteen digits. Every id in the unread list was
+        // read as hex, matched nothing, and each sync marked every matched
+        // article read.
+        val looksHex = prefixed || (hex.length == 16 && hex.any { it in 'a'..'f' || it in 'A'..'F' })
+        return if (looksHex) {
             runCatching { hex.toULong(16).toLong().toString() }.getOrNull()
         } else {
             // Already decimal. Round-tripped so a malformed one is rejected
