@@ -2049,9 +2049,12 @@ of B9 (the launcher panel's insets), which renders cannot show.
   present a valid certificate for the attacker's domain, so the connection
   failed before any request. The guard now judges the connected address
   (through a proxy, still the name, since the socket is then the proxy's).
-  The `Dns` filter was left out on purpose: it cannot tell a target from a
-  proxy, and would have cut off anybody behind a proxy on their own
-  network. The refusal no longer names the host, which went into the log.
+  The refusal no longer names the host, which went into the log. The second
+  half followed on 27 September: `PublicOnlyDns` drops private answers
+  before any socket opens, so a rebinding name gets no connection at all.
+  It stands aside when the phone has a proxy set, since the proxy may
+  rightly sit on the reader's own network; the connected-address check
+  still covers that case.
 - ~~**S5 · Low · Other apps can open any page inside Whisper.**~~ The web-view
   screen has a deep link (`NavigationManager.kt:141`), and `MainActivity`, which
   must be exported because it is the launcher entry, hands every intent it

@@ -17,6 +17,7 @@
  */
 package com.saulhdev.feeder
 
+import com.saulhdev.feeder.manager.bookmarks.PublicOnlyDns
 import com.saulhdev.feeder.manager.bookmarks.reachesPrivateNetwork
 import com.saulhdev.feeder.manager.bookmarks.refusingPrivateNetworks
 import com.sun.net.httpserver.HttpServer
@@ -34,6 +35,7 @@ import java.io.IOException
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.Proxy
+import java.net.UnknownHostException
 
 /**
  * The private-network guard judges the address a connection actually reached,
@@ -71,6 +73,60 @@ class PrivateAddressTest {
         assertTrue(reachesPrivateNetwork(null, null, "router.local") { false })
     }
 
+    // --- the lookup ------------------------------------------------------------
+
+    private val mixed = Dns { listOf(router, public) }
+
+    @Test
+    fun `the lookup leaves out private answers`() {
+        assertEquals(listOf(public), PublicOnlyDns(upstream = mixed, proxied = { false }).lookup("news.example"))
+    }
+
+    @Test
+    fun `a name that only answers privately is an unknown host`() {
+        val onlyRouter = Dns { listOf(router) }
+        try {
+            PublicOnlyDns(upstream = onlyRouter, proxied = { false }).lookup("news.example")
+            fail("a private answer was used")
+        } catch (e: UnknownHostException) {
+            assertFalse(e.message.orEmpty().contains("news.example"))
+        }
+    }
+
+    @Test
+    fun `behind a proxy every answer is kept, so the proxy can be reached`() {
+        assertEquals(listOf(router, public), PublicOnlyDns(upstream = mixed, proxied = { true }).lookup("proxy.lan"))
+    }
+
+    @Test
+    fun `a rebinding name never gets a connection at all`() {
+        var requests = 0
+        server.removeContext("/")
+        server.createContext("/") { exchange ->
+            requests++
+            exchange.sendResponseHeaders(200, 0)
+            exchange.close()
+        }
+        val rebound = Dns { listOf(InetAddress.getByName("127.0.0.1")) }
+        val client = OkHttpClient.Builder()
+            .refusingPrivateNetworks()
+            .dns(PublicOnlyDns(upstream = rebound, proxied = { false }))
+            .build()
+        try {
+            client.newCall(Request.Builder().url("http://news.example:${server.address.port}/").build()).execute().close()
+            fail("reached a private address")
+        } catch (e: UnknownHostException) {
+            assertEquals("Only private addresses", e.message)
+        }
+        assertEquals(0, requests)
+    }
+
+    @Test
+    fun `the guard installs the lookup`() {
+        val client = OkHttpClient.Builder().refusingPrivateNetworks().build()
+        assertTrue(client.dns is PublicOnlyDns)
+    }
+
     // --- end to end, through OkHttp ------------------------------------------
 
     private lateinit var server: HttpServer
@@ -101,7 +157,9 @@ class PrivateAddressTest {
             exchange.sendResponseHeaders(200, 0)
             exchange.close()
         }
-        val client = OkHttpClient.Builder().dns(rebound).refusingPrivateNetworks().build()
+        // The lookup set after the guard, so this tests the interceptor on
+        // its own: the case of a phone behind a proxy, with no filter.
+        val client = OkHttpClient.Builder().refusingPrivateNetworks().dns(rebound).build()
         val url = "http://news.example:${server.address.port}/feed.xml"
         try {
             client.newCall(Request.Builder().url(url).build()).execute().close()

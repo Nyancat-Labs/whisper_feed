@@ -190,7 +190,47 @@ internal fun reachesPrivateNetwork(
  * and a test that fails the build when a client is built without it.
  */
 fun okhttp3.OkHttpClient.Builder.refusingPrivateNetworks(): okhttp3.OkHttpClient.Builder =
-    addNetworkInterceptor(BlockPrivateNetworks())
+    dns(PublicOnlyDns()).addNetworkInterceptor(BlockPrivateNetworks())
+
+/**
+ * A lookup that leaves out the reader's own network, so a socket to it is
+ * never opened at all.
+ *
+ * [BlockPrivateNetworks] judges the address a connection reached, which is
+ * after the connection is made. This keeps a private answer from being used
+ * in the first place: a name that says "the router" gets no connection, only
+ * an unknown host.
+ *
+ * Not while the phone sends its traffic through a proxy. Then this lookup is
+ * the one that finds the proxy, which may well be on the reader's own network,
+ * and filtering it would cut them off entirely. The target is the proxy's to
+ * find, and the interceptor still judges it by name.
+ */
+class PublicOnlyDns(
+    private val upstream: okhttp3.Dns = okhttp3.Dns.SYSTEM,
+    private val proxied: () -> Boolean = ::phoneUsesProxy,
+) : okhttp3.Dns {
+    override fun lookup(hostname: String): List<InetAddress> {
+        val answers = upstream.lookup(hostname)
+        if (proxied()) return answers
+        // No name in the message: it goes into the log, and the log into a
+        // shared report.
+        return answers.filter(SafeAddress::isPublic)
+            .ifEmpty { throw java.net.UnknownHostException("Only private addresses") }
+    }
+}
+
+/**
+ * Whether web traffic goes through a proxy: the Wi-Fi's own setting, or a
+ * PAC file. Asked of a sample address, since a lookup does not know which
+ * request it is for. Unknown counts as yes, which leaves the filter off and
+ * the interceptor on: the old behaviour, never a cut-off.
+ */
+internal fun phoneUsesProxy(): Boolean = runCatching {
+    java.net.ProxySelector.getDefault()
+        ?.select(java.net.URI("https://example.org/"))
+        ?.any { it.type() != java.net.Proxy.Type.DIRECT } == true
+}.getOrDefault(true)
 
 /**
  * That, plus asking https of an address still written down as http.
