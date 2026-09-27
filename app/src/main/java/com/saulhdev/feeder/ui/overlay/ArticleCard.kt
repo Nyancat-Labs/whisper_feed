@@ -243,16 +243,6 @@ fun ArticleHeroCard(
                     CoverageLine(sources = it, color = Color.White)
                     Spacer(Modifier.height(4.dp))
                 }
-                val category = item.feedTag
-                if (category.isNotBlank()) {
-                    Text(
-                        text = category.uppercase(),
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color.White.copy(alpha = 0.85f),
-                    )
-                    Spacer(Modifier.height(4.dp))
-                }
                 Text(
                     text = item.contentTitle,
                     style = MaterialTheme.typography.titleLarge,
@@ -264,6 +254,7 @@ fun ArticleHeroCard(
                 Spacer(Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     ArticleMeta(
+                        category = item.feedTag,
                         source = item.feedTitle,
                         sourceId = item.sourceId,
                         articleId = item.id,
@@ -423,6 +414,7 @@ fun ArticleCard(
                     .padding(top = 10.dp),
             ) {
                 ArticleMeta(
+                    category = item.feedTag,
                     source = item.feedTitle,
                     sourceId = item.sourceId,
                     articleId = item.id,
@@ -474,16 +466,6 @@ fun ArticleCompactRow(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                val category = item.feedTag
-                if (category.isNotBlank()) {
-                    Text(
-                        text = category.uppercase(),
-                        style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                    Spacer(Modifier.height(2.dp))
-                }
                 Text(
                     text = item.contentTitle,
                     style = MaterialTheme.typography.titleSmall,
@@ -494,6 +476,7 @@ fun ArticleCompactRow(
                 )
                 Spacer(Modifier.height(6.dp))
                 ArticleMeta(
+                    category = item.feedTag,
                     source = item.feedTitle,
                     sourceId = item.sourceId,
                     articleId = item.id,
@@ -588,6 +571,7 @@ fun ArticleTextRow(
                 )
                 Spacer(Modifier.height(4.dp))
                 ArticleMeta(
+                    category = item.feedTag,
                     source = item.feedTitle,
                     sourceId = item.sourceId,
                     articleId = item.id,
@@ -755,6 +739,7 @@ fun ArticleMosaicTile(
             Spacer(Modifier.height(6.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 ArticleMeta(
+                    category = item.feedTag,
                     source = item.feedTitle,
                     sourceId = item.sourceId,
                     articleId = item.id,
@@ -812,6 +797,8 @@ private fun ArticleMeta(
     articleId: String? = null,
     iconUrl: String? = null,
     onImage: Boolean = false,
+    /** The article's category, after the mark; nothing when it has none. */
+    category: String = "",
 ) {
     // Null on a surface that cannot narrow the feed.
     // A CompositionLocal rather than another parameter because this row is
@@ -821,7 +808,7 @@ private fun ArticleMeta(
     val focusSource = LocalFocusSource.current
 
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
-        // The mark and the name together, and nothing else. The age sits
+        // The mark, the category and the name together, and nothing else. The age sits
         // beside them and the buttons beyond that; a target that swallowed
         // the whole row would take taps meant for the article, since this row
         // sits directly under the headline.
@@ -836,6 +823,18 @@ private fun ArticleMeta(
         ) {
             SourceMark(iconUrl = iconUrl, sourceName = source, onImage = onImage)
             Spacer(Modifier.width(6.dp))
+            // On the source's line rather than one of its own above the
+            // headline: the same words, a line less of every card. Never cut
+            // short; the source's name gives way first.
+            if (category.isNotBlank()) {
+                Text(
+                    text = "${category.uppercase()} · ",
+                    style = style,
+                    color = color,
+                    maxLines = 1,
+                    softWrap = false,
+                )
+            }
             Text(
                 text = source,
                 style = style,
