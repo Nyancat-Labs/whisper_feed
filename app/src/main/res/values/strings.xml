@@ -88,16 +88,10 @@
     <string name="source_hidden">Hiding %1$s</string>
     <string name="all_categories">All</string>
     <string name="home">Home</string>
-    <string name="app_id" translatable="false">Package</string>
     <string name="app_version" translatable="false">Version</string>
-    <string name="app_build" translatable="false">Build</string>
     <string name="title_settings">Settings</string>
     <string name="title_about">About</string>
     <string name="title_sources">Data sources</string>
-    <string name="summary_sources">Add or remove sources</string>
-    <string name="date_format_day_month" translatable="false">%1$d %2$s</string>
-    <string name="date_format_day_month_year" translatable="false">%1$d %2$s %3$d</string>
-    <string name="date_ago_now">now</string>
     <!-- Compact article ages, as seen under a headline: "BBC · 5h". -->
     <string name="age_now">now</string>
     <string name="age_minutes">%1$dm</string>
@@ -135,19 +129,10 @@
     <string name="background_data_blocked_title">Background syncs can\'t use mobile data</string>
     <string name="background_data_blocked_body">Android keeps Whisper off mobile data when it isn\'t on screen, so scheduled syncs wait for Wi-Fi. Pull to refresh still works. To let scheduled syncs use mobile data, turn on Unrestricted mobile data usage for Whisper.</string>
     <string name="background_data_blocked_action">Open mobile data settings</string>
-    <string name="date_at">at</string>
-    <string name="today">today</string>
-    <string name="tomorrow">tomorrow</string>
-    <string name="yesterday">yesterday</string>
-    <string name="pref_cat_contact">Contacts</string>
     <string name="about_whisper_team">Whisper</string>
     <string name="about_whisper_author" translatable="false">defsix</string>
     <string name="about_whisper_role">Developer</string>
     <string name="about_team">Built on Neo Feed, and on HomeFeeder before it</string>
-    <string name="about_channel">Channel</string>
-    <string name="about_community">Community</string>
-    <string name="about_community_telegram">Community on Telegram</string>
-    <string name="about_community_matrix">Community on Matrix</string>
     <string name="about_developer" translatable="false">Saul Henriquez</string>
     <string name="about_developer2" translatable="false">Antonios Hazim</string>
     <string name="about_build_information">Build info</string>
@@ -155,8 +140,6 @@
     <string name="about_licenses">License</string>
     <string name="back_to_top">Back to Top</string>
     <string name="about_changelog">Changelog</string>
-    <string name="about_open_source">Open Source Libraries</string>
-    <string name="pref_tg">Telegram channel</string>
     <string name="about_source_code">Source code</string>
     <string name="about_privacy">Privacy</string>
     <string name="about_disclaimer">Disclaimer</string>
@@ -167,7 +150,6 @@
     <string name="about_support">Support Whisper</string>
     <string name="about_support_summary">Whisper is free, has no adverts and collects nothing. If it has earned it, you can chip in — nothing in the app changes either way.</string>
     <string name="pref_cat_overlay">Appearance</string>
-    <string name="pref_cat_debug">Debug</string>
     <string name="pref_transparency">Overlay background opacity</string>
     <string name="pref_dynamic_color">Material You colours</string>
     <string name="pref_dynamic_color_summary">Follow the wallpaper instead of the Whisper palette</string>
@@ -195,7 +177,6 @@
     <string name="glance_set_location">Set location</string>
     <string name="font_inter" translatable="false">Inter</string>
     <string name="font_system">System default</string>
-    <string name="title_data_sources">Data sources</string>
     <string name="pref_article_open_mode">Open articles with</string>
     <string name="article_open_reader">Built-in reader</string>
     <string name="article_open_browser">Default browser</string>
@@ -213,19 +194,6 @@
     <string name="pref_items_per_feed">Max items per feed</string>
     <string name="syncing">Syncing</string>
     <string name="sync_status">Sync status</string>
-    <string name="pref_compact">Compact item layout</string>
-    <string name="pref_card_bg">Card background</string>
-    <string name="pref_bg_color">Overlay background</string>
-    <string name="allow_notify_to_settings">Open settings</string>
-    <string name="overlay_no_permission">No permission granted</string>
-    <string name="overlay_reload">Click here to reload</string>
-    <string name="overlay_no_permission_desc">HomeFeeder needs \"Notification access\" to show notifications atop other apps.</string>
-    <string name="overlay_no_permission_snackbar">Please verify you have allowed \"Notification access\" permission and try again.</string>
-    <string name="pref_syscolors">Use system wallpaper colors</string>
-    <string name="pref_syscolors_desc">instead of \"Launcher:\" options</string>
-    <string name="pref_syscolors_disabled">Requires Android 8.1 or newer</string>
-    <string name="pm_empty">No sources installed</string>
-    <string name="pm_desc">HomeFeeder uses them to display data</string>
     <string name="add_feed_category">File it under</string>
     <string name="add_rss">Add new RSS</string>
     <string name="failed_to_parse">Could not parse %1$s</string>
@@ -233,16 +201,10 @@
     <string name="add_input_hint" translatable="false">URL</string>
     <string name="title">Title</string>
     <string name="source_tags">Tags</string>
-    <string name="description">Description</string>
     <string name="add_feed_search_hint">Feed URL</string>
-    <string name="invalid_url">Not a valid URL</string>
     <string name="go_back">Go back</string>
     <string name="remove_title">Confirm action</string>
     <string name="remove_desc">Remove %s from feed sources\?</string>
-    <string name="remove_action_yes">Yes</string>
-    <string name="news_image_text">news story image</string>
-    <string name="title_feed_list">Feed List</string>
-    <string name="theme_auto_launcher">Automatically (from launcher)</string>
     <string name="theme_auto_system">Follow system</string>
     <string name="pref_pure_black">Pure black</string>
     <string name="pref_pure_black_summary">Use true black in dark modes, for OLED screens</string>
@@ -258,19 +220,8 @@
     <string name="sync_two_hours">Two Hours</string>
     <string name="sync_three_hours">Three Hours</string>
     <string name="sync_six_hours">Six Hours</string>
-    <string name="transparency_non_transparent">Non Transparent</string>
-    <string name="transparency_transparent">Transparent</string>
     <string name="background_theme_option">Theme based</string>
-    <string name="background_white">White</string>
-    <string name="background_amoled">Black</string>
-    <string name="background_primary_color">Launcher: Primary color</string>
-    <string name="background_secondary_color">Launcher: Secondary color</string>
-    <string name="background_tertiary_color">Launcher: Tertiary color</string>
     <string name="debug_logcat_printing">Extensive logcat printing</string>
-    <string name="debug_content_printing">Log notification content</string>
-    <string name="summary_feed_list">Add or remove RSS sources</string>
-    <string name="source_code_url" translatable="false">https://github.com/defsix/whisper_feed</string>
-    <string name="telegram_channel" translatable="false">t.me/neo_launcher</string>
     <string name="title_plugin_list">Plugin List</string>
     <string name="touch_to_play_video">Touch to play video</string>
     <string name="fetch_full_articles_by_default">Fetch full articles by default</string>
@@ -424,8 +375,6 @@
     <string name="pref_mark_read_on_scroll_summary">How long an article has to be on screen before scrolling past it counts as reading it. Nothing is marked while you are still looking at it. A fling past a card gives it about half a second.</string>
     <string name="mark_read_off">Off</string>
     <string name="mark_read_seconds_short">%1$.0fs</string>
-    <string name="mark_read_never">Never — only when opened</string>
-    <string name="mark_read_seconds">After %1$.1f seconds on screen, once scrolled past</string>
     <string name="pref_read_visibility">Articles you have read</string>
     <string name="pref_read_visibility_summary">A read article always loses weight and sinks. This is whether it also fades or goes.</string>
     <string name="read_visibility_keep">Keep them</string>
@@ -443,7 +392,6 @@
     <string name="fetch_full_articles_all_feeds_on">On for every feed in Settings</string>
     <string name="fetch_full_articles_summary">Download the whole article while syncing, so it is ready offline. The reader fetches it on demand either way.</string>
     <string name="article_not_found">Local article not found</string>
-    <string name="no_articles_found">No articles found</string>
     <string name="on_date" translatable="false">%1$s</string>
     <string name="by_author_on_date">%1$s, %2$s</string>
 
@@ -454,21 +402,9 @@
     <string name="failed_to_import_OPML">"Failed to import OPML"</string>
     <string name="failed_to_export_OPML">"Failed to export OPML"</string>
     <string name="share">Share</string>
-    <string name="delete_feed">Delete feed</string>
-    <string name="bookmark">Bookmark</string>
-    <string name="bookmark_remove">Remove bookmark</string>
-    <string name="action_show_bookmarks">Show bookmarks</string>
-    <string name="action_hide_bookmarks">Hide bookmarks</string>
     <string name="title_bookmarks">Read later</string>
-    <string name="summary_bookmarks">See your bookmarked articles</string>
-    <string name="title_service">Service</string>
-    <string name="title_other">Other</string>
-    <string name="no_activity_for_link">Web browser not found</string>
-    <string name="title_overlay">Overlay</string>
     <string name="add_feed">Add feed</string>
     <string name="pref_remove_duplicates">Remove duplicate article from different sources</string>
-    <string name="sort_filter">Sort and filter</string>
-    <string name="state_modified">Modified</string>
     <string name="action_apply">Apply</string>
     <string name="action_reset">Reset</string>
     <string name="sorting_order">Sorting order</string>
@@ -482,13 +418,7 @@
     <string name="sort_descending">Descending</string>
     <string name="select_all">Select all</string>
     <string name="deselect_all">Deselect all</string>
-    <string name="item_selected">Item selected</string>
 
-    <string name="collapse_handle_description">Drag to collapse bottom sheet</string>
-    <string name="section_icon_description">Section icon</string>
-    <string name="expand_section_description">Expand section</string>
-    <string name="collapse_section_description">Collapse section</string>
-    <string name="date_at_time_FORMAT">%1$s at %2$s</string>
     <string name="draw_permission_required">This application requires the permission to draw over other apps, without it feed items would not open on click</string>
     <string name="go_to_settings">Go to settings</string>
     <string name="file_share_text">File from Whisper</string>
@@ -575,7 +505,6 @@
         <item quantity="one">%1$d source added</item>
         <item quantity="other">%1$d sources added</item>
     </plurals>
-    <string name="starter_all_added">You are already subscribed to all of these.</string>
     <string name="pref_sources_summary">The feeds you follow, and their categories</string>
     <string name="pref_broken_feeds">Feeds that stopped working</string>
     <string name="pref_broken_feeds_summary">Look for a new address when a feed goes quiet</string>

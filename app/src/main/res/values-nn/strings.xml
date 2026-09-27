@@ -2,29 +2,10 @@
 <resources>
     <string name="pref_cat_overlay">Utsjånad</string>
     <string name="title_settings">Innstillingar</string>
-    <string name="summary_sources">Legg til eller tak bort kjelder</string>
     <string name="title_about">Om</string>
     <string name="title_sources">Datakjelder</string>
-    <string name="date_ago_now">no</string>
-    <string name="date_at">klokka</string>
-    <string name="today">i dag</string>
-    <string name="tomorrow">i morgon</string>
-    <string name="yesterday">i går</string>
-    <string name="pref_cat_contact">Kontaktar</string>
     <string name="about_licenses">Løyve</string>
     <string name="about_changelog">Brigdelogg</string>
-    <string name="pref_tg">Telegram-sambandsline</string>
     <string name="about_source_code">Kjeldekoden</string>
-    <string name="pref_cat_debug">Lysking</string>
     <string name="pref_transparency">Overlagbakgrunnens gjennomsynlegheit</string>
-    <string name="pref_browser_theme">Opne i nettlesar</string>
-    <string name="pref_compact">Samantrengd elementvising</string>
-    <string name="pref_card_bg">Kortbakgrunn</string>
-    <string name="pref_bg_color">Overlagsbakgrunn</string>
-    <string name="allow_notify_to_settings">Opne innstillingane</string>
-    <string name="overlay_no_permission">Ingen tilgjenge gjeve</string>
-    <string name="overlay_reload">Trykk her for å hente att</string>
-    <string name="overlay_no_permission_snackbar">Stadfest at du har gjeve løyve til «merknadstilgjenge» og freist om att.</string>
-    <string name="pref_syscolors">Nytta systemets bakgrunnsbileteletar</string>
-    <string name="overlay_no_permission_desc">HomeFeeder tarv «merknadstilgjenge» for å visa merknadar oppå andre appar.</string>
 </resources>

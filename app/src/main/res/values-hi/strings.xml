@@ -1,18 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="title_sources">डेटा केंद्र</string>
-    <string name="summary_sources">केंद्र जोड़े और हटाएँ</string>
-    <string name="date_ago_now">अब</string>
-    <string name="date_at">पर</string>
-    <string name="today">आज</string>
-    <string name="tomorrow">कल</string>
-    <string name="pref_cat_contact">संपर्क</string>
     <string name="about_changelog">बदलाव</string>
-    <string name="pref_tg">टेलीग्राम चैनल</string>
-    <string name="pref_git">स्रोत कोड</string>
     <string name="pref_cat_overlay">दिखावा</string>
     <string name="title_settings">सेटिंग्स</string>
     <string name="title_about">जानकारी</string>
-    <string name="yesterday">बीता कल</string>
     <string name="about_licenses">लाइसेंस</string>
 </resources>

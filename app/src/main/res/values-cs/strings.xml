@@ -1,17 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="title_settings">Nastavení</string>
-    <string name="tomorrow">zítra</string>
     <string name="title_about">O aplikaci</string>
     <string name="title_sources">Zdroje dat</string>
-    <string name="date_at">v</string>
-    <string name="pref_cat_contact">Kontakty</string>
     <string name="about_licenses">Licence</string>
     <string name="about_changelog">Seznam změn</string>
-    <string name="pref_tg">Telegramový kanál</string>
-    <string name="summary_sources">Přidat nebo odebrat zdroje</string>
-    <string name="date_ago_now">Nyní</string>
-    <string name="yesterday">včera</string>
-    <string name="today">dnes</string>
-    <string name="about_open_source">Knihovny s otevřeným zdrojovým kódem</string>
 </resources>
