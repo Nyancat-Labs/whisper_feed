@@ -281,10 +281,10 @@ private suspend fun prefetchFullArticle(
     // network: three of those used to spend an article's three tries in the
     // time it takes to walk out of Wi-Fi range. See countsAgainstSource.
     val code = (error as? HttpStatusException)?.code
-    if (item.link != null && !countsAgainstSource(code, whisperHasNetwork(context))) {
+    if (!countsAgainstSource(code, whisperHasNetwork(context))) {
         return Prefetch.Unreached
     }
-    val permanent = item.link.isNullOrBlank() ||
+    val permanent = item.link.isBlank() ||
         (code != null && isPermanentHttpFailure(code))
     val previous = readAttempts(item.uuid, filesDir) ?: FullTextAttempts.none
     withContext(Dispatchers.IO) {
@@ -354,7 +354,7 @@ suspend fun parseFullArticle(
     filesDir: File
 ): Pair<Boolean, Throwable?> = withContext(Dispatchers.Default) {
     return@withContext try {
-        val url = feedItem.link ?: return@withContext false to null
+        val url = feedItem.link
         Log.d("FeederFullText", "Fetching full page ${feedItem.link}")
         val fetched = okHttpClient.fetchPage(URL(url)) ?: return@withContext false to null
 

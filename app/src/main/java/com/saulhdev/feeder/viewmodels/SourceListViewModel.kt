@@ -176,7 +176,7 @@ class SourceListViewModel(
         // Three narrowing controls travelling as one value, because combine's
         // typed arity stops at five and these change together anyway.
         combine(_query, _category, _duplicatesOnly, _duplicateIds, _sameSite) { q, c, d, ids, same ->
-            Narrowing(q as String, c as String?, d as Boolean, ids as Set<Long>, same as Boolean)
+            Narrowing(q, c, d, ids, same)
         },
         combine(sort, ascending, prefs.pinnedSources.get()) { sort, ascending, pinned ->
             Order(

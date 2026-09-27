@@ -230,6 +230,9 @@ class OverlayView(val context: Context) :
 
     private lateinit var rootView: View
 
+    // Deprecated for apps to send since Android 12; the system still sends it
+    // when something else takes the screen, which is the case wanted here.
+    @Suppress("DEPRECATION")
     private val closeSystemDialogsReceiver = object : BroadcastReceiver() {
         override fun onReceive(c: Context?, intent: Intent?) {
             if (intent?.action != Intent.ACTION_CLOSE_SYSTEM_DIALOGS) return
@@ -329,6 +332,7 @@ class OverlayView(val context: Context) :
         }
         NeoApp.bridge.setCallback(this)
 
+        @Suppress("DEPRECATION")
         val filter = IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             context.registerReceiver(closeSystemDialogsReceiver, filter, Context.RECEIVER_EXPORTED)

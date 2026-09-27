@@ -20,8 +20,6 @@ package com.saulhdev.feeder.utils.extensions
 
 import android.graphics.Color
 import android.os.Build
-import android.os.Bundle
-import android.util.Log
 import android.view.Window
 import androidx.annotation.ColorInt
 import androidx.core.graphics.ColorUtils
@@ -31,14 +29,6 @@ const val LIGHT_BORDER = 0.5f
 
 fun Int.isLight() = ColorUtils.calculateLuminance(this) > LIGHT_BORDER
 fun Int.isDark() = ColorUtils.calculateLuminance(this) < LIGHT_BORDER
-
-fun Bundle.dump(tag: String) {
-    keySet().forEach {
-        val item = get(it)
-        item ?: return@forEach
-        Log.d(tag, "[$it] $item")
-    }
-}
 
 fun Window.setLightFlags() {
     val controller = WindowCompat.getInsetsController(this, this.decorView)

@@ -214,6 +214,7 @@ class ArticleListViewModel(
      * content, and combining the two meant every toggle re-sorted the whole
      * list for a result that was identical to the one before it.
      */
+    @OptIn(FlowPreview::class)
     private val processedArticles: Flow<ProcessedFeed> = combine(
         categoryArticles,
         filterState,

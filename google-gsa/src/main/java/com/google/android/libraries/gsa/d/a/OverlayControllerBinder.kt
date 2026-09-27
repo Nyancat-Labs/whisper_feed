@@ -1,5 +1,6 @@
 package com.google.android.libraries.gsa.d.a
 
+import androidx.core.os.BundleCompat
 import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Handler
@@ -92,7 +93,7 @@ class OverlayControllerBinder(
     override fun windowAttached(bundle: Bundle?, callback: ILauncherOverlayCallback?) {
         checkCallerId()
         this.overlaysController.handler.removeCallbacks(this)
-        val configuration = bundle!!.getParcelable<Configuration?>("configuration")
+        val configuration = BundleCompat.getParcelable(bundle!!, "configuration", Configuration::class.java)
         lastAttachWasLandscape = configuration != null && configuration.orientation == 2
         BL(bundle.getInt("client_options", 7))
         Message.obtain(

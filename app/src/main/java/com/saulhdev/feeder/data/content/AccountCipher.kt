@@ -129,6 +129,7 @@ interface LegacyAccountStore {
     fun forgetKey()
 }
 
+@Suppress("DEPRECATION") // The deprecated library, read once; see above.
 internal class EncryptedLegacyStore(context: Context, private val file: String) : LegacyAccountStore {
     private val appContext = context.applicationContext
 

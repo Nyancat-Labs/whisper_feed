@@ -18,6 +18,10 @@
 
 package com.saulhdev.feeder.utils
 
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,7 +40,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.selection.DisableSelection
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -420,30 +423,16 @@ private fun LazyListScope.formatBody(
             val paragraph = paragraphBuilder.toComposableAnnotatedString()
 
             WithBidiDeterminedLayoutDirection(paragraph.text) {
-                // ClickableText prevents taps from deselecting selected text
-                // So use regular Text if possible
-                if (
-                    paragraph.getStringAnnotations("URL", 0, paragraph.length)
-                        .isNotEmpty()
-                ) {
-                    ClickableText(
-                        text = paragraph,
-                        style = bodyStyle(),
-                        modifier = Modifier.width(dimens.maxContentWidth)
-                    ) { offset ->
-                        paragraph.getStringAnnotations("URL", offset, offset)
-                            .firstOrNull()
-                            ?.let {
-                                onLinkClick(it.item)
-                            }
-                    }
-                } else {
-                    Text(
-                        text = paragraph,
-                        style = bodyStyle(),
-                        modifier = Modifier.width(dimens.maxContentWidth)
-                    )
-                }
+                // Each link is its own tappable span, so a tap anywhere else
+                // in the paragraph is left to text selection. The address
+                // still goes through onLinkClick and its scheme checks.
+                val openLink by rememberUpdatedState(onLinkClick)
+                val linked = remember(paragraph) { withLinks(paragraph) { openLink(it) } }
+                Text(
+                    text = linked,
+                    style = bodyStyle(),
+                    modifier = Modifier.width(dimens.maxContentWidth)
+                )
             }
         }
     }
@@ -853,7 +842,7 @@ private fun TextComposer.appendTextChildren(
                         withComposableStyle(
                             style = { linkTextStyle().toSpanStyle() }
                         ) {
-                            withAnnotation("URL", element.attr("abs:href") ?: "") {
+                            withAnnotation("URL", element.attr("abs:href")) {
                                 appendTextChildren(
                                     element.childNodes(),
                                     lazyListScope = lazyListScope,
@@ -1006,7 +995,7 @@ private fun TextComposer.handleImage(
     val imageCandidates = getImageSource(baseUrl, element)
     if (imageCandidates.hasImage) {
         // Some sites are silly and insert formatting in alt text
-        val alt = stripHtml(element.attr("alt") ?: "")
+        val alt = stripHtml(element.attr("alt"))
         appendImage(onLinkClick = onLinkClick) { onClick ->
             lazyListScope.item {
                 val dimens = LocalDimens.current
@@ -1118,10 +1107,9 @@ private fun TextComposer.handleTable(
     appendTable {
         lazyListScope.item {
             // Create a separate TextComposer for building cell contents
-            val cellComposer = TextComposer { builder ->
-                // This won't be called immediately, just storing the builder
-                builder
-            }
+            // Its paragraphs go nowhere: each cell's text is read from its
+            // builder below.
+            val cellComposer = TextComposer { }
 
             element.children()
                 .filter { e -> e.tagName() == "caption" }
@@ -1476,6 +1464,21 @@ private fun Modifier.articleImageWidth(decodedPx: Int, columnPx: Int): Modifier 
         fillMaxWidth()
     }
 
+/**
+ * [paragraph] with each "URL" annotation made a link that calls [open] with
+ * its address. The paragraph's own styling, link colour included, is kept.
+ */
+internal fun withLinks(paragraph: AnnotatedString, open: (String) -> Unit): AnnotatedString {
+    val urls = paragraph.getStringAnnotations("URL", 0, paragraph.length)
+    if (urls.isEmpty()) return paragraph
+    return buildAnnotatedString {
+        append(paragraph)
+        urls.forEach { url ->
+            addLink(LinkAnnotation.Clickable(url.item) { open(url.item) }, url.start, url.end)
+        }
+    }
+}
+
 /** Whether filling [columnPx] would stretch a [decodedPx]-wide image past [MAX_IMAGE_UPSCALE]x. */
 internal fun isTooSmallToStretch(decodedPx: Int, columnPx: Int): Boolean =
     decodedPx > 0 && columnPx > 0 && decodedPx * MAX_IMAGE_UPSCALE < columnPx
@@ -1488,8 +1491,8 @@ internal const val MAX_IMAGE_UPSCALE = 2
  */
 internal fun getImageSource(baseUrl: String, element: Element) = ImageCandidates(
     baseUrl = baseUrl,
-    srcSet = element.attr("srcset") ?: "",
-    absSrc = element.attr("abs:src") ?: "",
+    srcSet = element.attr("srcset"),
+    absSrc = element.attr("abs:src"),
 )
 
 internal class ImageCandidates(
