@@ -35,6 +35,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -70,10 +71,10 @@ import org.koin.compose.koinInject
  * reader who stops opening the app.
  *
  * Nothing is added without being chosen. The pack is opened, the feeds are
- * listed with their addresses, everything starts ticked and anything can be
- * unticked — the same bargain the starter list makes, for the same reason: the
- * app claims no algorithm decides what you see, and subscribing somebody in
- * bulk on a single tap would make that untrue.
+ * listed with their addresses, and nothing starts ticked: the reader ticks
+ * the ones they want, or selects all of them in one tap. The app claims no
+ * algorithm decides what you see, and a pack that arrived ticked was a bulk
+ * subscription waiting for one careless tap.
  */
 @Composable
 fun FeedLibraryPage() {
@@ -90,16 +91,17 @@ fun FeedLibraryPage() {
 
     LaunchedEffect(Unit) { packs = FeedLibrary.packs(context) }
 
-    // Everything ticked on opening: somebody who picked "Photography" wants
-    // photography feeds, and making them tick eight boxes to say so again is
-    // ceremony. Unticking is where the real choice lives.
+    // Nothing ticked on opening. It used to be everything, on the reasoning
+    // that somebody who opened Photography wants photography; but a pack of
+    // twenty-two is somebody else's list, and choosing from it is the point.
+    // Select all is one tap away for the reader who does want the lot.
     LaunchedEffect(open) {
         val pack = open
         if (pack == null) {
             feeds = emptyList(); chosen = emptySet()
         } else {
             feeds = FeedLibrary.feeds(context, pack)
-            chosen = feeds.map { it.url }.toSet()
+            chosen = emptySet()
         }
     }
 
@@ -148,9 +150,11 @@ fun FeedLibraryPage() {
             } else {
                 item {
                     ActionButton(
-                        text = pluralStringResource(
-                            R.plurals.library_add, chosen.size, chosen.size
-                        ),
+                        text = if (chosen.isEmpty()) {
+                            stringResource(R.string.library_add_none)
+                        } else {
+                            pluralStringResource(R.plurals.library_add, chosen.size, chosen.size)
+                        },
                         icon = Phosphor.Plus,
                         enabled = chosen.isNotEmpty(),
                         modifier = Modifier.fillMaxWidth(),
@@ -168,6 +172,18 @@ fun FeedLibraryPage() {
                             }
                         },
                     )
+                }
+                if (feeds.isNotEmpty()) {
+                    item {
+                        val all = chosen.size == feeds.size
+                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                            TextButton(
+                                onClick = { chosen = if (all) emptySet() else feeds.map { it.url }.toSet() },
+                            ) {
+                                Text(stringResource(if (all) R.string.deselect_all else R.string.select_all))
+                            }
+                        }
+                    }
                 }
                 items(feeds, key = { it.url }) { feed ->
                     FeedRow(feed, feed.url in chosen) {

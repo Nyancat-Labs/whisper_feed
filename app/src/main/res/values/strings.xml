@@ -629,13 +629,14 @@
     <string name="stats_footnote">Worked out on your phone. Whisper keeps a running count of how many articles reached your screen and when \u2014 numbers only, no titles and no addresses \u2014 because the articles themselves are tidied away after a week and these charts would otherwise forget their own past. Nothing leaves the device, and the source breakdown reflects what you have been reading lately rather than the full 30 days.</string>
     <string name="pref_feed_library">Browse the feed library</string>
     <string name="pref_feed_library_summary">Hundreds of feeds by topic and country, bundled with the app</string>
-    <string name="library_explanation">A directory that ships with Whisper, so nothing is fetched and no one is told what you are looking for. Open a collection to see what is in it \u2014 everything starts ticked, and nothing is added until you say so.</string>
+    <string name="library_explanation">A directory that ships with Whisper, so nothing is fetched and no one is told what you are looking for. Open a collection to see what is in it \u2014 tick the feeds you want, and nothing is added until you say so.</string>
     <string name="library_topics">By topic</string>
     <string name="library_countries">By country</string>
     <plurals name="library_count">
         <item quantity="one">1 feed</item>
         <item quantity="other">%1$d feeds</item>
     </plurals>
+    <string name="library_add_none">Tick the feeds you want</string>
     <plurals name="library_add">
         <item quantity="one">Add the one chosen</item>
         <item quantity="other">Add the %1$d chosen</item>
