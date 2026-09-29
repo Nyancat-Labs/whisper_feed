@@ -18,7 +18,9 @@ import com.saulhdev.feeder.data.db.models.ArticleIdWithLink
 import com.saulhdev.feeder.data.repository.ArticleRepository
 import com.saulhdev.feeder.manager.bookmarks.onlyPublicHttps
 import com.saulhdev.feeder.utils.HttpIdentity.asArticleReader
+import com.saulhdev.feeder.utils.blobFile
 import com.saulhdev.feeder.utils.blobFullFile
+import com.saulhdev.feeder.utils.blobInputStream
 import com.saulhdev.feeder.utils.blobFullInputStream
 import com.saulhdev.feeder.utils.SavedImages
 import com.saulhdev.feeder.utils.usableImageUrl
@@ -284,7 +286,7 @@ private suspend fun prefetchFullArticle(
     if (!countsAgainstSource(code, whisperHasNetwork(context))) {
         return Prefetch.Unreached
     }
-    val permanent = item.link.isBlank() ||
+    val permanent = item.link.isBlank() || error is ThinExtraction ||
         (code != null && isPermanentHttpFailure(code))
     val previous = readAttempts(item.uuid, filesDir) ?: FullTextAttempts.none
     withContext(Dispatchers.IO) {
@@ -365,6 +367,16 @@ suspend fun parseFullArticle(
         val page = pageDocument(fetched, url).also(::stripPageChrome)
         val article = Readability4JExtended(url, page).parse()
 
+        // A page that yields less than the feed already gave is not the
+        // article: an aggregator's page (Techmeme's is a list of links) came
+        // back as its timestamp alone, and replaced the feed's own paragraph
+        // and picture in the reader. Kept as the feed has it instead.
+        val extracted = article.textContent.orEmpty().trim().length
+        if (isThinExtraction(extracted, feedTextLength(feedItem.uuid, filesDir))) {
+            Log.i("FeederFullText", "Page gave less than the feed for ${feedItem.uuid}; keeping the feed's")
+            return@withContext false to ThinExtraction()
+        }
+
         // TODO set image on item if none already
         // naiveFindImageLink(article.content)?.let { Parser.unescapeEntities(it, true) }
 
@@ -388,3 +400,21 @@ suspend fun parseFullArticle(
         false to e
     }
 }
+
+/** The page's text came out shorter than the feed's own; see parseFullArticle. */
+class ThinExtraction : java.io.IOException("the page gave less than the feed")
+
+/**
+ * Whether [extractedChars] from the page is worth less than the [feedChars]
+ * the feed already carried. A full article is more than its excerpt; one that
+ * is not was extracted from the wrong part of the page. A feed with no text
+ * of its own takes whatever the page gives.
+ */
+internal fun isThinExtraction(extractedChars: Int, feedChars: Int): Boolean =
+    feedChars > 0 && extractedChars < feedChars
+
+/** The visible length of the feed's own text for an article, or 0. */
+private fun feedTextLength(uuid: String, filesDir: File): Int = runCatching {
+    if (!blobFile(uuid, filesDir).isFile) return@runCatching 0
+    blobInputStream(uuid, filesDir).bufferedReader().use { org.jsoup.Jsoup.parse(it.readText()).text().trim().length }
+}.getOrDefault(0)
