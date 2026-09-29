@@ -18,6 +18,7 @@
 
 package com.saulhdev.feeder.manager.sync
 
+import com.saulhdev.feeder.utils.slowestOf
 import com.saulhdev.feeder.utils.usableImageUrl
 import com.saulhdev.feeder.utils.SyncResult
 import android.content.Context
@@ -208,6 +209,9 @@ internal suspend fun syncFeeds(
     val offlineFeeds = AtomicInteger(0)
     // And those left for a later sync because they rarely publish.
     var restingFeeds = 0
+    // How long each feed took, title to milliseconds, for the history's
+    // slowest few: a sync that takes minutes names what it waited for.
+    val feedTimes = java.util.concurrent.ConcurrentLinkedQueue<Pair<String, Long>>()
     val feedsRepo: SourcesRepository by inject(SourcesRepository::class.java)
     val articlesRepo: ArticleRepository by inject(ArticleRepository::class.java)
     val downloadTime = Clock.System.now()
@@ -281,6 +285,7 @@ internal suspend fun syncFeeds(
                             feed.fullTextByDefault || fullTextForAll
                     launch(coroutineContext) {
                         gate.withPermit {
+                            val fetchStarted = System.currentTimeMillis()
                             try {
                                 // Mark as syncing START
                                 feedsRepo.setCurrentlySyncingOn(feedId = feed.id, syncing = true)
@@ -324,6 +329,7 @@ internal suspend fun syncFeeds(
                                 // And forget any run of failures: whatever was
                                 // wrong is not wrong now.
                                 feedsRepo.clearFailures(feed.id)
+                                feedTimes.add(feed.title to System.currentTimeMillis() - fetchStarted)
                             } catch (e: CancellationException) {
                                 // Not a failure, and this catch used to treat
                                 // it as one. `Throwable` includes
@@ -384,6 +390,7 @@ internal suspend fun syncFeeds(
                                     offlineFeeds.incrementAndGet()
                                     FeedHistory.record(context, feed.id, FeedFetch(at, FetchKind.NoNetwork))
                                 }
+                                feedTimes.add(feed.title to System.currentTimeMillis() - fetchStarted)
                             }
                         }
                     }
@@ -397,6 +404,7 @@ internal suspend fun syncFeeds(
                     identical = identicalFeeds.get(),
                     offline = offlineFeeds.get(),
                     resting = restingFeeds,
+                    slowest = slowestOf(feedTimes),
                 )
 
             }

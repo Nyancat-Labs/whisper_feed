@@ -107,31 +107,38 @@ class GoogleReaderService(
             // read made in Whisper and not yet sent would otherwise be undone
             // by the server's older answer, which is what happened to every
             // read in the first version of this.
-            val token = api.writeToken(auth)
-            var tally = syncSubscriptions(auth, token, retryRefused)
+            // Each step timed, for the history: a sync that takes minutes
+            // should say which step they went on.
+            val steps = mutableListOf<Pair<String, Long>>()
+            suspend fun <T> step(name: String, block: suspend () -> T): T {
+                val started = System.currentTimeMillis()
+                return try { block() } finally { steps += name to System.currentTimeMillis() - started }
+            }
+            val token = step("sign-in") { api.writeToken(auth) }
+            var tally = step("subscriptions") { syncSubscriptions(auth, token, retryRefused) }
 
             // Articles still come from the feeds themselves; see the note above.
             // ID_ALL rather than the default, so a feed fetched in the last
             // few minutes is left alone unless the reader forced it, as it is
             // without an account.
-            val feeds = syncFeeds(context = context, feedId = ID_ALL, forceNetwork = forceNetwork)
+            val feeds = step("feeds") { syncFeeds(context = context, feedId = ID_ALL, forceNetwork = forceNetwork) }
 
-            mapRemoteIds(auth)
+            step("matching") { mapRemoteIds(auth) }
             requeueSavesOnce()
-            val saves = mapPendingSaves(auth)
-            val push = pushChanges(auth, token, saves.keep)
+            val saves = step("saves lookup") { mapPendingSaves(auth) }
+            val push = step("sending") { pushChanges(auth, token, saves.keep) }
             tally = tally.copy(
                 readSent = push.read, unreadSent = push.unread,
                 savedSent = push.saved, unsavedSent = push.unsaved, changesKept = push.kept,
                 savesNotFound = saves.givenUp.size,
             )
             if (push.ok) {
-                val (read, unread) = pullReadState(auth)
-                tally = tally.copy(readHere = read, unreadHere = unread, savedHere = pullStars(auth))
+                val (read, unread) = step("read state") { pullReadState(auth) }
+                tally = tally.copy(readHere = read, unreadHere = unread, savedHere = step("stars") { pullStars(auth) })
             } else {
                 Log.w(TAG, "Changes not sent; the server's read state waits for the next sync")
             }
-            tally = tally.copy(matched = articles.mappedArticles().size)
+            tally = tally.copy(matched = articles.mappedArticles().size, steps = steps)
 
             account.lastSync = System.currentTimeMillis()
             AccountTallyStore.write(context, tally, account.lastSync)

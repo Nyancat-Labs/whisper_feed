@@ -2431,6 +2431,16 @@ Small and certain first, then what the most phones see, then the rest.
   lookup. A test reads SQLite's own plan for the query, and without the
   index it shows the fallback, the `remoteId` index, which still reads every
   unmatched article.
+  The next full sync took 205 seconds, down from 499: better, not solved.
+  So each sync now records how long each step took (sign-in, subscriptions,
+  feeds, matching, saves lookup, sending, read state, stars) and the three
+  slowest feeds, in the history the diagnostics report carries, rather than
+  another guess.
+- **A Techmeme article lost its text and picture in the reader.** Its feed
+  carries a paragraph and an image; the page is a list of links, and the
+  full-article extraction came back as the timestamp alone and replaced
+  them. An extraction shorter than the feed's own text is now refused and
+  the feed's kept, and the background prefetch does not retry it.
 
 ### 17. Scroll parallax on the feed — parked, at the bottom
 
@@ -2668,7 +2678,7 @@ Small, and cheaper now than later.
   from the code and measured where it could be measured — text widths against
   the real font, icon alpha, migration SQL. The on-device checks have all been
   yours. Emulator-based screenshot tests would change that.
-- **Test coverage is 967 unit tests** (September 2026), across article age, tag splitting, feed
+- **Test coverage is 972 unit tests** (September 2026), across article age, tag splitting, feed
   layout and weighting, clustering, the settings backup format, the tour's step
   machine, the starter list, bookmark import, link harvesting, the Google Reader
   id shapes, the source list's filters and range selection, and the URL scheme

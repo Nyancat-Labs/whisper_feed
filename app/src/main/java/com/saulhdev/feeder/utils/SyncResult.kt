@@ -62,6 +62,8 @@ data class SyncResult(
     val resting: Int = 0,
     /** What an account sync did with the server; see AccountTally. */
     val account: AccountTally? = null,
+    /** The feeds that took longest, title to milliseconds; see slowestOf. */
+    val slowest: List<Pair<String, Long>> = emptyList(),
 ) {
     /** Not broken. Nothing due is fine; some feeds failing is still a sync. */
     val ok: Boolean get() = error == null
@@ -105,10 +107,33 @@ fun syncOutcome(result: SyncResult, notes: List<String> = emptyList()): String {
     }
     val data = result.bytes?.let(::formatBytes)
     val resting = if (result.resting > 0 && result.error == null) "${result.resting} not due yet" else null
-    val all = details + listOfNotNull(resting, data) + notes
+    val slow = result.slowest.takeIf { it.isNotEmpty() && result.error == null }
+        ?.joinToString(", ", prefix = "slowest ") { (title, ms) -> "${title.take(SLOW_TITLE)} ${seconds(ms)}" }
+    val all = details + listOfNotNull(resting, data, slow) + notes
     val line = if (all.isEmpty()) head else "$head (${all.joinToString(", ")})"
     return result.account?.takeIf { result.error == null }?.let { "$line; ${accountSummary(it)}" } ?: line
 }
+
+/** How much of a feed's title the slowest list shows. */
+private const val SLOW_TITLE = 24
+
+/** How many of the slowest feeds the history names. */
+private const val SLOWEST_SHOWN = 3
+
+/** Below this a feed was not slow, whatever else was slower. */
+private const val SLOW_FROM_MS = 3_000L
+
+/**
+ * The few feeds a sync waited longest for, slowest first, and only those
+ * that took [SLOW_FROM_MS] or more: a sync that took thirty seconds has no
+ * culprit worth naming.
+ */
+fun slowestOf(times: Collection<Pair<String, Long>>): List<Pair<String, Long>> =
+    times.filter { it.second >= SLOW_FROM_MS }.sortedByDescending { it.second }.take(SLOWEST_SHOWN)
+
+/** Whole seconds, or tenths below ten: "0.4s", "7.2s", "45s". */
+fun seconds(ms: Long): String =
+    if (ms < 10_000) String.format(java.util.Locale.US, "%.1fs", ms / 1000.0) else "${ms / 1000}s"
 
 /**
  * A byte count the way Android's own data screen writes it: thousands, not

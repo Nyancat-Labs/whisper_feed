@@ -17,6 +17,7 @@
  */
 package com.saulhdev.feeder.manager.sync.greader
 
+import com.saulhdev.feeder.utils.seconds
 import android.content.Context
 import androidx.core.content.edit
 
@@ -53,6 +54,12 @@ data class AccountTally(
      * so no longer sent. Still saved here; see planSaveLookups.
      */
     val savesNotFound: Int = 0,
+    /**
+     * How long each step of the sync took, in order, name to milliseconds:
+     * where the minutes went when a sync is slow. For the history only; not
+     * stored with the rest.
+     */
+    val steps: List<Pair<String, Long>> = emptyList(),
 )
 
 /**
@@ -78,6 +85,8 @@ fun accountSummary(t: AccountTally): String {
         if (t.changesKept > 0) "${t.changesKept} changes kept" else null,
         if (t.savesNotFound > 0) "${t.savesNotFound} saves not on the server" else null,
         down?.let { "received $it" },
+        t.steps.takeIf { it.isNotEmpty() }
+            ?.joinToString(", ", prefix = "took ") { (step, ms) -> "$step ${seconds(ms)}" },
     ).joinToString("; ")
 }
 
