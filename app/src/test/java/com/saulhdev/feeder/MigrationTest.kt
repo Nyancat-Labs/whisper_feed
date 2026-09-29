@@ -68,7 +68,7 @@ import java.io.File
 @Config(sdk = [35], application = Application::class)
 class MigrationTest {
 
-    private val current = 25
+    private val current = 26
     private val first = 3
     private val schemas = File("schemas/${NeoFeedDb::class.java.name}")
 

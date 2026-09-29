@@ -60,6 +60,13 @@ import kotlin.time.Instant
         // each is four thousand and climbing, and that reader is exactly the
         // one who would notice.
         Index(value = ["readAt"]),
+        // An account sync matches the server's articles to these by link,
+        // one at a time, up to two thousand a sync. The only index holding
+        // link had it second, behind uuid, where SQLite cannot use it for a
+        // lookup by link: each match read the whole table. At four thousand
+        // articles a sync took thirty seconds; at thirteen thousand, eight
+        // minutes, most of them on mobile data with the phone held awake.
+        Index(value = ["link"]),
     ],
     foreignKeys = [
         ForeignKey(

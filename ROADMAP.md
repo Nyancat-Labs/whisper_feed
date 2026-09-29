@@ -2418,6 +2418,20 @@ Small and certain first, then what the most phones see, then the rest.
 - **Lint and the compiler are both at zero warnings**, from 202 and 30. See
   Debt.
 
+### 24. From the device, 29 September 2026
+
+- **Every account sync took seven or eight minutes**, where two days before
+  it took thirty seconds. After the bookmark import the phone held 12,884
+  articles, not 5,001, and the server a dozen more feeds. Each sync matches
+  up to two thousand of the server's articles to these by link, one query
+  each, and no index could serve a lookup by link: the one holding it had it
+  second, behind uuid. Each match read the whole table, so the cost grew as
+  articles times matches, and most of it was spent on mobile data with the
+  phone held awake. An index on `link` (database version 26) makes each a
+  lookup. A test reads SQLite's own plan for the query, and without the
+  index it shows the fallback, the `remoteId` index, which still reads every
+  unmatched article.
+
 ### 17. Scroll parallax on the feed — parked, at the bottom
 
 Prototyped, demonstrated, and deliberately not built. The image inside a card's
@@ -2654,7 +2668,7 @@ Small, and cheaper now than later.
   from the code and measured where it could be measured — text widths against
   the real font, icon alpha, migration SQL. The on-device checks have all been
   yours. Emulator-based screenshot tests would change that.
-- **Test coverage is 966 unit tests** (September 2026), across article age, tag splitting, feed
+- **Test coverage is 967 unit tests** (September 2026), across article age, tag splitting, feed
   layout and weighting, clustering, the settings backup format, the tour's step
   machine, the starter list, bookmark import, link harvesting, the Google Reader
   id shapes, the source list's filters and range selection, and the URL scheme

@@ -52,7 +52,7 @@ const val ID_ALL: Long = -1L
         Suggestion::class,
         ReadingTally::class,
     ],
-    version = 25,
+    version = 26,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -230,6 +230,7 @@ abstract class NeoFeedDb : RoomDatabase() {
 }
 
 val allMigrations = arrayOf(
+    MIGRATION_25_26,
     MIGRATION_24_25,
     MIGRATION_23_24,
     MIGRATION_22_23,
@@ -251,6 +252,14 @@ val allMigrations = arrayOf(
     MIGRATION_12_13,
     MIGRATION_13_14,
 )
+
+@Suppress("ClassName")
+object MIGRATION_25_26 : Migration(25, 26) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Matching an account's articles by link; see the index on Article.
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_Article_link` ON `Article` (`link`)")
+    }
+}
 
 @Suppress("ClassName")
 object MIGRATION_24_25 : Migration(24, 25) {
