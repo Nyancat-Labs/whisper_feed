@@ -2436,6 +2436,13 @@ Small and certain first, then what the most phones see, then the rest.
   feeds, matching, saves lookup, sending, read state, stars) and the three
   slowest feeds, in the history the diagnostics report carries, rather than
   another guess.
+  The first two timed syncs answered it: 44 s on mobile data and 34 s on
+  Wi-Fi, of which feeds 32–35 s and matching 1.6–5.8 s; every other step
+  under two seconds. The 205 s had come straight after the upgrade, following
+  two syncs cut off while the phone's battery setting for Whisper was
+  Restricted. Slowest feeds were simply heavy ones (Gear Patrol, 430 KB, 14 s)
+  and ran alongside the rest. BizToc, fifty new articles a sync, was not among
+  them; the reader removed it for the volume.
 - **A Techmeme article lost its text and picture in the reader.** Its feed
   carries a paragraph and an image; the page is a list of links, and the
   full-article extraction came back as the timestamp alone and replaced
