@@ -2449,6 +2449,27 @@ Small and certain first, then what the most phones see, then the rest.
   them. An extraction shorter than the feed's own text is now refused and
   the feed's kept, and the background prefetch does not retry it.
 
+### 25. From the device, 30 September 2026
+
+- **An evening's syncs were cut off and restarted every few minutes.** From
+  19:08 to 20:50 every scheduled sync began on Wi-Fi and stopped as Whisper
+  left the screen, "network changed or dropped" or "device state changed",
+  ending "blocked for Whisper". WorkManager started each again as soon as it
+  could: seven runs between 20:38 and 20:50, each fetching the feeds from the
+  top, while the battery went from 32% to 18%. An automatic sync that would
+  start in the background within half an hour of one cut off that way now
+  waits for its next slot ("skipped: cut off a moment ago"). Not on screen,
+  and never for a sync the reader asked for.
+- **The full-article backlog restarted with them.** About 410 pages waited;
+  one run took 205 of them, 19.7 MB in 196 s, and most runs were stopped
+  part-way and began again. A run now downloads at most 50, saved articles
+  first and then newest, and the history says how many wait for the next
+  runs. A run of saved articles only is not capped.
+- **Twelve reads waited nine hours.** Sending came after the feeds and the
+  matching, and no run got that far. Changes to articles the server has
+  already matched now go up straight after sign-in; the rest still wait for
+  the matching, so nothing unmatched is dropped from the outbox.
+
 ### 17. Scroll parallax on the feed — parked, at the bottom
 
 Prototyped, demonstrated, and deliberately not built. The image inside a card's
@@ -2685,7 +2706,7 @@ Small, and cheaper now than later.
   from the code and measured where it could be measured — text widths against
   the real font, icon alpha, migration SQL. The on-device checks have all been
   yours. Emulator-based screenshot tests would change that.
-- **Test coverage is 972 unit tests** (September 2026), across article age, tag splitting, feed
+- **Test coverage is 982 unit tests** (September 2026), across article age, tag splitting, feed
   layout and weighting, clustering, the settings backup format, the tour's step
   machine, the starter list, bookmark import, link harvesting, the Google Reader
   id shapes, the source list's filters and range selection, and the URL scheme

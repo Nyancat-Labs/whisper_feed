@@ -110,3 +110,50 @@ fun skipForBlockedData(automatic: Boolean, blocked: Boolean, onScreen: Boolean):
     automatic && blocked && !onScreen
 
 fun msUntilNextMinute(nowMs: Long): Long = 60_000L - Math.floorMod(nowMs, 60_000L)
+
+/**
+ * How long a background sync that Android cut off holds back the next
+ * automatic one that would start in the background.
+ */
+const val CUT_OFF_HOLD_MS = 30 * 60_000L
+
+/**
+ * The ends that mean Android took the network or the run away from Whisper,
+ * as the history writes them; see stopReasonName.
+ */
+val CUT_OFF_OUTCOMES = setOf(
+    "stopped: network changed or dropped",
+    "stopped: device state changed",
+)
+
+/**
+ * Whether an automatic sync should wait for its next slot because the last
+ * automatic one was cut off a moment ago.
+ *
+ * WorkManager starts a stopped sync again as soon as it can, and one evening
+ * that was every two or three minutes: seven runs between 20:38 and 20:50,
+ * each fetching the feeds again from the top and each cut off as Whisper left
+ * the screen, the network "blocked for Whisper" on Wi-Fi. Each one cost
+ * battery and none got as far as the account. Skipped as success, the
+ * schedule moves on to its next slot.
+ *
+ * Never while Whisper is on screen, when Android leaves it the network, and
+ * never for a sync the reader asked for. The run looked at is the newest
+ * automatic one that finished and was not itself skipped, so the hold lasts
+ * [CUT_OFF_HOLD_MS] from the cut-off however many skips follow. [current] is
+ * this run's own entry, still running.
+ */
+fun skipAfterCutOff(
+    automatic: Boolean,
+    onScreen: Boolean,
+    entries: List<SyncEntry>,
+    nowMs: Long,
+    current: Long,
+): Boolean {
+    if (!automatic || onScreen) return false
+    val last = entries.firstOrNull {
+        it.start != current && it.end > 0L &&
+            it.origin in SyncLog.AUTOMATIC_ORIGINS && !it.outcome.startsWith("skipped")
+    } ?: return false
+    return last.outcome in CUT_OFF_OUTCOMES && nowMs - last.end in 0..CUT_OFF_HOLD_MS
+}

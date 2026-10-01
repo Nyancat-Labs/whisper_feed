@@ -225,6 +225,7 @@ class TwoWaySyncTest {
     fun `changes go up before anything comes down`() {
         val sync = source("manager/sync/service/GoogleReaderService.kt").substringAfter("override suspend fun sync(")
         val order = listOf(
+            "pushChanges(auth, token, matchedOnly = true)",
             "syncSubscriptions(auth, token, retryRefused)",
             "syncFeeds(context = context, feedId = ID_ALL, forceNetwork = forceNetwork)",
             "mapRemoteIds(auth)",

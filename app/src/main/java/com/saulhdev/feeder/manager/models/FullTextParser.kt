@@ -144,6 +144,25 @@ private fun fullTextConstraints(): Constraints {
         .build()
 }
 
+/**
+ * How many pages one after-sync run downloads.
+ *
+ * A backlog of four hundred went in one run: over three minutes, cut off as
+ * Whisper left the screen, started again from the top by the next sync and
+ * cut off again, the battery going down by a fifth in an evening. Fifty a run
+ * keeps each one short enough to finish, and the backlog goes over the next
+ * few syncs, newest first.
+ */
+internal const val FULL_TEXT_PER_RUN = 50
+
+/**
+ * The pages this run downloads, of the [waiting] ones, which come saved first
+ * and then newest. All of them for a run of saved articles only: the reader
+ * asked for each of those, and they are never many.
+ */
+internal fun <T> fullTextBatch(waiting: List<T>, savedOnly: Boolean): List<T> =
+    if (savedOnly) waiting else waiting.take(FULL_TEXT_PER_RUN)
+
 class FullTextWorker(
     val context: Context,
     workerParams: WorkerParameters
@@ -172,7 +191,7 @@ class FullTextWorker(
         // leaves no line in the history: it follows every sync, and twenty
         // lines of "nothing to fetch" would push the syncs themselves out.
         val savedOnly = inputData.getBoolean(SAVED_ONLY, false)
-        val toFetch = withContext(Dispatchers.IO) {
+        val waiting = withContext(Dispatchers.IO) {
             (if (savedOnly) repository.savedArticleIdLinks()
             else repository.getFeedsItemsWithDefaultFullTextParse(
                 allFeeds = prefs.fullTextForAllFeeds.getValue()
@@ -182,10 +201,13 @@ class FullTextWorker(
                         shouldPrefetchFullText(now, readAttempts(item.uuid, filesDir))
                 }
         }
-        if (toFetch.isEmpty()) {
+        if (waiting.isEmpty()) {
             if (savedOnly) keepSavedImages(filesDir)
             return Result.success()
         }
+        // Saved first, then newest; see fullTextBatch.
+        val toFetch = fullTextBatch(waiting, savedOnly)
+        val held = waiting.size - toFetch.size
 
         val run = SyncLog.started(applicationContext, SyncLog.ORIGIN_FULL_TEXT)
         val receivedBefore = receivedBytes()
@@ -212,7 +234,7 @@ class FullTextWorker(
         SyncLog.finished(
             applicationContext,
             run,
-            fullTextOutcome(fetched, failed, bytesSince(receivedBefore), unreached),
+            fullTextOutcome(fetched, failed, bytesSince(receivedBefore), unreached, held),
         )
         if (savedOnly) keepSavedImages(filesDir)
         // Success whatever happened to individual pages: each failure is

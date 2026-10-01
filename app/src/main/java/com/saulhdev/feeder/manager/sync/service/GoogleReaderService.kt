@@ -115,6 +115,13 @@ class GoogleReaderService(
                 return try { block() } finally { steps += name to System.currentTimeMillis() - started }
             }
             val token = step("sign-in") { api.writeToken(auth) }
+            // Except what the server can already place: that goes up first.
+            // Android cuts a background sync off as Whisper leaves the
+            // screen, often while the feeds are still coming in, and one
+            // evening twelve reads waited nine hours behind runs that never
+            // got as far as sending. Sent before the feeds, a short run still
+            // delivers them. The rest waits for the matching, as before.
+            val early = step("sending matched") { pushChanges(auth, token, matchedOnly = true) }
             var tally = step("subscriptions") { syncSubscriptions(auth, token, retryRefused) }
 
             // Articles still come from the feeds themselves; see the note above.
@@ -128,8 +135,9 @@ class GoogleReaderService(
             val saves = step("saves lookup") { mapPendingSaves(auth) }
             val push = step("sending") { pushChanges(auth, token, saves.keep) }
             tally = tally.copy(
-                readSent = push.read, unreadSent = push.unread,
-                savedSent = push.saved, unsavedSent = push.unsaved, changesKept = push.kept,
+                readSent = early.read + push.read, unreadSent = early.unread + push.unread,
+                savedSent = early.saved + push.saved, unsavedSent = early.unsaved + push.unsaved,
+                changesKept = push.kept,
                 savesNotFound = saves.givenUp.size,
             )
             if (push.ok) {
@@ -466,11 +474,25 @@ class GoogleReaderService(
         return after
     }
 
-    private suspend fun pushChanges(auth: String, token: String?, keepSaves: Set<String> = emptySet()): PushResult {
-        val outbox = GoogleReaderState.outbox(context)
-        if (outbox.isEmpty) return PushResult(ok = true)
-        if (token == null) return PushResult(ok = false, kept = outbox.pending.size)
+    /**
+     * Sends what is waiting in the outbox.
+     *
+     * With [matchedOnly], only the changes to articles the server has already
+     * matched, and only those leave the outbox: one it has not matched yet
+     * may be by the matching that follows, and has to still be there then.
+     */
+    private suspend fun pushChanges(
+        auth: String,
+        token: String?,
+        keepSaves: Set<String> = emptySet(),
+        matchedOnly: Boolean = false,
+    ): PushResult {
+        val waiting = GoogleReaderState.outbox(context)
+        if (waiting.isEmpty) return PushResult(ok = true)
+        if (token == null) return PushResult(ok = false, kept = waiting.pending.size)
         val remoteIds = articles.mappedArticles().associate { it.uuid to it.remoteId }
+        val outbox = if (matchedOnly) waiting.only(remoteIds.keys) else waiting
+        if (outbox.isEmpty) return PushResult(ok = true)
         val batches = listOf(
             Triple(outbox.read, GoogleReaderIds.TAG_READ, true),
             Triple(outbox.unread, GoogleReaderIds.TAG_READ, false),

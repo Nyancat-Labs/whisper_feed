@@ -400,6 +400,7 @@ interface FeedArticleDao {
         SELECT Article.uuid, Article.link FROM Article
         JOIN Feeds f ON Article.feedId = f.id
         WHERE :allFeeds OR f.fullTextByDefault = 1 OR Article.bookmarked = 1
+        ORDER BY Article.bookmarked DESC, Article.primarySortTime DESC
         """
     )
     fun getArticleIdLinks(allFeeds: Boolean): Flow<List<ArticleIdWithLink>>

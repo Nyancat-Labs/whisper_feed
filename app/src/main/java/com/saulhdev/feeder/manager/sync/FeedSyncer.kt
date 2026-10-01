@@ -2,6 +2,7 @@ package com.saulhdev.feeder.manager.sync
 
 import com.saulhdev.feeder.utils.backgroundMobileDataBlocked
 import com.saulhdev.feeder.utils.skipForBlockedData
+import com.saulhdev.feeder.utils.skipAfterCutOff
 import com.saulhdev.feeder.utils.whisperOnScreen
 import com.saulhdev.feeder.utils.bytesSince
 import com.saulhdev.feeder.utils.receivedBytes
@@ -94,6 +95,20 @@ class FeedSyncer(val context: Context, workerParams: WorkerParameters) :
         val dataBlocked = automatic && backgroundMobileDataBlocked(applicationContext)
         if (skipForBlockedData(automatic, dataBlocked, whisperOnScreen())) {
             SyncLog.finished(applicationContext, run, "skipped: background mobile data blocked")
+            return Result.success()
+        }
+
+        // Cut off a moment ago, in the background: started again at once, it
+        // would only be cut off again. See skipAfterCutOff.
+        if (skipAfterCutOff(
+                automatic = automatic,
+                onScreen = whisperOnScreen(),
+                entries = SyncLog.entries(applicationContext),
+                nowMs = System.currentTimeMillis(),
+                current = run,
+            )
+        ) {
+            SyncLog.finished(applicationContext, run, "skipped: cut off a moment ago")
             return Result.success()
         }
 

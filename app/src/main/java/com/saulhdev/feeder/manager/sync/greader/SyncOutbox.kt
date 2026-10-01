@@ -50,6 +50,14 @@ data class Outbox(
 
     val isEmpty: Boolean get() = pending.isEmpty()
 
+    /** Only the changes to the articles in [ids]. */
+    fun only(ids: Set<String>): Outbox = Outbox(
+        read = read intersect ids,
+        unread = unread intersect ids,
+        star = star intersect ids,
+        unstar = unstar intersect ids,
+    )
+
     /** What is left once [sent] has gone out. */
     fun without(sent: Outbox): Outbox = Outbox(
         read = read - sent.read,

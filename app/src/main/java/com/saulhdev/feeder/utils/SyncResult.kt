@@ -146,10 +146,11 @@ fun formatBytes(bytes: Long): String = when {
 }
 
 /** The history's outcome for a full-article prefetch run. */
-fun fullTextOutcome(fetched: Int, failed: Int, bytes: Long?, unreached: Int = 0): String =
+fun fullTextOutcome(fetched: Int, failed: Int, bytes: Long?, unreached: Int = 0, held: Int = 0): String =
     "ok (" + listOfNotNull(
         "$fetched fetched",
         if (failed > 0) "$failed failed" else null,
         if (unreached > 0) "$unreached left for later, no network" else null,
+        if (held > 0) "$held for the next runs" else null,
         bytes?.let(::formatBytes),
     ).joinToString(", ") + ")"
