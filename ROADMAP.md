@@ -2491,6 +2491,15 @@ Small and certain first, then what the most phones see, then the rest.
   stops itself at eight minutes ("stopped: eight minutes up, progress
   kept"), keeping what it did, and an automatic one is retried soon and
   carries on from there.
+- **Reddit stops serving RSS on 13 November 2026.** Announced on 30
+  September, with public API access ending in March 2027. The library's 22
+  Reddit feeds, across 20 packs, were replaced one for one with checked feeds
+  on the same subject: 9to5Google, Android Weekly, Six Colors, iDownloadBlog,
+  Architizer Journal, Electric Literature, Motor1.com, CricTracker, Football
+  League World, Sky Sports Football, VGC, Apartment Therapy, Collider, Sky
+  News World, Kiplinger, Lobsters, Science News, SpaceNews, The Independent
+  Sport, Decider, Tennis Majors and UX Planet. Reddit feeds a reader already
+  follows are left alone; after the date they fail like any broken feed.
 
 ### 17. Scroll parallax on the feed — parked, at the bottom
 
@@ -2728,7 +2737,7 @@ Small, and cheaper now than later.
   from the code and measured where it could be measured — text widths against
   the real font, icon alpha, migration SQL. The on-device checks have all been
   yours. Emulator-based screenshot tests would change that.
-- **Test coverage is 996 unit tests** (September 2026), across article age, tag splitting, feed
+- **Test coverage is 997 unit tests** (September 2026), across article age, tag splitting, feed
   layout and weighting, clustering, the settings backup format, the tour's step
   machine, the starter list, bookmark import, link harvesting, the Google Reader
   id shapes, the source list's filters and range selection, and the URL scheme

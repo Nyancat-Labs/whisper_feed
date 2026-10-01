@@ -79,4 +79,20 @@ class FeedLibraryPacksTest {
         }
         assertEquals(wrong.joinToString("\n"), emptyList<String>(), wrong)
     }
+
+    /**
+     * Reddit stops serving RSS on 13 November 2026. Its 22 feeds were taken
+     * out of the packs, each replaced by a feed on the same subject, so the
+     * library does not hand anybody a feed that is about to stop.
+     */
+    @Test
+    fun `no pack offers a Reddit feed`() {
+        val reddit = dir.listFiles { f -> f.name.endsWith(".opml") }.orEmpty().flatMap { file ->
+            file.inputStream().use { FeedLibrary.parsePack(it, AndroidLikeFactory()) }
+                .map { it.url }
+                .filter { "reddit.com" in it.lowercase() }
+                .map { "${file.name}: $it" }
+        }
+        assertEquals(reddit.joinToString("\n"), emptyList<String>(), reddit)
+    }
 }

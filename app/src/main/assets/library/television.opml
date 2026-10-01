@@ -12,7 +12,7 @@
       <outline text="TV Fanatic" title="TV Fanatic" description="Your Home for TV Show Reviews, Opinions, Spoilers, and News!" xmlUrl="https://www.tvfanatic.com/rss.xml" type="rss" />
       <outline text="TVLine" title="TVLine" description="Stay up to date with the latest TV news, previews, spoilers, casting updates, interviews, and more from TVLine. Your go-to source for all things TV." xmlUrl="https://tvline.com/feed/" type="rss" />
       <outline text="the TV addict" title="the TV addict" description="TV News, Previews, Spoilers and Reviews" xmlUrl="https://feeds.feedburner.com/thetvaddict/AXob" type="rss" />
-      <outline text="📺Television News and Discussion" title="📺Television News and Discussion" description="Subreddit for content primarily about and related to scripted television programming" xmlUrl="https://reddit.com/r/television/.rss" type="rss" />
+      <outline text="Decider" title="Decider" description="What to watch on TV and streaming." xmlUrl="https://decider.com/feed/" type="rss" />
     </outline>
   </body>
 </opml>

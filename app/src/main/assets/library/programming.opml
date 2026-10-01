@@ -44,7 +44,7 @@
       <outline text="The Stack Overflow Podcast" title="The Stack Overflow Podcast" description="&lt;p&gt;For well over a decade, the Stack Overflow Podcast has been exploring what it means to be a developer and how the art and practice of software engineering is changing our world. From creating code to running it in production, we host important conversations and fascinating guests that will help you understand how technology is made and where it’s headed. Hosted by Ryan Donovan, the Stack Overflow Podcast is your home for all things software.&lt;/p&gt;" xmlUrl="https://feeds.simplecast.com/XA_851k3" type="rss" />
       <outline text="The Women in Tech Show: A Technical Podcast" title="The Women in Tech Show: A Technical Podcast" description="A podcast about what we work on, not what it feels like to be a woman in tech. Hosted by Edaena Salinas, Software Engineer at Microsoft. Website: wit.fm" xmlUrl="https://thewomenintechshow.com/category/podcast/feed/" type="rss" />
       <outline text="overreacted — A blog by Dan Abramov" title="overreacted — A blog by Dan Abramov" description="A blog by Dan Abramov" xmlUrl="https://overreacted.io/rss.xml" type="rss" />
-      <outline text="programming" title="programming" description="Computer Programming" xmlUrl="https://www.reddit.com/r/programming/.rss" type="rss" />
+      <outline text="Lobsters" title="Lobsters" description="Computing links chosen and discussed by its community." xmlUrl="https://lobste.rs/rss" type="rss" />
     </outline>
   </body>
 </opml>

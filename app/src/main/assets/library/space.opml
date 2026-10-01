@@ -8,7 +8,7 @@
   </head>
   <body>
     <outline text="Space" title="Space">
-      <outline text="/r/space: news, articles and discussion" title="/r/space: news, articles and discussion" description="Share &amp; discuss informative content on: * Astrophysics * Cosmology * Space Exploration * Planetary Science * Astrobiology" xmlUrl="https://www.reddit.com/r/space/.rss?format=xml" type="rss" />
+      <outline text="SpaceNews" title="SpaceNews" description="News about space industry, exploration and policy." xmlUrl="https://spacenews.com/feed/" type="rss" />
       <outline text="Latest from Space.com" title="Latest from Space.com" description="All the latest content from the Space.com team" xmlUrl="https://www.space.com/feeds/all" type="rss" />
       <outline text="NASA" title="NASA" description="Official National Aeronautics and Space Administration Website" xmlUrl="https://www.nasa.gov/rss/dyn/breaking_news.rss" type="rss" />
       <outline text="New Scientist - Space" title="New Scientist - Space" description="New Scientist - Space" xmlUrl="https://www.newscientist.com/subject/space/feed/" type="rss" />

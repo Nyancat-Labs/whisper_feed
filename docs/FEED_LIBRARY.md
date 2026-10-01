@@ -258,3 +258,11 @@ regenerate `app/src/main/assets/library/`. The manifest is `index.json`: slug,
 display name, `topic` or `country`, and a feed count. Verification is the part
 worth repeating — a directory ages in exactly the way the 62 dropped addresses
 show.
+
+## No Reddit feeds
+
+Reddit stops serving RSS on 13 November 2026. The 22 Reddit feeds the packs
+carried were each replaced with a feed on the same subject that passed the
+usual check (https after redirects, a real feed with items, a post within 45
+days), so every pack keeps its size. A test fails if a Reddit feed is added
+back.

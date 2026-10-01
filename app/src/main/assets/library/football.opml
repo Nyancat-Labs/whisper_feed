@@ -9,8 +9,8 @@
   <body>
     <outline text="Football" title="Football">
       <outline text="BBC Sport" title="BBC Sport" description="BBC Sport - Football" xmlUrl="https://feeds.bbci.co.uk/sport/football/rss.xml" type="rss" />
-      <outline text="EFL Championship" title="EFL Championship" description="Home of the EFL Championship on Reddit" xmlUrl="https://www.reddit.com/r/Championship/.rss?format=xml" type="rss" />
-      <outline text="Football - The People's Sport" title="Football - The People's Sport" description="Home of Football. Official Sponsors of Redditch United. News, Rumours, Analysis, gossip and much more." xmlUrl="https://www.reddit.com/r/football/.rss?format=xml" type="rss" />
+      <outline text="Football League World" title="Football League World" description="News from the EFL Championship, League One and League Two." xmlUrl="https://footballleagueworld.co.uk/feed/" type="rss" />
+      <outline text="Sky Sports Football" title="Sky Sports Football" description="Football news from Sky Sports." xmlUrl="https://www.skysports.com/rss/12040" type="rss" />
       <outline text="The Hindu" title="The Hindu" description="Get Football News, Updates, Fixtures, Commentary &amp;amp;amp; Live Scores From Top Leagues Like The Premier League, La Liga, ISL &amp;amp;amp; Bundesliga At The Hindu" xmlUrl="https://www.thehindu.com/sport/football/feeder/default.rss" type="rss" />
       <outline text="Football | The Guardian" title="Football | The Guardian" description="Latest Football news, comment and analysis from the Guardian, the world's leading liberal voice" xmlUrl="https://www.theguardian.com/football/rss" type="rss" />
       <outline text="NYT &gt; Sports &gt; Soccer" title="NYT &gt; Sports &gt; Soccer" description="" xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Soccer.xml" type="rss" />

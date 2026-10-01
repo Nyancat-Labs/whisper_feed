@@ -20,7 +20,7 @@
       <outline text="The Ancient Gaming Noob" title="The Ancient Gaming Noob" description="Veni, Vidi, Scripsi" xmlUrl="https://feeds.feedburner.com/TheAncientGamingNoob" type="rss" />
       <outline text="The Escapist" title="The Escapist" description="Everything fun" xmlUrl="https://www.escapistmagazine.com/v2/feed/" type="rss" />
       <outline text="TouchArcade - iPhone, iPad, Android Games Forum" title="TouchArcade - iPhone, iPad, Android Games Forum" description="iPhone and iPad Games and News" xmlUrl="https://toucharcade.com/community/forums/-/index.rss" type="rss" />
-      <outline text="r/gaming" title="r/gaming" description="The Number One Gaming forum on the Internet." xmlUrl="https://www.reddit.com/r/gaming.rss" type="rss" />
+      <outline text="VGC" title="VGC" description="Video Games Chronicle: games news, reviews and features." xmlUrl="https://www.videogameschronicle.com/feed/" type="rss" />
     </outline>
   </body>
 </opml>

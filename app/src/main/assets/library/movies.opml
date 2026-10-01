@@ -14,7 +14,7 @@
       <outline text="Deadline" title="Deadline" description="Hollywood Entertainment Breaking News" xmlUrl="https://deadline.com/feed/" type="rss" />
       <outline text="FirstShowing.net" title="FirstShowing.net" description="Connecting Hollywood with its Audience" xmlUrl="https://www.firstshowing.net/feed/" type="rss" />
       <outline text="IndieWire" title="IndieWire" description="The Voice of Creative Independence" xmlUrl="https://www.indiewire.com/feed" type="rss" />
-      <outline text="Movie News and Discussion" title="Movie News and Discussion" description="/r/movies is the world's largest online film community, with over 37,000,000 members. Come on in and talk about movies with us!" xmlUrl="https://reddit.com/r/movies/.rss" type="rss" />
+      <outline text="Collider" title="Collider" description="Film news, reviews and interviews." xmlUrl="https://collider.com/feed/" type="rss" />
       <outline text="Movies" title="Movies" description="Comics, Movies, TV, Games" xmlUrl="https://www.bleedingcool.com/movies/feed/" type="rss" />
       <outline text="Variety" title="Variety" description="Entertainment news, film reviews, awards, film festivals, box office, entertainment industry conferences" xmlUrl="https://variety.com/feed/" type="rss" />
       <outline type="rss" text="Cineuropa" title="Cineuropa" xmlUrl="https://cineuropa.org/rss/newsen.xml"/>

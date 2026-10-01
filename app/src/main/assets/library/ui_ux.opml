@@ -14,7 +14,7 @@
       <outline text="UX Collective - Medium" title="UX Collective - Medium" description="We believe designers are thinkers as much as they are makers. https://linktr.ee/uxc - Medium" xmlUrl="https://uxdesign.cc/feed" type="rss" />
       <outline text="UX Movement" title="UX Movement" description="" xmlUrl="https://uxmovement.com/feed/" type="rss" />
       <outline text="Usability Geek" title="Usability Geek" description="Usability &amp; User Experience (UX) Blog" xmlUrl="https://usabilitygeek.com/feed/" type="rss" />
-      <outline text="User Experience" title="User Experience" description="A community where professionals, enthusiasts, and individuals interested in the field of user experience can share knowledge, ask questions, and engage in discussions about various UX-related topics." xmlUrl="https://www.reddit.com/r/userexperience/.rss" type="rss" />
+      <outline text="UX Planet" title="UX Planet" description="Articles on user experience and product design." xmlUrl="https://uxplanet.org/feed" type="rss" />
     </outline>
   </body>
 </opml>

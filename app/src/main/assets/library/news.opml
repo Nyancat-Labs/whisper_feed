@@ -14,7 +14,7 @@
       <outline text="NYT &gt; World News" title="NYT &gt; World News" description="" xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/World.xml" type="rss" />
       <outline text="Top stories - Google News" title="Top stories - Google News" description="Google News" xmlUrl="https://news.google.com/rss" type="rss" />
       <outline text="The Washington Post" title="The Washington Post" description="The Washington Post World section provides information and analysis of breaking world news stories. In addition to our world news and video, Post World News offers discussions and blogs on major international news and economic issues." xmlUrl="https://feeds.washingtonpost.com/rss/world" type="rss" />
-      <outline text="Reddit" title="Reddit" description="A place for major news from around the world, excluding US-internal news." xmlUrl="https://www.reddit.com/r/worldnews/.rss" type="rss" />
+      <outline text="Sky News World" title="Sky News World" description="World news from Sky News." xmlUrl="https://feeds.skynews.com/feeds/rss/world.xml" type="rss" />
       <outline text="The Times of India" title="The Times of India" description="World News Today: Read the latest world news headlines, Current International breaking news world wide. In depth analysis and top news headlines world wide." xmlUrl="https://timesofindia.indiatimes.com/rssfeeds/296589292.cms" type="rss" />
       <outline text="The Guardian" title="The Guardian" description="Latest World news news, comment and analysis from the Guardian, the world's leading liberal voice" xmlUrl="https://www.theguardian.com/world/rss" type="rss" />
       <outline type="rss" text="Euronews" title="Euronews" xmlUrl="https://www.euronews.com/rss"/>

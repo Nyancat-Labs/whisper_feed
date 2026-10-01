@@ -22,8 +22,8 @@
       <outline text="OS X Daily" title="OS X Daily" description="News, tips, software, reviews, and more for Mac OS X, iPhone, iPad" xmlUrl="https://feeds.feedburner.com/osxdaily" type="rss" />
       <outline text="The Loop" title="The Loop" description="Making Sense of Technology" xmlUrl="https://www.loopinsight.com/feed" type="rss" />
       <outline text="iMore - The #1 iPhone, iPad, and iPod touch blog" title="iMore - The #1 iPhone, iPad, and iPod touch blog" description="More news and rumors, more help and how-tos, more app and accessory reviews, more iPhone and iPad and iPod touch. More of everything you love. iMore." xmlUrl="https://feeds.feedburner.com/TheiPhoneBlog" type="rss" />
-      <outline text="r/Apple: Unofficial Apple Community" title="r/Apple: Unofficial Apple Community" description="An unofficial community about Apple and all of its devices and software." xmlUrl="https://www.reddit.com/r/apple/.rss" type="rss" />
-      <outline text="r/iPhone" title="r/iPhone" description="Reddit’s little corner for iPhone lovers (and some people who just mildly enjoy it…)" xmlUrl="https://www.reddit.com/r/iphone/.rss" type="rss" />
+      <outline text="Six Colors" title="Six Colors" description="Apple news and analysis by Jason Snell and Dan Moren." xmlUrl="https://sixcolors.com/feed/" type="rss" />
+      <outline text="iDownloadBlog" title="iDownloadBlog" description="iPhone, iPad and Mac news, tips and tutorials." xmlUrl="https://www.idownloadblog.com/feed/" type="rss" />
     </outline>
   </body>
 </opml>
