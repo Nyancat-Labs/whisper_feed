@@ -19,6 +19,9 @@
 package com.saulhdev.feeder.manager.sync
 
 import com.saulhdev.feeder.utils.slowestOf
+import com.saulhdev.feeder.utils.resumeFrom
+import com.saulhdev.feeder.utils.syncIntervalMs
+import com.saulhdev.feeder.utils.SyncLog
 import com.saulhdev.feeder.utils.usableImageUrl
 import com.saulhdev.feeder.utils.SyncResult
 import android.content.Context
@@ -209,6 +212,8 @@ internal suspend fun syncFeeds(
     val offlineFeeds = AtomicInteger(0)
     // And those left for a later sync because they rarely publish.
     var restingFeeds = 0
+    // And those a sync cut off just before had already fetched.
+    var resumedFeeds = 0
     // How long each feed took, title to milliseconds, for the history's
     // slowest few: a sync that takes minutes names what it waited for.
     val feedTimes = java.util.concurrent.ConcurrentLinkedQueue<Pair<String, Long>>()
@@ -262,12 +267,26 @@ internal suspend fun syncFeeds(
                 val paced = !forceNetwork && feedId <= 0 && feedTag.isEmpty()
                 val pace: Map<Long, Float> = if (paced) articlesRepo.sourcePace().first() else emptyMap()
                 val nowMs = Clock.System.now().toEpochMilliseconds()
-                val feedsToFetch = if (paced) {
+                val byPace = if (paced) {
                     candidates.filter { dueByPace(nowMs, it.lastSync.toEpochMilliseconds(), pace[it.id]) }
                 } else {
                     candidates
                 }
-                restingFeeds = candidates.size - feedsToFetch.size
+                restingFeeds = candidates.size - byPace.size
+
+                // Picking up after syncs Android cut off: what they fetched
+                // is not fetched again. See resumeFrom.
+                val resume = if (paced) {
+                    resumeFrom(SyncLog.entries(context), nowMs, syncIntervalMs(prefs.syncFrequency.getValue()))
+                } else {
+                    null
+                }
+                val feedsToFetch = if (resume != null) {
+                    byPace.filter { it.lastSync.toEpochMilliseconds() < resume }
+                } else {
+                    byPace
+                }
+                resumedFeeds = byPace.size - feedsToFetch.size
 
                 Log.d(TAG, "Feeds to sync: ${feedsToFetch.size}, resting: $restingFeeds")
 
@@ -404,6 +423,7 @@ internal suspend fun syncFeeds(
                     identical = identicalFeeds.get(),
                     offline = offlineFeeds.get(),
                     resting = restingFeeds,
+                    resumed = resumedFeeds,
                     slowest = slowestOf(feedTimes),
                 )
 

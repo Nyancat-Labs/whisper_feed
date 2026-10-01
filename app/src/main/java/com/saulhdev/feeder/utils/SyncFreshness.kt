@@ -157,3 +157,36 @@ fun skipAfterCutOff(
     } ?: return false
     return last.outcome in CUT_OFF_OUTCOMES && nowMs - last.end in 0..CUT_OFF_HOLD_MS
 }
+
+/**
+ * One scheduled interval, from the sync frequency setting in hours. An hour
+ * when syncing is manual ("0"), for the panel's and the app's own syncs.
+ */
+fun syncIntervalMs(frequencyHours: String): Long =
+    frequencyHours.toDoubleOrNull()?.takeIf { it > 0 }?.let { (it * HOUR_MS).toLong() } ?: HOUR_MS
+
+/**
+ * Where an automatic sync picks up after syncs Android cut off: the start of
+ * the unbroken run of cut-off automatic syncs just before it. A feed fetched
+ * since then is not fetched again.
+ *
+ * A cut-off sync starts again from the top. Each skipped only what had been
+ * fetched in the last five minutes, and restarts came three to six minutes
+ * apart, so one evening downloaded the same feeds over and over: Science
+ * Magazine at 20:38, 20:44 and 20:50, identical each time.
+ *
+ * Every stop counts, whatever the reason: each left feeds unfetched. Skips
+ * are passed over, since they fetched nothing and ended nothing. Null when
+ * the last automatic sync finished, or when the cut-off ones are more than
+ * [intervalMs] old - by then everything is due anyway. Never reaching back
+ * further than [intervalMs], so no feed goes longer than one interval.
+ * The sync asking is still running, and is not counted.
+ */
+fun resumeFrom(entries: List<SyncEntry>, nowMs: Long, intervalMs: Long): Long? {
+    val chain = entries.asSequence()
+        .filter { it.end > 0L && it.origin in SyncLog.AUTOMATIC_ORIGINS && !it.outcome.startsWith("skipped") }
+        .takeWhile { it.outcome.startsWith("stopped:") }
+        .toList()
+    if (chain.isEmpty() || nowMs - chain.first().end > intervalMs) return null
+    return maxOf(chain.last().start, nowMs - intervalMs)
+}

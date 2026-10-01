@@ -2469,6 +2469,13 @@ Small and certain first, then what the most phones see, then the rest.
   matching, and no run got that far. Changes to articles the server has
   already matched now go up straight after sign-in; the rest still wait for
   the matching, so nothing unmatched is dropped from the outbox.
+- **A sync after a cut-off started the feeds again from the top.** Each run
+  skipped only what had been fetched in the last five minutes, and restarts
+  came three to six minutes apart: Science Magazine was downloaded at 20:38,
+  20:44 and 20:50, identical each time. An automatic sync now picks up from
+  the start of the cut-off syncs just before it, never reaching back more
+  than one sync interval, and the history says how many feeds were "done
+  before the cut-off". A pull to refresh still fetches everything.
 
 ### 17. Scroll parallax on the feed — parked, at the bottom
 
@@ -2706,7 +2713,7 @@ Small, and cheaper now than later.
   from the code and measured where it could be measured — text widths against
   the real font, icon alpha, migration SQL. The on-device checks have all been
   yours. Emulator-based screenshot tests would change that.
-- **Test coverage is 982 unit tests** (September 2026), across article age, tag splitting, feed
+- **Test coverage is 990 unit tests** (September 2026), across article age, tag splitting, feed
   layout and weighting, clustering, the settings backup format, the tour's step
   machine, the starter list, bookmark import, link harvesting, the Google Reader
   id shapes, the source list's filters and range selection, and the URL scheme
