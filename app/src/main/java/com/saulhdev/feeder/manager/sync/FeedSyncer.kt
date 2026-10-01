@@ -44,6 +44,7 @@ import com.saulhdev.feeder.data.db.ID_UNSET
 import com.saulhdev.feeder.data.repository.SourcesRepository
 import org.koin.java.KoinJavaComponent.inject
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.withTimeoutOrNull
 
 class FeedSyncer(val context: Context, workerParams: WorkerParameters) :
     CoroutineWorker(context, workerParams) {
@@ -148,68 +149,84 @@ class FeedSyncer(val context: Context, workerParams: WorkerParameters) :
         val receivedBefore = receivedBytes()
 
         try {
-            val feedId = inputData.getLong("feed_id", ID_UNSET)
-            val feedTag = inputData.getString("feed_tag") ?: ""
-            // False unless the request says so. This defaulted to true, and the
-            // scheduled sync's request carries no such key - so every
-            // scheduled sync forced a fetch of every feed however recently it
-            // had been fetched. The report caught it: plugging in released
-            // the panel's sync and the scheduled one together, the lock let
-            // the panel's go first, and the scheduled one then waited three
-            // minutes and downloaded all 120 feeds again. Only a sync the
-            // reader asked for should skip the freshness check.
-            val forceNetwork = inputData.getBoolean("force_network", false)
-            val minFeedAgeMinutes = inputData.getInt("min_feed_age_minutes", 5)
+            // Stopped here, short of Android's ten minutes, rather than there:
+            // a run Android stops is cut off wherever it is, and one morning
+            // three syncs on the charger each hit the limit. Ended here, what
+            // it did is kept - the feeds it fetched and the articles it
+            // matched - and the retry carries on from it. See resumeFrom and
+            // mapRemoteIds.
+            val done = withTimeoutOrNull(SYNC_TIME_BUDGET_MS) {
+                val feedId = inputData.getLong("feed_id", ID_UNSET)
+                val feedTag = inputData.getString("feed_tag") ?: ""
+                // False unless the request says so. This defaulted to true, and the
+                // scheduled sync's request carries no such key - so every
+                // scheduled sync forced a fetch of every feed however recently it
+                // had been fetched. The report caught it: plugging in released
+                // the panel's sync and the scheduled one together, the lock let
+                // the panel's go first, and the scheduled one then waited three
+                // minutes and downloaded all 120 feeds again. Only a sync the
+                // reader asked for should skip the freshness check.
+                val forceNetwork = inputData.getBoolean("force_network", false)
+                val minFeedAgeMinutes = inputData.getInt("min_feed_age_minutes", 5)
 
-            // A whole-feed refresh goes through whichever service is in
-            // charge; a single feed or one tag is always local, because
-            // neither the protocol nor this worker has a notion of syncing
-            // part of an account.
-            //
-            // This used to call syncFeeds directly in every case, which meant
-            // an account was reconciled only when its settings screen was
-            // open: subscriptions added on another device did not arrive, and
-            // read state never moved unless somebody went looking for it. The
-            // scheduled sync was local-only without saying so.
-            // Both ways of saying "every feed": the schedule leaves the id
-            // unset, the panel and the app say ID_ALL. Only the first counted,
-            // so a panel or app-opened sync with an account signed in fetched
-            // the feeds and never spoke to the server.
-            val wholeFeed = isWholeFeed(feedId, feedTag)
-            val service = dispatcher.current()
+                // A whole-feed refresh goes through whichever service is in
+                // charge; a single feed or one tag is always local, because
+                // neither the protocol nor this worker has a notion of syncing
+                // part of an account.
+                //
+                // This used to call syncFeeds directly in every case, which meant
+                // an account was reconciled only when its settings screen was
+                // open: subscriptions added on another device did not arrive, and
+                // read state never moved unless somebody went looking for it. The
+                // scheduled sync was local-only without saying so.
+                // Both ways of saying "every feed": the schedule leaves the id
+                // unset, the panel and the app say ID_ALL. Only the first counted,
+                // so a panel or app-opened sync with an account signed in fetched
+                // the feeds and never spoke to the server.
+                val wholeFeed = isWholeFeed(feedId, feedTag)
+                val service = dispatcher.current()
 
-            result = if (wholeFeed && service !is LocalRssService) {
-                // An account says only whether it worked, so its line has no
-                // feed count; see SyncResult.counted.
-                when (val outcome = service.sync(
-                    forceNetwork = forceNetwork,
-                    retryRefused = origin == SyncLog.ORIGIN_ACCOUNT,
-                )) {
-                    is SyncOutcome.Success -> outcome.feeds ?: SyncResult.uncounted
-                    SyncOutcome.SignedOut -> {
-                        // The token is gone, and retrying will not bring it
-                        // back. Reported as success so WorkManager does not
-                        // back off and retry a thing that needs the reader.
-                        Log.w(TAG, "Account signed out; scheduled sync stopped")
-                        output = accountProblemData(AccountProblem.SIGNED_OUT, null)
-                        SyncResult(due = 0, error = "signed out")
+                if (wholeFeed && service !is LocalRssService) {
+                    // An account says only whether it worked, so its line has no
+                    // feed count; see SyncResult.counted.
+                    when (val outcome = service.sync(
+                        forceNetwork = forceNetwork,
+                        retryRefused = origin == SyncLog.ORIGIN_ACCOUNT,
+                    )) {
+                        is SyncOutcome.Success -> outcome.feeds ?: SyncResult.uncounted
+                        SyncOutcome.SignedOut -> {
+                            // The token is gone, and retrying will not bring it
+                            // back. Reported as success so WorkManager does not
+                            // back off and retry a thing that needs the reader.
+                            Log.w(TAG, "Account signed out; scheduled sync stopped")
+                            output = accountProblemData(AccountProblem.SIGNED_OUT, null)
+                            SyncResult(due = 0, error = "signed out")
+                        }
+
+                        is SyncOutcome.Failed -> {
+                            Log.e(TAG, "Account sync failed", outcome.cause)
+                            output = accountProblemData(problemFrom(outcome.cause), outcome.cause?.message)
+                            outcome.cause?.let(SyncResult::broken) ?: SyncResult(due = 0, error = "error")
+                        }
                     }
-
-                    is SyncOutcome.Failed -> {
-                        Log.e(TAG, "Account sync failed", outcome.cause)
-                        output = accountProblemData(problemFrom(outcome.cause), outcome.cause?.message)
-                        outcome.cause?.let(SyncResult::broken) ?: SyncResult(due = 0, error = "error")
-                    }
+                } else {
+                    syncFeeds(
+                        context = context,
+                        feedId = feedId,
+                        feedTag = feedTag,
+                        forceNetwork = forceNetwork,
+                        minFeedAgeMinutes = minFeedAgeMinutes
+                    )
                 }
-            } else {
-                syncFeeds(
-                    context = context,
-                    feedId = feedId,
-                    feedTag = feedTag,
-                    forceNetwork = forceNetwork,
-                    minFeedAgeMinutes = minFeedAgeMinutes
-                )
             }
+            if (done == null) {
+                SyncLog.finished(applicationContext, run, OUT_OF_TIME_OUTCOME)
+                // Retried soon for the syncs nobody asked for, which pick up
+                // where this stopped. A forced one would start again from the
+                // top, so it is left there.
+                return if (automatic) Result.retry() else Result.success(output)
+            }
+            result = done
         } catch (e: CancellationException) {
             // Cancellation is the reader leaving, not a sync that went wrong.
             // Reported as a failure it would retry on a backoff and log an
@@ -396,6 +413,15 @@ fun requestAutomaticFeedSync(
 
     workManager.enqueueUniqueWork(AUTOMATIC_SYNC_WORK, ExistingWorkPolicy.KEEP, workRequest)
 }
+
+/**
+ * How long a sync runs before it stops itself and keeps what it has done.
+ * Android stops background work at ten minutes; this leaves it two.
+ */
+const val SYNC_TIME_BUDGET_MS = 8 * 60_000L
+
+/** The history's line for a sync that stopped itself at [SYNC_TIME_BUDGET_MS]. */
+const val OUT_OF_TIME_OUTCOME = "stopped: eight minutes up, progress kept"
 
 /** Whether a sync request is for every feed rather than one feed or one tag. */
 fun isWholeFeed(feedId: Long, feedTag: String): Boolean =

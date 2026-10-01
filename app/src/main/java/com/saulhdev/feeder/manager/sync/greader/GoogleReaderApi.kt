@@ -233,11 +233,14 @@ class GoogleReaderApi(
         limit: Int,
         since: Long?,
         continuation: String?,
+        /** Oldest first, so a match can save its progress page by page. */
+        oldestFirst: Boolean = false,
     ): Pair<List<StreamItem>, String?> = withContext(Dispatchers.IO) {
         val params = buildList {
             add("n" to limit.toString())
             add("output" to "json")
             since?.let { add("ot" to (it / 1000).toString()) }
+            if (oldestFirst) add("r" to "o")
             continuation?.let { add("c" to it) }
         }
         val json = getString(
@@ -462,7 +465,15 @@ suspend fun <T> collectPages(
 data class StreamItem(
     val id: String = "",
     val alternate: List<StreamLink> = emptyList(),
+    /** When the server took the item in, in milliseconds, as text. */
+    val crawlTimeMsec: String? = null,
+    /** The same, in microseconds; some servers send only this. */
+    val timestampUsec: String? = null,
 ) {
+    /** When the server took the item in, in milliseconds, or null if it does not say. */
+    fun crawledAt(): Long? =
+        crawlTimeMsec?.toLongOrNull() ?: timestampUsec?.toLongOrNull()?.div(1000)
+
     /**
      * The article's address, and the server's id for it in the short form.
      *

@@ -2477,6 +2477,21 @@ Small and certain first, then what the most phones see, then the rest.
   than one sync interval, and the history says how many feeds were "done
   before the cut-off". A pull to refresh still fetches everything.
 
+### 26. From the device, 1 October 2026
+
+- **Three syncs in a row ran out of time on the charger and Wi-Fi.** At 05:37,
+  05:47 and 05:57 each scheduled sync was stopped at Android's ten-minute
+  limit; the one at 06:07 finished in 507 s, 278 of them matching. Matching
+  downloads every server article since the last match, each with its whole
+  text, and the last match had been at 13:05 the day before - seventeen
+  hours of articles. Where it got to was saved only at the end, so each run
+  started the same seventeen hours again. It now reads oldest first and
+  saves where it got to after every page, queueing what each page matched
+  as it goes; a gap is still read back two days at most. And a sync now
+  stops itself at eight minutes ("stopped: eight minutes up, progress
+  kept"), keeping what it did, and an automatic one is retried soon and
+  carries on from there.
+
 ### 17. Scroll parallax on the feed — parked, at the bottom
 
 Prototyped, demonstrated, and deliberately not built. The image inside a card's
@@ -2713,7 +2728,7 @@ Small, and cheaper now than later.
   from the code and measured where it could be measured — text widths against
   the real font, icon alpha, migration SQL. The on-device checks have all been
   yours. Emulator-based screenshot tests would change that.
-- **Test coverage is 990 unit tests** (September 2026), across article age, tag splitting, feed
+- **Test coverage is 996 unit tests** (September 2026), across article age, tag splitting, feed
   layout and weighting, clustering, the settings backup format, the tour's step
   machine, the starter list, bookmark import, link harvesting, the Google Reader
   id shapes, the source list's filters and range selection, and the URL scheme

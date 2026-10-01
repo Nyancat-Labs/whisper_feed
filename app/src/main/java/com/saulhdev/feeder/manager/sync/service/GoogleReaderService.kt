@@ -26,6 +26,7 @@ import com.saulhdev.feeder.data.repository.ArticleRepository
 import com.saulhdev.feeder.data.repository.SourcesRepository
 import com.saulhdev.feeder.manager.sync.greader.GoogleReaderApi
 import com.saulhdev.feeder.manager.sync.greader.GoogleReaderIds
+import com.saulhdev.feeder.manager.sync.greader.StreamItem
 import com.saulhdev.feeder.manager.sync.syncFeeds
 import com.saulhdev.feeder.data.db.ID_ALL
 import com.saulhdev.feeder.utils.isSameFeedUrl
@@ -347,32 +348,61 @@ class GoogleReaderService(
             Log.i(TAG, "First match of articles waits for Wi-Fi")
             return
         }
-        // As far back as Whisper keeps articles, and a day more: anything
-        // older has already gone from here, and there is nothing to match.
-        // Two days back the first time, not the whole sync range: each item
-        // arrives with its whole article, and a hundred and forty feeds' week
-        // was fifty megabytes, downloaded again every time the run was cut
-        // off. Older articles simply keep their read state to themselves.
-        val since = if (last > 0) last - MAP_OVERLAP_MS else startedAt - MAP_FIRST_WINDOW_MS
-        // Matched page by page, so what one page matched is kept even if the
-        // run is stopped before the next.
+        // Two days back at most, the first time and after a long gap alike:
+        // each item arrives with its whole article, and a hundred and forty
+        // feeds' week was fifty megabytes. Older articles simply keep their
+        // read state to themselves.
+        val since = matchSince(last, startedAt)
+        // Oldest first, and where it got to saved after every page. Newest
+        // first, with the time saved only at the end, a run Android stopped
+        // left nothing behind: one morning three syncs on the charger each
+        // spent ten minutes on the same seventeen hours of articles, and
+        // were each stopped at the limit having saved none of it.
         var attached = 0
         var seen = 0
+        var newly = 0
         var continuation: String? = null
         val pagesSeen = HashSet<String>()
         var pages = 0
+        var finished = false
         while (pages < MAP_MAX_PAGES) {
-            val (items, next) = api.contentsPage(auth, GoogleReaderIds.STREAM_READING_LIST, MAP_PAGE_SIZE, since, continuation)
+            val (items, next) = api.contentsPage(
+                auth, GoogleReaderIds.STREAM_READING_LIST, MAP_PAGE_SIZE, since, continuation, oldestFirst = true,
+            )
             pages++
             seen += items.size
             items.forEach { item ->
                 val (link, remoteId) = item.mapping() ?: return@forEach
                 attached += articles.attachRemoteId(link, remoteId)
             }
-            if (next == null || !pagesSeen.add(next)) break
+            // What this page matched is queued now, not at the end: an
+            // article matched by a run that is then stopped is "already
+            // matched" to the next, which would never queue it.
+            newly += queueNewlyMatched(before)
+            val reached = matchProgress(items)
+            if (next == null || !pagesSeen.add(next)) {
+                finished = true
+                break
+            }
+            reached?.let { GoogleReaderState.setMappedAt(context, it) }
             continuation = next
         }
+        // All of it: the next match starts from here. Stopped by the cap
+        // instead, it starts from the last page's newest, saved above, and
+        // the next sync carries on.
+        if (finished) GoogleReaderState.setMappedAt(context, startedAt)
+        Log.i(TAG, "Mapped $attached of $seen server items in $pages pages, $newly newly${if (finished) "" else ", more next time"}")
+    }
+
+    /**
+     * Queues what the reader did here to articles matched since [before] was
+     * taken, and adds them to it. Read in Whisper before the server knew it,
+     * an article is sent up as read rather than marked unread by a server
+     * that has simply not heard yet. The same for saved.
+     */
+    private suspend fun queueNewlyMatched(before: MutableSet<String>): Int {
         val newlyMapped = articles.mappedArticles().filter { it.uuid !in before }
+        if (newlyMapped.isEmpty()) return 0
         GoogleReaderState.updateOutbox(context) { outbox ->
             outbox
                 .withRead(newlyMapped.filter { it.readAt != 0L && it.uuid !in outbox.unread }.map { it.uuid }, true)
@@ -381,11 +411,8 @@ class GoogleReaderService(
                         .fold(o) { acc, a -> acc.withStar(a.uuid, true) }
                 }
         }
-        // Whether the pages ran out or the cap did: either way the next match
-        // starts from here. What the cap left behind is older than the
-        // window's newest, and older articles keep their state to themselves.
-        GoogleReaderState.setMappedAt(context, startedAt)
-        Log.i(TAG, "Mapped $attached of $seen server items in $pages pages, ${newlyMapped.size} newly")
+        newlyMapped.mapTo(before) { it.uuid }
+        return newlyMapped.size
     }
 
     /**
@@ -663,14 +690,6 @@ class GoogleReaderService(
         /** Items per edit-tag call; the protocol repeats a parameter per item. */
         const val EDIT_BATCH = 100
 
-        /** Overlap with the last match, for items the server crawled late. */
-        const val MAP_OVERLAP_MS = 60 * 60_000L
-
-        const val DAY_MS = 24 * 60 * 60_000L
-
-        /** How far back the first match looks. See mapRemoteIds. */
-        const val MAP_FIRST_WINDOW_MS = 2 * DAY_MS
-
         /** Items per page, and pages per match: at most two thousand articles. */
         const val MAP_PAGE_SIZE = 250
         const val MAP_MAX_PAGES = 8
@@ -686,6 +705,28 @@ class GoogleReaderService(
         const val STAR_CONTENTS_BATCH = 100
     }
 }
+
+/** Overlap with the last match, for items the server crawled late. */
+internal const val MAP_OVERLAP_MS = 60 * 60_000L
+
+internal const val DAY_MS = 24 * 60 * 60_000L
+
+/** How far back a match looks at most, the first time or after a gap. See mapRemoteIds. */
+internal const val MAP_FIRST_WINDOW_MS = 2 * DAY_MS
+
+/**
+ * Where a match starts: an hour before where the last one got to, for items
+ * the server took in late, and never more than [MAP_FIRST_WINDOW_MS] back.
+ * [last] is zero before the first match.
+ */
+internal fun matchSince(last: Long, now: Long): Long {
+    val floor = now - MAP_FIRST_WINDOW_MS
+    return if (last > 0) maxOf(last - MAP_OVERLAP_MS, floor) else floor
+}
+
+/** How far a page of a match reached: the newest item on it, or null if none says. */
+internal fun matchProgress(items: List<StreamItem>): Long? =
+    items.mapNotNull { it.crawledAt() }.maxOrNull()
 
 /** The status a refusal came with, when there was one to report. */
 internal fun refusalCode(status: Int?): String = when {
