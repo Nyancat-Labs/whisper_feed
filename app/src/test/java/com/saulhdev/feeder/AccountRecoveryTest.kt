@@ -133,7 +133,7 @@ class AccountRecoveryTest {
 
     @Test
     fun `one account sync at a time`() {
-        assertTrue(service.contains("return accountLock.withLock { syncLocked(auth, forceNetwork, retryRefused) }"))
+        assertTrue(service.contains("return accountLock.withLock { syncLocked(auth, forceNetwork, retryRefused, trace) }"))
         assertTrue(service.contains("private val accountLock = Mutex()"))
     }
 

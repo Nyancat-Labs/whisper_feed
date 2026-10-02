@@ -77,10 +77,12 @@ data class MatchStats(
     /** What Whisper received while it ran, or null where Android does not say. */
     val bytes: Long?,
     val finished: Boolean,
+    /** Not run: matching waits for Wi-Fi. See mapRemoteIds. */
+    val waitingForWifi: Boolean = false,
 )
 
 /** The history's words for [m]: "412 items in 2 pages, 4.8 MB". */
-fun matchSummary(m: MatchStats): String = listOfNotNull(
+fun matchSummary(m: MatchStats): String = if (m.waitingForWifi) "nothing, waiting for Wi-Fi" else listOfNotNull(
     "${m.items} items in ${m.pages} ${if (m.pages == 1) "page" else "pages"}",
     m.bytes?.let(::formatBytes),
     if (m.finished) null else "more next time",

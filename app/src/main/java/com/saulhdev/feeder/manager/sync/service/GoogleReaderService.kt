@@ -35,6 +35,7 @@ import com.saulhdev.feeder.utils.isUnmetered
 import com.saulhdev.feeder.manager.sync.greader.AccountTally
 import com.saulhdev.feeder.manager.sync.greader.MatchStats
 import com.saulhdev.feeder.utils.bytesSince
+import com.saulhdev.feeder.utils.StepTrace
 import com.saulhdev.feeder.utils.receivedBytes
 import com.saulhdev.feeder.manager.sync.greader.AccountTallyStore
 import com.saulhdev.feeder.manager.sync.greader.GoogleReaderState
@@ -90,7 +91,7 @@ class GoogleReaderService(
     private val api: GoogleReaderApi = GoogleReaderApi(account.serverUrl),
 ) : RssService() {
 
-    override suspend fun sync(forceNetwork: Boolean, retryRefused: Boolean): SyncOutcome {
+    override suspend fun sync(forceNetwork: Boolean, retryRefused: Boolean, trace: StepTrace?): SyncOutcome {
         val auth = account.authToken
         if (auth.isEmpty()) return SyncOutcome.SignedOut
 
@@ -99,10 +100,10 @@ class GoogleReaderService(
         // feed lists at once, each adding what the others were adding, and
         // one feed came out four times. The feed fetching already had a lock
         // of its own; the account half did not.
-        return accountLock.withLock { syncLocked(auth, forceNetwork, retryRefused) }
+        return accountLock.withLock { syncLocked(auth, forceNetwork, retryRefused, trace) }
     }
 
-    private suspend fun syncLocked(auth: String, forceNetwork: Boolean, retryRefused: Boolean): SyncOutcome {
+    private suspend fun syncLocked(auth: String, forceNetwork: Boolean, retryRefused: Boolean, trace: StepTrace?): SyncOutcome {
         return try {
             // The order is the design. Feeds first, both ways, so the
             // articles fetched next come from the right list. Then the
@@ -116,7 +117,14 @@ class GoogleReaderService(
             val steps = mutableListOf<Pair<String, Long>>()
             suspend fun <T> step(name: String, block: suspend () -> T): T {
                 val started = System.currentTimeMillis()
-                return try { block() } finally { steps += name to System.currentTimeMillis() - started }
+                trace?.started(name)
+                return try {
+                    block()
+                } finally {
+                    val ms = System.currentTimeMillis() - started
+                    steps += name to ms
+                    trace?.finished(name, ms)
+                }
             }
             val token = step("sign-in") { api.writeToken(auth) }
             // Except what the server can already place: that goes up first.
@@ -348,9 +356,15 @@ class GoogleReaderService(
         // window, which after signing in with a hundred feeds is tens of
         // megabytes. It waits for Wi-Fi; after that each match is the last
         // half hour's worth, and small.
-        if (last == 0L && !isUnmetered(context)) {
-            Log.i(TAG, "First match of articles waits for Wi-Fi")
-            return null
+        // Every match waits for Wi-Fi, not only the first. Each brings the
+        // server's copy of every article since the last, whole: about 5.5 MB
+        // of mobile data for each sync one afternoon, to learn eight hundred
+        // links. Changes to articles already matched still go up on mobile
+        // data; see the early sending in syncLocked. One read meanwhile on an
+        // article not yet matched is sent once a match on Wi-Fi finds it.
+        if (!isUnmetered(context)) {
+            Log.i(TAG, "Matching articles waits for Wi-Fi")
+            return MatchStats(pages = 0, items = 0, bytes = null, finished = false, waitingForWifi = true)
         }
         // Two days back at most, the first time and after a long gap alike:
         // each item arrives with its whole article, and a hundred and forty
@@ -711,8 +725,12 @@ class GoogleReaderService(
     }
 }
 
-/** Overlap with the last match, for items the server crawled late. */
-internal const val MAP_OVERLAP_MS = 60 * 60_000L
+/**
+ * Overlap with the last match, for items the server took in late. Ten
+ * minutes, not the hour it was: on a two-hour schedule the hour made every
+ * match read three hours of items, each with its whole article.
+ */
+internal const val MAP_OVERLAP_MS = 10 * 60_000L
 
 internal const val DAY_MS = 24 * 60 * 60_000L
 

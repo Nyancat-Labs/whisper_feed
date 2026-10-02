@@ -18,6 +18,7 @@
 package com.saulhdev.feeder.manager.sync.service
 
 import com.saulhdev.feeder.data.content.SyncAccount
+import com.saulhdev.feeder.utils.StepTrace
 
 /**
  * How Whisper gets its articles, whether or not there is an account.
@@ -62,6 +63,8 @@ abstract class RssService {
          * Only Sync now on the account screen: see refusedDueForRetry.
          */
         retryRefused: Boolean = false,
+        /** Told each step as it starts and ends, for a run that is stopped; see StepTrace. */
+        trace: StepTrace? = null,
     ): SyncOutcome
 
     /**

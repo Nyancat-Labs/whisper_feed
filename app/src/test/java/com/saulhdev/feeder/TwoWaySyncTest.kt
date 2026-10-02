@@ -260,7 +260,7 @@ class TwoWaySyncTest {
         assertTrue("queued page by page", map.contains("newly += queueNewlyMatched(before)"))
         assertTrue(queue.contains(".withRead(newlyMapped.filter { it.readAt != 0L"))
         assertTrue(queue.contains("acc.withStar(a.uuid, true)"))
-        assertTrue("the first match waits for Wi-Fi", map.contains("if (last == 0L && !isUnmetered(context))"))
+        assertTrue("every match waits for Wi-Fi", map.contains("if (!isUnmetered(context)) {"))
         assertTrue("and later ones ask only for what is new", service.contains("if (last > 0) maxOf(last - MAP_OVERLAP_MS, floor)"))
     }
 

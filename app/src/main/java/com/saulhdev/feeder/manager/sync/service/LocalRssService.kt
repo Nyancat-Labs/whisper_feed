@@ -20,6 +20,7 @@ package com.saulhdev.feeder.manager.sync.service
 import android.content.Context
 import com.saulhdev.feeder.data.repository.ArticleRepository
 import com.saulhdev.feeder.manager.sync.syncFeeds
+import com.saulhdev.feeder.utils.StepTrace
 
 /**
  * Whisper with no account: fetch the feeds, store the articles, done.
@@ -33,7 +34,7 @@ class LocalRssService(
     private val articles: ArticleRepository,
 ) : RssService() {
 
-    override suspend fun sync(forceNetwork: Boolean, retryRefused: Boolean): SyncOutcome =
+    override suspend fun sync(forceNetwork: Boolean, retryRefused: Boolean, trace: StepTrace?): SyncOutcome =
         runCatching { syncFeeds(context = context, forceNetwork = forceNetwork) }
             .fold(
                 onSuccess = { SyncOutcome.Success(feeds = it) },

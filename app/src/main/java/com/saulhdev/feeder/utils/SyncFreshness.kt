@@ -155,7 +155,9 @@ fun skipAfterCutOff(
         it.start != current && it.end > 0L &&
             it.origin in SyncLog.AUTOMATIC_ORIGINS && !it.outcome.startsWith("skipped")
     } ?: return false
-    return last.outcome in CUT_OFF_OUTCOMES && nowMs - last.end in 0..CUT_OFF_HOLD_MS
+    // By how the line starts: a stopped run's line goes on to say where it
+    // had got to. See withTrace.
+    return CUT_OFF_OUTCOMES.any { last.outcome.startsWith(it) } && nowMs - last.end in 0..CUT_OFF_HOLD_MS
 }
 
 /**

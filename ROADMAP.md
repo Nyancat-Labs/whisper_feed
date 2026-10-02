@@ -2531,6 +2531,19 @@ Small and certain first, then what the most phones see, then the rest.
   in the future (they wait that long to age out), the five sources holding
   the most, and the database and article files on disk. Each sync line also
   says how many articles aged out.
+- **Matching was volume, not a slow server.** With the counts recorded:
+  814 items in 4 pages, 5.5 MB, 39 s; 407 items, 0.9 MB, 2.4 s; 1,314
+  items, 274 s on mobile data while dozing. The server sends each article
+  whole, about 7 KB, to tell Whisper its link and id, and FreshRSS takes in
+  some 270 items an hour, far more than Whisper keeps. The overlap with the
+  last match is now ten minutes, not an hour, and the match itself waits for
+  Wi-Fi ("match read nothing, waiting for Wi-Fi"); changes to articles
+  already matched still go up on mobile data, and a read on one not yet
+  matched goes once a match on Wi-Fi finds it.
+- **A stopped sync now says where it got to.** One used all eight minutes
+  on mobile data and recorded nothing about its steps. A stopped run's line
+  now goes on "reached sign-in 0.5s, feeds 41s; stopped in matching after
+  380s", after the stop itself, which the hold and the pick-up still read.
 
 ### 17. Scroll parallax on the feed — parked, at the bottom
 
@@ -2768,7 +2781,7 @@ Small, and cheaper now than later.
   from the code and measured where it could be measured — text widths against
   the real font, icon alpha, migration SQL. The on-device checks have all been
   yours. Emulator-based screenshot tests would change that.
-- **Test coverage is 1006 unit tests** (September 2026), across article age, tag splitting, feed
+- **Test coverage is 1010 unit tests** (September 2026), across article age, tag splitting, feed
   layout and weighting, clustering, the settings backup format, the tour's step
   machine, the starter list, bookmark import, link harvesting, the Google Reader
   id shapes, the source list's filters and range selection, and the URL scheme

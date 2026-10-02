@@ -9,6 +9,7 @@ import com.saulhdev.feeder.utils.receivedBytes
 import com.saulhdev.feeder.utils.isPowerSaveMode
 import com.saulhdev.feeder.utils.stopReasonName
 import com.saulhdev.feeder.utils.SyncLog
+import com.saulhdev.feeder.utils.StepTrace
 import com.saulhdev.feeder.data.db.ID_ALL
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -145,6 +146,8 @@ class FeedSyncer(val context: Context, workerParams: WorkerParameters) :
         // Whether another sync holds the lock, so a run that spent its first
         // minutes waiting is not mistaken for a slow one.
         val queued = syncMutex.isLocked
+        // Where the account sync got to, for a run stopped before it can say.
+        val trace = StepTrace()
         // Counted from here: what this run cost in data. See SyncResult.bytes.
         val receivedBefore = receivedBytes()
 
@@ -192,6 +195,7 @@ class FeedSyncer(val context: Context, workerParams: WorkerParameters) :
                     when (val outcome = service.sync(
                         forceNetwork = forceNetwork,
                         retryRefused = origin == SyncLog.ORIGIN_ACCOUNT,
+                        trace = trace,
                     )) {
                         is SyncOutcome.Success -> outcome.feeds ?: SyncResult.uncounted
                         SyncOutcome.SignedOut -> {
@@ -220,7 +224,7 @@ class FeedSyncer(val context: Context, workerParams: WorkerParameters) :
                 }
             }
             if (done == null) {
-                SyncLog.finished(applicationContext, run, OUT_OF_TIME_OUTCOME)
+                SyncLog.finished(applicationContext, run, withTrace(OUT_OF_TIME_OUTCOME, trace))
                 // Retried soon for the syncs nobody asked for, which pick up
                 // where this stopped. A forced one would start again from the
                 // top, so it is left there.
@@ -242,7 +246,7 @@ class FeedSyncer(val context: Context, workerParams: WorkerParameters) :
             } else {
                 "no reason given"
             }
-            SyncLog.finished(applicationContext, run, "stopped: $why")
+            SyncLog.finished(applicationContext, run, withTrace("stopped: $why", trace))
             throw e
         } catch (e: Exception) {
             result = SyncResult.broken(e)
@@ -422,6 +426,15 @@ const val SYNC_TIME_BUDGET_MS = 8 * 60_000L
 
 /** The history's line for a sync that stopped itself at [SYNC_TIME_BUDGET_MS]. */
 const val OUT_OF_TIME_OUTCOME = "stopped: eight minutes up, progress kept"
+
+/**
+ * A stopped run's history line with where it got to, when it got anywhere:
+ * "stopped: eight minutes up, progress kept; reached sign-in 0.5s, feeds 41s;
+ * stopped in matching after 380s". The stop comes first, so the line still
+ * starts with what the hold and the pick-up look for; see skipAfterCutOff.
+ */
+fun withTrace(stopped: String, trace: StepTrace): String =
+    trace.describe()?.let { "$stopped; $it" } ?: stopped
 
 /** Whether a sync request is for every feed rather than one feed or one tag. */
 fun isWholeFeed(feedId: Long, feedTag: String): Boolean =
