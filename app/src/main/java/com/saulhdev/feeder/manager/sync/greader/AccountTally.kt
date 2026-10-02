@@ -18,6 +18,7 @@
 package com.saulhdev.feeder.manager.sync.greader
 
 import com.saulhdev.feeder.utils.seconds
+import com.saulhdev.feeder.utils.formatBytes
 import android.content.Context
 import androidx.core.content.edit
 
@@ -60,7 +61,30 @@ data class AccountTally(
      * stored with the rest.
      */
     val steps: List<Pair<String, Long>> = emptyList(),
+    /** What the match read from the server; see MatchStats. For the history only. */
+    val match: MatchStats? = null,
 )
+
+/**
+ * One match's reading of the server: pages and items, the data it took, and
+ * whether it reached the end or left the rest for the next sync. Asked for
+ * when matching took three minutes for two hours of articles and nothing said
+ * whether that was the server being slow or the articles being many.
+ */
+data class MatchStats(
+    val pages: Int,
+    val items: Int,
+    /** What Whisper received while it ran, or null where Android does not say. */
+    val bytes: Long?,
+    val finished: Boolean,
+)
+
+/** The history's words for [m]: "412 items in 2 pages, 4.8 MB". */
+fun matchSummary(m: MatchStats): String = listOfNotNull(
+    "${m.items} items in ${m.pages} ${if (m.pages == 1) "page" else "pages"}",
+    m.bytes?.let(::formatBytes),
+    if (m.finished) null else "more next time",
+).joinToString(", ")
 
 /**
  * The tally as the sync history writes it, after the feed counts.
@@ -85,6 +109,7 @@ fun accountSummary(t: AccountTally): String {
         if (t.changesKept > 0) "${t.changesKept} changes kept" else null,
         if (t.savesNotFound > 0) "${t.savesNotFound} saves not on the server" else null,
         down?.let { "received $it" },
+        t.match?.let { "match read ${matchSummary(it)}" },
         t.steps.takeIf { it.isNotEmpty() }
             ?.joinToString(", ", prefix = "took ") { (step, ms) -> "$step ${seconds(ms)}" },
     ).joinToString("; ")

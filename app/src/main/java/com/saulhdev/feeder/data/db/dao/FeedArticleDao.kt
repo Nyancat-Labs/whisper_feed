@@ -394,16 +394,23 @@ interface FeedArticleDao {
      * The ArticleIdWithLink view answers this for the per-source switch, but a
      * view takes no parameters and the global switch is a parameter, so the
      * same rule is spelled out here with [allFeeds] widening it.
+     *
+     * Saved articles always. Others only while unread and newer than
+     * [since]: the backlog was every article those feeds had ever brought,
+     * two thousand and growing, and one night's runs downloaded 48 MB of
+     * pages for articles that had already gone by unopened.
      */
     @Query(
         """
         SELECT Article.uuid, Article.link FROM Article
         JOIN Feeds f ON Article.feedId = f.id
-        WHERE :allFeeds OR f.fullTextByDefault = 1 OR Article.bookmarked = 1
+        WHERE Article.bookmarked = 1
+           OR ((:allFeeds OR f.fullTextByDefault = 1)
+               AND Article.readAt = 0 AND Article.primarySortTime > :since)
         ORDER BY Article.bookmarked DESC, Article.primarySortTime DESC
         """
     )
-    fun getArticleIdLinks(allFeeds: Boolean): Flow<List<ArticleIdWithLink>>
+    fun getArticleIdLinks(allFeeds: Boolean, since: Long): Flow<List<ArticleIdWithLink>>
 
     /** Saved articles, for downloading their whole text the moment they are saved. */
     @Query("SELECT uuid, link FROM Article WHERE bookmarked = 1")

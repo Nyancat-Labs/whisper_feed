@@ -33,6 +33,9 @@ import com.saulhdev.feeder.utils.isSameFeedUrl
 import com.saulhdev.feeder.utils.normalizeFeedUrl
 import com.saulhdev.feeder.utils.isUnmetered
 import com.saulhdev.feeder.manager.sync.greader.AccountTally
+import com.saulhdev.feeder.manager.sync.greader.MatchStats
+import com.saulhdev.feeder.utils.bytesSince
+import com.saulhdev.feeder.utils.receivedBytes
 import com.saulhdev.feeder.manager.sync.greader.AccountTallyStore
 import com.saulhdev.feeder.manager.sync.greader.GoogleReaderState
 import com.saulhdev.feeder.manager.sync.greader.MissingFeed
@@ -131,7 +134,7 @@ class GoogleReaderService(
             // without an account.
             val feeds = step("feeds") { syncFeeds(context = context, feedId = ID_ALL, forceNetwork = forceNetwork) }
 
-            step("matching") { mapRemoteIds(auth) }
+            val match = step("matching") { mapRemoteIds(auth) }
             requeueSavesOnce()
             val saves = step("saves lookup") { mapPendingSaves(auth) }
             val push = step("sending") { pushChanges(auth, token, saves.keep) }
@@ -147,7 +150,7 @@ class GoogleReaderService(
             } else {
                 Log.w(TAG, "Changes not sent; the server's read state waits for the next sync")
             }
-            tally = tally.copy(matched = articles.mappedArticles().size, steps = steps)
+            tally = tally.copy(matched = articles.mappedArticles().size, steps = steps, match = match)
 
             account.lastSync = System.currentTimeMillis()
             AccountTallyStore.write(context, tally, account.lastSync)
@@ -336,8 +339,9 @@ class GoogleReaderService(
      * being marked unread by a server that has simply not heard yet. The same
      * for saved.
      */
-    private suspend fun mapRemoteIds(auth: String) {
+    private suspend fun mapRemoteIds(auth: String): MatchStats? {
         val startedAt = System.currentTimeMillis()
+        val receivedBefore = receivedBytes()
         val before = articles.mappedArticles().mapTo(HashSet()) { it.uuid }
         val last = GoogleReaderState.mappedAt(context)
         // The first match brings the server's copy of every article in the
@@ -346,7 +350,7 @@ class GoogleReaderService(
         // half hour's worth, and small.
         if (last == 0L && !isUnmetered(context)) {
             Log.i(TAG, "First match of articles waits for Wi-Fi")
-            return
+            return null
         }
         // Two days back at most, the first time and after a long gap alike:
         // each item arrives with its whole article, and a hundred and forty
@@ -392,6 +396,7 @@ class GoogleReaderService(
         // the next sync carries on.
         if (finished) GoogleReaderState.setMappedAt(context, startedAt)
         Log.i(TAG, "Mapped $attached of $seen server items in $pages pages, $newly newly${if (finished) "" else ", more next time"}")
+        return MatchStats(pages = pages, items = seen, bytes = bytesSince(receivedBefore), finished = finished)
     }
 
     /**

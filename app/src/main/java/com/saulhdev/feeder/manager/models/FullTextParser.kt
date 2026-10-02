@@ -155,6 +155,15 @@ private fun fullTextConstraints(): Constraints {
  */
 internal const val FULL_TEXT_PER_RUN = 50
 
+/** How long a full-text run goes on before it stops between pages. See SYNC_TIME_BUDGET_MS. */
+internal const val FULL_TEXT_TIME_BUDGET_MS = 8 * 60_000L
+
+/**
+ * How new an unread article has to be for its page to be downloaded ahead.
+ * Older ones are fetched when opened, as any article is.
+ */
+internal const val FULL_TEXT_WINDOW_MS = 2 * 24 * 60 * 60_000L
+
 /**
  * The pages this run downloads, of the [waiting] ones, which come saved first
  * and then newest. All of them for a run of saved articles only: the reader
@@ -194,7 +203,8 @@ class FullTextWorker(
         val waiting = withContext(Dispatchers.IO) {
             (if (savedOnly) repository.savedArticleIdLinks()
             else repository.getFeedsItemsWithDefaultFullTextParse(
-                allFeeds = prefs.fullTextForAllFeeds.getValue()
+                allFeeds = prefs.fullTextForAllFeeds.getValue(),
+                since = now - FULL_TEXT_WINDOW_MS,
             ).firstOrNull().orEmpty())
                 .filter { item ->
                     !blobFullFile(item.uuid, filesDir).isFile &&
@@ -214,8 +224,16 @@ class FullTextWorker(
         var fetched = 0
         var failed = 0
         var unreached = 0
+        val runStarted = System.currentTimeMillis()
+        var outOfTime = 0
         try {
             for ((i, item) in toFetch.withIndex()) {
+                // Stopped here, between pages, rather than by Android at ten
+                // minutes in the middle of one. What is left goes next time.
+                if (System.currentTimeMillis() - runStarted >= FULL_TEXT_TIME_BUDGET_MS) {
+                    outOfTime = toFetch.size - i
+                    break
+                }
                 when (prefetchFullArticle(context, item, okHttpClient, filesDir)) {
                     Prefetch.Fetched -> fetched++
                     Prefetch.Failed -> failed++
@@ -228,13 +246,14 @@ class FullTextWorker(
                 }
             }
         } catch (e: CancellationException) {
-            SyncLog.finished(applicationContext, run, "stopped after $fetched")
+            SyncLog.finished(applicationContext, run, "stopped after $fetched" + if (failed > 0) ", $failed failed" else "")
             throw e
         }
         SyncLog.finished(
             applicationContext,
             run,
-            fullTextOutcome(fetched, failed, bytesSince(receivedBefore), unreached, held),
+            fullTextOutcome(fetched, failed, bytesSince(receivedBefore), unreached, held + outOfTime) +
+                if (outOfTime > 0) ", eight minutes up" else "",
         )
         if (savedOnly) keepSavedImages(filesDir)
         // Success whatever happened to individual pages: each failure is
@@ -356,8 +375,16 @@ val fullTextClient: OkHttpClient by lazy {
         .connectTimeout(10, TimeUnit.SECONDS)
         .writeTimeout(10, TimeUnit.SECONDS)
         .readTimeout(30, TimeUnit.SECONDS)
+        // The whole request, body included. The read timeout restarts with
+        // every byte, so a server sending a page slowly could hold one fetch
+        // for as long as it liked: one night a run sat twenty-four minutes
+        // and downloaded nothing.
+        .callTimeout(FULL_TEXT_CALL_TIMEOUT_S, TimeUnit.SECONDS)
         .build()
 }
+
+/** The longest one page download may take, from start to the last byte. */
+internal const val FULL_TEXT_CALL_TIMEOUT_S = 60L
 
 suspend fun parseFullArticleIfMissing(
     feedItem: ArticleIdWithLink,

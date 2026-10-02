@@ -32,7 +32,7 @@ class ReadLaterTest {
     @Test
     fun `saved articles are also in the after-sync download, whatever their source`() {
         val dao = read("data/db/dao/FeedArticleDao.kt")
-        assertTrue(dao.contains("WHERE :allFeeds OR f.fullTextByDefault = 1 OR Article.bookmarked = 1"))
+        assertTrue(dao.contains("WHERE Article.bookmarked = 1\n           OR ((:allFeeds OR f.fullTextByDefault = 1)"))
         assertTrue(dao.contains("@Query(\"SELECT uuid, link FROM Article WHERE bookmarked = 1\")"))
     }
 

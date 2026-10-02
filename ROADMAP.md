@@ -2501,6 +2501,26 @@ Small and certain first, then what the most phones see, then the rest.
   Sport, Decider, Tennis Majors and UX Planet. Reddit feeds a reader already
   follows are left alone; after the date they fail like any broken feed.
 
+### 27. From the device, 2 October 2026
+
+- **The full-article backlog had reached 2,276 pages and was growing.** The
+  50-a-run cap held, but runs come after every sync, and from 23:40 to 11:14
+  ten of them downloaded about 48 MB, nearly all for articles that had gone
+  by unopened. Pages are now downloaded ahead only for unread articles from
+  the last two days, and for every saved one; anything older is fetched when
+  it is opened, as before.
+- **One full-article run sat 24 minutes and downloaded nothing.** The read
+  timeout restarts with every byte, so a server sending a page slowly could
+  hold a fetch indefinitely. Each page download now has a 60-second limit
+  from start to last byte, and a run stops between pages at eight minutes,
+  leaving the rest for the next. A run that is stopped now says how many
+  pages failed as well as how many it fetched.
+- **Matching took three minutes for two hours of articles** (171-229 s
+  overnight), and each sync downloaded 10-12 MB where one download of every
+  feed is 5.7 MB. The history could not say whether the server was slow or
+  the articles were many, so each sync now records what the match read:
+  items, pages, data, and whether it left more for next time.
+
 ### 17. Scroll parallax on the feed — parked, at the bottom
 
 Prototyped, demonstrated, and deliberately not built. The image inside a card's
@@ -2737,7 +2757,7 @@ Small, and cheaper now than later.
   from the code and measured where it could be measured — text widths against
   the real font, icon alpha, migration SQL. The on-device checks have all been
   yours. Emulator-based screenshot tests would change that.
-- **Test coverage is 997 unit tests** (September 2026), across article age, tag splitting, feed
+- **Test coverage is 1000 unit tests** (September 2026), across article age, tag splitting, feed
   layout and weighting, clustering, the settings backup format, the tour's step
   machine, the starter list, bookmark import, link harvesting, the Google Reader
   id shapes, the source list's filters and range selection, and the URL scheme

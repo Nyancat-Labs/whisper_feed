@@ -578,8 +578,9 @@ class ArticleRepository(db: NeoFeedDb) {
         articlesDao.countInFeed(feedId)
     }
 
-    fun getFeedsItemsWithDefaultFullTextParse(allFeeds: Boolean): Flow<List<ArticleIdWithLink>> =
-        articlesDao.getArticleIdLinks(allFeeds)
+    /** See FeedArticleDao.getArticleIdLinks: saved ones, and unread ones newer than [since]. */
+    fun getFeedsItemsWithDefaultFullTextParse(allFeeds: Boolean, since: Long): Flow<List<ArticleIdWithLink>> =
+        articlesDao.getArticleIdLinks(allFeeds, since)
             .flowOn(cc)
 
     suspend fun savedArticleIdLinks(): List<ArticleIdWithLink> = withContext(cc) {
