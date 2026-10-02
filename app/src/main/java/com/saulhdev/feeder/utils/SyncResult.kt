@@ -62,6 +62,8 @@ data class SyncResult(
     val resting: Int = 0,
     /** Feeds skipped because a sync cut off just before had fetched them; see resumeFrom. */
     val resumed: Int = 0,
+    /** Articles older than the sync range that this run deleted. */
+    val agedOut: Int = 0,
     /** What an account sync did with the server; see AccountTally. */
     val account: AccountTally? = null,
     /** The feeds that took longest, title to milliseconds; see slowestOf. */
@@ -110,9 +112,10 @@ fun syncOutcome(result: SyncResult, notes: List<String> = emptyList()): String {
     val data = result.bytes?.let(::formatBytes)
     val resting = if (result.resting > 0 && result.error == null) "${result.resting} not due yet" else null
     val resumed = if (result.resumed > 0 && result.error == null) "${result.resumed} done before the cut-off" else null
+    val agedOut = if (result.agedOut > 0 && result.error == null) "${result.agedOut} articles aged out" else null
     val slow = result.slowest.takeIf { it.isNotEmpty() && result.error == null }
         ?.joinToString(", ", prefix = "slowest ") { (title, ms) -> "${title.take(SLOW_TITLE)} ${seconds(ms)}" }
-    val all = details + listOfNotNull(resting, resumed, data, slow) + notes
+    val all = details + listOfNotNull(resting, resumed, agedOut, data, slow) + notes
     val line = if (all.isEmpty()) head else "$head (${all.joinToString(", ")})"
     return result.account?.takeIf { result.error == null }?.let { "$line; ${accountSummary(it)}" } ?: line
 }

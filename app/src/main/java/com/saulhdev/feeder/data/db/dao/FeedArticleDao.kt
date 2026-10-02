@@ -370,6 +370,40 @@ interface FeedArticleDao {
     @Query("SELECT COUNT(*) FROM Article")
     suspend fun countAll(): Int
 
+    /**
+     * What is stored, by age, for the diagnostics report: whether the clean-up
+     * keeps up with what comes in. Ages are by publication date, which is
+     * what the clean-up goes by; see getItemsToBeCleanedFromFeed.
+     */
+    @Query(
+        """
+        SELECT COUNT(*) AS total,
+            COALESCE(SUM(bookmarked = 1), 0) AS saved,
+            COALESCE(SUM(pinned = 1), 0) AS pinned,
+            COALESCE(SUM(readAt = 0), 0) AS unread,
+            COALESCE(SUM(pubDateV2 >= :dayAgo), 0) AS underDay,
+            COALESCE(SUM(pubDateV2 >= :threeDaysAgo AND pubDateV2 < :dayAgo), 0) AS dayToThree,
+            COALESCE(SUM(pubDateV2 >= :cutoff AND pubDateV2 < :threeDaysAgo), 0) AS threeToRange,
+            COALESCE(SUM(pubDateV2 < :cutoff AND bookmarked = 0 AND pinned = 0), 0) AS pastRange,
+            COALESCE(SUM(pubDateV2 > :ahead), 0) AS datedAhead,
+            COALESCE(SUM(pubDateV2 <= 0), 0) AS undated,
+            COALESCE(SUM(firstSyncedTime >= :dayAgo), 0) AS addedDay,
+            MIN(CASE WHEN bookmarked = 0 AND pinned = 0 AND pubDateV2 > 0 THEN pubDateV2 END) AS oldest
+        FROM Article
+        """
+    )
+    suspend fun storageCounts(dayAgo: Long, threeDaysAgo: Long, cutoff: Long, ahead: Long): StorageCounts
+
+    /** The sources holding the most articles, for the diagnostics report. */
+    @Query(
+        """
+        SELECT f.title AS title, COUNT(*) AS articles FROM Article a
+        JOIN Feeds f ON a.feedId = f.id
+        GROUP BY a.feedId ORDER BY articles DESC LIMIT :limit
+        """
+    )
+    suspend fun largestSources(limit: Int): List<SourceArticleCount>
+
     @Query(
         """
         SELECT COUNT(*) FROM Article
@@ -637,3 +671,22 @@ data class FeedLatestArticle(
     val feedId: Long,
     val latest: Long,
 )
+
+/** See FeedArticleDao.storageCounts. [oldest] is a publication time, null when nothing qualifies. */
+data class StorageCounts(
+    val total: Int,
+    val saved: Int,
+    val pinned: Int,
+    val unread: Int,
+    val underDay: Int,
+    val dayToThree: Int,
+    val threeToRange: Int,
+    val pastRange: Int,
+    val datedAhead: Int,
+    val undated: Int,
+    val addedDay: Int,
+    val oldest: Long?,
+)
+
+/** A source's title and how many articles it has stored. */
+data class SourceArticleCount(val title: String, val articles: Int)

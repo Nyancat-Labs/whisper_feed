@@ -521,6 +521,14 @@ class ArticleRepository(db: NeoFeedDb) {
     /** Every article in the database, read or not, enabled source or not. */
     suspend fun countAll(): Int = withContext(cc) { articlesDao.countAll() }
 
+    /** See FeedArticleDao.storageCounts. */
+    suspend fun storageCounts(dayAgo: Long, threeDaysAgo: Long, cutoff: Long, ahead: Long) = withContext(cc) {
+        articlesDao.storageCounts(dayAgo, threeDaysAgo, cutoff, ahead)
+    }
+
+    /** See FeedArticleDao.largestSources. */
+    suspend fun largestSources(limit: Int) = withContext(cc) { articlesDao.largestSources(limit) }
+
     fun countUnread(): Flow<Int> = articlesDao.countUnread().flowOn(cc)
 
     fun countReadSince(since: Long): Flow<Int> = articlesDao.countReadSince(since).flowOn(cc)

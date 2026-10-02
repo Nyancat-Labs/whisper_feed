@@ -49,6 +49,9 @@ import com.saulhdev.feeder.data.repository.ArticleRepository
 import com.saulhdev.feeder.data.repository.SourcesRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.Dispatchers
+import com.saulhdev.feeder.data.db.NeoFeedDb
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -267,6 +270,37 @@ object Diagnostics : KoinComponent {
         } }.onFailure { appendLine("Article counts unavailable: $it") }
         appendLine()
 
+        // Whether the clean-up keeps up with what comes in. See StorageReport.
+        appendLine("== Storage ==")
+        runCatching { withTimeout(SECTION_TIMEOUT_MS) {
+            val repo = get<ArticleRepository>()
+            val prefs = get<FeedPreferences>()
+            val now = System.currentTimeMillis()
+            val rangeDays = getSyncDays(prefs)
+            val (dayAgo, threeDaysAgo, cutoff, ahead) = StorageReport.cutoffs(now, rangeDays)
+            val disk = withContext(Dispatchers.IO) {
+                runCatching {
+                    val db = context.getDatabasePath(NeoFeedDb.NAME)
+                    DiskUse.measure(
+                        listOf(db, File(db.path + "-wal"), File(db.path + "-shm")),
+                        context.filesDir,
+                        stopAt = System.currentTimeMillis() + DISK_COUNT_MS,
+                    )
+                }.getOrNull()
+            }
+            StorageReport.lines(
+                counts = repo.storageCounts(dayAgo, threeDaysAgo, cutoff, ahead),
+                nowMs = now,
+                rangeDays = rangeDays,
+                itemsPerFeed = prefs.itemsPerFeed.getValue(),
+                fullTextForAll = prefs.fullTextForAllFeeds.getValue(),
+                fullTextOnMobile = prefs.fullTextOnMobile.getValue(),
+                largest = repo.largestSources(StorageReport.LARGEST_SOURCES),
+                disk = disk,
+            ).forEach(::appendLine)
+        } }.onFailure { appendLine("Storage unavailable: $it") }
+        appendLine()
+
         // Every feed's own last few fetches, which the sync lines above
         // cannot give: they say "4 failed", not which four, and their data
         // figure is the whole app's. Feeds with a recent failure first.
@@ -462,6 +496,9 @@ object Diagnostics : KoinComponent {
      * never finishes is nothing at all.
      */
     private const val SECTION_TIMEOUT_MS = 4_000L
+
+    /** How long the storage section may spend counting files, well inside SECTION_TIMEOUT_MS. */
+    private const val DISK_COUNT_MS = 2_000L
 
 
     private fun readOwnLogcat(): String = runCatching {

@@ -2520,6 +2520,17 @@ Small and certain first, then what the most phones see, then the rest.
   feed is 5.7 MB. The history could not say whether the server was slow or
   the articles were many, so each sync now records what the match read:
   items, pages, data, and whether it left more for next time.
+- **Are we holding too many articles?** 12,884 on 29 September, 19,398
+  on 2 October, with the sync range at a week. The clean-up runs on every
+  feed it fetches, so the likeliest reading is the week still filling after
+  the bookmark import roughly doubled the sources; but the report could not
+  show it either way. It now has a Storage section: the settings that decide
+  retention, the articles by age (under a day, 1-3 days, 3 days to the
+  range, and past the range though not saved - which should stay near
+  zero), the oldest kept, how many arrived in the last 24 hours, any dated
+  in the future (they wait that long to age out), the five sources holding
+  the most, and the database and article files on disk. Each sync line also
+  says how many articles aged out.
 
 ### 17. Scroll parallax on the feed — parked, at the bottom
 
@@ -2757,7 +2768,7 @@ Small, and cheaper now than later.
   from the code and measured where it could be measured — text widths against
   the real font, icon alpha, migration SQL. The on-device checks have all been
   yours. Emulator-based screenshot tests would change that.
-- **Test coverage is 1000 unit tests** (September 2026), across article age, tag splitting, feed
+- **Test coverage is 1006 unit tests** (September 2026), across article age, tag splitting, feed
   layout and weighting, clustering, the settings backup format, the tour's step
   machine, the starter list, bookmark import, link harvesting, the Google Reader
   id shapes, the source list's filters and range selection, and the URL scheme

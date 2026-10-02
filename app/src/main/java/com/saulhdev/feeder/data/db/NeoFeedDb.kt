@@ -89,6 +89,9 @@ abstract class NeoFeedDb : RoomDatabase() {
     abstract fun readingTallyDao(): ReadingTallyDao
 
     companion object {
+        /** The database's file name; the diagnostics report measures it. */
+        const val NAME = "NeoFeed"
+
         @Volatile
         private var instance: NeoFeedDb? = null
 
@@ -99,7 +102,7 @@ abstract class NeoFeedDb : RoomDatabase() {
         }
 
         private fun buildDatabase(context: Context): NeoFeedDb {
-            return Room.databaseBuilder(context, NeoFeedDb::class.java, "NeoFeed")
+            return Room.databaseBuilder(context, NeoFeedDb::class.java, NAME)
                 .addMigrations(*allMigrations)
                 .build()
         }

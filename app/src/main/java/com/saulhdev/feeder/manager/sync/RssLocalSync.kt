@@ -214,6 +214,8 @@ internal suspend fun syncFeeds(
     var restingFeeds = 0
     // And those a sync cut off just before had already fetched.
     var resumedFeeds = 0
+    // Articles past the sync range that the feeds' clean-ups deleted.
+    val agedOutArticles = AtomicInteger(0)
     // How long each feed took, title to milliseconds, for the history's
     // slowest few: a sync that takes minutes names what it waited for.
     val feedTimes = java.util.concurrent.ConcurrentLinkedQueue<Pair<String, Long>>()
@@ -320,6 +322,7 @@ internal suspend fun syncFeeds(
                                     forceNetwork = forceNetwork,
                                     downloadTime = downloadTime,
                                     counter = counter,
+                                    agedOut = agedOutArticles,
                                 )
                                 val at = Clock.System.now().toEpochMilliseconds()
                                 FeedHistory.record(
@@ -424,6 +427,7 @@ internal suspend fun syncFeeds(
                     offline = offlineFeeds.get(),
                     resting = restingFeeds,
                     resumed = resumedFeeds,
+                    agedOut = agedOutArticles.get(),
                     slowest = slowestOf(feedTimes),
                 )
 
@@ -455,6 +459,8 @@ private suspend fun syncFeed(
     forceNetwork: Boolean = false,
     downloadTime: Instant,
     counter: ByteCounter? = null,
+    /** Adds the articles this feed's clean-up deleted; see SyncResult.agedOut. */
+    agedOut: AtomicInteger? = null,
 ): FeedFetchResult {
     Log.d(TAG, "Fetching ${feedSql.title}")
 
@@ -494,7 +500,7 @@ private suspend fun syncFeed(
     }
     if (download == null) {
         Log.d(TAG, "Unchanged: ${feedSql.title}")
-        cleanUpFeed(articleRepo, feedSql, filesDir)
+        agedOut?.addAndGet(cleanUpFeed(articleRepo, feedSql, filesDir))
         return FeedFetchResult.Unchanged
     }
     val (body, contentType, finalUrl) = download
@@ -505,7 +511,7 @@ private suspend fun syncFeed(
     // The same condition as the unchanged case above, for the same reason.
     if (digest == FeedDigest.read(context, feedSql.id) && articleRepo.countInFeed(feedSql.id) > 0) {
         Log.d(TAG, "Identical: ${feedSql.title}")
-        cleanUpFeed(articleRepo, feedSql, filesDir)
+        agedOut?.addAndGet(cleanUpFeed(articleRepo, feedSql, filesDir))
         return FeedFetchResult.Identical
     }
 
@@ -602,7 +608,7 @@ private suspend fun syncFeed(
         }
     }
 
-    cleanUpFeed(articleRepo, syncedFeed, filesDir)
+    agedOut?.addAndGet(cleanUpFeed(articleRepo, syncedFeed, filesDir))
     // Only now, with everything stored: a fingerprint written before a parse
     // that then failed would skip the next download of the same bytes, and
     // the feed would never be read at all.
@@ -630,7 +636,7 @@ internal sealed interface FeedFetchResult {
  * Its own step so an unchanged feed still ages out: a publisher that stops
  * posting would otherwise keep last month's articles for ever.
  */
-private suspend fun cleanUpFeed(articleRepo: ArticleRepository, feed: Feed, filesDir: File) {
+private suspend fun cleanUpFeed(articleRepo: ArticleRepository, feed: Feed, filesDir: File): Int {
     val days = getSyncDays(prefs)
     val minKeptPubDate = Clock.System.now().minus(
         period = DateTimePeriod(days = days),
@@ -653,6 +659,7 @@ private suspend fun cleanUpFeed(articleRepo: ArticleRepository, feed: Feed, file
     }
 
     articleRepo.deleteArticles(ids)
+    return ids.size
 }
 
 class ResponseFailure(val code: Int, message: String?) : Exception(message)
