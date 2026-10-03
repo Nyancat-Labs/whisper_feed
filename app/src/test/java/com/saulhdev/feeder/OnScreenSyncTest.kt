@@ -66,7 +66,8 @@ class OnScreenSyncTest {
     @Test
     fun `an on-screen sync with blocked data runs as a foreground task`() {
         val worker = source("manager/sync/FeedSyncer.kt").substringAfter("override suspend fun doWork()")
-        assertTrue(worker.contains("val foreground = origin in SyncLog.ASKED_ORIGINS || dataBlocked"))
+        assertTrue(worker.contains("val foreground = runInForeground(origin, dataBlocked, onScreen)"))
+        assertTrue(com.saulhdev.feeder.manager.sync.runInForeground(SyncLog.ORIGIN_SCHEDULED, dataBlocked = true, onScreen = false))
         assertTrue(
             "decided before the skip is asked",
             worker.indexOf("val dataBlocked =") < worker.indexOf("skipForBlockedData("),

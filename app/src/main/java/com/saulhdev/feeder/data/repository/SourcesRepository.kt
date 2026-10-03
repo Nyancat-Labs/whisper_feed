@@ -55,7 +55,8 @@ import com.saulhdev.feeder.utils.isSameFeedUrl
 import com.saulhdev.feeder.utils.normalizeFeedUrl
 import com.saulhdev.feeder.utils.preferringHttps
 import com.saulhdev.feeder.utils.joinPairs
-import com.saulhdev.feeder.utils.sameArticleGroups
+import com.saulhdev.feeder.utils.SAME_ARTICLES_SHARE
+import com.saulhdev.feeder.utils.articleOverlap
 import org.koin.java.KoinJavaComponent.inject
 import java.net.URL
 
@@ -577,24 +578,47 @@ class SourcesRepository(db: NeoFeedDb) {
      * screen apart, and "these are duplicates" is not a useful thing to be
      * told about a list you then have to pair up yourself.
      */
-    suspend fun duplicateGroups(): List<List<Feed>> = withContext(jcc) {
+    suspend fun duplicateGroups(): List<List<Feed>> = duplicateReport().map { it.feeds }
+
+    /**
+     * The same groups, each with what joined it: the same address, most of
+     * the same articles, or both, with how many in common.
+     *
+     * Two kinds of evidence, both conclusive. The same address, written
+     * differently; and the same articles, under addresses no rule could
+     * match - a subscription list had four feeds subscribed twice and the
+     * address check found none of them. See sameArticleGroups.
+     */
+    suspend fun duplicateReport(): List<DuplicateGroup> = withContext(jcc) {
         val feeds = feedsDao.loadAllFeeds()
         val byId = feeds.associateBy(Feed::id)
-        // Two kinds of evidence, both conclusive. The same address, written
-        // differently; and the same articles, under addresses no rule could
-        // match — a subscription list had four feeds subscribed twice and
-        // the address check found none of them. See sameArticleGroups.
         val sameAddress = feeds.groupBy { normalizeFeedUrl(it.url) }.values
             .filter { it.size > 1 }
-            .flatMap { group -> group.zipWithNext { a, b -> a.id to b.id } }
-        val sameArticles = sameArticleGroups(articlesDao.loadFeedLinks().map { it.feedId to it.link })
-            .flatMap { group -> group.sorted().zipWithNext() }
-        joinPairs(sameAddress + sameArticles)
-            .map { group -> group.mapNotNull(byId::get).sortedBy { it.title.lowercase() } }
-            .filter { it.size > 1 }
-            .sortedBy { it.first().title.lowercase() }
+            .flatMap { group -> group.zipWithNext { a, b -> minOf(a.id, b.id) to maxOf(a.id, b.id) } }
+            .toSet()
+        val overlap = articleOverlap(articlesDao.loadFeedLinks().map { it.feedId to it.link })
+            .filterValues { it >= SAME_ARTICLES_SHARE }
+        joinPairs(sameAddress + overlap.keys)
+            .map { ids ->
+                val inGroup = { pair: Pair<Long, Long> -> pair.first in ids && pair.second in ids }
+                DuplicateGroup(
+                    feeds = ids.mapNotNull(byId::get).sortedBy { it.title.lowercase() },
+                    sameAddress = sameAddress.any(inGroup),
+                    articlesShared = overlap.filterKeys(inGroup).values.maxOrNull(),
+                )
+            }
+            .filter { it.feeds.size > 1 }
+            .sortedBy { it.feeds.first().title.lowercase() }
     }
 }
+
+/** A set of sources that look like one, and why; see SourcesRepository.duplicateReport. */
+data class DuplicateGroup(
+    val feeds: List<Feed>,
+    val sameAddress: Boolean,
+    /** The most two of them have in common, 0 to 1; null when only the address joined them. */
+    val articlesShared: Float?,
+)
 
 /**
  * How many consecutive failures make a feed worth mentioning.

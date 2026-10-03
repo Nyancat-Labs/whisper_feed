@@ -163,13 +163,15 @@ class SyncLeftoversTest {
     @Test
     fun `find duplicates asks both the addresses and the articles`() {
         val repo = source("data/repository/SourcesRepository.kt")
-        val groups = repo.substring(repo.indexOf("suspend fun duplicateGroups()"))
+        val groups = repo.substring(repo.indexOf("suspend fun duplicateReport()"))
+        assertTrue(repo.contains("suspend fun duplicateGroups(): List<List<Feed>> = duplicateReport().map { it.feeds }"))
         assertTrue(groups.contains("normalizeFeedUrl(it.url)"))
-        assertTrue(groups.contains("sameArticleGroups(articlesDao.loadFeedLinks()"))
-        assertTrue(groups.contains("joinPairs(sameAddress + sameArticles)"))
+        assertTrue(groups.contains("articleOverlap(articlesDao.loadFeedLinks()"))
+        assertTrue(groups.contains(".filterValues { it >= SAME_ARTICLES_SHARE }"))
+        assertTrue(groups.contains("joinPairs(sameAddress + overlap.keys)"))
         val page = source("ui/pages/SourceListPage.kt")
         assertTrue("offered without being asked", page.contains("if (!duplicatesOnly && duplicateCount > 0) {"))
-        assertTrue(source("utils/Diagnostics.kt").contains("appendLine(\"Subscribed twice:  \${duplicates.size}\")"))
+        assertTrue(source("utils/Diagnostics.kt").contains("appendLine(\"Duplicates:        \${duplicates.size}\")"))
     }
 
     @Test

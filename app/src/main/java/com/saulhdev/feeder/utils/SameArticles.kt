@@ -81,7 +81,23 @@ fun sameArticleGroups(
     links: List<Pair<Long, String?>>,
     minShare: Float = SAME_ARTICLES_SHARE,
     minArticles: Int = SAME_ARTICLES_MIN,
-): List<Set<Long>> {
+): List<Set<Long>> = joinPairs(articleOverlap(links, minArticles).filterValues { it >= minShare }.keys)
+
+/**
+ * For every two sources that delivered any of the same articles: the share of
+ * the smaller one's articles the other delivered too, from 0 to 1. Only where
+ * the smaller has at least [minArticles] to judge by. Pairs come smaller id
+ * first.
+ *
+ * What [sameArticleGroups] decides by, kept as numbers, so the report can say
+ * how alike two sources are rather than only that they are.
+ *
+ * @param links every stored article as (source id, link).
+ */
+fun articleOverlap(
+    links: List<Pair<Long, String?>>,
+    minArticles: Int = SAME_ARTICLES_MIN,
+): Map<Pair<Long, Long>, Float> {
     val bySource = HashMap<Long, HashSet<String>>()
     links.forEach { (source, link) ->
         val key = articleKey(link) ?: return@forEach
@@ -99,12 +115,25 @@ fun sameArticleGroups(
             shared[pair] = (shared[pair] ?: 0) + 1
         }
     }
-    val pairs = shared.filter { (pair, count) ->
+    return shared.mapNotNull { (pair, count) ->
         val smaller = minOf(bySource.getValue(pair.first).size, bySource.getValue(pair.second).size)
-        smaller >= minArticles && count >= minShare * smaller
-    }.keys
-    return joinPairs(pairs)
+        if (smaller >= minArticles) pair to count.toFloat() / smaller else null
+    }.toMap()
 }
+
+/**
+ * Why a group of sources counts as duplicates, as the report says it: one
+ * subscription twice over ("same address"), or two feeds that deliver most of
+ * the same articles - which can be two sections of one publication, each
+ * worth keeping, and is for the reader to judge.
+ *
+ * [articlesShared] is the largest share between two of the group, or null
+ * when only their addresses joined them.
+ */
+fun duplicateReason(sameAddress: Boolean, articlesShared: Float?): String = listOfNotNull(
+    if (sameAddress) "same address" else null,
+    articlesShared?.let { "mostly the same articles, ${(it * 100).toInt()}%" },
+).joinToString("; ").ifEmpty { "same address" }
 
 /** Pairs into groups: A with B and B with C is one group of three. */
 fun joinPairs(pairs: Collection<Pair<Long, Long>>): List<Set<Long>> {

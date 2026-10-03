@@ -113,7 +113,7 @@ class SyncResultTest {
     @Test
     fun `a sync Android would cut off is not started`() {
         val worker = source("manager/sync/FeedSyncer.kt")
-        val skip = worker.indexOf("if (skipForBlockedData(automatic, dataBlocked, whisperOnScreen())) {")
+        val skip = worker.indexOf("if (skipForBlockedData(automatic, dataBlocked, onScreen)) {")
         assertTrue(skip > 0)
         assertTrue(
             "only the automatic ones",

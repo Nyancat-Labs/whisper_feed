@@ -95,7 +95,9 @@ class FeedSyncer(val context: Context, workerParams: WorkerParameters) :
         // Settings says which switch lifts the block; see BackgroundDataHint.
         val automatic = origin in SyncLog.AUTOMATIC_ORIGINS
         val dataBlocked = automatic && backgroundMobileDataBlocked(applicationContext)
-        if (skipForBlockedData(automatic, dataBlocked, whisperOnScreen())) {
+        // Asked once: every question below is about the moment the run began.
+        val onScreen = whisperOnScreen()
+        if (skipForBlockedData(automatic, dataBlocked, onScreen)) {
             SyncLog.finished(applicationContext, run, "skipped: background mobile data blocked")
             return Result.success()
         }
@@ -104,7 +106,7 @@ class FeedSyncer(val context: Context, workerParams: WorkerParameters) :
         // would only be cut off again. See skipAfterCutOff.
         if (skipAfterCutOff(
                 automatic = automatic,
-                onScreen = whisperOnScreen(),
+                onScreen = onScreen,
                 entries = SyncLog.entries(applicationContext),
                 nowMs = System.currentTimeMillis(),
                 current = run,
@@ -130,7 +132,15 @@ class FeedSyncer(val context: Context, workerParams: WorkerParameters) :
         // never shows it at all. Asked while the app is still on screen,
         // which is when a pull starts; if Android refuses, the sync simply
         // runs as it did before.
-        val foreground = origin in SyncLog.ASKED_ORIGINS || dataBlocked
+        //
+        // And any sync that starts while Whisper is on screen, whoever asked
+        // for it. The panel's and the schedule's, begun with the reader
+        // looking, were stopped the moment they looked away - "device state
+        // changed", six times one day on Wi-Fi, each a minute or two into
+        // the feeds and never reaching the account, so twenty-five reads sat
+        // unsent all afternoon. On screen is also the only time Android lets
+        // a foreground task be started.
+        val foreground = runInForeground(origin, dataBlocked, onScreen)
         var inForeground = false
         if (foreground) {
             try {
@@ -435,6 +445,14 @@ const val OUT_OF_TIME_OUTCOME = "stopped: eight minutes up, progress kept"
  */
 fun withTrace(stopped: String, trace: StepTrace): String =
     trace.describe()?.let { "$stopped; $it" } ?: stopped
+
+/**
+ * Whether a sync runs as a foreground task, keeping its network when the
+ * reader leaves: one they asked for, one going ahead on mobile data Android
+ * would otherwise keep from it, and any begun while Whisper is on screen.
+ */
+fun runInForeground(origin: String, dataBlocked: Boolean, onScreen: Boolean): Boolean =
+    origin in SyncLog.ASKED_ORIGINS || dataBlocked || onScreen
 
 /** Whether a sync request is for every feed rather than one feed or one tag. */
 fun isWholeFeed(feedId: Long, feedTag: String): Boolean =

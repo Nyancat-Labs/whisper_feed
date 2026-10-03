@@ -234,10 +234,16 @@ object Diagnostics : KoinComponent {
             appendLine("Currently failing: $failing")
             // Each is downloaded once per subscription on every sync. Titles
             // only, which the list below already carries.
-            val duplicates = get<SourcesRepository>().duplicateGroups()
-            appendLine("Subscribed twice:  ${duplicates.size}")
+            // With why: one subscription twice over, or two feeds - often two
+            // sections of one publication - that deliver most of the same
+            // articles. The line used to call both kinds a double subscription.
+            val duplicates = get<SourcesRepository>().duplicateReport()
+            appendLine("Duplicates:        ${duplicates.size}")
             duplicates.forEach { group ->
-                appendLine("  " + group.joinToString(" = ") { it.title.take(28) })
+                appendLine(
+                    "  " + group.feeds.joinToString(" = ") { it.title.take(28) } +
+                        " (" + duplicateReason(group.sameAddress, group.articlesShared) + ")"
+                )
             }
 
             // Worst first: a report is read from the top, and the feeds that

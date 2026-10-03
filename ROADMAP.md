@@ -2566,6 +2566,24 @@ the real card code and the reader's own photos, all four changes chosen:
   point strip between, in Cards and Magazine. Twelve was mocked first and
   cost a story a screen; the panel's shade does most of the separating.
 
+### 29. From the device, 3 October 2026
+
+- **The clean-up keeps up; a week is simply a lot.** The Storage section's
+  first report: 182 articles past the week (sources not fetched lately),
+  the oldest kept 7.2 days old, 2,500 arriving a day, 20,846 held. Five
+  sources hold 29% of them. Fifty items per feed per fetch and full text for
+  all feeds were the reader's settings.
+- **Syncs begun on screen were stopped as the reader looked away.** Six on
+  Wi-Fi in one day, "device state changed", each a minute or two into the
+  feeds and none reaching the account, so 25 reads waited all afternoon.
+  Any sync that starts while Whisper is on screen now runs as a foreground
+  task, as a pull already did, with the same silent "Syncing" line, and
+  finishes when the reader leaves.
+- **"Subscribed twice" was wrong about two NPR feeds.** They are two feeds,
+  and the main one's stories nearly all come through the News topic too.
+  The report now says "Duplicates", with why: "same address", or "mostly
+  the same articles, 91%".
+
 ### 17. Scroll parallax on the feed — parked, at the bottom
 
 Prototyped, demonstrated, and deliberately not built. The image inside a card's
@@ -2802,7 +2820,7 @@ Small, and cheaper now than later.
   from the code and measured where it could be measured — text widths against
   the real font, icon alpha, migration SQL. The on-device checks have all been
   yours. Emulator-based screenshot tests would change that.
-- **Test coverage is 1017 unit tests** (September 2026), across article age, tag splitting, feed
+- **Test coverage is 1022 unit tests** (September 2026), across article age, tag splitting, feed
   layout and weighting, clustering, the settings backup format, the tour's step
   machine, the starter list, bookmark import, link harvesting, the Google Reader
   id shapes, the source list's filters and range selection, and the URL scheme

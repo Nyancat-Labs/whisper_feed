@@ -61,8 +61,10 @@ class SyncEfficiencyTest {
     fun `a pull runs in the foreground, silently`() {
         val worker = syncer.substringAfter("override suspend fun doWork()")
         assertTrue(
-            "only the reader's own syncs",
-            worker.contains("val foreground = origin in SyncLog.ASKED_ORIGINS") && SyncLog.ASKED_ORIGINS.none { it in SyncLog.AUTOMATIC_ORIGINS },
+            "the reader's own syncs, wherever they start; the rest only when begun on screen",
+            worker.contains("val foreground = runInForeground(origin, dataBlocked, onScreen)") &&
+                SyncLog.ASKED_ORIGINS.all { com.saulhdev.feeder.manager.sync.runInForeground(it, dataBlocked = false, onScreen = false) } &&
+                SyncLog.AUTOMATIC_ORIGINS.none { com.saulhdev.feeder.manager.sync.runInForeground(it, dataBlocked = false, onScreen = false) },
         )
         assertTrue(worker.contains("setForeground(getForegroundInfo())"))
         assertTrue("before the sync, while the app is still on screen", worker.indexOf("setForeground(") < worker.indexOf("syncFeeds("))
