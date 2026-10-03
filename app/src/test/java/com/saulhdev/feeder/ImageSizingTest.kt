@@ -61,7 +61,7 @@ class ImageSizingTest {
         // would be a second, less precise copy of the same number.
         val source = read("ui/overlay/ArticleCard.kt")
         val sites = callSites(source, "AsyncImage(")
-        assertTrue("ArticleCard's images moved", sites.size == 4)
+        assertTrue("ArticleCard's images moved", sites.size == 3)
 
         var from = 0
         sites.forEachIndexed { index, site ->
@@ -73,7 +73,7 @@ class ImageSizingTest {
             // hero image is written that way — it fills a Box that carries the
             // aspectRatio — so the shape it decodes to is stated one composable
             // up, and looking only at the call site would call it unbounded.
-            val ownBound = site.contains("aspectRatio(") ||
+            val ownBound = site.contains("aspectRatio(") || site.contains(".leadPicture(") ||
                     Regex("""\.size\([^)]""").containsMatchIn(site)
             // The lead picture's Box is sized by leadPicture since C5: four by
             // three, capped at half the window, measured with fixed

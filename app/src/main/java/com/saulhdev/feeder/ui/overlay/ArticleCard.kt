@@ -20,11 +20,6 @@ package com.saulhdev.feeder.ui.overlay
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.layout.layout
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -74,6 +69,8 @@ import com.saulhdev.feeder.ui.icons.Phosphor
 import com.saulhdev.feeder.ui.icons.phosphor.Asterisk
 import com.saulhdev.feeder.ui.icons.phosphor.Megaphone
 import com.saulhdev.feeder.utils.LAYOUT_CARDS
+import com.saulhdev.feeder.utils.LAYOUT_MAGAZINE
+import com.saulhdev.feeder.utils.shortSourceName
 import com.saulhdev.feeder.utils.formatArticleAge
 
 /**
@@ -130,11 +127,22 @@ fun FeedArticleItem(
     // hold itself; see FeedItems. A pin still keeps its exemption, because a
     // pin is still kept on screen by the app rather than by the reader.
     val faded = (dimRead && item.article.readAt != 0L) || dimSource
+    // Each story on its own panel, a shade off the background, with a narrow
+    // strip of the background between: where one story ends and the next
+    // begins, seen without reading. Cards and Magazine only. Mosaic's tiles
+    // are already blocks, and List is a list.
+    val panel = if (layout == LAYOUT_CARDS || layout == LAYOUT_MAGAZINE) {
+        Modifier
+            .padding(vertical = CARD_PANEL_GAP)
+            .background(MaterialTheme.colorScheme.surfaceContainer)
+    } else {
+        Modifier
+    }
     val shapeModifier =
         if (isCardFaded(faded, pinned = item.pinned)) {
-            modifier.alpha(READ_ALPHA)
+            modifier.then(panel).alpha(READ_ALPHA)
         } else {
-            modifier
+            modifier.then(panel)
         }
     // Worked out only when the menu is opened, not for every card in the feed:
     // this is an answer to a question almost nobody asks of almost any article.
@@ -160,8 +168,8 @@ fun FeedArticleItem(
         )
     }
     when (feedCardShape(index, hasImage, layout, emphasis)) {
-        FeedCardShape.Hero    -> ArticleHeroCard(
-            item, onClick, onBookmark, onShare, menu = menu, modifier = shapeModifier, coverage = coverage,
+        FeedCardShape.Hero    -> ArticleCard(
+            item, onClick, onBookmark, onShare, menu = menu, modifier = shapeModifier, coverage = coverage, lead = true,
         )
         FeedCardShape.Card    -> ArticleCard(
             item, onClick, onBookmark, onShare, menu = menu, modifier = shapeModifier, coverage = coverage,
@@ -173,110 +181,6 @@ fun FeedArticleItem(
             size = emphasis,
             coverage = coverage,
         )
-    }
-}
-
-/**
- * The anchor shape: a tall image with the headline laid over it.
- *
- * The scrim is a gradient rather than a flat overlay because a flat one has to
- * be dark enough for the worst image, which then greys out every good one.
- */
-@Composable
-fun ArticleHeroCard(
-    item: FeedItem,
-    onClick: () -> Unit,
-    onBookmark: (Boolean) -> Unit,
-    onShare: () -> Unit,
-    modifier: Modifier = Modifier,
-    menu: @Composable (Color?) -> Unit = {},
-    coverage: Int? = null,
-) {
-    val context = LocalContext.current
-    // Cards merge their texts for a screen reader, so the headline is
-    // already read out; what was missing was any hint that the thing read
-    // out can be opened at all.
-    val openLabel = stringResource(R.string.action_open_article)
-    val windowHeight = LocalWindowInfo.current.containerSize.height
-
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-            .clickable(onClickLabel = openLabel, role = Role.Button, onClick = onClick)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .leadPicture(windowHeight)
-                // The shade reaches above the text; never above the picture.
-                .clipToBounds()
-        ) {
-            AsyncImage(
-                model = item.imageUrl,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                placeholder = painterResource(articlePlaceholder()),
-                error = painterResource(articlePlaceholder()),
-                modifier = Modifier.fillMaxSize(),
-            )
-            // The shade follows the text, not the picture: clear until a
-            // little above the first line, then deepening to the bottom. It
-            // was fixed to the card, clear down to 30% of it, and a headline
-            // that ran taller (at 200% text, or on a narrow screen) put its
-            // top line in white on the bare photograph. Where the text sits
-            // as it usually does, the shade lands where the old one did, and
-            // the top of the picture is still left alone.
-            Column(
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .fillMaxWidth()
-                    .drawBehind { drawTextShade() }
-                    .padding(16.dp)
-            ) {
-                if (item.pinned) {
-                    PinnedLine(color = Color.White)
-                    Spacer(Modifier.height(4.dp))
-                }
-                coverage?.let {
-                    CoverageLine(sources = it, color = Color.White)
-                    Spacer(Modifier.height(4.dp))
-                }
-                Text(
-                    text = item.contentTitle,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    maxLines = 3,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                Spacer(Modifier.height(8.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    ArticleMeta(
-                        category = item.feedTag,
-                        source = item.feedTitle,
-                        sourceId = item.sourceId,
-                        articleId = item.id,
-                        age = item.relativeAge(context),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = Color.White.copy(alpha = 0.85f),
-                        modifier = Modifier.weight(1f),
-                        iconUrl = item.feedIconUrl,
-                        onImage = true,
-                    )
-                    // Share lives in the menu. Two ways to one action on
-                    // every card was a button the card did not need.
-                    CardActions {
-                        SaveButton(
-                            saved = item.bookmarked,
-                            onSavedChange = onBookmark,
-                            onImage = true,
-                        )
-                        menu(Color.White)
-                    }
-                }
-            }
-        }
     }
 }
 
@@ -303,31 +207,16 @@ internal fun leadPictureHeight(widthPx: Int, windowHeightPx: Int): Int {
     return if (windowHeightPx <= 0) fourByThree else minOf(fourByThree, windowHeightPx / 2)
 }
 
-/** How far above the text the shade starts to show. */
-private val SHADE_HEADROOM = 72.dp
-
-/**
- * Behind a lead story's text, from [SHADE_HEADROOM] above it to the bottom:
- * the three stops the card had, anchored to the text instead of the card.
- */
-private fun DrawScope.drawTextShade() {
-    val headroom = SHADE_HEADROOM.toPx()
-    drawRect(
-        brush = Brush.verticalGradient(
-            0f to Color.Transparent,
-            headroom / (headroom + size.height) to Color.Black.copy(alpha = 0.45f),
-            1f to Color.Black.copy(alpha = 0.88f),
-            startY = -headroom,
-            endY = size.height,
-        ),
-        topLeft = Offset(0f, -headroom),
-        size = Size(size.width, size.height + headroom),
-    )
-}
-
 /**
  * The middle weight: image above, headline and summary below. This is the shape
  * the Cards layout was built around and it stays the relaxed-browsing view.
+ *
+ * And, with [lead], the lead story's: its picture taller and its headline a
+ * size up, but the headline below the picture like every other card's. It was
+ * laid over the picture on a dark shade, and over a busy photograph - a
+ * publisher's logo, a crowd, a chart - it was the hardest text in the feed to
+ * read, however dark the shade. Below it, it reads the same on any picture,
+ * and the lead story is the same shape as the rest, only bigger.
  */
 @Composable
 fun ArticleCard(
@@ -338,12 +227,14 @@ fun ArticleCard(
     modifier: Modifier = Modifier,
     menu: @Composable (Color?) -> Unit = {},
     coverage: Int? = null,
+    lead: Boolean = false,
 ) {
     val context = LocalContext.current
     // Cards merge their texts for a screen reader, so the headline is
     // already read out; what was missing was any hint that the thing read
     // out can be opened at all.
     val openLabel = stringResource(R.string.action_open_article)
+    val windowHeight = LocalWindowInfo.current.containerSize.height
 
     Column(
         modifier = modifier
@@ -362,9 +253,11 @@ fun ArticleCard(
                 placeholder = painterResource(articlePlaceholder()),
                 error = painterResource(articlePlaceholder()),
                 contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(16f / 9f),
+                modifier = if (lead) {
+                    Modifier.fillMaxWidth().leadPicture(windowHeight)
+                } else {
+                    Modifier.fillMaxWidth().aspectRatio(16f / 9f)
+                },
             )
         }
 
@@ -386,8 +279,11 @@ fun ArticleCard(
 
             Text(
                 text = item.contentTitle,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
+                style = if (lead) MaterialTheme.typography.titleLarge else MaterialTheme.typography.titleMedium,
+                // Medium rather than bold: at a headline's size the weight
+                // closed the letters up, and a two-line title read as a block.
+                // The size and the summary below still set it apart.
+                fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.padding(
                     top = if (coverage != null || item.pinned) 6.dp else 0.dp
@@ -467,7 +363,7 @@ fun ArticleCompactRow(
                 Text(
                     text = item.contentTitle,
                     style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold,
+                    fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 3,
                     overflow = TextOverflow.Ellipsis,
@@ -564,7 +460,7 @@ fun ArticleTextRow(
                 Text(
                     text = item.contentTitle,
                     style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold,
+                    fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
@@ -713,7 +609,7 @@ fun ArticleMosaicTile(
                 text = item.contentTitle,
                 style = if (large) MaterialTheme.typography.titleMedium
                 else MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.SemiBold,
+                fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = when (size) {
                     FeedEmphasis.Small  -> 2
@@ -835,7 +731,8 @@ private fun ArticleMeta(
                 )
             }
             Text(
-                text = source,
+                // The publication, not its strapline; see shortSourceName.
+                text = shortSourceName(source),
                 style = style,
                 color = color,
                 maxLines = 1,
@@ -886,6 +783,13 @@ fun articlePlaceholder(): Int =
  * than as a difference. Pictures ignore it on purpose and run full width.
  */
 val CARD_MARGIN = 16.dp
+
+/**
+ * Half the strip of background between two stories' panels: six points in
+ * all. Twelve was tried first and cost a story a screen; the panel's shade
+ * does most of the separating, and the strip only has to show it is there.
+ */
+val CARD_PANEL_GAP = 3.dp
 
 /** How far a read article fades, when the reader has asked for that. */
 private const val READ_ALPHA = 0.55f

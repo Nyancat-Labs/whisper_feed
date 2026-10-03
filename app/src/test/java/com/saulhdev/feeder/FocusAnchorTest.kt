@@ -117,6 +117,6 @@ class FocusAnchorTest {
         val calls = Regex("""(?<!fun )ArticleMeta\(\n""").findAll(card).count()
         val carried = Regex("""\n\s*articleId = item\.id,""").findAll(card).count()
         assertEquals("one per ArticleMeta call site", calls, carried)
-        assertTrue("and there are some", calls >= 5)
+        assertTrue("and there are some", calls >= 4)
     }
 }

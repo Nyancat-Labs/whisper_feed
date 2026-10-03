@@ -119,7 +119,7 @@ class SourceFilterTest {
         val target = card.substring(opens, closes)
 
         assertTrue("the mark left the target", target.contains("SourceMark("))
-        assertTrue("the source name left the target", target.contains("text = source,"))
+        assertTrue("the source name left the target", target.contains("text = shortSourceName(source),"))
         // Matched on the interpolation rather than the word: `onImage` in the
         // same block contains "age", which is the kind of near-miss that makes
         // a test pass for the wrong reason and then fail for the wrong one.

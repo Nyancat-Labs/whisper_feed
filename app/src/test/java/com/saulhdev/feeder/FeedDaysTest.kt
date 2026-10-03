@@ -126,7 +126,7 @@ class CardActionsTest {
 
     @Test
     fun `every byline pair is drawn together and out to the edge`() {
-        assertEquals("hero, card, text row and tile", 4, Regex("CardActions \\{").findAll(card).count())
+        assertEquals("card (the lead story's too), text row and tile", 3, Regex("CardActions \\{").findAll(card).count())
         assertTrue(card.contains("horizontalArrangement = Arrangement.spacedBy(-CARD_ACTIONS_OVERLAP),"))
         assertTrue(card.contains("modifier = Modifier.offset(x = CARD_ACTIONS_EDGE),"))
         assertTrue("drawn, not shrunk: targets keep 48dp", !card.substring(card.indexOf("fun CardActions(")).contains("size("))

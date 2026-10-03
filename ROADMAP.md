@@ -2545,6 +2545,27 @@ Small and certain first, then what the most phones see, then the rest.
   now goes on "reached sign-in 0.5s, feeds 41s; stopped in matching after
   380s", after the stop itself, which the hold and the pick-up still read.
 
+### 28. Easier to read, 3 October 2026
+
+Set beside another reader's feed, Whisper's read less easily. Mocked up with
+the real card code and the reader's own photos, all four changes chosen:
+
+- **The lead headline sits below its picture.** It was laid over the photo
+  on a dark shade, and over a busy one - a publisher's logo across the
+  bottom, a crowd, a chart - it was the hardest text in the feed to read.
+  The lead story is now the standard card with a taller picture and a
+  headline a size up; the overlay card and its shade are gone.
+- **Headlines are medium weight,** not bold or semi-bold, in every shape.
+  At a headline's size the weight closed the letters up.
+- **Cards name the publication, not its strapline:** "GSMArena.com", not
+  "GSMArena.com - Latest articles". Cut at the first separator; when the
+  part before it is only a section ("Tennis | The Guardian", "Blog –
+  Hackaday") the publication is the part after. The sources list keeps the
+  full title.
+- **Each story sits on a panel** a shade off the background, with a six
+  point strip between, in Cards and Magazine. Twelve was mocked first and
+  cost a story a screen; the panel's shade does most of the separating.
+
 ### 17. Scroll parallax on the feed — parked, at the bottom
 
 Prototyped, demonstrated, and deliberately not built. The image inside a card's
@@ -2781,7 +2802,7 @@ Small, and cheaper now than later.
   from the code and measured where it could be measured — text widths against
   the real font, icon alpha, migration SQL. The on-device checks have all been
   yours. Emulator-based screenshot tests would change that.
-- **Test coverage is 1010 unit tests** (September 2026), across article age, tag splitting, feed
+- **Test coverage is 1017 unit tests** (September 2026), across article age, tag splitting, feed
   layout and weighting, clustering, the settings backup format, the tour's step
   machine, the starter list, bookmark import, link harvesting, the Google Reader
   id shapes, the source list's filters and range selection, and the URL scheme
