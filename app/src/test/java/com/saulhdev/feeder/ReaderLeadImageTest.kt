@@ -80,6 +80,28 @@ class ReaderLeadImageTest {
     }
 
     @Test
+    fun `the card's picture goes on top, not the page's opening one`() {
+        // Investing.com opens its Reuters stories with the Reuters logo.
+        val article = read(
+            """<p><img src="https://i-invdn-com.investing.com/news/LYNXMPEB0H0A8_L.jpg?reuters"></p><p>By</p><p>Oct 4 (Reuters) - Spanish police on Sunday cleared a migrant camp.</p>""",
+            card = "https://cdn.example.org/ceuta-camp.jpg",
+        )
+        assertEquals("https://cdn.example.org/ceuta-camp.jpg", article.leadImage)
+        assertTrue("the logo is not left in the text either", article.body.select("img").isEmpty())
+    }
+
+    @Test
+    fun `a different picture further down the article stays`() {
+        val long = "This paragraph is long enough to count as the article's text and not a dek."
+        val article = read(
+            "<p>$long</p><p>$long</p><img src=\"https://cdn.example.org/map.png\">",
+            card = "https://cdn.example.org/card.jpg",
+        )
+        assertEquals("https://cdn.example.org/card.jpg", article.leadImage)
+        assertEquals(1, article.body.select("img").size)
+    }
+
+    @Test
     fun `no picture anywhere, none on top`() {
         assertNull(read("<p>Only text.</p>").leadImage)
     }

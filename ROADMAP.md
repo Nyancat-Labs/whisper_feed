@@ -2590,9 +2590,13 @@ the real card code and the reader's own photos, all four changes chosen:
   it was, and built as mocked: the article's picture first and edge to
   edge, then the headline in medium weight, then the card's own byline -
   mark, category, publication, age - where the source's name had a line of
-  its own at headline size, and the author and date quietly below. The
-  picture is the body's opening one, lifted out with its figure and caption
-  so it is not drawn twice; the card's when the body has none.
+  its own at headline size, and the author and date quietly below.
+- **The picture on top is the card's.** It was first the body's opening
+  picture, and an Investing.com story opened with Reuters' logo, so the
+  reader showed a blurred logo where the card had shown the photograph. The
+  card's picture now goes on top whenever there is one; the body's opening
+  picture and any copy of the card's are taken out so nothing is drawn
+  twice. Only an article without a card picture lifts the body's first one.
 
 ### 17. Scroll parallax on the feed — parked, at the bottom
 

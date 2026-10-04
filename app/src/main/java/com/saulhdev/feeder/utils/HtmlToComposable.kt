@@ -329,10 +329,19 @@ class ReaderBody internal constructor(
 )
 
 /**
- * The reader's article, read once: the repeated title and repeated pictures
- * taken out as [htmlFormattedText] does, the card's picture put back when the
- * body has none of its own, and then the opening picture lifted out for the
- * top of the screen. Its text is drawn with [readerBodyText].
+ * The reader's article, read once, with the picture for the top of the
+ * screen chosen and taken out of the text. Its text is drawn with
+ * [readerBodyText].
+ *
+ * The card's picture when there is one - the picture the reader tapped - and
+ * the page's opening picture taken out, whatever it is. The page's own
+ * opening picture went on top at first, and on Investing.com that is the
+ * Reuters logo: blown up to the width of the screen above a story whose card
+ * had shown the photograph. When the page's opening picture is the lead, it
+ * is the card's under another name (BGR's `intro-123.jpg` for the feed's
+ * `l-intro-123.jpg`), so it goes either way; any copy of the card's picture
+ * further down goes too. Only with no card picture does the page's opening
+ * one go on top.
  */
 fun readerBody(
     inputStream: InputStream,
@@ -342,9 +351,28 @@ fun readerBody(
 ): ReaderBody {
     val body = Jsoup.parse(inputStream, null, baseUrl).body()
     stripRepeatedTitle(body, articleTitle)
-    ensureLeadImage(body, leadImageUrl)
+    val card = usableImageUrl(leadImageUrl?.trim())
+    if (card != null) {
+        openingImage(body)?.let { (it.closest("figure") ?: it.closest("picture") ?: it).remove() }
+        dropCopiesOf(body, card)
+        dropRepeatedImages(body)
+        return ReaderBody(card, body)
+    }
     dropRepeatedImages(body)
     return ReaderBody(liftLeadImage(body), body)
+}
+
+/** Takes out every picture in [body] that is [picture] at some other address or size. */
+internal fun dropCopiesOf(body: Element, picture: String) {
+    val wanted = imageIdentity(picture)
+    if (wanted.isEmpty()) return
+    body.select("img").forEach { img ->
+        val src = srcOf(img).ifBlank { img.attr("srcset").substringBefore(',').trim().substringBefore(' ') }
+        val identity = imageIdentity(src)
+        if (identity.isNotEmpty() && (identity == wanted || sameAsset(identity, wanted))) {
+            (img.closest("figure") ?: img.closest("picture") ?: img).remove()
+        }
+    }
 }
 
 /** The text of a [readerBody], below the headline. */
