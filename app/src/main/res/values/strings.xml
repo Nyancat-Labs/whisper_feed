@@ -352,6 +352,8 @@
     <string name="account_server_hint">The address you open in your browser. For FreshRSS, Whisper adds /api/greader.php if it is needed.</string>
     <string name="account_server_upgraded">Changed to https, so your password is not sent in the clear. Plain http will not connect.</string>
     <string name="account_password_hint">Most services offer an application password for this. Use one if yours does — it can be revoked without changing your real password.</string>
+    <string name="account_next">Next</string>
+    <string name="account_change_server">Change</string>
     <string name="account_sign_in">Sign in</string>
     <string name="account_sign_out">Sign out</string>
     <string name="account_sign_out_keeps">Signing out keeps your feeds and articles on this phone.</string>

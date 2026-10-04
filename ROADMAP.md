@@ -2636,6 +2636,14 @@ the real card code and the reader's own photos, all four changes chosen:
   the copy it replaces beside it, as `.previous`, so one written over by
   mistake can still be had.
 
+- **Signing in is two steps.** A password manager put the username into
+  the server address, the first text field, and the password nowhere
+  useful. Android has no autofill type for a server address, and a manager
+  guesses the first text box is the username. The address now has a screen
+  of its own, Next, then the username and password with the address above
+  them and a Change button, so the field it cannot place is not there when
+  it fills.
+
 ### 17. Scroll parallax on the feed — parked, at the bottom
 
 Prototyped, demonstrated, and deliberately not built. The image inside a card's

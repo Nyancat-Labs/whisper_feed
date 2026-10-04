@@ -18,6 +18,11 @@
 package com.saulhdev.feeder.ui.pages
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.ui.Alignment
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.material3.TextButton
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -88,6 +93,17 @@ fun AccountPage(
     var corrected by remember { mutableStateOf(false) }
     var username by remember(state.username) { mutableStateOf(state.username) }
     var password by remember { mutableStateOf("") }
+    // Past the address and on to the username and password. Starts there
+    // when an address is already known, as after signing out.
+    var addressDone by rememberSaveable { mutableStateOf(state.serverUrl.isNotBlank()) }
+    fun toCredentials() {
+        if (server.isBlank()) return
+        val fixed = normalisedServerUrl(server)
+        corrected = fixed != server.trim()
+        server = fixed
+        viewModel.clearError()
+        addressDone = true
+    }
 
     ViewWithActionBar(
         title = stringResource(R.string.pref_account),
@@ -176,117 +192,166 @@ fun AccountPage(
                         )
                     }
                 }
-                item {
-                    OutlinedTextField(
-                        value = server,
-                        onValueChange = {
-                            server = it
-                            corrected = false
-                            viewModel.clearError()
-                        },
-                        label = { Text(stringResource(R.string.account_server)) },
-                        // One line, like the field: a placeholder that wrapped sat on two
-                        // lines with the cursor alone on the first.
-                        placeholder = {
-                            Text(
-                                "https://freshrss.example.com",
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                        },
-                        singleLine = true,
-                        shape = MaterialTheme.shapes.large,
-                        supportingText = {
-                            Text(
-                                stringResource(
-                                    if (corrected) R.string.account_server_upgraded
-                                    else R.string.account_server_hint,
-                                ),
-                            )
-                        },
-                        keyboardOptions = KeyboardOptions(
-                            capitalization = KeyboardCapitalization.None,
-                            autoCorrectEnabled = false,
-                            keyboardType = KeyboardType.Uri,
-                            imeAction = ImeAction.Next,
-                        ),
-                        // Corrected as the reader leaves the field rather than
-                        // as they type it, which would make `http` impossible
-                        // to type and look like the app fighting them.
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .onFocusChanged { focus ->
-                                if (focus.isFocused || server.isBlank()) return@onFocusChanged
-                                val fixed = normalisedServerUrl(server)
-                                if (fixed != server) {
-                                    corrected = true
-                                    server = fixed
-                                }
+                // Two steps: the server's address, then the username and
+                // password on their own. With all three on one screen a
+                // password manager put the username into the address - the
+                // first text field - and the password nowhere useful. Android
+                // has no autofill type for a server address, so the field it
+                // cannot place is simply not there when it fills.
+                if (!addressDone) {
+                    item {
+                        OutlinedTextField(
+                            value = server,
+                            onValueChange = {
+                                server = it
+                                corrected = false
+                                viewModel.clearError()
                             },
-                    )
-                }
-                item {
-                    OutlinedTextField(
-                        value = username,
-                        onValueChange = { username = it; viewModel.clearError() },
-                        label = { Text(stringResource(R.string.account_username)) },
-                        singleLine = true,
-                        shape = MaterialTheme.shapes.large,
-                        keyboardOptions = KeyboardOptions(
-                            capitalization = KeyboardCapitalization.None,
-                            autoCorrectEnabled = false,
-                            imeAction = ImeAction.Next,
-                        ),
-                        // Named for autofill, so a password manager puts the
-                        // username here and the password below rather than
-                        // guessing from the order of the fields.
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .semantics { contentType = ContentType.Username },
-                    )
-                }
-                item {
-                    OutlinedTextField(
-                        value = password,
-                        onValueChange = { password = it; viewModel.clearError() },
-                        label = { Text(stringResource(R.string.account_password)) },
-                        singleLine = true,
-                        shape = MaterialTheme.shapes.large,
-                        visualTransformation = PasswordVisualTransformation(),
-                        keyboardOptions = KeyboardOptions(
-                            autoCorrectEnabled = false,
-                            keyboardType = KeyboardType.Password,
-                            imeAction = ImeAction.Done,
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .semantics { contentType = ContentType.Password },
-                    )
-                }
-                item {
-                    Text(
-                        text = stringResource(R.string.account_password_hint),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-                item {
-                    ActionButton(
-                        text = stringResource(R.string.account_sign_in),
-                        icon = Phosphor.Check,
-                        modifier = Modifier.fillMaxWidth(),
-                        positive = true,
-                        // Corrected again on the way out, for the reader who
-                        // types an address and presses Sign in without the
-                        // field ever losing focus. Assigning it back means
-                        // they still see what is being used.
-                        onClick = {
-                            val fixed = normalisedServerUrl(server)
-                            corrected = fixed != server.trim()
-                            server = fixed
-                            viewModel.signIn(fixed, username.trim(), password)
-                        },
-                    )
+                            label = { Text(stringResource(R.string.account_server)) },
+                            // One line, like the field: a placeholder that wrapped sat on two
+                            // lines with the cursor alone on the first.
+                            placeholder = {
+                                Text(
+                                    "https://freshrss.example.com",
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                            },
+                            singleLine = true,
+                            shape = MaterialTheme.shapes.large,
+                            supportingText = {
+                                Text(
+                                    stringResource(
+                                        if (corrected) R.string.account_server_upgraded
+                                        else R.string.account_server_hint,
+                                    ),
+                                )
+                            },
+                            keyboardOptions = KeyboardOptions(
+                                capitalization = KeyboardCapitalization.None,
+                                autoCorrectEnabled = false,
+                                keyboardType = KeyboardType.Uri,
+                                imeAction = ImeAction.Next,
+                            ),
+                            keyboardActions = KeyboardActions(onNext = { toCredentials() }),
+                            // Corrected as the reader leaves the field rather than
+                            // as they type it, which would make `http` impossible
+                            // to type and look like the app fighting them.
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .onFocusChanged { focus ->
+                                    if (focus.isFocused || server.isBlank()) return@onFocusChanged
+                                    val fixed = normalisedServerUrl(server)
+                                    if (fixed != server) {
+                                        corrected = true
+                                        server = fixed
+                                    }
+                                },
+                        )
+                    }
+                    item {
+                        ActionButton(
+                            text = stringResource(R.string.account_next),
+                            icon = Phosphor.Check,
+                            modifier = Modifier.fillMaxWidth(),
+                            positive = true,
+                            onClick = { toCredentials() },
+                        )
+                    }
+                } else {
+                    item {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = stringResource(R.string.account_server),
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                                Text(
+                                    text = server,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                                if (corrected) {
+                                    Text(
+                                        text = stringResource(R.string.account_server_upgraded),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
+                                }
+                            }
+                            TextButton(onClick = { addressDone = false }) {
+                                Text(stringResource(R.string.account_change_server))
+                            }
+                        }
+                    }
+                    item {
+                        OutlinedTextField(
+                            value = username,
+                            onValueChange = { username = it; viewModel.clearError() },
+                            label = { Text(stringResource(R.string.account_username)) },
+                            singleLine = true,
+                            shape = MaterialTheme.shapes.large,
+                            keyboardOptions = KeyboardOptions(
+                                capitalization = KeyboardCapitalization.None,
+                                autoCorrectEnabled = false,
+                                imeAction = ImeAction.Next,
+                            ),
+                            // Named for autofill, so a password manager puts the
+                            // username here and the password below rather than
+                            // guessing from the order of the fields.
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .semantics { contentType = ContentType.Username },
+                        )
+                    }
+                    item {
+                        OutlinedTextField(
+                            value = password,
+                            onValueChange = { password = it; viewModel.clearError() },
+                            label = { Text(stringResource(R.string.account_password)) },
+                            singleLine = true,
+                            shape = MaterialTheme.shapes.large,
+                            visualTransformation = PasswordVisualTransformation(),
+                            keyboardOptions = KeyboardOptions(
+                                autoCorrectEnabled = false,
+                                keyboardType = KeyboardType.Password,
+                                imeAction = ImeAction.Done,
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .semantics { contentType = ContentType.Password },
+                        )
+                    }
+                    item {
+                        Text(
+                            text = stringResource(R.string.account_password_hint),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    item {
+                        ActionButton(
+                            text = stringResource(R.string.account_sign_in),
+                            icon = Phosphor.Check,
+                            modifier = Modifier.fillMaxWidth(),
+                            positive = true,
+                            // Corrected again on the way out, for the reader who
+                            // types an address and presses Sign in without the
+                            // field ever losing focus. Assigning it back means
+                            // they still see what is being used.
+                            onClick = {
+                                val fixed = normalisedServerUrl(server)
+                                corrected = fixed != server.trim()
+                                server = fixed
+                                viewModel.signIn(fixed, username.trim(), password)
+                            },
+                        )
+                    }
                 }
             }
 

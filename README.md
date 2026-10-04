@@ -13,7 +13,7 @@ disagree.
 [![Licence: GPL v3](https://img.shields.io/badge/licence-GPL--3.0-blue)](LICENSE)
 ![Version 1.0.0](https://img.shields.io/badge/version-1.0.0-informational)
 ![Android 8.0+](https://img.shields.io/badge/Android-8.0%2B-brightgreen)
-![Tests](https://img.shields.io/badge/tests-1041%20passing-success)
+![Tests](https://img.shields.io/badge/tests-1044%20passing-success)
 ![No trackers](https://img.shields.io/badge/trackers-none-success)
 
 </div>
@@ -57,7 +57,7 @@ Two things are worth knowing:
   FreshRSS server, with 114 feeds, since September 2026, on both devices at
   once. Miniflux and the other Google Reader services speak the same protocol
   and may work, but are not tested or supported.
-- **There are no instrumentation or screenshot tests.** 1041 unit tests cover
+- **There are no instrumentation or screenshot tests.** 1044 unit tests cover
   the logic, some under Robolectric (every database upgrade from version 3,
   the download queue, the account store); every on-device check has been
   done by hand.
