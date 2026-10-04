@@ -2586,6 +2586,13 @@ the real card code and the reader's own photos, all four changes chosen:
 - **A lead story's headline is the same size as the rest.** A size up, it
   looked like a mistake once it sat below the picture instead of on it; the
   taller picture marks the lead story on its own.
+- **The reader carries the cards' style.** Mocked up beside the reader as
+  it was, and built as mocked: the article's picture first and edge to
+  edge, then the headline in medium weight, then the card's own byline -
+  mark, category, publication, age - where the source's name had a line of
+  its own at headline size, and the author and date quietly below. The
+  picture is the body's opening one, lifted out with its figure and caption
+  so it is not drawn twice; the card's when the body has none.
 
 ### 17. Scroll parallax on the feed — parked, at the bottom
 
@@ -2823,7 +2830,7 @@ Small, and cheaper now than later.
   from the code and measured where it could be measured — text widths against
   the real font, icon alpha, migration SQL. The on-device checks have all been
   yours. Emulator-based screenshot tests would change that.
-- **Test coverage is 1022 unit tests** (September 2026), across article age, tag splitting, feed
+- **Test coverage is 1030 unit tests** (September 2026), across article age, tag splitting, feed
   layout and weighting, clustering, the settings backup format, the tour's step
   machine, the starter list, bookmark import, link harvesting, the Google Reader
   id shapes, the source list's filters and range selection, and the URL scheme

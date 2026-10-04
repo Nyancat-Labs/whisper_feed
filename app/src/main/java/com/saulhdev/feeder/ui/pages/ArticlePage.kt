@@ -10,10 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Icon
@@ -27,7 +24,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -40,7 +36,6 @@ import com.saulhdev.feeder.ui.components.HeaderAction
 import com.saulhdev.feeder.ui.components.RoundButton
 import com.saulhdev.feeder.ui.components.SaveButton
 import com.saulhdev.feeder.ui.overlay.articlePlaceholder
-import com.saulhdev.feeder.ui.overlay.SourceMark
 import com.saulhdev.feeder.ui.components.ViewWithActionBar
 import com.saulhdev.feeder.ui.components.WithBidiDeterminedLayoutDirection
 import com.saulhdev.feeder.ui.icons.Phosphor
@@ -53,7 +48,17 @@ import com.saulhdev.feeder.utils.blobInputStream
 import com.saulhdev.feeder.utils.extensions.koinNeoViewModel
 import com.saulhdev.feeder.utils.extensions.launchView
 import com.saulhdev.feeder.utils.extensions.shareIntent
-import com.saulhdev.feeder.utils.htmlFormattedText
+import com.saulhdev.feeder.utils.readerBody
+import com.saulhdev.feeder.utils.readerBodyText
+import com.saulhdev.feeder.utils.formatArticleAge
+import com.saulhdev.feeder.ui.overlay.ArticleMeta
+import coil.compose.AsyncImage
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import com.saulhdev.feeder.utils.unicodeWrap
 import com.saulhdev.feeder.viewmodels.ArticleViewModel
 import kotlinx.datetime.TimeZone
@@ -248,46 +253,83 @@ fun ArticlePage(
                         bottom = paddingValues.calculateBottomPadding() + 8.dp
                     ),
             ) {
+                // Read once, before anything is drawn: the article's opening
+                // picture is drawn above the headline, and has to come out of
+                // the body first so it is not drawn twice. See readerBody.
+                // Also matched on the id: a Ready left by the article read
+                // before this one is no full text for this one.
+                val baseUrl = state?.article?.link ?: ""
+                val cardPicture = usableImageUrl(state?.article?.imageUrl)
+                val article = when {
+                    showFullArticle && blobFullFile(articleId, context.filesDir).isFile ->
+                        blobFullInputStream(articleId, context.filesDir).use {
+                            readerBody(it, baseUrl, articleTitle = title, leadImageUrl = cardPicture)
+                        }
+                    !showFullArticle && blobFile(articleId, context.filesDir).isFile ->
+                        blobInputStream(articleId, context.filesDir).use {
+                            readerBody(it, baseUrl, articleTitle = title, leadImageUrl = cardPicture)
+                        }
+                    else -> null
+                }
+
+                // The picture first and edge to edge, then the headline, as a
+                // card has them, so an article opens looking like the card it
+                // was opened from. It sat between the byline and the text,
+                // inset by the margins, and the two screens read as two apps.
+                article?.leadImage?.let { picture ->
+                    item {
+                        AsyncImage(
+                            model = picture,
+                            contentDescription = null,
+                            placeholder = painterResource(placeholder),
+                            error = painterResource(placeholder),
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .bleed(CARD_MARGIN)
+                                .aspectRatio(16f / 9f),
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+                }
+
                 item {
                     WithBidiDeterminedLayoutDirection(paragraph = title) {
                         Text(
                             text = title,
                             style = MaterialTheme.typography.headlineMedium,
+                            // Medium, as the cards' headlines are.
+                            fontWeight = FontWeight.Medium,
                             modifier = Modifier
                                 .fillMaxWidth()
                         )
                     }
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
-                    // The source's own mark beside its name, the same one the
-                    // cards carry and already cached from the feed. A byline
-                    // with a face on it is recognisable at a glance; a line of
-                    // text is something you have to read.
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        SourceMark(
-                            iconUrl = usableImageUrl(state?.source?.feedImage?.toString()),
-                            sourceName = feedTitle,
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        // Plain text. It was drawn as a link whose tap built an
-                        // intent and never started it, so it looked like the
-                        // way to the page and did nothing - and the page is
-                        // one tap away in the bar above anyway.
-                        WithBidiDeterminedLayoutDirection(paragraph = feedTitle) {
-                            Text(
-                                text = feedTitle,
-                                style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier.wrapContentWidth()
-                            )
-                        }
-                    }
+                    // The card's byline, the same line in the same type: the
+                    // source's mark, its category, the publication's name and
+                    // the article's age. The name was a line of its own at
+                    // headline size, in full - "GSMArena.com - Latest
+                    // articles" - and louder than anything but the title.
+                    ArticleMeta(
+                        category = state?.source?.tags?.firstOrNull().orEmpty(),
+                        source = feedTitle,
+                        age = state?.article?.let {
+                            formatArticleAge(context, it.primarySortTime.toEpochMilliseconds())
+                        }.orEmpty(),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        iconUrl = usableImageUrl(state?.source?.feedImage?.toString()),
+                    )
 
                     if (authorDate != null) {
                         Spacer(modifier = Modifier.height(4.dp))
                         WithBidiDeterminedLayoutDirection(paragraph = authorDate) {
                             Text(
                                 text = authorDate,
-                                style = MaterialTheme.typography.titleMedium,
+                                // Quiet: the card's byline above already says
+                                // how long ago; this is for who and exactly when.
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier
                                     .fillMaxWidth()
                             )
@@ -309,52 +351,33 @@ fun ArticlePage(
                     }
                 }
 
-                if (showFullArticle) {
-                    if (blobFullFile(articleId, context.filesDir).isFile) {
-                        blobFullInputStream(articleId, context.filesDir).use {
-                            htmlFormattedText(
-                                inputStream = it,
-                                baseUrl = state?.article?.link ?: "",
-                                imagePlaceholder = placeholder,
-                                onLinkClick = context::launchView,
-                                // Drawn above already. Several publishers open
-                                // the body with it too; see stripRepeatedTitle.
-                                articleTitle = title,
-                                // The card's picture, put back when the body
-                                // arrived without one; see ensureLeadImage.
-                                leadImageUrl = usableImageUrl(state?.article?.imageUrl),
-                            )
-                        }
-                    } else {
-                        item {
-                            NotFoundView()
-                        }
-                    }
+                if (article != null) {
+                    readerBodyText(
+                        article = article,
+                        baseUrl = baseUrl,
+                        imagePlaceholder = placeholder,
+                        onLinkClick = context::launchView,
+                    )
                 } else {
-                    if (blobFile(articleId, context.filesDir).isFile) {
-                        blobInputStream(articleId, context.filesDir).use {
-                            htmlFormattedText(
-                                inputStream = it,
-                                baseUrl = state?.article?.link ?: "",
-                                imagePlaceholder = placeholder,
-                                onLinkClick = context::launchView,
-                                // Drawn above already. Several publishers open
-                                // the body with it too; see stripRepeatedTitle.
-                                articleTitle = title,
-                                // The card's picture, put back when the body
-                                // arrived without one; see ensureLeadImage.
-                                leadImageUrl = usableImageUrl(state?.article?.imageUrl),
-                            )
-                        }
-                    } else {
-                        item {
-                            NotFoundView()
-                        }
+                    item {
+                        NotFoundView()
                     }
                 }
             }
         }
     }
+}
+
+/**
+ * Out through the list's side margins to the screen's edges: the reader's
+ * text keeps the feed's margin, and its lead picture runs the full width as a
+ * card's does.
+ */
+private fun Modifier.bleed(margin: Dp): Modifier = layout { measurable, constraints ->
+    val edge = margin.roundToPx()
+    val width = constraints.maxWidth + 2 * edge
+    val placeable = measurable.measure(constraints.copy(minWidth = width, maxWidth = width))
+    layout(constraints.maxWidth, placeable.height) { placeable.place(-edge, 0) }
 }
 
 @Composable

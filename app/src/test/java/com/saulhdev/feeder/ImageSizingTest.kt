@@ -118,6 +118,15 @@ class ImageSizingTest {
     }
 
     @Test
+    fun `the reader's lead picture has a stated shape`() {
+        // Edge to edge and sixteen by nine, like a card's: a bound, so it
+        // decodes at the size it is drawn.
+        val sites = callSites(read("ui/pages/ArticlePage.kt"), "AsyncImage(")
+        assertTrue(sites.size == 1)
+        assertTrue(sites.single().contains(".aspectRatio(16f / 9f)"))
+    }
+
+    @Test
     fun `no new image call sites have appeared unchecked`() {
         // The three tests above name their files. An image loaded somewhere
         // else is one nothing is watching, which is how this invariant would
@@ -128,6 +137,7 @@ class ImageSizingTest {
             "ui/components/ContributorRow.kt",
             "utils/HtmlToComposable.kt",
             "ui/pages/AboutPage.kt",
+            "ui/pages/ArticlePage.kt",
         )
         val found = File("src/main/java/com/saulhdev/feeder")
             .walkTopDown()

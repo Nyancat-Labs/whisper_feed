@@ -685,8 +685,9 @@ fun ArticleMosaicTile(
  */
 val LocalFocusSource = compositionLocalOf<((String, String) -> Unit)?> { null }
 
+/** The byline under a headline, on every card and in the reader. */
 @Composable
-private fun ArticleMeta(
+internal fun ArticleMeta(
     source: String,
     age: String,
     style: androidx.compose.ui.text.TextStyle,

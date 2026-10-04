@@ -145,8 +145,10 @@ class SyncResultTest {
     @Test
     fun `the reader's source name is not dressed as a link`() {
         val page = source("ui/pages/ArticlePage.kt")
-        val name = page.substring(page.indexOf("WithBidiDeterminedLayoutDirection(paragraph = feedTitle)"))
+        // The card's byline now, which draws the name as plain text.
+        val name = page.substring(page.indexOf("ArticleMeta("))
             .substringBefore("if (authorDate != null)")
+        assertTrue(name.contains("source = feedTitle,"))
         assertFalse(name.contains("linkTextStyle"))
         assertFalse(name.contains("clickable"))
     }

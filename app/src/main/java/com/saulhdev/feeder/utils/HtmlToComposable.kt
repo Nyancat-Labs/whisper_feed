@@ -279,20 +279,87 @@ internal fun ensureLeadImage(body: Element, leadImageUrl: String?) {
  * avatar or an icon - is not a lead image however early it comes; How-To
  * Geek's byline avatar is 90 by 90 and sits right at the top.
  */
-internal fun opensWithImage(body: Element): Boolean {
+internal fun opensWithImage(body: Element): Boolean = openingImage(body) != null
+
+/** The body's opening picture, as [opensWithImage] judges it, or null. */
+internal fun openingImage(body: Element): Element? {
     var paragraphs = 0
     for (e in body.select("img, p, li, blockquote, h2, h3")) {
         if (e.tagName() == "img") {
             if (srcOf(e).isBlank() && e.attr("srcset").isBlank()) continue
             if (isDeclaredSmall(e)) continue
-            return true
+            return e
         }
         if (e.text().trim().length >= OPENING_PARAGRAPH_CHARS) {
             paragraphs++
-            if (paragraphs >= OPENING_PARAGRAPHS_ALLOWED + 1) return false
+            if (paragraphs >= OPENING_PARAGRAPHS_ALLOWED + 1) return null
         }
     }
-    return false
+    return null
+}
+
+/**
+ * Takes the body's opening picture out and gives back its address, for the
+ * reader to draw above the headline - edge to edge, as a card draws it - and
+ * not a second time in the article.
+ *
+ * Its figure goes with it, caption and all: a caption left at the head of the
+ * text with nothing above it to describe reads as a stray line. Null, and the
+ * body untouched, when the article opens without a picture or the one it
+ * opens with has no address this can use.
+ */
+internal fun liftLeadImage(body: Element): String? {
+    val img = openingImage(body) ?: return null
+    val src = srcOf(img).ifBlank {
+        img.attr("srcset").substringBefore(',').trim().substringBefore(' ')
+    }
+    val usable = usableImageUrl(src.trim()) ?: return null
+    (img.closest("figure") ?: img.closest("picture") ?: img).remove()
+    return usable
+}
+
+/**
+ * An article body made ready for the reader, with its lead picture taken out
+ * to be drawn above the headline. See [readerBody].
+ */
+class ReaderBody internal constructor(
+    /** The picture to draw above the headline, or null for none. */
+    val leadImage: String?,
+    internal val body: Element,
+)
+
+/**
+ * The reader's article, read once: the repeated title and repeated pictures
+ * taken out as [htmlFormattedText] does, the card's picture put back when the
+ * body has none of its own, and then the opening picture lifted out for the
+ * top of the screen. Its text is drawn with [readerBodyText].
+ */
+fun readerBody(
+    inputStream: InputStream,
+    baseUrl: String,
+    articleTitle: String? = null,
+    leadImageUrl: String? = null,
+): ReaderBody {
+    val body = Jsoup.parse(inputStream, null, baseUrl).body()
+    stripRepeatedTitle(body, articleTitle)
+    ensureLeadImage(body, leadImageUrl)
+    dropRepeatedImages(body)
+    return ReaderBody(liftLeadImage(body), body)
+}
+
+/** The text of a [readerBody], below the headline. */
+fun LazyListScope.readerBodyText(
+    article: ReaderBody,
+    baseUrl: String,
+    @DrawableRes imagePlaceholder: Int,
+    onLinkClick: (String) -> Unit,
+) {
+    formatBody(
+        element = article.body,
+        imagePlaceholder = imagePlaceholder,
+        onLinkClick = onLinkClick,
+        baseUrl = baseUrl,
+    )
 }
 
 /** Paragraphs allowed above the lead image before it stops being the lead: the dek. */
