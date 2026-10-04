@@ -295,7 +295,7 @@ private val links = listOf(
     Link(
         icon = Phosphor.GithubLogo,
         labelResId = R.string.about_source_code,
-        url = "https://github.com/defsix/whisper_feed"
+        url = "https://github.com/Nyancat-Labs/whisper_feed"
     ),
     // The app had no route to either of these at all: a reader who wanted to
     // know what Whisper does with their reading had to find the repository
@@ -306,12 +306,12 @@ private val links = listOf(
     Link(
         icon = Phosphor.EyeSlash,
         labelResId = R.string.about_privacy,
-        url = "https://github.com/defsix/whisper_feed/blob/main/PRIVACY.md"
+        url = "https://github.com/Nyancat-Labs/whisper_feed/blob/main/PRIVACY.md"
     ),
     Link(
         icon = Phosphor.Info,
         labelResId = R.string.about_disclaimer,
-        url = "https://github.com/defsix/whisper_feed/blob/main/DISCLAIMER.md"
+        url = "https://github.com/Nyancat-Labs/whisper_feed/blob/main/DISCLAIMER.md"
     ),
     Link(
         icon = Phosphor.Browser,
@@ -365,7 +365,7 @@ private val whisperTeam = listOf(
         name = R.string.about_whisper_author,
         descriptionRes = R.string.about_whisper_role,
         photoUrl = "https://github.com/defsix.png",
-        webpage = "https://github.com/defsix/whisper_feed"
+        webpage = "https://github.com/Nyancat-Labs/whisper_feed"
     ),
 )
 

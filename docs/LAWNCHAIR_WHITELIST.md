@@ -49,7 +49,7 @@ that actually verifies anything.
 > turning on "Ignore feed whitelist" in the debug menu.
 >
 > **Package:** `com.nyancatlabs.whisper`
-> **Source:** https://github.com/defsix/whisper_feed
+> **Source:** https://github.com/Nyancat-Labs/whisper_feed
 > **Licence:** GPL-3.0
 > **Signature hash:** `0x________`
 >

@@ -986,8 +986,9 @@ or an explicit note saying why it is exempt.
   ever touching a launcher.
 - **Play and F-Droid together**, decided 27 September 2026, rather than the
   staged GitHub → F-Droid → Play in `docs/brand/ASSET_SPEC.md` §8. The repo is
-  `defsix/whisper_feed` (renamed from `076feed`; GitHub redirects the old
-  name). What is needed, and who:
+  `Nyancat-Labs/whisper_feed` (first `defsix/076feed`, renamed, then moved
+  to the Nyancat Labs organisation on 4 October; GitHub redirects the old
+  names). What is needed, and who:
   - **Release signing key** — the reader's to create and keep. The build
     already signs with it when `keystore.properties` is present, and the key
     never comes into the repo. Play uses it as the upload key and holds the

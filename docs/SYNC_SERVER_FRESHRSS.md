@@ -41,7 +41,7 @@ FreshRSS then can't fetch those feeds, and refuses to add them. One file sets
 an identity for every feed:
 
 ```sh
-printf '%s\n' '<?php' "define('FRESHRSS_USERAGENT', 'Mozilla/5.0 (compatible; Whisper/1.0.0; +https://github.com/defsix/whisper_feed)');" > constants.local.php
+printf '%s\n' '<?php' "define('FRESHRSS_USERAGENT', 'Mozilla/5.0 (compatible; Whisper/1.0.0; +https://github.com/Nyancat-Labs/whisper_feed)');" > constants.local.php
 ```
 
 FreshRSS reads `constants.local.php` at start-up; it is its supported place for

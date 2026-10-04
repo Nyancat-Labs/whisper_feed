@@ -46,7 +46,7 @@ object HttpIdentity {
      */
     const val FEED_AGENT: String =
         "Mozilla/5.0 (compatible; Whisper/${BuildConfig.VERSION_NAME}; " +
-                "+https://github.com/defsix/whisper_feed)"
+                "+https://github.com/Nyancat-Labs/whisper_feed)"
 
     /**
      * Fetching an article to read: ask for the page a browser would get.
