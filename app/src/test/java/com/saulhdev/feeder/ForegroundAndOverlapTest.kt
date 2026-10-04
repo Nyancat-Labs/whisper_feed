@@ -45,11 +45,27 @@ class ForegroundAndOverlapTest {
         assertFalse("one begun in the background stays there", runInForeground(SyncLog.ORIGIN_SCHEDULED, dataBlocked = false, onScreen = false))
     }
 
+    /**
+     * 4 October: overnight on the charger the background syncs took 129-203 s
+     * for the feeds and 0.6 s an item matching; begun on screen, 10-32 s and
+     * 0.05 s. One ran 426 s of its 480.
+     */
+    @Test
+    fun `a sync begun on the charger asks for the foreground, and says if refused`() {
+        assertTrue(runInForeground(SyncLog.ORIGIN_SCHEDULED, dataBlocked = false, onScreen = false, pluggedIn = true))
+        assertTrue(runInForeground(SyncLog.ORIGIN_PANEL, dataBlocked = false, onScreen = false, pluggedIn = true))
+        assertFalse("on battery, in the background, as before", runInForeground(SyncLog.ORIGIN_SCHEDULED, dataBlocked = false, onScreen = false, pluggedIn = false))
+        val worker = File("src/main/java/com/saulhdev/feeder/manager/sync/FeedSyncer.kt").readText()
+        assertTrue(worker.contains("val pluggedIn = powerState(applicationContext).pluggedIn"))
+        assertTrue(worker.contains("foregroundRefused = true"))
+        assertTrue(worker.contains("if (foregroundRefused) \"foreground refused\" else null"))
+    }
+
     @Test
     fun `the worker asks once, before anything is decided`() {
         val worker = File("src/main/java/com/saulhdev/feeder/manager/sync/FeedSyncer.kt").readText()
         assertEquals(1, Regex("whisperOnScreen\\(\\)").findAll(worker).count())
-        assertTrue(worker.contains("val foreground = runInForeground(origin, dataBlocked, onScreen)"))
+        assertTrue(worker.contains("val foreground = runInForeground(origin, dataBlocked, onScreen, pluggedIn)"))
         assertTrue(worker.indexOf("val onScreen = whisperOnScreen()") < worker.indexOf("skipForBlockedData(automatic, dataBlocked, onScreen)"))
     }
 

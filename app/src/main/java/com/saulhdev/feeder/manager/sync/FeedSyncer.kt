@@ -7,6 +7,7 @@ import com.saulhdev.feeder.utils.whisperOnScreen
 import com.saulhdev.feeder.utils.bytesSince
 import com.saulhdev.feeder.utils.receivedBytes
 import com.saulhdev.feeder.utils.isPowerSaveMode
+import com.saulhdev.feeder.utils.powerState
 import com.saulhdev.feeder.utils.stopReasonName
 import com.saulhdev.feeder.utils.SyncLog
 import com.saulhdev.feeder.utils.StepTrace
@@ -138,10 +139,20 @@ class FeedSyncer(val context: Context, workerParams: WorkerParameters) :
         // looking, were stopped the moment they looked away - "device state
         // changed", six times one day on Wi-Fi, each a minute or two into
         // the feeds and never reaching the account, so twenty-five reads sat
-        // unsent all afternoon. On screen is also the only time Android lets
-        // a foreground task be started.
-        val foreground = runInForeground(origin, dataBlocked, onScreen)
+        // unsent all afternoon.
+        //
+        // And any sync that starts on the charger. A night's report had the
+        // background syncs about ten times slower than the ones begun on
+        // screen, on the same Wi-Fi: the feeds 129-203 s against 10-32 s,
+        // matching 0.6 s an item against 0.05, and one run 426 s into its
+        // 480. Android gives work in the background the slow end of the
+        // phone; a foreground task gets what an open app gets. Android may
+        // refuse to start one from the background, and then the run goes on
+        // as before, saying so in its line, so a report shows which it was.
+        val pluggedIn = powerState(applicationContext).pluggedIn
+        val foreground = runInForeground(origin, dataBlocked, onScreen, pluggedIn)
         var inForeground = false
+        var foregroundRefused = false
         if (foreground) {
             try {
                 setForeground(getForegroundInfo())
@@ -150,6 +161,7 @@ class FeedSyncer(val context: Context, workerParams: WorkerParameters) :
                 SyncLog.finished(applicationContext, run, "stopped: before starting")
                 throw e
             } catch (e: Exception) {
+                foregroundRefused = true
                 Log.w(TAG, "Could not run the sync in the foreground", e)
             }
         }
@@ -266,6 +278,7 @@ class FeedSyncer(val context: Context, workerParams: WorkerParameters) :
         val notes = listOfNotNull(
             if (queued) "queued" else null,
             if (inForeground) "foreground" else null,
+            if (foregroundRefused) "foreground refused" else null,
         )
         result = result.copy(bytes = bytesSince(receivedBefore))
         SyncLog.finished(
@@ -449,10 +462,15 @@ fun withTrace(stopped: String, trace: StepTrace): String =
 /**
  * Whether a sync runs as a foreground task, keeping its network when the
  * reader leaves: one they asked for, one going ahead on mobile data Android
- * would otherwise keep from it, and any begun while Whisper is on screen.
+ * would otherwise keep from it, any begun while Whisper is on screen, and
+ * any begun on the charger, where a background run was ten times slower.
  */
-fun runInForeground(origin: String, dataBlocked: Boolean, onScreen: Boolean): Boolean =
-    origin in SyncLog.ASKED_ORIGINS || dataBlocked || onScreen
+fun runInForeground(
+    origin: String,
+    dataBlocked: Boolean,
+    onScreen: Boolean,
+    pluggedIn: Boolean = false,
+): Boolean = origin in SyncLog.ASKED_ORIGINS || dataBlocked || onScreen || pluggedIn
 
 /** Whether a sync request is for every feed rather than one feed or one tag. */
 fun isWholeFeed(feedId: Long, feedTag: String): Boolean =

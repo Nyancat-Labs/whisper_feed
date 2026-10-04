@@ -201,6 +201,25 @@ class ReportPrivacyTest {
         assertEquals("these log an address: $offenders", emptyList<String>(), offenders)
     }
 
+    /**
+     * The read-on-scroll trace logged each article's headline as it was marked
+     * read, so a shared report said what the reader had been reading. Feed
+     * titles may be logged; article titles may not.
+     */
+    @Test
+    fun `no log line carries an article's headline`() {
+        val headline = Regex("""\$\{?[\w.?]*?(contentTitle|articleTitle)\b""")
+        val call = Regex("""(?:Log\.\w+|gateLog|Log\.println)\([^\n]*""")
+        val offenders = kotlinFiles().flatMap { file ->
+            val source = file.readText()
+            call.findAll(source)
+                .filter { headline.containsMatchIn(it.value) }
+                .map { "${file.path}:${source.substring(0, it.range.first).count { c -> c == '\n' } + 1}" }
+                .toList()
+        }
+        assertEquals("these log a headline: $offenders", emptyList<String>(), offenders)
+    }
+
     @Test
     fun `the report is scrubbed as one piece`() {
         val diagnostics = File(mainSources, "com/saulhdev/feeder/utils/Diagnostics.kt").readText()

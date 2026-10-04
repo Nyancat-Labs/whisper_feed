@@ -1,0 +1,40 @@
+<p><b>Curate. Read. Breathe.</b></p>
+
+<p>Whisper is a reader for the feeds you chose. It needs no account, keeps everything on your phone, and works fully offline.</p>
+
+<p>What makes it different is the ordering. Most readers are chronological, which is honest but flat; the rest use an algorithm that will not tell you what it is doing. Whisper gives more room to some articles than others, and every one of those decisions can be inspected per article, disagreed with per source, and reset. Chronological order is still there, and is the default.</p>
+
+<p><b>Sources you control</b></p>
+<ul>
+<li>Add a feed by address, or paste a website and Whisper finds the feed</li>
+<li>Import OPML, or your browser's bookmarks, and it works out which sites publish feeds</li>
+<li>A feed library that ships with the app, so browsing it tells nobody what you are looking for: 39 topics and 50 countries</li>
+<li>Broken feeds are flagged, with their last five fetches and the error from each</li>
+</ul>
+
+<p><b>Reading</b></p>
+<ul>
+<li>Four layouts: Cards, Magazine, List and Mosaic</li>
+<li>Several sources on one story become one lead card</li>
+<li>Mark read on scroll, with read articles dimmed or hidden</li>
+<li>Read later: the whole article, pictures included, is kept for reading offline</li>
+<li>Full article text, per feed or for all of them</li>
+<li>On a tablet the feed spreads into columns, and an article opens beside it</li>
+</ul>
+
+<p><b>Personalisation you can see</b></p>
+<ul>
+<li>Tap through to why an article was given the size it was</li>
+<li>More like this, less like this, and a screen showing exactly what the app has learned, with a reset that actually resets</li>
+<li>Nothing is inferred and none of it leaves the phone</li>
+</ul>
+
+<p><b>Optional extras</b></p>
+<ul>
+<li>Two-way sync with your own FreshRSS server: subscriptions, read state and saved articles</li>
+<li>Weather and sunrise in the glance row, off by default, with no location permission: you type a place name</li>
+<li>OPML and settings backup to a folder you choose</li>
+<li>If you use Lawnchair, Whisper can live on its left-most home-screen page</li>
+</ul>
+
+<p>No trackers, no ads, no analytics. Settings → Export diagnostics writes a report you can read before you share it; it holds counts and settings, never what you searched for or the addresses you typed.</p>

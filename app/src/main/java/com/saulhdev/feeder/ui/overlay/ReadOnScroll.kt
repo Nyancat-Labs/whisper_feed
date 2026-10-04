@@ -328,8 +328,10 @@ private suspend fun tick(
                 ready -= id
                 marked += id
                 val item = byId[id] ?: return@forEach
+                // A count, not the headline: the report is shared, and the
+                // titles would say what the reader has been reading.
                 if (trace) {
-                    gateLog("marked: ${item.contentTitle.take(60)}")
+                    gateLog("marked: ${marked.size} this visit")
                 }
                 onRead(item)
             }

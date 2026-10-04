@@ -74,7 +74,7 @@ class AccountHistoryTest {
         assertTrue(SyncLog.ORIGIN_ACCOUNT in SyncLog.ASKED_ORIGINS)
         assertFalse("Battery Saver does not hold it", SyncLog.ORIGIN_ACCOUNT in SyncLog.AUTOMATIC_ORIGINS)
         val worker = source("manager/sync/FeedSyncer.kt")
-        assertTrue(worker.contains("val foreground = runInForeground(origin, dataBlocked, onScreen)"))
+        assertTrue(worker.contains("val foreground = runInForeground(origin, dataBlocked, onScreen, pluggedIn)"))
         assertTrue(com.saulhdev.feeder.manager.sync.runInForeground(SyncLog.ORIGIN_ACCOUNT, dataBlocked = false, onScreen = false))
     }
 

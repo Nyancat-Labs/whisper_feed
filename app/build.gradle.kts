@@ -245,6 +245,15 @@ android {
         resources.pickFirsts.add("rome-utils-2.1.0.jar")
     }
 
+    // The dependency list Android Studio writes into the APK is encrypted
+    // with Google's key, and F-Droid will not build an app whose APK carries
+    // a block nobody else can read. Play reads it from the bundle, so the
+    // bundle keeps it.
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = true
+    }
+
     lint {
         // The report is clean, so it can be a gate rather than a document.
         // With this off, a lint error changed nothing about the build and was

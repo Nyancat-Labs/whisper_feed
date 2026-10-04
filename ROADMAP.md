@@ -1001,7 +1001,11 @@ or an explicit note saying why it is exempt.
     `SYSTEM_ALERT_WINDOW`.
   - **F-Droid** — no proprietary code (checked: none), Fastlane metadata in
     the repo, a version tag, the APK's Google dependency-info block turned off
-    (F-Droid rejects it), and a merge request to `fdroiddata`.
+    (F-Droid rejects it), and a merge request to `fdroiddata`. *4 October:
+    the Play developer account is open; the metadata is in
+    `fastlane/metadata/android/en-US` (title, descriptions, first changelog,
+    the four real screenshots) and the APK no longer carries the block. Still
+    to do: the tag, and the merge request.*
   - **Artwork** — Play needs a 512 px icon and a 1024 × 500 banner, both from
     the brand kit, not made up; both stores take 2–8 phone screenshots at
     1080 × 2400, real captures.
@@ -2597,6 +2601,22 @@ the real card code and the reader's own photos, all four changes chosen:
   card's picture now goes on top whenever there is one; the body's opening
   picture and any copy of the card's are taken out so nothing is drawn
   twice. Only an article without a card picture lifts the body's first one.
+
+### 30. From the device, 4 October 2026
+
+- **Background syncs ran ten times slower than ones begun on screen.** The
+  same phone on the same Wi-Fi, overnight on the charger: the feeds took
+  129-203 s and matching 0.6 s an item, against 10-32 s and 0.05 s on screen,
+  and one run took 426 s of its 480. Android gives work in the background
+  the slow end of the phone. A sync begun on the charger now asks for the
+  foreground, the silent "Syncing" line in the shade, and says "foreground
+  refused" in its line if Android will not allow it from the background -
+  the next report says which.
+- **The read-on-scroll trace logged headlines.** Each article marked read
+  went into the log by its title, so a shared report said what had been
+  read. It logs a count now, and a test holds every log line to it.
+- **F-Droid, step 1.** Store listing in `fastlane/`, and the APK's
+  dependency block off (the bundle keeps it for Play).
 
 ### 17. Scroll parallax on the feed — parked, at the bottom
 
