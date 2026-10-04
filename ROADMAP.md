@@ -2628,6 +2628,14 @@ the real card code and the reader's own photos, all four changes chosen:
   international offices; the creator of the Nyan Cat animation holds it in
   the US, for mobile software among other things, which is the one risk.
 
+- **Choosing a backup folder wrote over the backup in it.** Backed up,
+  uninstalled, the new build installed, the same folder chosen - and the
+  backup made a minute earlier was replaced by the empty app's, because
+  choosing a folder wrote a backup at once. A folder that already has one is
+  now asked about first: Restore, Replace or Cancel. And every backup keeps
+  the copy it replaces beside it, as `.previous`, so one written over by
+  mistake can still be had.
+
 ### 17. Scroll parallax on the feed — parked, at the bottom
 
 Prototyped, demonstrated, and deliberately not built. The image inside a card's

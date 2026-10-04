@@ -101,8 +101,9 @@ class BackupStore(
 
             // Replaced rather than appended to: DocumentFile has no truncate,
             // so an existing shorter file would otherwise keep the tail of the
-            // longer one it replaced and produce invalid XML.
-            tree.findFile(FILE_NAME)?.delete()
+            // longer one it replaced and produce invalid XML. The one it
+            // replaces is kept beside it; see makeRoomFor.
+            makeRoomFor(DocumentBackupFolder(tree), FILE_NAME)
             val file = tree.createFile(MIME_TYPE, FILE_NAME)
                 ?: return@withContext Result.Failed(null)
 
@@ -122,7 +123,7 @@ class BackupStore(
             // disk — and reporting it as one would have the reader believe
             // they have no backup at all when they have most of it.
             val settingsWritten = runCatching {
-                tree.findFile(SettingsBackup.FILE_NAME)?.delete()
+                makeRoomFor(DocumentBackupFolder(tree), SettingsBackup.FILE_NAME)
                 val settingsFile = tree.createFile("application/json", SettingsBackup.FILE_NAME)
                     ?: return@runCatching false
                 context.contentResolver.openOutputStream(settingsFile.uri)?.use { out ->
@@ -242,6 +243,22 @@ class BackupStore(
         }
     }
 
+    /**
+     * Whether the folder already holds a Whisper backup.
+     *
+     * Asked before a newly chosen folder is written to. Choosing one used to
+     * write a backup straight away, so a reader who backed up, reinstalled and
+     * pointed the new install at the same folder had their backup replaced by
+     * the empty app's within a second of choosing it - which is exactly the
+     * moment the backup existed for.
+     */
+    suspend fun hasBackup(treeUri: Uri): Boolean = withContext(Dispatchers.IO) {
+        runCatching {
+            val tree = DocumentFile.fromTreeUri(context, treeUri) ?: return@runCatching false
+            tree.findFile(FILE_NAME) != null || tree.findFile(SettingsBackup.FILE_NAME) != null
+        }.getOrDefault(false)
+    }
+
     /** Keeps the folder writable across restarts. */
     fun remember(treeUri: Uri) {
         context.contentResolver.takePersistableUriPermission(
@@ -263,4 +280,41 @@ class BackupStore(
         const val FILE_NAME = "whisper-subscriptions.opml"
         const val MIME_TYPE = "text/x-opml"
     }
+}
+
+/** The few things [makeRoomFor] asks of a folder, so it can be tested without one. */
+internal interface BackupFolder {
+    fun exists(name: String): Boolean
+    fun delete(name: String)
+    fun rename(from: String, to: String): Boolean
+}
+
+private class DocumentBackupFolder(private val tree: DocumentFile) : BackupFolder {
+    override fun exists(name: String) = tree.findFile(name) != null
+    override fun delete(name: String) {
+        tree.findFile(name)?.delete()
+    }
+    override fun rename(from: String, to: String) =
+        runCatching { tree.findFile(from)?.renameTo(to) == true }.getOrDefault(false)
+}
+
+/** "whisper-subscriptions.opml" -> "whisper-subscriptions.previous.opml". */
+internal fun previousName(name: String): String {
+    val dot = name.lastIndexOf('.')
+    return if (dot <= 0) "$name.previous" else name.substring(0, dot) + ".previous" + name.substring(dot)
+}
+
+/**
+ * Clears the way for a new backup file, keeping the one it replaces.
+ *
+ * One copy back, not a dated series: enough that a backup written over by
+ * mistake - the new install's empty one over the old phone's - can still be
+ * had, without a folder that fills up. A folder that cannot rename gets the
+ * old behaviour, the file deleted, since the new backup has to go somewhere.
+ */
+internal fun makeRoomFor(folder: BackupFolder, name: String) {
+    if (!folder.exists(name)) return
+    val previous = previousName(name)
+    folder.delete(previous)
+    if (!folder.rename(name, previous)) folder.delete(name)
 }

@@ -659,6 +659,10 @@
         <item quantity="one">%1$d setting</item>
         <item quantity="other">%1$d settings</item>
     </plurals>
+    <string name="backup_exists_title">This folder already has a backup</string>
+    <string name="backup_exists_body">It may be the one you made before reinstalling. Restore your feeds and settings from it, or replace it with this phone\'s. Replacing keeps the old copy beside the new one, named .previous.</string>
+    <string name="backup_exists_restore">Restore</string>
+    <string name="backup_exists_replace">Replace</string>
     <string name="backup_nothing_found">No backup was found in that folder</string>
     <string name="starter_returning_title">Used Whisper before?</string>
     <string name="starter_returning_body">If you have a backup folder, this is the moment to use it — your sources and settings come back exactly as they were.</string>

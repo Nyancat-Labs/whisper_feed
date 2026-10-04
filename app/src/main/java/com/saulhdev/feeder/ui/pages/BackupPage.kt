@@ -27,7 +27,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -67,6 +69,7 @@ import com.saulhdev.feeder.ui.icons.phosphor.Nut
 import com.saulhdev.feeder.ui.icons.phosphor.PaintRoller
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
 import java.text.DateFormat
 import java.util.Date
@@ -102,23 +105,40 @@ fun BackupPage(
         folder.isNotEmpty() && store.canWrite(folder.toUri())
     }
 
+    // On IO: everything in here writes to a DataStore or to a document, and
+    // the launcher callback arrives on the main thread.
+    fun useFolder(uri: Uri) = scope.launch(Dispatchers.IO) {
+        prefs.backupFolder.setValue(uri.toString())
+        BackupWorker.schedule(context, uri.toString())
+        // Written immediately rather than waiting for the first scheduled
+        // run: somebody who has just chosen a folder wants to see a file
+        // appear in it, and a day of nothing happening reads as a setting
+        // that did not take.
+        val outcome = store.backUp(uri)
+        report(outcome, context) { say(it) }
+        stamp(outcome, prefs)
+    }
+
+    // A chosen folder that already holds a backup, waiting on the reader.
+    //
+    // 4 October: backed up, uninstalled, installed the new build, chose the
+    // same folder - and the backup written a minute earlier was replaced by
+    // the empty app's, because choosing a folder wrote to it at once. A
+    // folder with a backup in it is now asked about first: restore from it,
+    // or replace it, which keeps the old copy beside the new one.
+    var existing by remember { mutableStateOf<Uri?>(null) }
+
     val chooseFolder = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocumentTree()
     ) { uri: Uri? ->
         if (uri == null) return@rememberLauncherForActivityResult
         store.remember(uri)
-        // On IO: everything in here writes to a DataStore or to a document,
-        // and the launcher callback arrives on the main thread.
-        scope.launch(Dispatchers.IO) {
-            prefs.backupFolder.setValue(uri.toString())
-            BackupWorker.schedule(context, uri.toString())
-            // Written immediately rather than waiting for the first scheduled
-            // run: somebody who has just chosen a folder wants to see a file
-            // appear in it, and a day of nothing happening reads as a setting
-            // that did not take.
-            val outcome = store.backUp(uri)
-            report(outcome, context) { say(it) }
-            stamp(outcome, prefs)
+        scope.launch {
+            if (withContext(Dispatchers.IO) { store.hasBackup(uri) }) {
+                existing = uri
+            } else {
+                useFolder(uri)
+            }
         }
     }
 
@@ -134,6 +154,40 @@ fun BackupPage(
     ) { uri: Uri? ->
         if (uri == null) return@rememberLauncherForActivityResult
         scope.launch { report(store.restore(uri), context) { say(it) } }
+    }
+
+    existing?.let { uri ->
+        AlertDialog(
+            onDismissRequest = { existing = null },
+            title = { Text(stringResource(R.string.backup_exists_title)) },
+            text = { Text(stringResource(R.string.backup_exists_body)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    existing = null
+                    scope.launch(Dispatchers.IO) {
+                        // Restored first, then remembered as the destination,
+                        // so the schedule cannot write before the restore has
+                        // read. The settings restored never include the
+                        // folder; see SettingsBackup.NOT_PORTABLE.
+                        val outcome = store.restoreFolder(uri)
+                        report(outcome, context) { say(it) }
+                        prefs.backupFolder.setValue(uri.toString())
+                        BackupWorker.schedule(context, uri.toString())
+                    }
+                }) { Text(stringResource(R.string.backup_exists_restore)) }
+            },
+            dismissButton = {
+                Row {
+                    TextButton(onClick = { existing = null }) {
+                        Text(stringResource(android.R.string.cancel))
+                    }
+                    TextButton(onClick = {
+                        existing = null
+                        useFolder(uri)
+                    }) { Text(stringResource(R.string.backup_exists_replace)) }
+                }
+            },
+        )
     }
 
     ViewWithActionBar(
