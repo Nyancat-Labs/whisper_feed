@@ -2647,6 +2647,14 @@ the real card code and the reader's own photos, all four changes chosen:
   them and a Change button, so the field it cannot place is not there when
   it fills.
 
+- **"Whisper: RSS Reader" in the stores; Nyancat Labs on the About page.**
+  F-Droid already lists three voice-recognition apps called Whisper, so the
+  store title says what this one is; the name under the icon stays Whisper.
+  The About page names Nyancat Labs, links nyancatlabs.com, and drops the
+  personal avatar; the company's logo goes in its circle, bundled, once the
+  file is in the brand kit. Ko-fi stays as it is for now. Both reach F-Droid
+  with the next tag, since it reads the listing from the release it builds.
+
 ### 17. Scroll parallax on the feed — parked, at the bottom
 
 Prototyped, demonstrated, and deliberately not built. The image inside a card's

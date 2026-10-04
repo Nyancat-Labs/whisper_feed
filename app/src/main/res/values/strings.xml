@@ -138,7 +138,7 @@
     <string name="background_data_blocked_body">Android keeps Whisper off mobile data when it isn\'t on screen, so scheduled syncs wait for Wi-Fi. Pull to refresh still works. To let scheduled syncs use mobile data, turn on Unrestricted mobile data usage for Whisper.</string>
     <string name="background_data_blocked_action">Open mobile data settings</string>
     <string name="about_whisper_team">Whisper</string>
-    <string name="about_whisper_author" translatable="false">defsix</string>
+    <string name="about_whisper_author" translatable="false">Nyancat Labs</string>
     <string name="about_whisper_role">Developer</string>
     <string name="about_team">Built on Neo Feed, and on HomeFeeder before it</string>
     <string name="about_developer" translatable="false">Saul Henriquez</string>

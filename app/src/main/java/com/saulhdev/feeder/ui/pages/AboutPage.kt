@@ -202,7 +202,7 @@ fun AboutPage() {
                 ContributorRow(
                     nameId = it.name,
                     roleId = it.descriptionRes,
-                    photoUrl = it.photoUrl,
+                    photo = it.photo,
                     url = it.webpage,
                     index = i,
                     groupSize = whisperTeam.size
@@ -243,7 +243,7 @@ fun AboutPage() {
                 ContributorRow(
                     nameId = it.name,
                     roleId = it.descriptionRes,
-                    photoUrl = it.photoUrl,
+                    photo = it.photo,
                     url = it.webpage,
                     index = i,
                     groupSize = contributors.size
@@ -275,7 +275,8 @@ private data class Link(
 private data class TeamMember(
     @StringRes val name: Int,
     @StringRes val descriptionRes: Int,
-    val photoUrl: String,
+    /** An address, a drawable, or null for the empty circle. */
+    val photo: Any?,
     val webpage: String
 )
 
@@ -364,8 +365,10 @@ private val whisperTeam = listOf(
     TeamMember(
         name = R.string.about_whisper_author,
         descriptionRes = R.string.about_whisper_role,
-        photoUrl = "https://github.com/defsix.png",
-        webpage = "https://github.com/Nyancat-Labs/whisper_feed"
+        // Nyancat Labs' logo goes here, bundled rather than fetched, once
+        // the file is in the brand kit. Until then the empty circle.
+        photo = null,
+        webpage = "https://nyancatlabs.com"
     ),
 )
 
@@ -373,13 +376,13 @@ private val contributors = listOf(
     TeamMember(
         name = R.string.about_developer,
         descriptionRes = R.string.author_role,
-        photoUrl = "https://avatars.githubusercontent.com/u/6044050",
+        photo = "https://avatars.githubusercontent.com/u/6044050",
         webpage = "https://github.com/saulhdev"
     ),
     TeamMember(
         name = R.string.about_developer2,
         descriptionRes = R.string.author_role,
-        photoUrl = "https://avatars.githubusercontent.com/u/40302595",
+        photo = "https://avatars.githubusercontent.com/u/40302595",
         webpage = "https://github.com/machiav3lli"
     )
 )
