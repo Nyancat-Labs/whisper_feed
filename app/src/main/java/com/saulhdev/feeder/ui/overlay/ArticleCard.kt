@@ -211,8 +211,8 @@ internal fun leadPictureHeight(widthPx: Int, windowHeightPx: Int): Int {
  * The middle weight: image above, headline and summary below. This is the shape
  * the Cards layout was built around and it stays the relaxed-browsing view.
  *
- * And, with [lead], the lead story's: its picture taller and its headline a
- * size up, but the headline below the picture like every other card's. It was
+ * And, with [lead], the lead story's: its picture taller, its headline below
+ * the picture like every other card's and the same size. It was
  * laid over the picture on a dark shade, and over a busy photograph - a
  * publisher's logo, a crowd, a chart - it was the hardest text in the feed to
  * read, however dark the shade. Below it, it reads the same on any picture,
@@ -279,7 +279,11 @@ fun ArticleCard(
 
             Text(
                 text = item.contentTitle,
-                style = if (lead) MaterialTheme.typography.titleLarge else MaterialTheme.typography.titleMedium,
+                // The same size as every other card's. A size up, the lead's
+                // headline stood out as a mistake once it sat below the
+                // picture rather than on it; the taller picture says "lead"
+                // on its own.
+                style = MaterialTheme.typography.titleMedium,
                 // Medium rather than bold: at a headline's size the weight
                 // closed the letters up, and a two-line title read as a block.
                 // The size and the summary below still set it apart.

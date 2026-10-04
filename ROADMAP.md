@@ -2583,6 +2583,9 @@ the real card code and the reader's own photos, all four changes chosen:
   and the main one's stories nearly all come through the News topic too.
   The report now says "Duplicates", with why: "same address", or "mostly
   the same articles, 91%".
+- **A lead story's headline is the same size as the rest.** A size up, it
+  looked like a mistake once it sat below the picture instead of on it; the
+  taller picture marks the lead story on its own.
 
 ### 17. Scroll parallax on the feed — parked, at the bottom
 

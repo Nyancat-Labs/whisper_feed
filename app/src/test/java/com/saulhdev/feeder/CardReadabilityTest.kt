@@ -75,12 +75,14 @@ class CardReadabilityTest {
         assertFalse(cards.contains("drawTextShade"))
         assertTrue(cards.contains("FeedCardShape.Hero    -> ArticleCard(\n            item, onClick, onBookmark, onShare, menu = menu, modifier = shapeModifier, coverage = coverage, lead = true,"))
         assertTrue(cards.contains("Modifier.fillMaxWidth().leadPicture(windowHeight)"))
-        assertTrue(cards.contains("style = if (lead) MaterialTheme.typography.titleLarge else MaterialTheme.typography.titleMedium,"))
+        assertFalse("the lead's headline is the same size as the rest", cards.contains("if (lead) MaterialTheme.typography.titleLarge"))
+        val card = cards.substring(cards.indexOf("fun ArticleCard("), cards.indexOf("fun ArticleCompactRow("))
+        assertTrue(card.contains("style = MaterialTheme.typography.titleMedium,"))
     }
 
     @Test
     fun `headlines are medium weight in every shape`() {
-        val titles = Regex("""text = item\.contentTitle,(?:\n[^\n]*){1,6}?\n\s*fontWeight = FontWeight\.(\w+)""")
+        val titles = Regex("""text = item\.contentTitle,(?:\n[^\n]*){1,12}?\n\s*fontWeight = FontWeight\.(\w+)""")
             .findAll(cards).map { it.groupValues[1] }.toList()
         assertEquals("card, compact row, text row and tile", 4, titles.size)
         assertEquals(listOf("Medium"), titles.distinct())
