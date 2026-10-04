@@ -365,9 +365,9 @@ private val whisperTeam = listOf(
     TeamMember(
         name = R.string.about_whisper_author,
         descriptionRes = R.string.about_whisper_role,
-        // Nyancat Labs' logo goes here, bundled rather than fetched, once
-        // the file is in the brand kit. Until then the empty circle.
-        photo = null,
+        // Bundled rather than fetched: the About page asks nothing of the
+        // network. From docs/brand/nyancat_labs.
+        photo = R.drawable.nyancat_labs_symbol,
         webpage = "https://nyancatlabs.com"
     ),
 )

@@ -2651,8 +2651,8 @@ the real card code and the reader's own photos, all four changes chosen:
   F-Droid already lists three voice-recognition apps called Whisper, so the
   store title says what this one is; the name under the icon stays Whisper.
   The About page names Nyancat Labs, links nyancatlabs.com, and drops the
-  personal avatar; the company's logo goes in its circle, bundled, once the
-  file is in the brand kit. Ko-fi stays as it is for now. Both reach F-Droid
+  personal avatar for the company's symbol, the navy version, bundled from
+  `docs/brand/nyancat_labs` rather than fetched. Ko-fi stays as it is for now. Both reach F-Droid
   with the next tag, since it reads the listing from the release it builds.
 
 ### 17. Scroll parallax on the feed — parked, at the bottom
