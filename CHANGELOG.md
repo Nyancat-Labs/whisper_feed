@@ -6,10 +6,10 @@ kept because Whisper is a fork of it and the work is inherited rather than
 replaced — but those are not Whisper releases, and the version numbers are not
 Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 
-1.0.0 — unreleased
-------------------
+1.0.0 — 4 October 2026
+----------------------
 
-First Whisper release. Not yet published; in private testing.
+First Whisper release, from Nyancat Labs.
 
 Rather than list several hundred commits, the position is documented where it
 is maintained:
@@ -22,7 +22,7 @@ is maintained:
 Two things are repeated here so a release note cannot be read as more than it
 is: **sync is supported with FreshRSS only** — proven against a live server
 with 114 feeds, on a phone and a tablet at once — and **there are no
-instrumentation or screenshot tests**: the 972 unit tests cover logic, and
+instrumentation or screenshot tests**: the 1044 unit tests cover logic, and
 every on-device check has been manual.
 
 ---
