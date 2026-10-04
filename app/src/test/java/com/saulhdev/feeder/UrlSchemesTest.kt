@@ -58,7 +58,7 @@ class UrlSchemesTest {
         assertTrue(isBrowsable("http://example.com"))
         // These are the ones that matter: the in-app WebView runs JavaScript,
         // and any app on the device can point it somewhere by explicit intent.
-        assertFalse("app's own storage", isBrowsable("file:///data/data/io.zero76.whisper/x"))
+        assertFalse("app's own storage", isBrowsable("file:///data/data/com.nyancatlabs.whisper/x"))
         assertFalse("a provider", isBrowsable("content://sms/inbox"))
         assertFalse("script in the address bar", isBrowsable("javascript:alert(1)"))
         assertFalse("intent scheme", isBrowsable("intent://scan/#Intent;end"))
@@ -75,7 +75,7 @@ class UrlSchemesTest {
             "tel:+441234567890",
             "sms:+441234567890",
             "geo:51.5,-0.1",
-            "market://details?id=io.zero76.whisper",
+            "market://details?id=com.nyancatlabs.whisper",
         ).forEach { assertTrue(it, isViewable(it)) }
     }
 

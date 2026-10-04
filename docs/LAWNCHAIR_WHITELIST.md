@@ -19,7 +19,7 @@ One line in `lawnchair/src/app/lawnchair/FeedBridge.kt`, in
 `initializeWhitelist`:
 
 ```kotlin
-whitelist["io.zero76.whisper"] = 0x________   // release signing certificate hash
+whitelist["com.nyancatlabs.whisper"] = 0x________   // release signing certificate hash
 ```
 
 **This cannot be written until the release signing key exists.** The value is
@@ -48,7 +48,7 @@ that actually verifies anything.
 > `FeedBridge`'s whitelist so that Lawnchair users can select it without
 > turning on "Ignore feed whitelist" in the debug menu.
 >
-> **Package:** `io.zero76.whisper`
+> **Package:** `com.nyancatlabs.whisper`
 > **Source:** https://github.com/defsix/whisper_feed
 > **Licence:** GPL-3.0
 > **Signature hash:** `0x________`

@@ -2617,6 +2617,15 @@ the real card code and the reader's own photos, all four changes chosen:
   read. It logs a count now, and a test holds every log line to it.
 - **F-Droid, step 1.** Store listing in `fastlane/`, and the APK's
   dependency block off (the bundle keeps it for Play).
+- **Published as Nyancat Labs, as `com.nyancatlabs.whisper`.** Every app
+  from now on is built and distributed under Nyancat Labs, registered with
+  the CRO and the owner of nyancatlabs.com, so the app ID is that domain
+  backwards rather than `io.zero76.whisper`. Changed before anything was
+  published, because no store lets an app change it afterwards; the test
+  builds install as a new app once. A quick trade mark check found nothing
+  registered as Nyancat Labs anywhere, nor "Nyan Cat" with the EU, Irish or
+  international offices; the creator of the Nyan Cat animation holds it in
+  the US, for mobile software among other things, which is the one risk.
 
 ### 17. Scroll parallax on the feed — parked, at the bottom
 
@@ -2675,7 +2684,7 @@ package that is not in it is rejected unless `pref_ignoreFeedWhitelist` is on.
 
 So there is exactly one legitimate route to "install it and it works":
 
-> **A pull request to Lawnchair** adding `io.zero76.whisper` and our release
+> **A pull request to Lawnchair** adding `com.nyancatlabs.whisper` and our release
 > signing certificate hash to that map.
 
 That needs a stable release signing key first — which we do not have yet, and

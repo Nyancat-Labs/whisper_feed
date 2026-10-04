@@ -63,7 +63,7 @@ import com.saulhdev.feeder.ui.icons.phosphor.Info
  * It exists as a screen rather than a line in the README because the people
  * who need it are holding the phone, not reading GitHub — and because the
  * steps are genuinely obscure. Lawnchair keeps a hardcoded list of packages
- * allowed to be the feed, `io.zero76.whisper` is not on it, and the way past
+ * allowed to be the feed, `com.nyancatlabs.whisper` is not on it, and the way past
  * that is a hidden command typed into the app drawer's search box. Nobody
  * guesses that.
  *

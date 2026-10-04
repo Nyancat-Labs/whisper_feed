@@ -74,11 +74,14 @@ android {
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "io.zero76.whisper"
+        // Nyancat Labs' domain, backwards, as every one of its apps will be.
+        // Changed from io.zero76.whisper on 4 October 2026, before anything
+        // was published: a store never lets an app change it afterwards.
+        applicationId = "com.nyancatlabs.whisper"
         minSdk = 26
         targetSdk = 37
         // Whisper's own first release, not Neo Feed's ninth. The package
-        // io.zero76.whisper has never been published, so there is no version
+        // com.nyancatlabs.whisper has never been published, so there is no version
         // history to preserve and nothing to keep monotonic against — 1.9.0
         // would have claimed eight earlier releases that do not exist.
         versionCode = 1

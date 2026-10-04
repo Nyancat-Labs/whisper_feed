@@ -25,7 +25,7 @@ import java.io.File
  */
 class BlobPathTest {
 
-    private val dir = File("/data/data/io.zero76.whisper/files")
+    private val dir = File("/data/data/com.nyancatlabs.whisper/files")
 
     @Test
     fun `a real article id is unchanged`() {

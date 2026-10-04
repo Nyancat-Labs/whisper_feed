@@ -40,7 +40,7 @@ proves illegible at 48 dp on a busy wallpaper, the fallback is board concept
 
 Lawnchair whitelists feed providers by **package name and signing
 certificate**. A Whisper installed from any store still needs the
-`/lawnchairdebug` override until `io.zero76.whisper` is added to Lawnchair's
+`/lawnchairdebug` override until `com.nyancatlabs.whisper` is added to Lawnchair's
 `FeedBridge.kt` upstream. That is a pull request, not an export.
 
 ---

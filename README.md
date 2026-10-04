@@ -250,7 +250,7 @@ Three build types:
 
 | Build | What it is |
 |---|---|
-| `assembleDebug` | Unminified, `io.zero76.whisper.dev`. Fast to build, and the one to debug with. |
+| `assembleDebug` | Unminified, `com.nyancatlabs.whisper.dev`. Fast to build, and the one to debug with. |
 | `assemblePreview` | **Release, made installable.** Fully minified and shrunk, signed with the repository's test key, and carrying the same `.dev` id as debug so it installs over one. What testers get. |
 | `assembleRelease` | Minified and **unsigned**, on purpose. Signing is a local step with a key that never comes near this repository. |
 
@@ -265,7 +265,7 @@ never sign a release.
 ### Getting Lawnchair to use it
 
 Lawnchair only accepts feed providers on a hardcoded package whitelist, and
-`io.zero76.whisper` is not on it yet. For a local build, unlock Lawnchair's
+`com.nyancatlabs.whisper` is not on it yet. For a local build, unlock Lawnchair's
 debug menu and turn the check off:
 
 1. Open the App Drawer, tap the search field, type `/lawnchairdebug`
