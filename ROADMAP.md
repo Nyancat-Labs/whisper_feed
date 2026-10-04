@@ -1007,8 +1007,9 @@ or an explicit note saying why it is exempt.
     `fastlane/metadata/android/en-US` (title, descriptions, first changelog,
     the four real screenshots) and the APK no longer carries the block.
     Tagged `v1.0.0` the same day, and the fdroiddata entry written as
-    `docs/fdroid/com.nyancatlabs.whisper.yml`. Still to do: the merge
-    request, from the Nyancat Labs GitLab account.*
+    `docs/fdroid/com.nyancatlabs.whisper.yml`. Merge request opened the
+    same day: fdroiddata !51197, from the `nyancatlabs` GitLab fork. Waiting
+    on its pipelines and a reviewer.*
   - **Artwork** — Play needs a 512 px icon and a 1024 × 500 banner, both from
     the brand kit, not made up; both stores take 2–8 phone screenshots at
     1080 × 2400, real captures.
