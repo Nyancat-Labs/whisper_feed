@@ -155,7 +155,9 @@ suspend fun syncFeeds(
     feedId: Long = ID_UNSET,
     feedTag: String = "",
     forceNetwork: Boolean = false,
-    minFeedAgeMinutes: Int = 5
+    minFeedAgeMinutes: Int = 5,
+    /** No feed is started after this moment; see the internal syncFeeds. */
+    feedDeadlineMs: Long? = null,
 ): SyncResult {
     // When this was asked for, before any wait for the lock. A forced sync
     // that had to queue behind another only needs what that one did not
@@ -172,6 +174,7 @@ suspend fun syncFeeds(
                 forceNetwork = forceNetwork,
                 minFeedAgeMinutes = minFeedAgeMinutes,
                 freshSince = if (forceNetwork && waited) requestedAt else null,
+                feedDeadlineMs = feedDeadlineMs,
             )
         }
     }
@@ -199,8 +202,21 @@ internal suspend fun syncFeeds(
      * is exactly as fresh as the pull wanted.
      */
     freshSince: Long? = null,
+    /**
+     * For a run in the background: no feed is started after this moment, and
+     * the ones not reached are first next time.
+     *
+     * In the background Android gives Whisper the slow end of the phone, and
+     * a night's runs on the charger took 129-235 s over the feeds alone; with
+     * the account's matching after them one ran into the eight-minute stop.
+     * Feeds started by then finish; the rest wait, oldest first, so the
+     * account half always has its time.
+     */
+    feedDeadlineMs: Long? = null,
 ): SyncResult {
     var result = SyncResult(due = 0)
+    // Feeds not started because the deadline came first.
+    val deferredFeeds = AtomicInteger(0)
     // Feeds that threw, counted for the history: a sync that reached 118 of
     // 120 feeds and one that reached none were both just "ok".
     val failedFeeds = AtomicInteger(0)
@@ -283,10 +299,14 @@ internal suspend fun syncFeeds(
                 } else {
                     null
                 }
-                val feedsToFetch = if (resume != null) {
+                val feedsToFetch = (if (resume != null) {
                     byPace.filter { it.lastSync.toEpochMilliseconds() < resume }
                 } else {
                     byPace
+                }).let { feeds ->
+                    // Longest waiting first when a deadline may leave some
+                    // out, so the ones it leaves are the freshest.
+                    if (feedDeadlineMs != null) feeds.sortedBy { it.lastSync } else feeds
                 }
                 resumedFeeds = byPace.size - feedsToFetch.size
 
@@ -307,6 +327,10 @@ internal suspend fun syncFeeds(
                     launch(coroutineContext) {
                         gate.withPermit {
                             val fetchStarted = System.currentTimeMillis()
+                            if (feedDeadlineMs != null && fetchStarted >= feedDeadlineMs) {
+                                deferredFeeds.incrementAndGet()
+                                return@withPermit
+                            }
                             try {
                                 // Mark as syncing START
                                 feedsRepo.setCurrentlySyncingOn(feedId = feed.id, syncing = true)
@@ -420,7 +444,8 @@ internal suspend fun syncFeeds(
 
                 jobs.joinAll()
                 result = SyncResult(
-                    due = feedsToFetch.size,
+                    due = feedsToFetch.size - deferredFeeds.get(),
+                    deferred = deferredFeeds.get(),
                     failed = failedFeeds.get(),
                     unchanged = unchangedFeeds.get(),
                     identical = identicalFeeds.get(),

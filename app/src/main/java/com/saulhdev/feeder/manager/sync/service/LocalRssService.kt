@@ -17,6 +17,7 @@
  */
 package com.saulhdev.feeder.manager.sync.service
 
+import com.saulhdev.feeder.manager.sync.backgroundFeedDeadline
 import android.content.Context
 import com.saulhdev.feeder.data.repository.ArticleRepository
 import com.saulhdev.feeder.manager.sync.syncFeeds
@@ -34,8 +35,15 @@ class LocalRssService(
     private val articles: ArticleRepository,
 ) : RssService() {
 
-    override suspend fun sync(forceNetwork: Boolean, retryRefused: Boolean, trace: StepTrace?): SyncOutcome =
-        runCatching { syncFeeds(context = context, forceNetwork = forceNetwork) }
+    override suspend fun sync(
+        forceNetwork: Boolean,
+        retryRefused: Boolean,
+        trace: StepTrace?,
+        background: Boolean,
+    ): SyncOutcome =
+        runCatching {
+            syncFeeds(context = context, forceNetwork = forceNetwork, feedDeadlineMs = backgroundFeedDeadline(background))
+        }
             .fold(
                 onSuccess = { SyncOutcome.Success(feeds = it) },
                 onFailure = { SyncOutcome.Failed(it) },

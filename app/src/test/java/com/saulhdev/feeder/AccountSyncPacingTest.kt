@@ -33,10 +33,10 @@ class AccountSyncPacingTest {
     @Test
     fun `an account sync fetches the feeds only as hard as it was asked to`() {
         val remote = source("manager/sync/service/GoogleReaderService.kt")
-        assertTrue(remote.contains("syncFeeds(context = context, feedId = ID_ALL, forceNetwork = forceNetwork)"))
+        assertTrue(remote.contains("feedId = ID_ALL,\n                    forceNetwork = forceNetwork,"))
         assertFalse(remote.contains("forceNetwork = true"))
         val local = source("manager/sync/service/LocalRssService.kt")
-        assertTrue(local.contains("syncFeeds(context = context, forceNetwork = forceNetwork)"))
+        assertTrue(local.contains("syncFeeds(context = context, forceNetwork = forceNetwork, feedDeadlineMs ="))
         val base = source("manager/sync/service/RssService.kt")
         assertTrue("nobody asking means not forced", base.contains("forceNetwork: Boolean = false,\n        /**"))
     }

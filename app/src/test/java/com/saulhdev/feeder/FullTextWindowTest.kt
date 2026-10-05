@@ -112,7 +112,7 @@ class FullTextWindowTest {
         val line = accountSummary(AccountTally(serverFeeds = 128, matched = 17046, match = MatchStats(2, 412, 4_800_000, true)))
         assertTrue(line, line.contains("; match read 412 items in 2 pages, 4.8 MB"))
         val service = File("src/main/java/com/saulhdev/feeder/manager/sync/service/GoogleReaderService.kt").readText()
-        assertTrue(service.contains("val match = step(\"matching\") { mapRemoteIds(auth) }"))
+        assertTrue(service.contains("val match = step(\"matching\") {\n                mapRemoteIds(auth, maxPages ="))
         assertTrue(service.contains("steps = steps, match = match)"))
     }
 }

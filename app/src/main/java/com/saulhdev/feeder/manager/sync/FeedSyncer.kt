@@ -165,6 +165,10 @@ class FeedSyncer(val context: Context, workerParams: WorkerParameters) :
                 Log.w(TAG, "Could not run the sync in the foreground", e)
             }
         }
+        // In the background, at the slow end of the phone, the run is a
+        // lighter one: see RssService.sync. In the foreground - begun on
+        // screen, or asked for - it does everything.
+        val background = !inForeground
         // Whether another sync holds the lock, so a run that spent its first
         // minutes waiting is not mistaken for a slow one.
         val queued = syncMutex.isLocked
@@ -218,6 +222,7 @@ class FeedSyncer(val context: Context, workerParams: WorkerParameters) :
                         forceNetwork = forceNetwork,
                         retryRefused = origin == SyncLog.ORIGIN_ACCOUNT,
                         trace = trace,
+                        background = background,
                     )) {
                         is SyncOutcome.Success -> outcome.feeds ?: SyncResult.uncounted
                         SyncOutcome.SignedOut -> {
@@ -241,7 +246,8 @@ class FeedSyncer(val context: Context, workerParams: WorkerParameters) :
                         feedId = feedId,
                         feedTag = feedTag,
                         forceNetwork = forceNetwork,
-                        minFeedAgeMinutes = minFeedAgeMinutes
+                        minFeedAgeMinutes = minFeedAgeMinutes,
+                        feedDeadlineMs = backgroundFeedDeadline(background),
                     )
                 }
             }
@@ -446,6 +452,20 @@ fun requestAutomaticFeedSync(
  * Android stops background work at ten minutes; this leaves it two.
  */
 const val SYNC_TIME_BUDGET_MS = 8 * 60_000L
+
+/**
+ * How long a background run spends starting feeds, of its eight minutes.
+ *
+ * Half, so the account's matching and sending always have time after it: a
+ * night on the charger had the feeds take 235 s and the matching 243 s, and
+ * the run was stopped at the limit. Feeds not started by then are first next
+ * time.
+ */
+const val BACKGROUND_FEEDS_BUDGET_MS = 4 * 60_000L
+
+/** When a run's feeds stop being started: four minutes on in the background, never otherwise. */
+fun backgroundFeedDeadline(background: Boolean, nowMs: Long = System.currentTimeMillis()): Long? =
+    if (background) nowMs + BACKGROUND_FEEDS_BUDGET_MS else null
 
 /** The history's line for a sync that stopped itself at [SYNC_TIME_BUDGET_MS]. */
 const val OUT_OF_TIME_OUTCOME = "stopped: eight minutes up, progress kept"

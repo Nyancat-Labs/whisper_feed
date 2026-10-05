@@ -89,6 +89,6 @@ class StoppedSyncTraceTest {
         val wait = map.indexOf("if (!isUnmetered(context)) {")
         assertTrue("before anything is downloaded", wait > 0 && wait < map.indexOf("api.contentsPage("))
         assertTrue(map.contains("waitingForWifi = true"))
-        assertTrue("and the early sending still runs first", service.indexOf("pushChanges(auth, token, matchedOnly = true)") < service.indexOf("mapRemoteIds(auth) }"))
+        assertTrue("and the early sending still runs first", service.indexOf("pushChanges(auth, token, matchedOnly = true)") < service.indexOf("mapRemoteIds(auth, maxPages ="))
     }
 }

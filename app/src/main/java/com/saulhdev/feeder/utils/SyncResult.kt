@@ -64,6 +64,8 @@ data class SyncResult(
     val resumed: Int = 0,
     /** Articles older than the sync range that this run deleted. */
     val agedOut: Int = 0,
+    /** Feeds a background run left for the next one, out of time for them; see BACKGROUND_FEEDS_BUDGET_MS. */
+    val deferred: Int = 0,
     /** What an account sync did with the server; see AccountTally. */
     val account: AccountTally? = null,
     /** The feeds that took longest, title to milliseconds; see slowestOf. */
@@ -113,9 +115,10 @@ fun syncOutcome(result: SyncResult, notes: List<String> = emptyList()): String {
     val resting = if (result.resting > 0 && result.error == null) "${result.resting} not due yet" else null
     val resumed = if (result.resumed > 0 && result.error == null) "${result.resumed} done before the cut-off" else null
     val agedOut = if (result.agedOut > 0 && result.error == null) "${result.agedOut} articles aged out" else null
+    val deferred = if (result.deferred > 0 && result.error == null) "${result.deferred} left for the next sync" else null
     val slow = result.slowest.takeIf { it.isNotEmpty() && result.error == null }
         ?.joinToString(", ", prefix = "slowest ") { (title, ms) -> "${title.take(SLOW_TITLE)} ${seconds(ms)}" }
-    val all = details + listOfNotNull(resting, resumed, agedOut, data, slow) + notes
+    val all = details + listOfNotNull(resting, resumed, deferred, agedOut, data, slow) + notes
     val line = if (all.isEmpty()) head else "$head (${all.joinToString(", ")})"
     return result.account?.takeIf { result.error == null }?.let { "$line; ${accountSummary(it)}" } ?: line
 }

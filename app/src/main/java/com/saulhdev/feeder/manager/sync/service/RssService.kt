@@ -65,6 +65,12 @@ abstract class RssService {
         retryRefused: Boolean = false,
         /** Told each step as it starts and ends, for a run that is stopped; see StepTrace. */
         trace: StepTrace? = null,
+        /**
+         * Running in the background, at the slow end of the phone: a lighter
+         * run, its feeds held to BACKGROUND_FEEDS_BUDGET_MS and its matching
+         * to MAP_BACKGROUND_PAGES. What it leaves, the next run takes up.
+         */
+        background: Boolean = false,
     ): SyncOutcome
 
     /**

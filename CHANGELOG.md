@@ -20,8 +20,11 @@ Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
   it replaces as `.previous`.
 - **The reader** puts the card's picture on top rather than a site's logo,
   and drops a site's own "By / Published / Updated" lines from the top.
-- **Syncs begun on the charger** ask to run in the foreground; in the
-  background they ran about ten times slower.
+- **Background syncs are lighter.** Android keeps a sync it starts in the
+  background at the slow end of the phone, and one night's ran into its
+  eight-minute stop. In the background a sync now spends at most half its
+  time on feeds and matches a quarter as much with the account; what it
+  leaves, the next sync takes up, and one begun on screen does it all.
 - The store title is "Whisper: RSS Reader", and the About page names
   Nyancat Labs.
 
@@ -41,7 +44,7 @@ is maintained:
 Two things are repeated here so a release note cannot be read as more than it
 is: **sync is supported with FreshRSS only** — proven against a live server
 with 114 feeds, on a phone and a tablet at once — and **there are no
-instrumentation or screenshot tests**: the 1044 unit tests cover logic, and
+instrumentation or screenshot tests**: the 1063 unit tests cover logic, and
 every on-device check has been manual.
 
 ---

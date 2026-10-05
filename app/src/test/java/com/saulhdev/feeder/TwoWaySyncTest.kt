@@ -227,8 +227,8 @@ class TwoWaySyncTest {
         val order = listOf(
             "pushChanges(auth, token, matchedOnly = true)",
             "syncSubscriptions(auth, token, retryRefused)",
-            "syncFeeds(context = context, feedId = ID_ALL, forceNetwork = forceNetwork)",
-            "mapRemoteIds(auth)",
+            "feedId = ID_ALL,\n                    forceNetwork = forceNetwork,",
+            "mapRemoteIds(auth, maxPages =",
             "requeueSavesOnce()",
             "val saves = step(\"saves lookup\") { mapPendingSaves(auth) }",
             "val push = step(\"sending\") { pushChanges(auth, token, saves.keep) }",

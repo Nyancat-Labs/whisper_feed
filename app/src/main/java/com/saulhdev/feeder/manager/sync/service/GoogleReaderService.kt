@@ -17,6 +17,7 @@
  */
 package com.saulhdev.feeder.manager.sync.service
 
+import com.saulhdev.feeder.manager.sync.backgroundFeedDeadline
 import com.saulhdev.feeder.manager.sync.greader.isCatchAllFolder
 import android.content.Context
 import android.util.Log
@@ -91,7 +92,12 @@ class GoogleReaderService(
     private val api: GoogleReaderApi = GoogleReaderApi(account.serverUrl),
 ) : RssService() {
 
-    override suspend fun sync(forceNetwork: Boolean, retryRefused: Boolean, trace: StepTrace?): SyncOutcome {
+    override suspend fun sync(
+        forceNetwork: Boolean,
+        retryRefused: Boolean,
+        trace: StepTrace?,
+        background: Boolean,
+    ): SyncOutcome {
         val auth = account.authToken
         if (auth.isEmpty()) return SyncOutcome.SignedOut
 
@@ -100,10 +106,16 @@ class GoogleReaderService(
         // feed lists at once, each adding what the others were adding, and
         // one feed came out four times. The feed fetching already had a lock
         // of its own; the account half did not.
-        return accountLock.withLock { syncLocked(auth, forceNetwork, retryRefused, trace) }
+        return accountLock.withLock { syncLocked(auth, forceNetwork, retryRefused, trace, background) }
     }
 
-    private suspend fun syncLocked(auth: String, forceNetwork: Boolean, retryRefused: Boolean, trace: StepTrace?): SyncOutcome {
+    private suspend fun syncLocked(
+        auth: String,
+        forceNetwork: Boolean,
+        retryRefused: Boolean,
+        trace: StepTrace?,
+        background: Boolean = false,
+    ): SyncOutcome {
         return try {
             // The order is the design. Feeds first, both ways, so the
             // articles fetched next come from the right list. Then the
@@ -140,9 +152,18 @@ class GoogleReaderService(
             // ID_ALL rather than the default, so a feed fetched in the last
             // few minutes is left alone unless the reader forced it, as it is
             // without an account.
-            val feeds = step("feeds") { syncFeeds(context = context, feedId = ID_ALL, forceNetwork = forceNetwork) }
+            val feeds = step("feeds") {
+                syncFeeds(
+                    context = context,
+                    feedId = ID_ALL,
+                    forceNetwork = forceNetwork,
+                    feedDeadlineMs = backgroundFeedDeadline(background),
+                )
+            }
 
-            val match = step("matching") { mapRemoteIds(auth) }
+            val match = step("matching") {
+                mapRemoteIds(auth, maxPages = if (background) MAP_BACKGROUND_PAGES else MAP_MAX_PAGES)
+            }
             requeueSavesOnce()
             val saves = step("saves lookup") { mapPendingSaves(auth) }
             val push = step("sending") { pushChanges(auth, token, saves.keep) }
@@ -347,7 +368,7 @@ class GoogleReaderService(
      * being marked unread by a server that has simply not heard yet. The same
      * for saved.
      */
-    private suspend fun mapRemoteIds(auth: String): MatchStats? {
+    private suspend fun mapRemoteIds(auth: String, maxPages: Int = MAP_MAX_PAGES): MatchStats? {
         val startedAt = System.currentTimeMillis()
         val receivedBefore = receivedBytes()
         val before = articles.mappedArticles().mapTo(HashSet()) { it.uuid }
@@ -383,7 +404,7 @@ class GoogleReaderService(
         val pagesSeen = HashSet<String>()
         var pages = 0
         var finished = false
-        while (pages < MAP_MAX_PAGES) {
+        while (pages < maxPages) {
             val (items, next) = api.contentsPage(
                 auth, GoogleReaderIds.STREAM_READING_LIST, MAP_PAGE_SIZE, since, continuation, oldestFirst = true,
             )
@@ -712,6 +733,17 @@ class GoogleReaderService(
         /** Items per page, and pages per match: at most two thousand articles. */
         const val MAP_PAGE_SIZE = 250
         const val MAP_MAX_PAGES = 8
+
+        /**
+         * Pages per match in a background run: five hundred articles.
+         *
+         * Catching up after signing in again, background runs read the full
+         * eight pages at the slow end of the phone - 243 s of matching after
+         * 235 s of feeds, stopped at eight minutes. Runs begun on screen take
+         * the eight pages in seconds, so the catching-up is theirs; the
+         * background keeps up with what is new.
+         */
+        const val MAP_BACKGROUND_PAGES = 2
 
         /** How far into one feed's stream a waiting save is looked for: 1,000 items. */
         const val SAVE_LOOKUP_PAGES = 4

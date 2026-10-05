@@ -2627,7 +2627,11 @@ the real card code and the reader's own photos, all four changes chosen:
   243 s). Android 17 does not let a sync started in the background become a
   foreground one. Harmless, so it ships in 1.0.1; the answer for 1.0.2 is
   lighter background runs - less matching per run, the catching-up left to
-  syncs begun on screen.*
+  syncs begun on screen.* *Done for 1.0.1 instead: a run Android keeps in
+  the background starts no feed after four minutes (`BACKGROUND_FEEDS_BUDGET_MS`,
+  half of the eight), longest-waiting feeds first, and the rest are counted
+  as "left for the next sync"; and it matches two pages of the account, not
+  eight (`MAP_BACKGROUND_PAGES`). A run in the foreground does everything.*
 - **The read-on-scroll trace logged headlines.** Each article marked read
   went into the log by its title, so a shared report said what had been
   read. It logs a count now, and a test holds every log line to it.

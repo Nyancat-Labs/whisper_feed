@@ -133,7 +133,7 @@ class AccountRecoveryTest {
 
     @Test
     fun `one account sync at a time`() {
-        assertTrue(service.contains("return accountLock.withLock { syncLocked(auth, forceNetwork, retryRefused, trace) }"))
+        assertTrue(service.contains("return accountLock.withLock { syncLocked(auth, forceNetwork, retryRefused, trace, background) }"))
         assertTrue(service.contains("private val accountLock = Mutex()"))
     }
 
@@ -149,9 +149,9 @@ class AccountRecoveryTest {
     @Test
     fun `the first match is small, capped, and kept as it goes`() {
         assertTrue(service.contains("const val MAP_FIRST_WINDOW_MS = 2 * DAY_MS"))
-        assertTrue(service.contains("while (pages < MAP_MAX_PAGES) {"))
+        assertTrue(service.contains("while (pages < maxPages) {"))
         val map = service.substring(service.indexOf("private suspend fun mapRemoteIds(")).substringBefore("\n    }\n")
-        val loop = map.substring(map.indexOf("while (pages < MAP_MAX_PAGES)"))
+        val loop = map.substring(map.indexOf("while (pages < maxPages)"))
         assertTrue("matched per page", loop.substringBefore("if (next == null").contains("articles.attachRemoteId(link, remoteId)"))
         assertTrue("and the next match starts from here", map.contains("GoogleReaderState.setMappedAt(context, startedAt)\n        Log.i"))
     }
