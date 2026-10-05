@@ -2621,7 +2621,13 @@ the real card code and the reader's own photos, all four changes chosen:
   the slow end of the phone. A sync begun on the charger now asks for the
   foreground, the silent "Syncing" line in the shade, and says "foreground
   refused" in its line if Android will not allow it from the background -
-  the next report says which.
+  the next report says which. *It said refused: the night of 4 October,
+  23:59 and 03:08 on the charger, both "foreground refused", and 05:08 ran
+  to the eight-minute cut-off at background speed (feeds 235 s, matching
+  243 s). Android 17 does not let a sync started in the background become a
+  foreground one. Harmless, so it ships in 1.0.1; the answer for 1.0.2 is
+  lighter background runs - less matching per run, the catching-up left to
+  syncs begun on screen.*
 - **The read-on-scroll trace logged headlines.** Each article marked read
   went into the log by its title, so a shared report said what had been
   read. It logs a count now, and a test holds every log line to it.
@@ -2657,7 +2663,8 @@ the real card code and the reader's own photos, all four changes chosen:
   address was not; both are kept now, the username too, and the login is
   never shown without an address. The first step also did not say what it
   was for, so each step is headed "Step 1 of 2 · Your server" and "Step 2 of
-  2 · Sign in", and Next waits for an address.
+  2 · Sign in", and Next waits for an address. Confirmed on the Pixel the same afternoon,
+  with the password manager filling the login.
 
 - **"Whisper: RSS Reader" in the stores; Nyancat Labs on the About page.**
   F-Droid already lists three voice-recognition apps called Whisper, so the
