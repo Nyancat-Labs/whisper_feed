@@ -27,7 +27,6 @@
     <string name="remove_desc">Remover %s ab le fontes de fluxo?</string>
     <string name="pref_transparency">Opacitate de fundo de superposition</string>
     <string name="failed_to_parse">Non poteva analysar %1$s</string>
-    <string name="debug_logcat_printing">Impression extensive de logcat</string>
     <string name="go_back">Retornar</string>
     <string name="about_changelog">Registro de cambiamentos</string>
     <string name="remove_title">Confirmar le action</string>

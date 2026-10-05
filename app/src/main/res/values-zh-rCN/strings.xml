@@ -22,7 +22,6 @@
     <string name="add_feed_search_hint">订阅源 URL</string>
     <string name="remove_title">确认操作</string>
     <string name="theme_auto_system">自动（跟随系统）</string>
-    <string name="debug_logcat_printing">输出详细日志</string>
     <string name="sync_half_hour_minutes">30 分钟</string>
     <string name="touch_to_play_video">点击播放视频</string>
     <string name="fetch_full_articles_by_default">默认获取完整文章</string>

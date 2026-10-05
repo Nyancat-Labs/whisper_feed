@@ -31,7 +31,6 @@
     <string name="sync_two_hours">İki saat</string>
     <string name="sync_three_hours">Üç saat</string>
     <string name="sync_six_hours">Altı saat</string>
-    <string name="debug_logcat_printing">Kapsamlı hata günlüğü yazdırma</string>
     <string name="title_plugin_list">Eklenti listesi</string>
     <string name="touch_to_play_video">Videoyu oynatmak için dokunun</string>
     <string name="fetch_full_articles_by_default">Makalenin tamamı varsayılan olarak getir</string>

@@ -14,7 +14,6 @@
     <string name="theme_light">Chiaro</string>
     <string name="theme_dark">Scuro</string>
     <string name="background_theme_option">Basato sul tema</string>
-    <string name="debug_logcat_printing">Stampa logcat esteso</string>
     <string name="title_plugin_list">Elenco plugin</string>
     <string name="edit_rss">Modifica elemento feed</string>
     <string name="title">Titolo</string>

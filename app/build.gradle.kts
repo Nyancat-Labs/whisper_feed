@@ -87,6 +87,10 @@ android {
         versionCode = 2
         versionName = "1.0.1"
 
+        // Developer-only screens and buttons, such as sending a test sync
+        // notice: on in debug and preview builds, off in the store builds.
+        buildConfigField("boolean", "DEV_TOOLS", "false")
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled = true
@@ -148,6 +152,7 @@ android {
         debug {
             isMinifyEnabled = false
             applicationIdSuffix = ".dev"
+            buildConfigField("boolean", "DEV_TOOLS", "true")
             signingConfig = signingConfigs.getByName("debug")
             gitCommit?.let {
                 versionNameSuffix = "-$it" + if (gitDirty) "-dirty" else ""
@@ -192,6 +197,7 @@ android {
         create("preview") {
             initWith(getByName("release"))
             applicationIdSuffix = ".dev"
+            buildConfigField("boolean", "DEV_TOOLS", "true")
             // The commit, so a report names the code it came from.
             //
             // Only here and on debug. A release is identified by its version

@@ -21,7 +21,6 @@
     <string name="theme_auto_system">Automat (din sistem)</string>
     <string name="remove_title">Confirmați acțiunea</string>
     <string name="background_theme_option">Bazat pe temă</string>
-    <string name="debug_logcat_printing">Imprimare logcat extinsă</string>
     <string name="title_plugin_list">Lista plugin-urilor</string>
     <string name="sync_three_hours">Trei ore</string>
     <string name="sync_six_hours">Șase ore</string>

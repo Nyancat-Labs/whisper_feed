@@ -38,7 +38,6 @@
     <string name="sync_three_hours">3時間</string>
     <string name="sync_six_hours">6時間</string>
     <string name="background_theme_option">テーマに基づいた</string>
-    <string name="debug_logcat_printing">広範なログ出力</string>
     <string name="title_plugin_list">プラグイン一覧</string>
     <string name="touch_to_play_video">動画再生するにはタップしてください</string>
     <string name="fetch_full_articles_by_default">デフォルトで完全な記事を取得する</string>

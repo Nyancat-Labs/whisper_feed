@@ -23,7 +23,6 @@
     <string name="edit_rss">Feed-Element bearbeiten</string>
     <string name="add_rss">Neue RSS hinzufügen</string>
     <string name="title">Titel</string>
-    <string name="debug_logcat_printing">Ausführliche Logcat-Ausgabe</string>
     <string name="touch_to_play_video">Berühren, um Video abzuspielen</string>
     <string name="fetch_full_articles_by_default">Standardmäßig vollständige Artikel abrufen</string>
     <string name="article_not_found">Lokaler Artikel nicht gefunden</string>

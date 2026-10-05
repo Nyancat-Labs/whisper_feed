@@ -16,7 +16,6 @@
     <string name="about_source_code">மூலக் குறியீடு</string>
     <string name="pref_cat_overlay">தோற்றம்</string>
     <string name="pref_transparency">மேலடுக்கு பின்னணி ஒளிபுகாநிலை</string>
-    <string name="debug_logcat_printing">விரிவான லோகாட் அச்சிடுதல்</string>
     <string name="title_plugin_list">சொருகி பட்டியல்</string>
     <string name="touch_to_play_video">வீடியோவை இயக்கத் தொடவும்</string>
     <string name="article_not_found">உள்ளக கட்டுரை கிடைக்கவில்லை</string>

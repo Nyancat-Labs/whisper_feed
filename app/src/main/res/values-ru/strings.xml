@@ -33,7 +33,6 @@
     <string name="add_feed_search_hint">URL-адрес ленты</string>
     <string name="sync_one_hour">Один час</string>
     <string name="by_author_on_date">%1$s, %2$s</string>
-    <string name="debug_logcat_printing">Расширенный вывод logcat</string>
     <string name="background_theme_option">В зависимости от темы</string>
     <string name="about_changelog">Журнал изменений</string>
     <string name="article_not_found">Статьи нет на устройстве</string>

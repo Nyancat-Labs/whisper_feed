@@ -16,7 +16,6 @@
     <string name="sync_half_hour_minutes">30 minuto</string>
     <string name="sync_six_hours">Anim na Oras</string>
     <string name="background_theme_option">Nakabase sa tema</string>
-    <string name="debug_logcat_printing">Malawakang pagpi-print ng logcat</string>
     <string name="fetch_full_articles_by_default">Kunin ang buong artikulo by default</string>
     <string name="article_not_found">Hindi nakakita ng lokal na artikulo</string>
     <string name="title_settings">Mga Setting</string>

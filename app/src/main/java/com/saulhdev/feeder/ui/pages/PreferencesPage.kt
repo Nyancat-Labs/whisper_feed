@@ -44,6 +44,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import com.saulhdev.feeder.utils.openOverlaySettings
 import com.saulhdev.feeder.utils.canGrantOverlay
+import com.saulhdev.feeder.BuildConfig
 import com.saulhdev.feeder.R
 import java.util.Date
 import java.text.DateFormat
@@ -171,7 +172,9 @@ fun PreferencesPage(
         // Last row of the last group. It was defined and in no list at all, so
         // the switch existed and could not be reached from anywhere.
         prefs.debugging,
-        prefs.testSyncNotice.takeIf { debugging },
+        // Only in the debug and preview builds: it is for checking how the
+        // notice looks, not something a reader of a store build needs.
+        prefs.testSyncNotice.takeIf { debugging && BuildConfig.DEV_TOOLS },
     )
 
     // Turning the global switch on should start downloading now, not at the

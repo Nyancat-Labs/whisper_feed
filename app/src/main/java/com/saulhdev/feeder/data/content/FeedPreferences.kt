@@ -864,8 +864,15 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
         }
     )
 
+    /**
+     * Detailed logs: the performance and read-tracking traces, for a
+     * diagnostics report. In the store builds, so a reader who reports a
+     * problem can be asked to turn it on; named for what it is for, where it
+     * used to say "Extensive logcat printing".
+     */
     var debugging = BooleanPref(
-        titleId = R.string.debug_logcat_printing,
+        titleId = R.string.pref_detailed_logs,
+        summaryId = R.string.pref_detailed_logs_summary,
         defaultValue = false,
         icon = Phosphor.Bug,
         key = DEBUG,

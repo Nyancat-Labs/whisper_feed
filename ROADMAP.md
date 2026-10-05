@@ -2685,6 +2685,15 @@ the real card code and the reader's own photos, all four changes chosen:
   the shot whose weather chip names the town, the James Bond ones, and an
   article that opens on a membership box.
 
+- **What the store builds keep of the debugging tools.** They are release
+  builds: not debuggable, minified, with every debug, verbose and info log
+  call stripped by R8. The one switch left, "Extensive logcat printing", is
+  now "Detailed logs for diagnostics", with a line saying to leave it off
+  unless asked - kept so that a reader reporting a problem can be asked to
+  turn it on and export a report. "Send a test sync notice", which only
+  exists to check the notice, is in the debug and preview builds alone,
+  behind `BuildConfig.DEV_TOOLS`.
+
 ### 17. Scroll parallax on the feed — parked, at the bottom
 
 Prototyped, demonstrated, and deliberately not built. The image inside a card's

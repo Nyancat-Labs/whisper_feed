@@ -19,7 +19,6 @@
     <string name="pref_transparency">Opacidad del fondo</string>
     <string name="pref_ovr_theme">Tema de la superposición</string>
     <string name="remove_desc">¿Eliminar %s de las fuentes\?</string>
-    <string name="debug_logcat_printing">Muestra ampliada del registro de los mensajes del sistema</string>
     <string name="about_licenses">Licencia</string>
     <string name="about_changelog">Novedades</string>
     <string name="sync_six_hours">Seis horas</string>

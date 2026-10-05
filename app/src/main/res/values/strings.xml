@@ -125,6 +125,8 @@
     <string name="sync_stuck_unknown">Android has not run it yet.</string>
     <string name="sync_stuck_hint">Pull down on the feed to update now.</string>
     <string name="sync_stuck_test_title">Test: %1$s</string>
+    <string name="pref_detailed_logs">Detailed logs for diagnostics</string>
+    <string name="pref_detailed_logs_summary">Adds timing and read-tracking detail to an exported diagnostics report. Leave off unless asked</string>
     <string name="pref_test_sync_notice">Send a test sync notice</string>
     <string name="pref_test_sync_notice_summary">Shows the notice Whisper sends when feeds stop updating, so you can see it and try tapping it</string>
     <string name="test_notice_blocked">Notifications are off for Whisper, so nothing can be shown. Turn them on in Android\u2019s settings.</string>
@@ -229,7 +231,6 @@
     <string name="sync_three_hours">Three Hours</string>
     <string name="sync_six_hours">Six Hours</string>
     <string name="background_theme_option">Theme based</string>
-    <string name="debug_logcat_printing">Extensive logcat printing</string>
     <string name="title_plugin_list">Plugin List</string>
     <string name="touch_to_play_video">Touch to play video</string>
     <string name="fetch_full_articles_by_default">Fetch full articles by default</string>

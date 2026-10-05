@@ -32,7 +32,6 @@
     <string name="sync_three_hours">ثلاث ساعات</string>
     <string name="sync_six_hours">ست ساعات</string>
     <string name="background_theme_option">على أساس السمة</string>
-    <string name="debug_logcat_printing">تسجيل logcat مكثف</string>
     <string name="title_plugin_list">قائمة المكونات الإضافية</string>
     <string name="touch_to_play_video">المس لتشغيل الفيديو</string>
     <string name="fetch_full_articles_by_default">جلب المقالات الكاملة افتراضيًا</string>

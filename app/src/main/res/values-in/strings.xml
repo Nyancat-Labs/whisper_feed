@@ -11,7 +11,6 @@
     <string name="theme_dark">Gelap</string>
     <string name="sync_two_hours">2 jam</string>
     <string name="background_theme_option">Berbasis tema</string>
-    <string name="debug_logcat_printing">Pencetakan logcat ekstensif</string>
     <string name="title_sources">Sumber data</string>
     <string name="touch_to_play_video">Sentuh untuk memutar video</string>
     <string name="about_licenses">Lisensi</string>
