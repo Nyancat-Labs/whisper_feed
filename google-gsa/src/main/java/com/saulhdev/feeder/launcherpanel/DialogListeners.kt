@@ -1,4 +1,4 @@
-package com.google.android.libraries.gsa.d.a
+package com.saulhdev.feeder.launcherpanel
 
 import android.content.DialogInterface
 

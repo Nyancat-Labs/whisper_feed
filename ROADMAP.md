@@ -1015,7 +1015,12 @@ or an explicit note saying why it is exempt.
     build there; fixed on one line, proven by running fdroidserver's own
     deletion on a copy and building it, and held by `FdroidBuildTest`.
     And `rewritemeta`, because the file pasted into GitLab had Windows line
-    endings. Hence 1.0.1, and the entry now builds `v1.0.1`.*
+    endings. Hence 1.0.1, and the entry now builds `v1.0.1`.* *1.0.1 then built on F-Droid and failed only the APK scan,
+    which read the launcher panel's classes, open code under
+    `com.google.android.libraries.gsa`, as Google's proprietary library.
+    Moved to `com.saulhdev.feeder.launcherpanel`, with the module's own
+    namespace and no data binding; F-Droid's 104 scanner signatures run over
+    a release built as they build it found nothing. Hence 1.0.2.*
   - **Artwork** — Play needs a 512 px icon and a 1024 × 500 banner, both from
     the brand kit, not made up; both stores take 2–8 phone screenshots at
     1080 × 2400, real captures.

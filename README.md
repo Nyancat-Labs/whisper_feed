@@ -11,9 +11,9 @@ An RSS reader that tells you why it put an article where it did — and lets you
 disagree.
 
 [![Licence: GPL v3](https://img.shields.io/badge/licence-GPL--3.0-blue)](LICENSE)
-![Version 1.0.1](https://img.shields.io/badge/version-1.0.1-informational)
+![Version 1.0.2](https://img.shields.io/badge/version-1.0.2-informational)
 ![Android 8.0+](https://img.shields.io/badge/Android-8.0%2B-brightgreen)
-![Tests](https://img.shields.io/badge/tests-1063%20passing-success)
+![Tests](https://img.shields.io/badge/tests-1066%20passing-success)
 ![No trackers](https://img.shields.io/badge/trackers-none-success)
 
 </div>
@@ -57,7 +57,7 @@ Two things are worth knowing:
   FreshRSS server, with 114 feeds, since September 2026, on both devices at
   once. Miniflux and the other Google Reader services speak the same protocol
   and may work, but are not tested or supported.
-- **There are no instrumentation or screenshot tests.** 1063 unit tests cover
+- **There are no instrumentation or screenshot tests.** 1066 unit tests cover
   the logic, some under Robolectric (every database upgrade from version 3,
   the download queue, the account store); every on-device check has been
   done by hand.

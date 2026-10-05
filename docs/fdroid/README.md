@@ -4,7 +4,7 @@
 [fdroiddata](https://gitlab.com/fdroid/fdroiddata). It lives there, as
 `metadata/com.nyancatlabs.whisper.yml`; this copy is the one to edit and paste.
 
-- **Builds from the tag.** `commit: v1.0.1` is the release; F-Droid checks out
+- **Builds from the tag.** `commit: v1.0.2` is the release; F-Droid checks out
   that tag, runs the `release` build (unsigned without `keystore.properties`)
   and signs the APK with its own key.
 - **The listing text is not in this file.** Title, descriptions, changelog and
@@ -22,4 +22,11 @@
   runs the same deletion over `app/build.gradle.kts`.
 - **Plain line endings.** The copy in the merge request must have Unix line
   endings and end with a newline, or `fdroid rewritemeta` fails.
+- **Nothing of ours under Google's package names.** F-Droid's APK scan
+  reads any class under `com.google.android.libraries.gsa` as Google's
+  proprietary library. 1.0.1 failed it on the launcher panel's classes,
+  which were open code with Google's name; they are in
+  `com.saulhdev.feeder.launcherpanel` now, and `FdroidScannerTest` keeps
+  them there. The Binder interfaces in `launcherclient` keep their names:
+  the descriptor strings are Lawnchair's protocol.
 

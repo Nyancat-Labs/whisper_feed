@@ -17,8 +17,8 @@ import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnAttach
-import com.google.android.libraries.gsa.d.a.OverlayController
-import com.google.android.libraries.gsa.d.a.PanelState
+import com.saulhdev.feeder.launcherpanel.OverlayController
+import com.saulhdev.feeder.launcherpanel.PanelState
 import com.saulhdev.feeder.MainActivity
 import com.saulhdev.feeder.NeoApp
 import com.saulhdev.feeder.R

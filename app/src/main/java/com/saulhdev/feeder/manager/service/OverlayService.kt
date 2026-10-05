@@ -4,7 +4,7 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
-import com.google.android.libraries.gsa.d.a.OverlaysController
+import com.saulhdev.feeder.launcherpanel.OverlaysController
 
 class OverlayService(): Service() {
     private lateinit var overlaysController: OverlaysController

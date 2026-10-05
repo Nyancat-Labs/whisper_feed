@@ -6,6 +6,15 @@ kept because Whisper is a fork of it and the work is inherited rather than
 replaced — but those are not Whisper releases, and the version numbers are not
 Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 
+1.0.2 — 5 October 2026
+----------------------
+
+- **F-Droid's scan passes.** F-Droid built 1.0.1 and then failed its scan
+  for proprietary code: the launcher panel's classes were filed under
+  Google's package name, so they read as Google's library. They are open
+  code inherited from Neo Feed, and they are under Whisper's own name now.
+  Nothing else changes; the panel speaks to Lawnchair exactly as before.
+
 1.0.1 — 5 October 2026
 ----------------------
 
@@ -44,7 +53,7 @@ is maintained:
 Two things are repeated here so a release note cannot be read as more than it
 is: **sync is supported with FreshRSS only** — proven against a live server
 with 114 feeds, on a phone and a tablet at once — and **there are no
-instrumentation or screenshot tests**: the 1063 unit tests cover logic, and
+instrumentation or screenshot tests**: the 1066 unit tests cover logic, and
 every on-device check has been manual.
 
 ---

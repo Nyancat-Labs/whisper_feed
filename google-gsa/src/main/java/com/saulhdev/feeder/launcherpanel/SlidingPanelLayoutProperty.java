@@ -1,7 +1,7 @@
-package com.google.android.libraries.gsa.d.a;
+package com.saulhdev.feeder.launcherpanel;
 
 import android.util.Property;
-import com.google.android.libraries.gsa.d.a.SlidingPanelLayout;
+import com.saulhdev.feeder.launcherpanel.SlidingPanelLayout;
 /**
  * A Property implementation for animating SlidingPanelLayout values.
  * This allows animating properties of SlidingPanelLayout using Android's property animation system.
