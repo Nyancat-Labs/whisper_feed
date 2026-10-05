@@ -34,7 +34,7 @@ class TwoStepSignInTest {
 
     @Test
     fun `the address and the login are never on screen together`() {
-        val form = page.substringAfter("if (!addressDone) {")
+        val form = page.substringAfter("if (!onLogin) {")
         val addressStep = form.substringBefore("} else {")
         val loginStep = form.substringAfter("} else {")
         assertTrue(addressStep.contains("value = server,"))
@@ -58,5 +58,18 @@ class TwoStepSignInTest {
         assertTrue(step.contains("addressDone = true"))
         assertTrue(page.contains("TextButton(onClick = { addressDone = false })"))
         assertTrue(page.contains("KeyboardActions(onNext = { toCredentials() })"))
+    }
+
+    @Test
+    fun `the typed address and username survive the screen being rebuilt`() {
+        assertTrue(page.contains("var server by rememberSaveable(state.serverUrl)"))
+        assertTrue(page.contains("var username by rememberSaveable(state.username)"))
+        assertTrue("the password is not saved with the screen", page.contains("var password by remember { mutableStateOf(\"\") }"))
+    }
+
+    @Test
+    fun `the login is never shown without an address`() {
+        assertTrue(page.contains("val onLogin = addressDone && server.isNotBlank()"))
+        assertTrue(page.contains("enabled = server.isNotBlank(),"))
     }
 }

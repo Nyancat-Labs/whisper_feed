@@ -2651,7 +2651,13 @@ the real card code and the reader's own photos, all four changes chosen:
   guesses the first text box is the username. The address now has a screen
   of its own, Next, then the username and password with the address above
   them and a Change button, so the field it cannot place is not there when
-  it fills.
+  it fills. Tried on the Pixel the same day: the second step came back with the
+  address blank under its label. The step was kept when Android rebuilt the
+  screen (as it may while the reader is in their password manager), and the
+  address was not; both are kept now, the username too, and the login is
+  never shown without an address. The first step also did not say what it
+  was for, so each step is headed "Step 1 of 2 · Your server" and "Step 2 of
+  2 · Sign in", and Next waits for an address.
 
 - **"Whisper: RSS Reader" in the stores; Nyancat Labs on the About page.**
   F-Droid already lists three voice-recognition apps called Whisper, so the

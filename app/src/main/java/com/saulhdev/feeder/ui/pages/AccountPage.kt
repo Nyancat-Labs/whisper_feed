@@ -85,13 +85,17 @@ fun AccountPage(
 ) {
     val state by viewModel.state.collectAsState()
 
-    var server by remember(state.serverUrl) { mutableStateOf(state.serverUrl) }
+    // Saveable, like the step below: Android may rebuild the screen while
+    // the reader is away in their password manager, and the step came back
+    // on the login while the address it was for had gone. The password is
+    // deliberately not kept this way; a password manager fills it again.
+    var server by rememberSaveable(state.serverUrl) { mutableStateOf(state.serverUrl) }
     // Set when the address was corrected, so the screen can say so. The
     // correction itself is visible in the field; this is the sentence that
     // explains why it moved, which is the whole point of doing it here rather
     // than silently inside the HTTP client.
-    var corrected by remember { mutableStateOf(false) }
-    var username by remember(state.username) { mutableStateOf(state.username) }
+    var corrected by rememberSaveable { mutableStateOf(false) }
+    var username by rememberSaveable(state.username) { mutableStateOf(state.username) }
     var password by remember { mutableStateOf("") }
     // Past the address and on to the username and password. Starts there
     // when an address is already known, as after signing out.
@@ -198,7 +202,18 @@ fun AccountPage(
                 // first text field - and the password nowhere useful. Android
                 // has no autofill type for a server address, so the field it
                 // cannot place is simply not there when it fills.
-                if (!addressDone) {
+                // Never the login without an address above it.
+                val onLogin = addressDone && server.isNotBlank()
+                item {
+                    Text(
+                        text = stringResource(
+                            if (onLogin) R.string.account_step_login else R.string.account_step_server
+                        ),
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(top = 8.dp),
+                    )
+                }
+                if (!onLogin) {
                     item {
                         OutlinedTextField(
                             value = server,
@@ -255,6 +270,7 @@ fun AccountPage(
                             icon = Phosphor.Check,
                             modifier = Modifier.fillMaxWidth(),
                             positive = true,
+                            enabled = server.isNotBlank(),
                             onClick = { toCredentials() },
                         )
                     }
