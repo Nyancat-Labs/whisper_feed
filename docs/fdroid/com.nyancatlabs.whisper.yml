@@ -1,11 +1,12 @@
 Categories:
+  - News
   - Reading
 License: GPL-3.0-or-later
 AuthorName: Nyancat Labs
 WebSite: https://nyancatlabs.com
 SourceCode: https://github.com/Nyancat-Labs/whisper_feed
 IssueTracker: https://github.com/Nyancat-Labs/whisper_feed/issues
-Changelog: https://github.com/Nyancat-Labs/whisper_feed/blob/main/CHANGELOG.md
+Changelog: https://github.com/Nyancat-Labs/whisper_feed/blob/HEAD/CHANGELOG.md
 
 AutoName: Whisper
 

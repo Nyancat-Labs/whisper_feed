@@ -1020,7 +1020,13 @@ or an explicit note saying why it is exempt.
     `com.google.android.libraries.gsa`, as Google's proprietary library.
     Moved to `com.saulhdev.feeder.launcherpanel`, with the module's own
     namespace and no data binding; F-Droid's 104 scanner signatures run over
-    a release built as they build it found nothing. Hence 1.0.2.*
+    a release built as they build it found nothing. Hence 1.0.2.* *Before tagging it, F-Droid's own tools were run here:
+    lint (which asked for `/HEAD/` in the changelog link; "News" was added
+    beside "Reading", as other RSS readers have it), rewritemeta, and the
+    scanner on the source and on the keyless release - all clean. Play: the
+    bundle builds and is signed with the upload key (`CN=Whisper, O=Nyancat
+    Labs, C=IE`, SHA-256 `d4545245…`), native libraries are 16 KB aligned,
+    and the storage permissions stop at API 28.*
   - **Artwork** — Play needs a 512 px icon and a 1024 × 500 banner, both from
     the brand kit, not made up; both stores take 2–8 phone screenshots at
     1080 × 2400, real captures.

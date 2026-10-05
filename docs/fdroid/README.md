@@ -29,4 +29,11 @@
   `com.saulhdev.feeder.launcherpanel` now, and `FdroidScannerTest` keeps
   them there. The Binder interfaces in `launcherclient` keep their names:
   the descriptor strings are Lawnchair's protocol.
+- **Checked before every tag, with F-Droid's own tools** (fdroidserver,
+  installed from PyPI): `fdroid lint` and `fdroid rewritemeta` on this file,
+  with fdroiddata's `config/categories.yml`; and on a fresh copy with
+  `remove_signing_keys` applied and a keyless `assembleRelease`, the
+  scanner's `scan_source` on the tree and `scan_binary` on the APK. All
+  clean for 1.0.2; `scan_binary` on the 1.0.1 build finds the same 20
+  problems F-Droid's pipeline did.
 
