@@ -2673,9 +2673,12 @@ the real card code and the reader's own photos, all four changes chosen:
   `docs/brand/nyancat_labs/pack`. Its SVG and PDF masters wrap a PNG rather
   than drawing the shapes, and its own QA fails one file; both noted there.
 
-- **New store screenshots.** Six real captures from the Pixel on 5 October,
-  build cb8fee4: Cards in light, Mosaic in dark, the reader, "Why is this
-  here?", what Whisper has learned, and the feed library. Cropped from
+- **New store screenshots.** Seven real captures from the Pixel on 5 October,
+  build cb8fee4: Cards in light, Mosaic in dark, the reader, a card's menu
+  (more or less like this, pin, hide source), "Why is this here?", what
+  Whisper has learned, and the feed library. "Why is this here?" was taken
+  three times: first over an actor's photograph, then with a sync's spinner
+  caught in it. Cropped from
   1080 x 2410 to 1080 x 2160, 150 px off the top and 100 off the bottom,
   because Play refuses a screenshot more than twice as tall as it is wide;
   the crop also takes the status bar and its notification icons. Left out:
