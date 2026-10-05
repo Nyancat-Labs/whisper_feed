@@ -6,6 +6,25 @@ kept because Whisper is a fork of it and the work is inherited rather than
 replaced — but those are not Whisper releases, and the version numbers are not
 Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 
+1.0.1 — 5 October 2026
+----------------------
+
+- **F-Droid can build it.** F-Droid deletes every line that sets a signing
+  key before it builds; one such line in the build file ran over three, and
+  the deletion left the file broken. 1.0.0 never built there.
+- **Signing in is two steps**: the server's address, then the username and
+  password, so a password manager fills the right fields.
+- **A backup folder is asked about before it is written to.** Choosing one
+  that already held a backup replaced it with the new install's empty one;
+  it now offers Restore, Replace or Cancel, and every backup keeps the copy
+  it replaces as `.previous`.
+- **The reader** puts the card's picture on top rather than a site's logo,
+  and drops a site's own "By / Published / Updated" lines from the top.
+- **Syncs begun on the charger** ask to run in the foreground; in the
+  background they ran about ten times slower.
+- The store title is "Whisper: RSS Reader", and the About page names
+  Nyancat Labs.
+
 1.0.0 — 4 October 2026
 ----------------------
 

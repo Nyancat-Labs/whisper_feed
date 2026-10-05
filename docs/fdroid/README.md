@@ -4,7 +4,7 @@
 [fdroiddata](https://gitlab.com/fdroid/fdroiddata). It lives there, as
 `metadata/com.nyancatlabs.whisper.yml`; this copy is the one to edit and paste.
 
-- **Builds from the tag.** `commit: v1.0.0` is the release; F-Droid checks out
+- **Builds from the tag.** `commit: v1.0.1` is the release; F-Droid checks out
   that tag, runs the `release` build (unsigned without `keystore.properties`)
   and signs the APK with its own key.
 - **The listing text is not in this file.** Title, descriptions, changelog and
@@ -15,3 +15,11 @@
 - **Updates:** `UpdateCheckMode: Tags` and `AutoUpdateMode: Version` mean a new
   `vX.Y.Z` tag with a higher `versionCode` is picked up without another merge
   request.
+- **Signing lines stay on one line each.** Before building, F-Droid deletes
+  every line that sets a signing key (`remove_signing_keys` in fdroidserver).
+  One that runs over several lines leaves the rest behind and breaks the
+  build file - which is why 1.0.0 never built there. `FdroidBuildTest`
+  runs the same deletion over `app/build.gradle.kts`.
+- **Plain line endings.** The copy in the merge request must have Unix line
+  endings and end with a newline, or `fdroid rewritemeta` fails.
+

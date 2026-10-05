@@ -1,0 +1,5 @@
+- Signing in is two steps, so password managers fill the username and password, not the server address.
+- Choosing a backup folder that already holds a backup asks before replacing it, and every backup keeps the previous copy.
+- The reader no longer shows a site's own "By / Published / Updated" lines above the article.
+- The reader puts the card's picture on top, not a site's logo.
+- Syncs that start on the charger run in the foreground, so they finish faster.

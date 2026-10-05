@@ -1008,8 +1008,14 @@ or an explicit note saying why it is exempt.
     the four real screenshots) and the APK no longer carries the block.
     Tagged `v1.0.0` the same day, and the fdroiddata entry written as
     `docs/fdroid/com.nyancatlabs.whisper.yml`. Merge request opened the
-    same day: fdroiddata !51197, from the `nyancatlabs` GitLab fork. Waiting
-    on its pipelines and a reviewer.*
+    same day: fdroiddata !51197, from the `nyancatlabs` GitLab fork.
+    5 October: its first real run failed two of nine checks. The build,
+    because fdroidserver deletes every line that sets a signing key before
+    it builds and the preview's ran over three lines, so 1.0.0 can never
+    build there; fixed on one line, proven by running fdroidserver's own
+    deletion on a copy and building it, and held by `FdroidBuildTest`.
+    And `rewritemeta`, because the file pasted into GitLab had Windows line
+    endings. Hence 1.0.1, and the entry now builds `v1.0.1`.*
   - **Artwork** — Play needs a 512 px icon and a 1024 × 500 banner, both from
     the brand kit, not made up; both stores take 2–8 phone screenshots at
     1080 × 2400, real captures.

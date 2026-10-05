@@ -84,8 +84,8 @@ android {
         // com.nyancatlabs.whisper has never been published, so there is no version
         // history to preserve and nothing to keep monotonic against — 1.9.0
         // would have claimed eight earlier releases that do not exist.
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -205,9 +205,10 @@ android {
             gitCommit?.let {
                 versionNameSuffix = "-$it" + if (gitDirty) "-dirty" else ""
             }
-            signingConfig = signingConfigs.getByName(
-                if (releaseKeystore != null) "release" else "debug"
-            )
+            // One line, on purpose: F-Droid deletes every line that sets a
+            // signing key before it builds, and this used to span three, so
+            // the deletion left half a call behind and the build file broke.
+            signingConfig = signingConfigs.getByName(if (releaseKeystore != null) "release" else "debug")
             // The google-gsa module has only debug and release; without this
             // Gradle cannot decide which of them a "preview" app should use.
             matchingFallbacks += listOf("release")
