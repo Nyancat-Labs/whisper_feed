@@ -11,6 +11,4 @@ Nyancat Labs; these are the company's marks, not Whisper's.
 | `symbol_transparent_512.png` | 512 px, transparent. |
 | `symbol_transparent_64.png` | 64 px, transparent. |
 | `symbol_transparent_32.png` | 32 px, transparent, favicon size. |
-
-The full lockup ("NYANCAT LABS — Think Design Develop") has not been supplied
-as a file yet.
+| `lockup.png` | The full lockup: symbol, "NYANCAT LABS" and "Think Design Develop". Dark lettering, for light grounds. |
