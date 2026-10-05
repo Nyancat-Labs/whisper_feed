@@ -200,6 +200,102 @@ internal fun stripRepeatedTitle(body: Element, articleTitle: String?) {
 }
 
 /**
+ * Takes out the page's own byline and date lines from the top of the text.
+ *
+ * An Investing.com article opened with three lines of its page furniture
+ * under the reader's own byline: "By", whose author's name had not survived
+ * the page, then "Published 10/04/2026, 08:15 AM" and "Updated …", saying
+ * again what the line above them already said.
+ *
+ * Only the opening lines, and only a line that is nothing but that: a bare
+ * "By", "By" and the article's own author, and "Published", "Updated",
+ * "Posted" or "Last updated" with a date. The first line that is anything
+ * else ends the search, so nothing in the article itself is touched; a line
+ * holding a picture ends it too.
+ */
+internal fun stripBylineNoise(body: Element, author: String?) {
+    val name = author?.trim()?.lowercase().orEmpty()
+    var looked = 0
+    for (line in body.select("*").filter { isTextLine(it) }) {
+        if (looked++ >= BYLINE_LINES_LOOKED_AT) return
+        if (line.selectFirst("img, picture, figure, video, svg") != null) return
+        if (!isBylineNoise(line.text(), name)) return
+        line.remove()
+    }
+}
+
+/** A block with text of its own and no block inside it: one line, as a reader sees it. */
+private fun isTextLine(element: Element): Boolean =
+    element.tagName() != "body" &&
+        (element.isBlock || element.tagName() in setOf("span", "time", "address")) &&
+        element.text().isNotBlank() &&
+        element.children().none { it.isBlock || it.tagName() in setOf("span", "time", "address") }
+
+/**
+ * Whether a line is only a byline or date stamp: "By", "By" and the author,
+ * "Published 10/04/2026, 08:15 AM", or several of them run together.
+ */
+internal fun isBylineNoise(text: String, author: String = ""): Boolean {
+    val line = text.replace('\u00A0', ' ').trim()
+    if (line.isEmpty() || line.length > 120) return false
+    val parts = line.split(STAMP_START).map { it.trim(' ', '|', '·', '•', ',', '-', '–', '—') }
+    return parts.all { part ->
+        val lower = part.lowercase()
+        when {
+            part.isEmpty() -> true
+            lower == "by" || lower == "by:" -> true
+            author.isNotEmpty() && lower.removePrefix("by").trim(' ', ':') == author -> true
+            isDateStamp(part) -> true
+            else -> false
+        }
+    }
+}
+
+/** How far down the text the byline lines are looked for. */
+private const val BYLINE_LINES_LOOKED_AT = 6
+
+/** Where a date stamp begins, so several on one line can be told apart. */
+private val STAMP_START =
+    Regex(
+        """(?i)(?=\b(?:first\s+published|last\s+updated)\b)|""" +
+            """(?<!(?:first|last)\s)(?=\b(?:published|updated|posted)\b)"""
+    )
+
+/** The keyword a date stamp starts with. */
+private val STAMP_KEYWORD =
+    Regex("""(?i)^(?:first\s+published|last\s+updated|published|updated|posted)\b\s*:?\s*""")
+
+/** The words a date or time may hold besides digits: months, days, am/pm, "2 hours ago". */
+private val DATE_WORDS = setOf(
+    "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "sept", "oct", "nov", "dec",
+    "january", "february", "march", "april", "june", "july", "august", "september",
+    "october", "november", "december",
+    "mon", "tue", "wed", "thu", "fri", "sat", "sun", "monday", "tuesday", "wednesday",
+    "thursday", "friday", "saturday", "sunday",
+    "am", "pm", "a", "p", "m", "at", "on", "th", "st", "nd", "rd",
+    "ago", "min", "mins", "minute", "minutes", "hr", "hrs", "hour", "hours", "day", "days",
+)
+
+/**
+ * "Published 10/04/2026, 08:15 AM", "Updated: Oct 4, 2026 9:10AM ET",
+ * "Posted 2 hours ago": the keyword, then a date and nothing else. Every word
+ * after the keyword has to be a number, a date word, or a time zone in
+ * capitals, so "Published in 2019 by Penguin" is not one.
+ */
+private fun isDateStamp(part: String): Boolean {
+    val keyword = STAMP_KEYWORD.find(part) ?: return false
+    val rest = part.substring(keyword.range.last + 1).trim()
+    if (rest.isEmpty() || rest.length > 40 || rest.none(Char::isDigit)) return false
+    return Regex("""[\p{L}]+|\d+""").findAll(rest).all { word ->
+        val w = word.value
+        w.all(Char::isDigit) ||
+            w.lowercase() in DATE_WORDS ||
+            (w.length in 2..4 && w.all(Char::isUpperCase)) ||
+            Regex("""\d+(?:am|pm)""", RegexOption.IGNORE_CASE).matches(w)
+    }
+}
+
+/**
  * Puts the article's own picture back when the body arrived without it.
  *
  * The Verge's articles opened with no picture at all while the same story's
@@ -348,9 +444,11 @@ fun readerBody(
     baseUrl: String,
     articleTitle: String? = null,
     leadImageUrl: String? = null,
+    author: String? = null,
 ): ReaderBody {
     val body = Jsoup.parse(inputStream, null, baseUrl).body()
     stripRepeatedTitle(body, articleTitle)
+    stripBylineNoise(body, author)
     val card = usableImageUrl(leadImageUrl?.trim())
     if (card != null) {
         openingImage(body)?.let { (it.closest("figure") ?: it.closest("picture") ?: it).remove() }

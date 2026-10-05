@@ -263,11 +263,11 @@ fun ArticlePage(
                 val article = when {
                     showFullArticle && blobFullFile(articleId, context.filesDir).isFile ->
                         blobFullInputStream(articleId, context.filesDir).use {
-                            readerBody(it, baseUrl, articleTitle = title, leadImageUrl = cardPicture)
+                            readerBody(it, baseUrl, articleTitle = title, leadImageUrl = cardPicture, author = state?.article?.author)
                         }
                     !showFullArticle && blobFile(articleId, context.filesDir).isFile ->
                         blobInputStream(articleId, context.filesDir).use {
-                            readerBody(it, baseUrl, articleTitle = title, leadImageUrl = cardPicture)
+                            readerBody(it, baseUrl, articleTitle = title, leadImageUrl = cardPicture, author = state?.article?.author)
                         }
                     else -> null
                 }

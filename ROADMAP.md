@@ -2655,6 +2655,18 @@ the real card code and the reader's own photos, all four changes chosen:
   `docs/brand/nyancat_labs` rather than fetched. Ko-fi stays as it is for now. Both reach F-Droid
   with the next tag, since it reads the listing from the release it builds.
 
+- **The page's own byline lines come out of the reader.** An Investing.com
+  article opened with "By" (its author's name lost), "Published 10/04/2026,
+  08:15 AM" and "Updated …" under the reader's own byline. The opening lines
+  of the text, up to six, are now dropped when they are nothing but that: a
+  bare "By", "By" and the article's own author, or a keyword and a date in
+  which every word is a number, a month, a day, am/pm or a time zone - so
+  "Published in 2019 by Penguin" stays. The first other line, or one with a
+  picture, ends the search.
+- **The Nyancat Labs asset pack is in the brand kit**, under
+  `docs/brand/nyancat_labs/pack`. Its SVG and PDF masters wrap a PNG rather
+  than drawing the shapes, and its own QA fails one file; both noted there.
+
 ### 17. Scroll parallax on the feed — parked, at the bottom
 
 Prototyped, demonstrated, and deliberately not built. The image inside a card's
