@@ -1,0 +1,4 @@
+Wordmark_Only_Large_Transparent.png: PASS
+Wordmark_Only_Master_Transparent.png: PASS
+Wordmark_Only_Medium_Transparent.png: FAIL [(3, 4, 6)]
+Wordmark_Only_Small_Transparent.png: PASS
