@@ -257,7 +257,7 @@ class TwoWaySyncTest {
         val service = source("manager/sync/service/GoogleReaderService.kt")
         val map = service.substring(service.indexOf("private suspend fun mapRemoteIds(")).substringBefore("\n    }\n")
         val queue = service.substring(service.indexOf("private suspend fun queueNewlyMatched(")).substringBefore("\n    }\n")
-        assertTrue("queued page by page", map.contains("newly += queueNewlyMatched(before)"))
+        assertTrue("queued page by page", map.contains("val pageQueued = queueNewlyMatched(before)\n            newly += pageQueued"))
         assertTrue(queue.contains(".withRead(newlyMapped.filter { it.readAt != 0L"))
         assertTrue(queue.contains("acc.withStar(a.uuid, true)"))
         assertTrue("every match waits for Wi-Fi", map.contains("if (!isUnmetered(context)) {"))
