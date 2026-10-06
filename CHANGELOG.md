@@ -20,6 +20,16 @@ Unreleased
   Inc. (NASDAQ:GSHD)" read as "Goosehead Insurance Inc. ()". Words inside a
   sentence now keep their text whatever their wrapper is called. Articles
   already downloaded change when they are fetched again.
+- **Source names show on narrow Mosaic tiles.** On a tile with no picture,
+  the save and menu buttons shared the line under the headline and squeezed
+  the source's name to nothing: "NEWS · · 2h". On a narrow tile they now sit
+  under that line instead.
+- **Buttons on pictures can always be seen.** The save and menu icons over a
+  photo had only a faint fade behind them and vanished on white or pale
+  pictures. Each now sits on a small dark disc.
+- **No stray space before the comma in the reader.** Some feeds end their
+  author's name with a space, which showed as "Zhiye Liu , Tuesday". Author
+  names are trimmed, and a blank one is treated as none.
 
 1.0.2 — 5 October 2026
 ----------------------

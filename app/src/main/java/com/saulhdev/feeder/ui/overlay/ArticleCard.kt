@@ -24,6 +24,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -49,8 +50,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -60,6 +61,7 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.saulhdev.feeder.R
@@ -572,31 +574,24 @@ fun ArticleMosaicTile(
                         )
                         .background(MaterialTheme.colorScheme.surfaceContainerHigh),
                 )
-                // A short scrim under the controls only. A photograph can be
-                // white in the corner, and a white icon on it disappears.
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .fillMaxWidth()
-                        .height(52.dp)
-                        .background(
-                            Brush.verticalGradient(
-                                0f to Color.Black.copy(alpha = 0.45f),
-                                1f to Color.Transparent,
-                            )
-                        )
-                )
+                // A dark disc under each control. A photograph can be white
+                // in the corner, and a white icon on it disappears; the fade
+                // across the top that was here before had thinned to a
+                // quarter by the icons' middle, and the menu's three dots
+                // vanished on a white glasshouse roof.
                 Row(
                     modifier = Modifier.align(Alignment.TopEnd),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    SaveButton(
-                        saved = item.bookmarked,
-                        onSavedChange = onBookmark,
-                        size = 20.dp,
-                        onImage = true,
-                    )
-                    menu(Color.White)
+                    OnPhoto {
+                        SaveButton(
+                            saved = item.bookmarked,
+                            onSavedChange = onBookmark,
+                            size = 20.dp,
+                            onImage = true,
+                        )
+                    }
+                    OnPhoto { menu(Color.White) }
                 }
             }
         }
@@ -636,7 +631,7 @@ fun ArticleMosaicTile(
                 }
             }
             Spacer(Modifier.height(6.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            val meta: @Composable (Modifier) -> Unit = { metaModifier ->
                 ArticleMeta(
                     category = item.feedTag,
                     source = item.feedTitle,
@@ -645,20 +640,37 @@ fun ArticleMosaicTile(
                     age = item.relativeAge(context),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.weight(1f),
+                    modifier = metaModifier,
                     iconUrl = item.feedIconUrl,
                 )
-                // Only where there was no image to put them on. The buttons
-                // keep their full 48dp targets either way — the fix was to
-                // stop them claiming a row of their own, not to shrink them.
-                if (!hasImage) {
-                    CardActions {
-                        SaveButton(
-                            saved = item.bookmarked,
-                            onSavedChange = onBookmark,
-                            size = 18.dp,
-                        )
-                        menu(null)
+            }
+            // Only where there was no image to put them on. The buttons
+            // keep their full 48dp targets either way — the fix was to
+            // stop them claiming a row of their own, not to shrink them.
+            val actions: @Composable () -> Unit = {
+                CardActions {
+                    SaveButton(
+                        saved = item.bookmarked,
+                        onSavedChange = onBookmark,
+                        size = 18.dp,
+                    )
+                    menu(null)
+                }
+            }
+            BoxWithConstraints {
+                // Except on a narrow tile. Beside the buttons, a two-column
+                // Mosaic tile's line under the headline is ~55dp, and the
+                // source's name, the part allowed to shorten, shortened to
+                // nothing: "NEWS · · 2h". There they go under the line.
+                if (hasImage || !actionsCrowdMeta(maxWidth)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        meta(Modifier.weight(1f))
+                        if (!hasImage) actions()
+                    }
+                } else {
+                    Column {
+                        meta(Modifier.fillMaxWidth())
+                        Box(Modifier.align(Alignment.End)) { actions() }
                     }
                 }
             }
@@ -901,6 +913,32 @@ fun CardActions(content: @Composable () -> Unit) {
         modifier = Modifier.offset(x = CARD_ACTIONS_EDGE),
     ) { content() }
 }
+
+/**
+ * A white control over a photograph, on a disc dark enough to read on any
+ * picture: white on 45% black is at least 3:1 even over a white sky.
+ */
+@Composable
+private fun OnPhoto(content: @Composable () -> Unit) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.drawBehind {
+            drawCircle(color = Color.Black.copy(alpha = PHOTO_DISC_ALPHA), radius = PHOTO_DISC_RADIUS.toPx())
+        },
+    ) { content() }
+}
+
+internal const val PHOTO_DISC_ALPHA = 0.45f
+private val PHOTO_DISC_RADIUS = 16.dp
+
+/**
+ * Whether the save and menu buttons, beside the line under a headline, leave
+ * its source's name too little room to read. The two buttons take 84dp; the
+ * mark, a category and an age about 75dp more; a name wants 60dp or so.
+ */
+internal fun actionsCrowdMeta(width: Dp): Boolean = width < MIN_WIDTH_FOR_ACTIONS_BESIDE_META
+
+internal val MIN_WIDTH_FOR_ACTIONS_BESIDE_META = 220.dp
 
 /** Half a button's spare width: where a 22dp glyph's box meets a 48dp target's edge. */
 val CARD_ACTIONS_EDGE = 13.dp

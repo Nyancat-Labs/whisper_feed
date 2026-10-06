@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import com.saulhdev.feeder.R
+import com.saulhdev.feeder.data.db.models.authorName
 import com.saulhdev.feeder.ui.overlay.CARD_MARGIN
 import com.saulhdev.feeder.ui.components.HeaderAction
 import com.saulhdev.feeder.ui.components.RoundButton
@@ -168,8 +169,10 @@ fun ArticlePage(
                 .withLocale(locale)
         }
 
+    // Cleaned here as well as on the way in, for articles stored before.
+    val author = authorName(state?.article?.author)
     val authorDate = when {
-        state?.article?.author == null && state?.article?.pubDate != null && (state?.article?.pubDate
+        author == null && state?.article?.pubDate != null && (state?.article?.pubDate
             ?: 0L) > 0L ->
             stringResource(
                 R.string.on_date,
@@ -179,12 +182,12 @@ fun ArticlePage(
                     .format(dateTimeFormat)
             )
 
-        state?.article?.author != null && (state?.article?.pubDate ?: 0L) > 0L ->
+        author != null && (state?.article?.pubDate ?: 0L) > 0L ->
             stringResource(
                 R.string.by_author_on_date,
                 // Must wrap author in unicode marks to ensure it formats
                 // correctly in RTL
-                context.unicodeWrap(state?.article?.author ?: ""),
+                context.unicodeWrap(author),
                 Instant.fromEpochMilliseconds(state?.article?.pubDate ?: 0L)
                     .toLocalDateTime(TimeZone.currentSystemDefault())
                     .toJavaLocalDateTime()
@@ -263,11 +266,11 @@ fun ArticlePage(
                 val article = when {
                     showFullArticle && blobFullFile(articleId, context.filesDir).isFile ->
                         blobFullInputStream(articleId, context.filesDir).use {
-                            readerBody(it, baseUrl, articleTitle = title, leadImageUrl = cardPicture, author = state?.article?.author)
+                            readerBody(it, baseUrl, articleTitle = title, leadImageUrl = cardPicture, author = author)
                         }
                     !showFullArticle && blobFile(articleId, context.filesDir).isFile ->
                         blobInputStream(articleId, context.filesDir).use {
-                            readerBody(it, baseUrl, articleTitle = title, leadImageUrl = cardPicture, author = state?.article?.author)
+                            readerBody(it, baseUrl, articleTitle = title, leadImageUrl = cardPicture, author = author)
                         }
                     else -> null
                 }

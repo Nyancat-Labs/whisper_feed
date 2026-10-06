@@ -284,7 +284,7 @@ data class Article constructor(
             // with one slash stops storing pictures that can never load.
             imageUrl = usableImageUrl(absoluteImage),
             enclosureLink = entry.attachments?.firstOrNull()?.url,
-            author = entry.author?.name ?: feed.author?.name,
+            author = authorName(entry.author?.name) ?: authorName(feed.author?.name),
             link = entry.url,
             pubDate = newPubDate,
             primarySortTime = newSortTime,
@@ -419,3 +419,10 @@ data class ReadingTime(val totalMs: Long, val articles: Int)
 
 /** The same, bucketed by hour of day. `hour` is `00`–`23`, as text from SQLite. */
 data class HourCount(val hour: String, val seen: Int, val opened: Int)
+
+/**
+ * A feed's author name as it should be shown: trimmed, and none when blank.
+ * Tom's Hardware's ends in a space, and the reader printed it as
+ * "Zhiye Liu , Tuesday 6 October"; an author of "" read as ", Tuesday".
+ */
+internal fun authorName(raw: String?): String? = raw?.trim()?.takeIf { it.isNotEmpty() }
