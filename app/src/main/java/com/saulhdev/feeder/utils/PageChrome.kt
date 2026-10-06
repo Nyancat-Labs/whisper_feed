@@ -82,7 +82,21 @@ fun stripPageChrome(document: Document) {
             val share = if (pageText == 0) 0.0 else element.text().length.toDouble() / pageText
             if (share <= MAX_BYLINE_SHARE) element.remove()
         }
+
+    // Words inside a sentence are part of it, whatever their wrapper is called.
+    // Readability drops elements named like clutter ("popup", "share",
+    // "sidebar"...), and Investing.com wraps every ticker in
+    // span.aqPopupWrapper: "Goosehead Insurance Inc. (NASDAQ:GSHD)" came out
+    // as "Goosehead Insurance Inc. ()". Inline elements inside running text
+    // lose their names, after the byline rule above has used them.
+    body.select(INLINE_TAGS)
+        .filter { inline -> inline.parents().any { it.tagName() in TEXT_BLOCKS } }
+        .forEach { it.removeAttr("class").removeAttr("id") }
 }
+
+private const val INLINE_TAGS =
+    "span, a, em, strong, b, i, u, s, abbr, small, sup, sub, mark, cite, q, time, code, font"
+private val TEXT_BLOCKS = setOf("p", "li", "blockquote", "dd", "figcaption")
 
 /**
  * Whether an element's class or id says "author" or "byline" as a word.

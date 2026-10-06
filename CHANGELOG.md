@@ -14,6 +14,12 @@ Unreleased
   not open, which was only ever true of the launcher panel. The permission is
   now explained in one place, Settings → Launcher page, where the panel is set
   up.
+- **Stock tickers stay in full articles.** Investing.com puts each ticker in
+  a hover-card wrapper whose name says "popup", and the article extractor
+  threw anything named like that away as clutter, so "Goosehead Insurance
+  Inc. (NASDAQ:GSHD)" read as "Goosehead Insurance Inc. ()". Words inside a
+  sentence now keep their text whatever their wrapper is called. Articles
+  already downloaded change when they are fetched again.
 
 1.0.2 — 5 October 2026
 ----------------------
