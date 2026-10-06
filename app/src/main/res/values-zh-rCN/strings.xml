@@ -62,8 +62,6 @@
     <string name="home">首页</string>
     <string name="pref_dynamic_color">动态配色</string>
     <string name="source_tags">标签</string>
-    <string name="draw_permission_required">此应用需要显示在其他应用上层的权限，否则无法点击打开订阅内容</string>
-    <string name="go_to_settings">转到设置</string>
     <string name="sources_import_bookmarks">导入收藏</string>
     <string name="sources_export_bookmarks">导出收藏</string>
     <string name="enabled">已启用</string>

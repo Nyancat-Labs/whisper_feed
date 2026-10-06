@@ -57,6 +57,5 @@
     <string name="add_rss">নতুন আরএসএস(RSS) ফিড যোগ করো</string>
     <string name="edit_rss">ফিড ভুক্তি সম্পাদনা করো</string>
     <string name="theme_auto_system">স্বয়ংক্রিয়ভাবে (সিস্টেম থেকে)</string>
-    <string name="go_to_settings">পছন্দসমূহে যাও</string>
     <string name="file_share_text">Whisper থেকে ফাইল</string>
 </resources>

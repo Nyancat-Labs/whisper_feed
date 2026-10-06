@@ -432,8 +432,6 @@
     <string name="select_all">Select all</string>
     <string name="deselect_all">Deselect all</string>
 
-    <string name="draw_permission_required">This application requires the permission to draw over other apps, without it feed items would not open on click</string>
-    <string name="go_to_settings">Go to settings</string>
     <string name="file_share_text">File from Whisper</string>
     <string name="sources_import_bookmarks">Import bookmarks</string>
     <string name="sources_export_bookmarks">Export bookmarks</string>

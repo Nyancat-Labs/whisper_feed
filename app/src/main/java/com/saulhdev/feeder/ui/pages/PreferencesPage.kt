@@ -18,7 +18,6 @@
 
 package com.saulhdev.feeder.ui.pages
 
-import android.provider.Settings
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -26,7 +25,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.runtime.Composable
@@ -37,13 +35,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import com.saulhdev.feeder.utils.openOverlaySettings
-import com.saulhdev.feeder.utils.canGrantOverlay
 import com.saulhdev.feeder.BuildConfig
 import com.saulhdev.feeder.R
 import java.util.Date
@@ -62,11 +57,8 @@ import com.saulhdev.feeder.ui.components.dialog.StringSelectionPrefDialogUI
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.foundation.layout.Row
 import com.saulhdev.feeder.NeoApp
-import com.saulhdev.feeder.ui.components.ActionButton
 import com.saulhdev.feeder.ui.components.BackgroundDataHint
-import com.saulhdev.feeder.ui.icons.Phosphor
 import com.saulhdev.feeder.ui.icons.phosphor.ArrowCounterClockwise
-import com.saulhdev.feeder.ui.icons.phosphor.GearSix
 import com.saulhdev.feeder.ui.icons.phosphor.Power
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
@@ -77,7 +69,6 @@ import com.saulhdev.feeder.data.content.asState
 fun PreferencesPage(
     prefs: FeedPreferences = koinInject(),
 ) {
-    val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val navController = LocalNavController.current
     val backupStoppedAt by prefs.backupStoppedAt.get().collectAsState(initial = 0L)
@@ -277,25 +268,8 @@ fun PreferencesPage(
                     prefs = themePrefs,
                     onPrefDialog = onPrefDialog
                 )
-
-                if (!Settings.canDrawOverlays(context)) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Card {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            if (canGrantOverlay(context)) {
-                                Text(text = stringResource(R.string.draw_permission_required))
-                                Spacer(modifier = Modifier.height(12.dp))
-                                ActionButton(
-                                    text = stringResource(R.string.go_to_settings),
-                                    icon = Phosphor.GearSix,
-                                    onClick = { openOverlaySettings(context) },
-                                )
-                            } else {
-                                Text(text = stringResource(R.string.overlay_not_on_go))
-                            }
-                        }
-                    }
-                }
+                // No "display over other apps" card here. Only the launcher
+                // panel needs it, and Settings → Launcher page asks for it.
             }
             item(key = R.string.pref_cat_data) {
                 PreferenceGroup(

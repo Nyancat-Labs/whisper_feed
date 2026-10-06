@@ -6,6 +6,15 @@ kept because Whisper is a fork of it and the work is inherited rather than
 replaced — but those are not Whisper releases, and the version numbers are not
 Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 
+Unreleased
+----------
+
+- **No more "display over other apps" card in Settings.** It sat under
+  Appearance for every reader without the permission and said feed items would
+  not open, which was only ever true of the launcher panel. The permission is
+  now explained in one place, Settings → Launcher page, where the panel is set
+  up.
+
 1.0.2 — 5 October 2026
 ----------------------
 

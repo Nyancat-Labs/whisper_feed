@@ -68,8 +68,6 @@
     <string name="sort_descending">Azalan</string>
     <string name="select_all">Tümünü seç</string>
     <string name="deselect_all">Tümünün seçimini kaldır</string>
-    <string name="draw_permission_required">Bu uygulama diğer uygulamaların üzerinde görüntülenme izni gerektirir; bu izin verilmezse akış ögeleri tıklandığında açılmayacaktır</string>
-    <string name="go_to_settings">Ayarlara git</string>
     <string name="file_share_text">Whisper\'den Dosya</string>
     <string name="sources_import_bookmarks">Yer işaretlerini içe aktar</string>
     <string name="sources_export_bookmarks">Yer işaretlerini dışa aktar</string>

@@ -62,8 +62,6 @@
     <string name="sort_descending">下降</string>
     <string name="select_all">すべて選択</string>
     <string name="deselect_all">すべて選択解除</string>
-    <string name="draw_permission_required">このアプリは他のアプリの上に表示する権限が必要です。この権限がないと、フィードの項目をクリックしても開かれません</string>
-    <string name="go_to_settings">設定に移動</string>
     <string name="file_share_text">Whisperからのファイル</string>
     <string name="sources_import_bookmarks">ブックマークをインポートする</string>
     <string name="sources_export_bookmarks">ブックマークをエクスポート</string>

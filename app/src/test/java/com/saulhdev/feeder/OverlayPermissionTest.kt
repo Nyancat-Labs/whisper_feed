@@ -56,6 +56,19 @@ class OverlayPermissionTest {
     }
 
     @Test
+    fun `only the launcher page asks about the overlay permission`() {
+        // Only the launcher panel needs it. A prompt anywhere else tells every
+        // reader something is broken when nothing is. Diagnostics may read it.
+        val allowed = setOf("LauncherPage.kt", "Diagnostics.kt", "OverlayPermission.kt")
+        val offenders = File("src/main/java").walkTopDown()
+            .filter { it.isFile && it.extension == "kt" && it.name !in allowed }
+            .filter { f -> f.readText().let { "canDrawOverlays" in it || "openOverlaySettings(" in it } }
+            .map { it.path }
+            .toList()
+        assertEquals("these ask outside the launcher page: $offenders", emptyList<String>(), offenders)
+    }
+
+    @Test
     fun `the unused permission dialog is gone`() {
         assertFalse(File("src/main/java/com/saulhdev/feeder/ui/components/dialog/PermissionDialog.kt").exists())
     }

@@ -62,8 +62,6 @@
     <string name="sort_descending">Absteigend</string>
     <string name="select_all">Alle auswählen</string>
     <string name="deselect_all">Alle abwählen</string>
-    <string name="draw_permission_required">Diese Anwendung benötigt die Berechtigung, über anderen Apps angezeigt zu werden. Ohne diese Berechtigung würden Feed-Elemente beim Anklicken nicht geöffnet</string>
-    <string name="go_to_settings">Gehen Sie zu den Einstellungen</string>
     <string name="file_share_text">Datei von Whisper</string>
     <string name="sources_import_bookmarks">Lesezeichen importieren</string>
     <string name="sources_export_bookmarks">Lesezeichen exportieren</string>
