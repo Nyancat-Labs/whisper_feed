@@ -79,14 +79,44 @@ data class MatchStats(
     val finished: Boolean,
     /** Not run: matching waits for Wi-Fi. See mapRemoteIds. */
     val waitingForWifi: Boolean = false,
+    /**
+     * Of the match's time, how much went on fetching the server's pages -
+     * asking, downloading and reading each answer - and the longest single
+     * page. The rest was the phone matching them. Added when two
+     * thousand items took 26 seconds one night and 213 the next, and the
+     * report could not say which side had slowed.
+     */
+    val serverMs: Long = 0,
+    val slowestPageMs: Long = 0,
+    /** Of the server's items, how many found their article here. */
+    val attached: Int = 0,
+    /** Newly matched articles whose read or saved state was queued to go up. */
+    val queued: Int = 0,
+    /** The phone's share: linking items to articles, then queueing what to send. */
+    val linkMs: Long = 0,
+    val queueMs: Long = 0,
+    /** How far back the match started, from when it ran; 0 where not known. */
+    val fromAgoMs: Long = 0,
 )
 
-/** The history's words for [m]: "412 items in 2 pages, 4.8 MB". */
+/** The history's words for [m]: "412 items in 2 pages, 4.8 MB, server 12s (slowest page 8.1s)". */
 fun matchSummary(m: MatchStats): String = if (m.waitingForWifi) "nothing, waiting for Wi-Fi" else listOfNotNull(
     "${m.items} items in ${m.pages} ${if (m.pages == 1) "page" else "pages"}",
     m.bytes?.let(::formatBytes),
+    if (m.fromAgoMs > 0) "from ${agoHours(m.fromAgoMs)} ago" else null,
+    if (m.items > 0) "${m.attached} matched" + if (m.queued > 0) " (${m.queued} to send)" else "" else null,
+    if (m.pages > 0 && m.serverMs > 0) {
+        "server ${seconds(m.serverMs)}" + if (m.pages > 1) " (slowest page ${seconds(m.slowestPageMs)})" else ""
+    } else null,
+    if (m.pages > 0 && m.linkMs + m.queueMs > 0) {
+        "phone ${seconds(m.linkMs + m.queueMs)} (linking ${seconds(m.linkMs)}, queueing ${seconds(m.queueMs)})"
+    } else null,
     if (m.finished) null else "more next time",
 ).joinToString(", ")
+
+/** "40m", "27h": how far back a match reached, to the nearest unit. */
+internal fun agoHours(ms: Long): String =
+    if (ms < 60 * 60_000L) "${(ms / 60_000L).coerceAtLeast(1)}m" else "${ms / (60 * 60_000L)}h"
 
 /**
  * The tally as the sync history writes it, after the feed counts.

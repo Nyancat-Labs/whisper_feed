@@ -30,6 +30,12 @@ Unreleased
 - **No stray space before the comma in the reader.** Some feeds end their
   author's name with a space, which showed as "Zhiye Liu , Tuesday". Author
   names are trimmed, and a blank one is treated as none.
+- **The diagnostics report says why matching was slow.** The step that pairs
+  FreshRSS's articles with Whisper's now reports how far back it started, how
+  many it matched, how long it waited on the server (and its slowest page),
+  and how long the phone took. One evening it took eight minutes where the
+  night before it took half a minute, and the report could not say which side
+  had slowed. Counts and times only, never what was matched.
 
 1.0.2 — 5 October 2026
 ----------------------

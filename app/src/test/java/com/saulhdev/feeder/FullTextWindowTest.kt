@@ -32,6 +32,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -107,12 +108,47 @@ class FullTextWindowTest {
 
     @Test
     fun `the history says what a match read`() {
-        assertEquals("412 items in 2 pages, 4.8 MB", matchSummary(MatchStats(2, 412, 4_800_000, finished = true)))
-        assertEquals("250 items in 1 page, more next time", matchSummary(MatchStats(1, 250, null, finished = false)))
+        assertEquals("412 items in 2 pages, 4.8 MB, 0 matched", matchSummary(MatchStats(2, 412, 4_800_000, finished = true)))
+        assertEquals("250 items in 1 page, 0 matched, more next time", matchSummary(MatchStats(1, 250, null, finished = false)))
         val line = accountSummary(AccountTally(serverFeeds = 128, matched = 17046, match = MatchStats(2, 412, 4_800_000, true)))
         assertTrue(line, line.contains("; match read 412 items in 2 pages, 4.8 MB"))
         val service = File("src/main/java/com/saulhdev/feeder/manager/sync/service/GoogleReaderService.kt").readText()
         assertTrue(service.contains("val match = step(\"matching\") {\n                mapRemoteIds(auth, maxPages ="))
         assertTrue(service.contains("steps = steps, match = match)"))
+    }
+
+    @Test
+    fun `the history says how long the match waited on the server`() {
+        // 2000 items took 26s one night and 213s the next; this says which side slowed.
+        assertEquals(
+            "2000 items in 8 pages, 2.5 MB, from 27h ago, 912 matched (40 to send), " +
+                "server 201s (slowest page 41s), phone 12s (linking 9.8s, queueing 2.2s), more next time",
+            matchSummary(
+                MatchStats(
+                    8, 2000, 2_500_000, finished = false, serverMs = 201_000, slowestPageMs = 41_000,
+                    attached = 912, queued = 40, linkMs = 9_800, queueMs = 2_200, fromAgoMs = 27 * 3_600_000L + 1,
+                )
+            ),
+        )
+        assertEquals(
+            "250 items in 1 page, from 40m ago, 250 matched, server 3.2s, phone 0.3s (linking 0.2s, queueing 0.1s)",
+            matchSummary(
+                MatchStats(
+                    1, 250, null, finished = true, serverMs = 3_200, slowestPageMs = 3_200,
+                    attached = 250, linkMs = 200, queueMs = 100, fromAgoMs = 40 * 60_000L,
+                )
+            ),
+        )
+        // Measured around each page's fetch and each local step, and handed to the summary.
+        val service = File("src/main/java/com/saulhdev/feeder/manager/sync/service/GoogleReaderService.kt").readText()
+        val loop = service.substring(service.indexOf("private suspend fun mapRemoteIds"))
+        assertTrue(loop.indexOf("val asked = System.currentTimeMillis()") < loop.indexOf("api.contentsPage("))
+        assertTrue(loop.indexOf("api.contentsPage(") < loop.indexOf("serverMs += waited"))
+        assertTrue(loop.indexOf("linkMs += linked - linking") < loop.indexOf("queueNewlyMatched(before)"))
+        assertTrue(loop.contains("serverMs = serverMs, slowestPageMs = slowestPageMs"))
+        assertTrue(loop.contains("attached = attached, queued = newly, linkMs = linkMs, queueMs = queueMs"))
+        // The per-page log line carries counts and times, never what was matched.
+        val logLine = loop.substring(loop.indexOf("\"Match page \$pages"), loop.indexOf("queued \$pageQueued"))
+        assertFalse(logLine, Regex("""\$\{?(item|link|title|remoteId|uuid)\b""").containsMatchIn(logLine))
     }
 }

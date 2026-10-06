@@ -36,6 +36,7 @@ import com.saulhdev.feeder.utils.isUnmetered
 import com.saulhdev.feeder.manager.sync.greader.AccountTally
 import com.saulhdev.feeder.manager.sync.greader.MatchStats
 import com.saulhdev.feeder.utils.bytesSince
+import com.saulhdev.feeder.utils.formatBytes
 import com.saulhdev.feeder.utils.StepTrace
 import com.saulhdev.feeder.utils.receivedBytes
 import com.saulhdev.feeder.manager.sync.greader.AccountTallyStore
@@ -404,20 +405,43 @@ class GoogleReaderService(
         val pagesSeen = HashSet<String>()
         var pages = 0
         var finished = false
+        var serverMs = 0L
+        var slowestPageMs = 0L
+        var linkMs = 0L
+        var queueMs = 0L
         while (pages < maxPages) {
+            val asked = System.currentTimeMillis()
+            val bytesBefore = receivedBytes()
             val (items, next) = api.contentsPage(
                 auth, GoogleReaderIds.STREAM_READING_LIST, MAP_PAGE_SIZE, since, continuation, oldestFirst = true,
             )
+            val waited = System.currentTimeMillis() - asked
+            serverMs += waited
+            slowestPageMs = maxOf(slowestPageMs, waited)
             pages++
             seen += items.size
+            val linking = System.currentTimeMillis()
+            var pageAttached = 0
             items.forEach { item ->
                 val (link, remoteId) = item.mapping() ?: return@forEach
-                attached += articles.attachRemoteId(link, remoteId)
+                pageAttached += articles.attachRemoteId(link, remoteId)
             }
+            attached += pageAttached
+            val linked = System.currentTimeMillis()
+            linkMs += linked - linking
             // What this page matched is queued now, not at the end: an
             // article matched by a run that is then stopped is "already
             // matched" to the next, which would never queue it.
-            newly += queueNewlyMatched(before)
+            val pageQueued = queueNewlyMatched(before)
+            newly += pageQueued
+            queueMs += System.currentTimeMillis() - linked
+            // Counts and times only: no link, title or id reaches the log.
+            Log.i(
+                TAG,
+                "Match page $pages: ${items.size} items, ${bytesSince(bytesBefore)?.let(::formatBytes) ?: "size unknown"}, " +
+                    "server ${waited}ms, linked $pageAttached in ${linked - linking}ms, " +
+                    "queued $pageQueued in ${System.currentTimeMillis() - linked}ms",
+            )
             val reached = matchProgress(items)
             if (next == null || !pagesSeen.add(next)) {
                 finished = true
@@ -431,7 +455,12 @@ class GoogleReaderService(
         // the next sync carries on.
         if (finished) GoogleReaderState.setMappedAt(context, startedAt)
         Log.i(TAG, "Mapped $attached of $seen server items in $pages pages, $newly newly${if (finished) "" else ", more next time"}")
-        return MatchStats(pages = pages, items = seen, bytes = bytesSince(receivedBefore), finished = finished)
+        return MatchStats(
+            pages = pages, items = seen, bytes = bytesSince(receivedBefore), finished = finished,
+            serverMs = serverMs, slowestPageMs = slowestPageMs,
+            attached = attached, queued = newly, linkMs = linkMs, queueMs = queueMs,
+            fromAgoMs = (startedAt - since).coerceAtLeast(0),
+        )
     }
 
     /**
