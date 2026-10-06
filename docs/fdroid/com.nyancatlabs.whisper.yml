@@ -16,7 +16,7 @@ Repo: https://github.com/Nyancat-Labs/whisper_feed.git
 Builds:
   - versionName: 1.0.2
     versionCode: 3
-    commit: v1.0.2
+    commit: 35d6a33862745ebea40b6c3fffb8f2bda8634aae
     subdir: app
     gradle:
       - yes
