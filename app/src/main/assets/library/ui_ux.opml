@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<opml version="1.0">
+  <head>
+    <title>Export from Plenary</title>
+    <url>https://play.google.com/store/apps/details?id=com.spians.plenary</url>
+    <ownerName>Plenary app</ownerName>
+    <ownerEmail>plenarytheapp@gmail.com</ownerEmail>
+  </head>
+  <body>
+    <outline text="UI / UX" title="UI / UX">
+      <outline text="Smashing Magazine" title="Smashing Magazine" description="Recent content in Articles on Smashing Magazine — For Web Designers And Developers" xmlUrl="https://www.smashingmagazine.com/feed" type="rss" />
+      <outline text="JUST™ Creative" title="JUST™ Creative" description="Logo Designer, Graphic Designer, Graphic Design Portfolio, Logo Design, Logo, Graphic, Design, Graphic Design, Brand Strategy, Branding" xmlUrl="https://feeds.feedburner.com/JustCreativeDesignBlog" type="rss" />
+      <outline text="NN/g latest articles and announcements" title="NN/g latest articles and announcements" description="The latest articles and announcements from Nielsen Norman Group" xmlUrl="https://www.nngroup.com/feed/rss/" type="rss" />
+      <outline text="UX Collective - Medium" title="UX Collective - Medium" description="We believe designers are thinkers as much as they are makers. https://linktr.ee/uxc - Medium" xmlUrl="https://uxdesign.cc/feed" type="rss" />
+      <outline text="UX Movement" title="UX Movement" description="" xmlUrl="https://uxmovement.com/feed/" type="rss" />
+      <outline text="Usability Geek" title="Usability Geek" description="Usability &amp; User Experience (UX) Blog" xmlUrl="https://usabilitygeek.com/feed/" type="rss" />
+      <outline text="UX Planet" title="UX Planet" description="Articles on user experience and product design." xmlUrl="https://uxplanet.org/feed" type="rss" />
+    </outline>
+  </body>
+</opml>

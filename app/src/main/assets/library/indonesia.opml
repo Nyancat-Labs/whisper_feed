@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+  <head>
+    <title>Indonesia</title>
+  </head>
+  <body>
+    <outline text="Indonesia" title="Indonesia">
+      <outline type="rss" text="Republika Online RSS Feed" title="Republika Online RSS Feed" xmlUrl="https://www.republika.co.id/rss/"/>
+      <outline type="rss" text="Tribunnews.com" title="Tribunnews.com" xmlUrl="https://www.tribunnews.com/rss"/>
+    </outline>
+    <outline text="News" title="News">
+      <outline type="rss" text="Antara News" title="Antara News" xmlUrl="https://en.antaranews.com/rss/news.xml"/>
+      <outline type="rss" text="CNN Indonesia" title="CNN Indonesia" xmlUrl="https://www.cnnindonesia.com/nasional/rss"/>
+      <outline type="rss" text="Tempo" title="Tempo" xmlUrl="https://rss.tempo.co/nasional"/>
+    </outline>
+  </body>
+</opml>

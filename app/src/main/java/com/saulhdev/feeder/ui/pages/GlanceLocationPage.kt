@@ -52,6 +52,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
+import com.saulhdev.feeder.data.content.asState
 
 /**
  * Picks the place the weather and sunset chips describe.
@@ -72,8 +73,7 @@ fun GlanceLocationPage(
     var query by remember { mutableStateOf("") }
     var results by remember { mutableStateOf<List<GlancePlace>>(emptyList()) }
     var searching by remember { mutableStateOf(false) }
-    val current by prefs.glancePlaceName.get()
-        .collectAsState(initial = prefs.glancePlaceName.getValue())
+    val current by prefs.glancePlaceName.asState()
 
     // Debounced so typing does not fire a request per keystroke.
     LaunchedEffect(query) {
@@ -87,7 +87,10 @@ fun GlanceLocationPage(
         searching = false
     }
 
-    ViewWithActionBar(title = stringResource(R.string.pref_glance_place)) { padding ->
+    ViewWithActionBar(
+        title = stringResource(R.string.pref_glance_place),
+        largeTitle = true,
+    ) { padding ->
         Column(
             modifier = Modifier
                 .padding(padding)

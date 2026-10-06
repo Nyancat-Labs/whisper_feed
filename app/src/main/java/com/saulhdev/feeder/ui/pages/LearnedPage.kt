@@ -85,8 +85,8 @@ fun LearnedPage(
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(
-                start = 8.dp,
-                end = 8.dp,
+                start = 16.dp,
+                end = 16.dp,
                 top = paddingValues.calculateTopPadding(),
                 bottom = paddingValues.calculateBottomPadding() + 16.dp,
             ),
@@ -97,7 +97,7 @@ fun LearnedPage(
                     text = stringResource(R.string.learned_explanation),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp),
+                    modifier = Modifier.padding(vertical = 12.dp),
                 )
             }
 
@@ -163,7 +163,8 @@ private fun LearnedRow(
                     text = stringResource(
                         R.string.learned_detail,
                         source.affinity,
-                        source.reads,
+                        source.opened,
+                        source.seen,
                     ),
                     style = MaterialTheme.typography.bodySmall,
                 )

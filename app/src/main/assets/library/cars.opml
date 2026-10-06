@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<opml version="1.0">
+  <head>
+    <title>Export from Plenary</title>
+    <url>https://play.google.com/store/apps/details?id=com.spians.plenary</url>
+    <ownerName>Plenary app</ownerName>
+    <ownerEmail>plenarytheapp@gmail.com</ownerEmail>
+  </head>
+  <body>
+    <outline text="Cars" title="Cars">
+      <outline text="Autocar RSS Feed" title="Autocar RSS Feed" description="Welcome to nirvana for car enthusiasts. You have just entered the online home of the world's oldest car magazine, and the only place on the internet where you can find Autocar's unique mix of up-to-the-minute news, red hot car reviews, conclusive road test verdicts, and a lot more besides." xmlUrl="https://www.autocar.co.uk/rss" type="rss" />
+      <outline text="BMWBLOG" title="BMWBLOG" description="Latest BMW News, Reviews and New Models" xmlUrl="https://feeds.feedburner.com/BmwBlog" type="rss" />
+      <outline text="BikeEXIF" title="BikeEXIF" description="Latest updates from BikeEXIF" xmlUrl="https://www.bikeexif.com/feed" type="rss" />
+      <outline text="Car Body Design" title="Car Body Design" description="Car Design Resources, News and Tutorials" xmlUrl="https://www.carbodydesign.com/feed/" type="rss" />
+      <outline text="Carscoops" title="Carscoops" description="Breaking Car News, Scoops &amp; Reviews" xmlUrl="https://www.carscoops.com/feed/" type="rss" />
+      <outline text="Motor1.com" title="Motor1.com" description="Car news, reviews and motorsport." xmlUrl="https://www.motor1.com/rss/news/all/" type="rss" />
+      <outline text="Jalopnik - Obsessed with the culture of cars" title="Jalopnik - Obsessed with the culture of cars" description="From cars to motorcycles, Jalopnik is your go-to site covering everything with an engine—including automotive news, buying guides, and expert commentary from our staff." xmlUrl="https://jalopnik.com/rss" type="rss" />
+      <outline text="Latest Content - Car and Driver" title="Latest Content - Car and Driver" description="RSS feed for Latest Content - Car and Driver" xmlUrl="https://www.caranddriver.com/rss/all.xml/" type="rss" />
+      <outline text="Speedhunters" title="Speedhunters" description="Global Car Culture Since 2008" xmlUrl="https://feeds.feedburner.com/speedhunters" type="rss" />
+      <outline text="Bring a Trailer" title="Bring a Trailer" description="Barn finds, rally cars, and needles in the haystack." xmlUrl="https://bringatrailer.com/feed/" type="rss" />
+      <outline text="TheTruthAboutCars" title="TheTruthAboutCars" description="TheTruthAboutCars RSS feed" xmlUrl="https://www.thetruthaboutcars.com/feed/" type="rss" />
+      <outline type="rss" text="Top Gear" title="Top Gear" xmlUrl="https://www.topgear.com/feeds/all"/>
+    </outline>
+  </body>
+</opml>

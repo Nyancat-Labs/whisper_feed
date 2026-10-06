@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+  <head>
+    <title>Malaysia</title>
+  </head>
+  <body>
+    <outline text="News" title="News">
+      <outline type="rss" text="Free Malaysia Today" title="Free Malaysia Today" xmlUrl="https://www.freemalaysiatoday.com/feed/"/>
+      <outline type="rss" text="Malay Mail" title="Malay Mail" xmlUrl="https://www.malaymail.com/feed/rss/malaysia"/>
+      <outline type="rss" text="Malaysiakini" title="Malaysiakini" xmlUrl="https://www.malaysiakini.com/rss/en/news.rss"/>
+      <outline type="rss" text="New Straits Times" title="New Straits Times" xmlUrl="https://www.nst.com.my/feed"/>
+      <outline type="rss" text="The Vibes" title="The Vibes" xmlUrl="https://www.thevibes.com/rss"/>
+    </outline>
+  </body>
+</opml>

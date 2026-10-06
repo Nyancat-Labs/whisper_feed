@@ -1,9 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    No plaintext HTTP, anywhere.
+
+    It used to be permitted globally, which mattered more here than in most
+    apps. Whisper fetches whatever addresses its subscriptions name, renders
+    the result in a WebView with JavaScript on, and signs in to self-hosted
+    Google Reader servers with a username and a password. Over HTTP those
+    credentials cross the network in the clear and anybody on the path can
+    rewrite the article body before it reaches the reader.
+
+    The cost is that an http-only feed now fails to fetch. That failure is
+    visible rather than silent — three failed syncs and the source is listed
+    under Broken feeds with its reason — which is a better outcome than
+    quietly accepting a page anyone on the wifi could have written.
+
+    The removed block also carried a <domain> of "file:///android_asset/",
+    which is not a domain and matched nothing.
+-->
 <network-security-config>
-    <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="true">file:///android_asset/</domain>
-    </domain-config>
-    <base-config cleartextTrafficPermitted="true">
+    <base-config cleartextTrafficPermitted="false">
         <trust-anchors>
             <certificates src="system" />
         </trust-anchors>

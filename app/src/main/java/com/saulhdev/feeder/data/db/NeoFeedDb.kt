@@ -31,6 +31,10 @@ import androidx.room.migration.AutoMigrationSpec
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.saulhdev.feeder.data.db.dao.FeedArticleDao
+import com.saulhdev.feeder.data.db.dao.ReadingTallyDao
+import com.saulhdev.feeder.data.db.dao.SuggestionDao
+import com.saulhdev.feeder.data.db.models.ReadingTally
+import com.saulhdev.feeder.data.db.models.Suggestion
 import com.saulhdev.feeder.data.db.dao.FeedSourceDao
 import com.saulhdev.feeder.data.db.models.Article
 import com.saulhdev.feeder.data.db.models.ArticleIdWithLink
@@ -45,8 +49,10 @@ const val ID_ALL: Long = -1L
     entities = [
         Feed::class,
         Article::class,
+        Suggestion::class,
+        ReadingTally::class,
     ],
-    version = 13,
+    version = 26,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -78,8 +84,14 @@ const val ID_ALL: Long = -1L
 abstract class NeoFeedDb : RoomDatabase() {
     abstract fun feedSourceDao(): FeedSourceDao
     abstract fun feedArticleDao(): FeedArticleDao
+    abstract fun suggestionDao(): SuggestionDao
+
+    abstract fun readingTallyDao(): ReadingTallyDao
 
     companion object {
+        /** The database's file name; the diagnostics report measures it. */
+        const val NAME = "NeoFeed"
+
         @Volatile
         private var instance: NeoFeedDb? = null
 
@@ -90,7 +102,7 @@ abstract class NeoFeedDb : RoomDatabase() {
         }
 
         private fun buildDatabase(context: Context): NeoFeedDb {
-            return Room.databaseBuilder(context, NeoFeedDb::class.java, "NeoFeed")
+            return Room.databaseBuilder(context, NeoFeedDb::class.java, NAME)
                 .addMigrations(*allMigrations)
                 .build()
         }
@@ -221,6 +233,18 @@ abstract class NeoFeedDb : RoomDatabase() {
 }
 
 val allMigrations = arrayOf(
+    MIGRATION_25_26,
+    MIGRATION_24_25,
+    MIGRATION_23_24,
+    MIGRATION_22_23,
+    MIGRATION_21_22,
+    MIGRATION_20_21,
+    MIGRATION_19_20,
+    MIGRATION_18_19,
+    MIGRATION_17_18,
+    MIGRATION_16_17,
+    MIGRATION_15_16,
+    MIGRATION_14_15,
     MIGRATION_1_2,
     MIGRATION_2_3,
     MIGRATION_7_8,
@@ -229,7 +253,258 @@ val allMigrations = arrayOf(
     MIGRATION_10_11,
     MIGRATION_11_12,
     MIGRATION_12_13,
+    MIGRATION_13_14,
 )
+
+@Suppress("ClassName")
+object MIGRATION_25_26 : Migration(25, 26) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Matching an account's articles by link; see the index on Article.
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_Article_link` ON `Article` (`link`)")
+    }
+}
+
+@Suppress("ClassName")
+object MIGRATION_24_25 : Migration(24, 25) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Nothing has been dismissed yet, so every existing article is simply
+        // one the reader has not told to stop shouting.
+        db.execSQL("ALTER TABLE Article ADD COLUMN dismissedAt INTEGER NOT NULL DEFAULT 0")
+    }
+}
+
+@Suppress("ClassName")
+object MIGRATION_23_24 : Migration(23, 24) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Nothing is backfilled, and there is nothing to backfill from: the
+        // whole reason this table exists is that the articles the old charts
+        // counted have been deleted. Reconstructing a history out of the
+        // survivors would produce exactly the decay curve this replaces, with
+        // the added insult of looking deliberate. The charts start from today
+        // and are honest from today.
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `ReadingTally` (
+                `day` TEXT NOT NULL,
+                `hour` TEXT NOT NULL,
+                `seen` INTEGER NOT NULL DEFAULT 0,
+                `opened` INTEGER NOT NULL DEFAULT 0,
+                `readMs` INTEGER NOT NULL DEFAULT 0,
+                `timed` INTEGER NOT NULL DEFAULT 0,
+                PRIMARY KEY(`day`, `hour`)
+            )
+            """.trimIndent()
+        )
+    }
+}
+
+@Suppress("ClassName")
+object MIGRATION_22_23 : Migration(22, 23) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Mastodon is gone from the app, so its rows and its columns go too.
+        //
+        // The sources go first, and their articles by hand rather than by
+        // cascade: Room runs migrations with foreign keys switched off, so the
+        // `onDelete = CASCADE` on Article.feedId does not fire here and the
+        // articles would be orphaned onto a feed id that no longer exists.
+        //
+        // Nothing is being rescued. A Mastodon source's articles are toots
+        // fetched through an API that this version cannot speak to; leaving
+        // them would leave a source in the list that can never sync again.
+        db.execSQL(
+            """
+            DELETE FROM Article WHERE feedId IN (
+                SELECT id FROM Feeds WHERE sourceType = 'mastodon'
+            )
+            """.trimIndent()
+        )
+        db.execSQL("DELETE FROM Feeds WHERE sourceType = 'mastodon'")
+
+        // SQLite before 3.35 has no DROP COLUMN, and the minSdk reaches back
+        // further than that, so the four columns go the long way round.
+        //
+        // The view goes first, and this is not tidiness. A view is stored as
+        // text and resolved lazily, so dropping the table underneath one is
+        // allowed and silent — but from SQLite 3.25 an ALTER TABLE ... RENAME
+        // re-parses every view in the schema to fix up references, and a view
+        // pointing at a table that no longer exists stops the rename dead:
+        //
+        //     error in view ArticleIdWithLink: no such table: main.feeds
+        //
+        // which fails the migration, rolls it back, and leaves the app
+        // crashing on launch for everybody who had the previous version.
+        db.execSQL("DROP VIEW IF EXISTS `ArticleIdWithLink`")
+
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `Feeds_new` (
+                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                `title` TEXT NOT NULL,
+                `description` TEXT NOT NULL,
+                `url` TEXT NOT NULL,
+                `feedImage` TEXT NOT NULL,
+                `lastSync` INTEGER NOT NULL,
+                `alternateId` INTEGER NOT NULL,
+                `fullTextByDefault` INTEGER NOT NULL,
+                `tag` TEXT NOT NULL,
+                `currentlySyncing` INTEGER NOT NULL,
+                `isEnabled` INTEGER NOT NULL,
+                `removedAt` INTEGER NOT NULL DEFAULT 0,
+                `consecutiveFailures` INTEGER NOT NULL DEFAULT 0,
+                `failingSince` INTEGER NOT NULL DEFAULT 0
+            )
+            """.trimIndent()
+        )
+        db.execSQL(
+            """
+            INSERT INTO `Feeds_new` (
+                `id`, `title`, `description`, `url`, `feedImage`, `lastSync`,
+                `alternateId`, `fullTextByDefault`, `tag`, `currentlySyncing`,
+                `isEnabled`, `removedAt`, `consecutiveFailures`, `failingSince`
+            )
+            SELECT
+                `id`, `title`, `description`, `url`, `feedImage`, `lastSync`,
+                `alternateId`, `fullTextByDefault`, `tag`, `currentlySyncing`,
+                `isEnabled`, `removedAt`, `consecutiveFailures`, `failingSince`
+            FROM `Feeds`
+            """.trimIndent()
+        )
+        db.execSQL("DROP TABLE `Feeds`")
+        db.execSQL("ALTER TABLE `Feeds_new` RENAME TO `Feeds`")
+        db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_Feeds_url` ON `Feeds` (`url`)")
+        db.execSQL(
+            "CREATE UNIQUE INDEX IF NOT EXISTS `index_Feeds_id_url_title` " +
+                    "ON `Feeds` (`id`, `url`, `title`)"
+        )
+
+        // Put back character for character. Room compares a view's stored SQL
+        // against the text it expects and rejects the database on any
+        // difference, so this is not a place to tidy the whitespace or the
+        // capitalisation of `feeds`. It is the string from the exported
+        // schema, and `scripts/check_migrations.py` compares what this
+        // produces against that file rather than trusting the comparison to a
+        // careful reading.
+        db.execSQL(
+            "CREATE VIEW `ArticleIdWithLink` AS SELECT Article.uuid, Article.link\n" +
+                    "    FROM Article\n" +
+                    "    JOIN feeds f ON Article.feedId = f.id\n" +
+                    "    WHERE f.fulltextByDefault = 1 OR Article.bookmarked = 1"
+        )
+    }
+}
+
+@Suppress("ClassName")
+object MIGRATION_21_22 : Migration(21, 22) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Nothing has ever been removed-but-kept, so every existing source is
+        // simply a source the reader still has.
+        db.execSQL("ALTER TABLE Feeds ADD COLUMN removedAt INTEGER NOT NULL DEFAULT 0")
+    }
+}
+
+@Suppress("ClassName")
+object MIGRATION_20_21 : Migration(20, 21) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Everything already recorded came from link harvesting, which is the
+        // default, so the existing rows are correct without being touched.
+        db.execSQL("ALTER TABLE Suggestion ADD COLUMN kind TEXT NOT NULL DEFAULT 'links'")
+        db.execSQL("ALTER TABLE Suggestion ADD COLUMN context TEXT NOT NULL DEFAULT ''")
+    }
+}
+
+@Suppress("ClassName")
+object MIGRATION_19_20 : Migration(19, 20) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Zero, and it means "never measured" rather than "read for no time".
+        // Nothing before this release could have recorded it, and there is no
+        // history to reconstruct: the app has never had a clock to reconstruct
+        // it from.
+        db.execSQL("ALTER TABLE Article ADD COLUMN readMs INTEGER NOT NULL DEFAULT 0")
+    }
+}
+
+@Suppress("ClassName")
+object MIGRATION_18_19 : Migration(18, 19) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Zero everywhere, and honestly so: no install has ever recorded
+        // either of these, so there is no history to reconstruct and nothing
+        // to guess at. Both start accumulating from the next article opened
+        // and the next one looked at.
+        db.execSQL("ALTER TABLE Article ADD COLUMN openedAt INTEGER NOT NULL DEFAULT 0")
+        db.execSQL("ALTER TABLE Article ADD COLUMN dwellMs INTEGER NOT NULL DEFAULT 0")
+    }
+}
+
+@Suppress("ClassName")
+object MIGRATION_17_18 : Migration(17, 18) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // An index and nothing else: no column added, no row rewritten, no
+        // behaviour changed. SQLite builds it in one pass over a table that is
+        // thousands of rows rather than millions, so the upgrade is not
+        // something anyone will see happen.
+        //
+        // The name has to match what Room generates for the entity, or Room's
+        // own schema validation fails on the next open and the app will not
+        // start.
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_Article_readAt` ON `Article` (`readAt`)")
+    }
+}
+
+@Suppress("ClassName")
+object MIGRATION_16_17 : Migration(16, 17) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Zero for everything: no feed has a failure history because none was
+        // ever kept. The count starts building from the next sync.
+        db.execSQL("ALTER TABLE Feeds ADD COLUMN consecutiveFailures INTEGER NOT NULL DEFAULT 0")
+        db.execSQL("ALTER TABLE Feeds ADD COLUMN failingSince INTEGER NOT NULL DEFAULT 0")
+    }
+}
+
+@Suppress("ClassName")
+object MIGRATION_15_16 : Migration(15, 16) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Empty on every existing install: a suggestion is evidence about what
+        // somebody read, and there is no evidence until a pass has run.
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS Suggestion (
+                id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                host TEXT NOT NULL,
+                feedUrl TEXT NOT NULL,
+                title TEXT NOT NULL,
+                mentions INTEGER NOT NULL,
+                foundAt INTEGER NOT NULL,
+                dismissedAt INTEGER NOT NULL
+            )
+            """
+        )
+        db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_Suggestion_host ON Suggestion (host)")
+    }
+}
+
+@Suppress("ClassName")
+object MIGRATION_14_15 : Migration(14, 15) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Null for everything that already exists, which is correct: no server
+        // has claimed any of these articles yet, and a sync fills it in for
+        // the ones a server turns out to know about.
+        db.execSQL("ALTER TABLE Article ADD COLUMN remoteId TEXT DEFAULT NULL")
+        db.execSQL("CREATE INDEX IF NOT EXISTS index_Article_remoteId ON Article (remoteId)")
+    }
+}
+
+@Suppress("ClassName")
+object MIGRATION_13_14 : Migration(13, 14) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Pinning has never been reachable from the interface: the only thing
+        // that ever set this column was bookmarking, which set both at once.
+        // So every pinned row in an existing database is a saved article
+        // rather than a pinned one, and leaving them would put every article
+        // the reader has ever saved at the top of the feed the moment pinning
+        // starts meaning something.
+        db.execSQL("UPDATE Article SET pinned = 0")
+    }
+}
 
 @Suppress("ClassName")
 object MIGRATION_12_13 : Migration(12, 13) {

@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<opml version="1.0">
+  <head>
+    <title>Export from Plenary</title>
+    <url>https://play.google.com/store/apps/details?id=com.spians.plenary</url>
+    <ownerName>Plenary app</ownerName>
+    <ownerEmail>plenarytheapp@gmail.com</ownerEmail>
+  </head>
+  <body>
+    <outline text="Television" title="Television">
+      <outline text="TV" title="TV" description="Comics, Movies, TV, Games" xmlUrl="https://www.bleedingcool.com/tv/feed/" type="rss" />
+      <outline text="TV Fanatic" title="TV Fanatic" description="Your Home for TV Show Reviews, Opinions, Spoilers, and News!" xmlUrl="https://www.tvfanatic.com/rss.xml" type="rss" />
+      <outline text="TVLine" title="TVLine" description="Stay up to date with the latest TV news, previews, spoilers, casting updates, interviews, and more from TVLine. Your go-to source for all things TV." xmlUrl="https://tvline.com/feed/" type="rss" />
+      <outline text="the TV addict" title="the TV addict" description="TV News, Previews, Spoilers and Reviews" xmlUrl="https://feeds.feedburner.com/thetvaddict/AXob" type="rss" />
+      <outline text="Decider" title="Decider" description="What to watch on TV and streaming." xmlUrl="https://decider.com/feed/" type="rss" />
+    </outline>
+  </body>
+</opml>

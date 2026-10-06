@@ -42,6 +42,7 @@ import kotlinx.coroutines.launch
 import java.io.File
 import kotlinx.coroutines.plus
 
+/** @see com.saulhdev.feeder.ui.overlay.TrackArticleReading */
 class ArticleViewModel(
     private val articleRepo: ArticleRepository,
     private val sourcesRepo: SourcesRepository,
@@ -55,6 +56,17 @@ class ArticleViewModel(
     }
 
     /**
+     * Adds a measured chunk of reading time to an article.
+     *
+     * An amount, not a total: see [TrackArticleReading], which is the only
+     * thing that calls this and explains why the distinction is the whole
+     * point rather than a detail of the signature.
+     */
+    fun addReading(id: String, millis: Long) {
+        ioScope.launch { articleRepo.addReading(id, millis) }
+    }
+
+    /**
      * Whether the readable version of the open article is here yet.
      *
      * A feed entry is usually a paragraph and a link — that is what RSS is —
@@ -64,8 +76,36 @@ class ArticleViewModel(
      */
     enum class FullText { Absent, Loading, Ready, Failed }
 
-    private val _fullText = MutableStateFlow(FullText.Absent)
-    val fullText: StateFlow<FullText> = _fullText.asStateFlow()
+    /**
+     * A full-text state, and the article it is about.
+     *
+     * The id is the whole point. This view model is scoped to the activity —
+     * see koinNeoViewModel, which does that deliberately so screens share one
+     * instance across navigation — so every article the reader opens uses the
+     * same one, and during a navigation transition the outgoing and incoming
+     * pages are both composed against it at once.
+     *
+     * A bare state could not survive that. The outgoing page's disposal calls
+     * resetFullText, and it can land after the incoming page has already
+     * reported Ready: the new article then renders the paragraph the feed sent
+     * instead of the page that was just fetched for it. The reverse happens
+     * too — a Ready left by the previous article, read by the next one before
+     * its own file exists, shows "not found" for an article that is fine.
+     *
+     * Neither is reliable enough to see every time, which is exactly what
+     * makes them expensive to chase: they follow how fast the database
+     * answered and how long the transition took.
+     *
+     * With the id attached, a state belonging to another article is simply
+     * ignored, and no ordering between the two pages can be wrong.
+     */
+    data class FullTextState(
+        val articleId: String = "",
+        val state: FullText = FullText.Absent,
+    )
+
+    private val _fullText = MutableStateFlow(FullTextState())
+    val fullText: StateFlow<FullTextState> = _fullText.asStateFlow()
 
     /**
      * Fetches the readable article unless it is already stored.
@@ -78,27 +118,40 @@ class ArticleViewModel(
      */
     fun loadFullText(id: String, link: String?, filesDir: File) {
         if (link.isNullOrBlank()) {
-            _fullText.value = FullText.Failed
+            _fullText.value = FullTextState(id, FullText.Failed)
             return
         }
         if (blobFullFile(id, filesDir).isFile) {
-            _fullText.value = FullText.Ready
+            _fullText.value = FullTextState(id, FullText.Ready)
             return
         }
-        _fullText.value = FullText.Loading
+        _fullText.value = FullTextState(id, FullText.Loading)
         ioScope.launch {
             val ok = parseFullArticleIfMissing(
                 feedItem = ArticleIdWithLink(uuid = id, link = link),
                 okHttpClient = fullTextClient,
                 filesDir = filesDir,
             )
-            _fullText.value = if (ok) FullText.Ready else FullText.Failed
+            // A fetch takes seconds, which is long enough for the reader to
+            // have moved on twice. Reporting unconditionally would hand this
+            // article's outcome to whichever one is open now.
+            if (_fullText.value.articleId != id) return@launch
+            _fullText.value =
+                FullTextState(id, if (ok) FullText.Ready else FullText.Failed)
         }
     }
 
-    /** Reset when the reader moves to another article. */
-    fun resetFullText() {
-        _fullText.value = FullText.Absent
+    /**
+     * Reset when the reader moves off [id].
+     *
+     * Ignored when the state has already moved to another article, because
+     * this is called from a page being disposed and that disposal can happen
+     * after the next page has set its own. Without the check it clears the
+     * state belonging to the article the reader is now looking at.
+     */
+    fun resetFullText(id: String) {
+        if (_fullText.value.articleId != id) return
+        _fullText.value = FullTextState()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -119,9 +172,10 @@ class ArticleViewModel(
             ArticlePageState()
         )
 
-    fun unpinArticle(id: String) {
+    /** Holds an article at the top of the feed, or lets it go. */
+    fun setPinned(id: String, pinned: Boolean) {
         viewModelScope.launch {
-            articleRepo.unpinArticle(id)
+            articleRepo.setPinned(id, pinned)
         }
     }
 

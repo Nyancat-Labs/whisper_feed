@@ -18,6 +18,7 @@
 
 package com.saulhdev.feeder.manager.models
 
+import com.saulhdev.feeder.utils.SyncLog
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
@@ -57,7 +58,7 @@ suspend fun ContentResolver.exportOpml(uri: Uri, tagsFeedMap: Map<String, List<F
                     )
                 }
             }
-            Log.d("OPML", "Exported OPML in $time ms on ${Thread.currentThread().name}")
+            Log.d("OPML", "Exported OPML in $time ms")
         } catch (e: Throwable) {
             Log.e("OPML", "Failed to export OPML", e)
             val toastMaker: ToastMaker by inject(ToastMaker::class.java)
@@ -81,9 +82,9 @@ suspend fun ContentResolver.importOpml(uri: Uri) = withContext(Dispatchers.IO) {
                     parser.parseInputStream(stream)
                 }
             }
-            requestFeedSync()
+            requestFeedSync(origin = SyncLog.ORIGIN_IMPORT)
         }
-        Log.d("OPML", "Imported OPML in $time ms on ${Thread.currentThread().name}")
+        Log.d("OPML", "Imported OPML in $time ms")
     } catch (e: Throwable) {
         Log.e("OPML", "Failed to import OPML", e)
         val toastMaker: ToastMaker by inject(ToastMaker::class.java)

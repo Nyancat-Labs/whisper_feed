@@ -8,7 +8,8 @@ below that is not explicitly marked "on-device" is verified by building the
 real upstream source and reading the real Lawnchair source — not assumption.
 
 The remaining §5 item is re-confirming the same behaviour after the
-`applicationId` rename to `io.zero76.whisper`, which has since been made.
+`applicationId` rename to `com.nyancatlabs.whisper` (first `io.zero76.whisper`,
+changed again on 4 October 2026 for Nyancat Labs), which has since been made.
 
 ## 1. What was forked and built
 
@@ -118,7 +119,7 @@ where the user picks which discovered package to use.
 
 ### Direct answer to Milestone 0's mandatory question ("does a package rename break detection?")
 
-**Yes, by default** — `io.zero76.whisper` is not in the hardcoded whitelist, so
+**Yes, by default** — `com.nyancatlabs.whisper` is not in the hardcoded whitelist, so
 it will not appear in Lawnchair's Feed Provider picker and will not be
 auto-selected.
 
@@ -132,10 +133,10 @@ matches the handoff doc's "no root" requirement.
 
 Three longer-term options if we don't want to depend on a manual toggle:
 1. Keep relying on the toggle indefinitely (fine for a personal/enthusiast install, which is the stated primary use case).
-2. Upstream a PR to `LawnchairLauncher/lawnchair` adding `io.zero76.whisper`'s signature hash to the hardcoded `whitelist` map — puts us at the mercy of Lawnchair's release cadence and review, and only helps users of a Lawnchair build that includes it.
+2. Upstream a PR to `LawnchairLauncher/lawnchair` adding `com.nyancatlabs.whisper`'s signature hash to the hardcoded `whitelist` map — puts us at the mercy of Lawnchair's release cadence and review, and only helps users of a Lawnchair build that includes it.
 3. Ship under the literal package `com.saulhdev.neofeed` — rejected; that's Neo Feed's real identity, not ours, and would be actively misleading.
 
-Recommendation: proceed with `io.zero76.whisper` + the toggle (option 1). It's
+Recommendation: proceed with `com.nyancatlabs.whisper` + the toggle (option 1). It's
 consistent with "primary launcher target: Lawnchair" for a single
 enthusiast device, not a mass-market whitelist submission.
 
@@ -185,7 +186,7 @@ Settings → Apps → Whisper → ⋮ → Allow restricted settings
 then grant the permission normally. Or directly:
 
 ```bash
-adb shell appops set io.zero76.whisper.dev SYSTEM_ALERT_WINDOW allow
+adb shell appops set com.nyancatlabs.whisper.dev SYSTEM_ALERT_WINDOW allow
 ```
 
 This is a second manual setup step on top of the Lawnchair whitelist toggle in
@@ -226,7 +227,7 @@ target, so these were run by hand on the target Pixel 10 Pro:
 - [x] With the toggle enabled and the app picked as feed provider: swipe-right-from-Home opens it — **confirmed, Discover replacement works.**
 - [ ] Confirm the feed survives a Lawnchair restart.
 - [ ] Force-stop the feed process and confirm Lawnchair recovers (re-binds) on next swipe.
-- [ ] Re-confirm the above now that `applicationId` is `io.zero76.whisper` (the rename has been made; a fresh APK needs the same provider-picker check, since it installs as a *new* package alongside any existing Neo Feed install rather than upgrading it).
+- [ ] Re-confirm the above now that `applicationId` is `com.nyancatlabs.whisper` (the rename has been made; a fresh APK needs the same provider-picker check, since it installs as a *new* package alongside any existing Neo Feed install rather than upgrading it).
 
 The two unchecked resilience checks are not blockers for Milestone 1 — they
 test upstream's overlay lifecycle, which this fork does not modify — but they

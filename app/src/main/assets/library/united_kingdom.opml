@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+  <head>
+    <title>United Kingdom</title>
+  </head>
+  <body>
+    <outline text="United Kingdom" title="United Kingdom">
+      <outline type="rss" text="BBC News - Home" title="BBC News - Home" xmlUrl="https://feeds.bbci.co.uk/news/rss.xml"/>
+      <outline type="rss" text="The Guardian" title="The Guardian" xmlUrl="https://www.theguardian.com/world/rss"/>
+      <outline type="rss" text="Home | Mail Online" title="Home | Mail Online" xmlUrl="https://www.dailymail.co.uk/home/index.rss"/>
+      <outline type="rss" text="Daily Express :: News Feed" title="Daily Express :: News Feed" xmlUrl="https://feeds.feedburner.com/daily-express-news-showbiz"/>
+    </outline>
+    <outline text="News" title="News">
+      <outline type="rss" text="Sky News" title="Sky News" xmlUrl="https://feeds.skynews.com/feeds/rss/home.xml"/>
+    </outline>
+  </body>
+</opml>

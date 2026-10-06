@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+  <head>
+    <title>Czechia</title>
+  </head>
+  <body>
+    <outline text="News" title="News">
+      <outline type="rss" text="ČT24" title="ČT24" xmlUrl="https://ct24.ceskatelevize.cz/rss"/>
+      <outline type="rss" text="iDNES" title="iDNES" xmlUrl="https://servis.idnes.cz/rss.aspx?c=zpravodaj"/>
+      <outline type="rss" text="Novinky" title="Novinky" xmlUrl="https://www.novinky.cz/rss"/>
+      <outline type="rss" text="Aktuálně" title="Aktuálně" xmlUrl="https://www.aktualne.cz/rss/"/>
+      <outline type="rss" text="Prague Morning" title="Prague Morning" xmlUrl="https://praguemorning.cz/feed/"/>
+      <outline type="rss" text="Seznam Zprávy" title="Seznam Zprávy" xmlUrl="https://www.seznamzpravy.cz/rss"/>
+      <outline type="rss" text="Deník N" title="Deník N" xmlUrl="https://denikn.cz/feed/"/>
+    </outline>
+  </body>
+</opml>

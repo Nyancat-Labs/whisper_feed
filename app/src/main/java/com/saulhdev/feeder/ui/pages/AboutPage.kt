@@ -20,8 +20,10 @@
 package com.saulhdev.feeder.ui.pages
 
 
+import android.annotation.SuppressLint
+import androidx.core.graphics.createBitmap
+import androidx.compose.ui.platform.LocalResources
 import android.content.ActivityNotFoundException
-import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.util.Base64
 import android.view.ViewGroup
@@ -55,6 +57,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -66,18 +71,23 @@ import com.saulhdev.feeder.R
 import com.saulhdev.feeder.utils.extensions.launchView
 import com.saulhdev.feeder.ui.navigation.PageItem
 import com.saulhdev.feeder.ui.components.ContributorRow
+import com.saulhdev.feeder.ui.icons.phosphor.HeartStraight
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.foundation.layout.height
 import com.saulhdev.feeder.ui.components.LinkItem
 import com.saulhdev.feeder.ui.components.PagePreference
 import com.saulhdev.feeder.ui.components.PreferenceGroupHeading
 import com.saulhdev.feeder.ui.components.ViewWithActionBar
 import com.saulhdev.feeder.ui.icons.Phosphor
+import com.saulhdev.feeder.ui.icons.phosphor.Browser
+import com.saulhdev.feeder.ui.icons.phosphor.Info
+import com.saulhdev.feeder.ui.icons.phosphor.EyeSlash
 import com.saulhdev.feeder.ui.icons.phosphor.BracketsSquare
 import com.saulhdev.feeder.ui.icons.phosphor.GithubLogo
 import com.saulhdev.feeder.ui.icons.phosphor.Megaphone
 import com.saulhdev.feeder.ui.icons.phosphor.TelegramLogo
-import com.saulhdev.feeder.ui.theme.kingthingsPrintingkit
 import com.saulhdev.feeder.utils.urlDecode
-import java.io.InputStream
 
 @OptIn(ExperimentalCoilApi::class)
 @Composable
@@ -85,6 +95,7 @@ fun AboutPage() {
     val title = stringResource(id = R.string.title_about)
     ViewWithActionBar(
         title = title,
+        largeTitle = true,
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
@@ -113,15 +124,11 @@ fun AboutPage() {
                         ),
                         leadingContent = {
                             ResourcesCompat.getDrawable(
-                                LocalContext.current.resources,
+                                LocalResources.current,
                                 R.mipmap.ic_launcher,
                                 LocalContext.current.theme
                             )?.let { drawable ->
-                                val bitmap = Bitmap.createBitmap(
-                                    drawable.intrinsicWidth,
-                                    drawable.intrinsicHeight,
-                                    Bitmap.Config.ARGB_8888
-                                )
+                                val bitmap = createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight)
                                 val canvas = Canvas(bitmap)
                                 drawable.setBounds(0, 0, canvas.width, canvas.height)
                                 drawable.draw(canvas)
@@ -139,7 +146,12 @@ fun AboutPage() {
                                 text = stringResource(id = R.string.app_name),
                                 style = MaterialTheme.typography.headlineMedium,
                                 color = MaterialTheme.colorScheme.primary,
-                                fontFamily = kingthingsPrintingkit,
+                                // No decorative face here. This was drawing
+                                // the app's own name in a display font
+                                // inherited from upstream, which is not the
+                                // wordmark, does not match a single other
+                                // screen, and rendered "Whisper" as something
+                                // the brand board would not recognise.
                             )
                         },
                         supportingContent = {
@@ -152,6 +164,16 @@ fun AboutPage() {
                                 )
                                 Text(
                                     text = BuildConfig.APPLICATION_ID,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                // Who is answerable for the app, which until
+                                // now appeared nowhere in it. The contributor
+                                // rows below name the people who wrote it;
+                                // this names the party the privacy notice
+                                // makes the data controller.
+                                Text(
+                                    text = stringResource(id = R.string.about_publisher),
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -174,13 +196,54 @@ fun AboutPage() {
                 }
             }
             item {
+                PreferenceGroupHeading(heading = stringResource(id = R.string.about_whisper_team))
+            }
+            itemsIndexed(whisperTeam) { i, it ->
+                ContributorRow(
+                    nameId = it.name,
+                    roleId = it.descriptionRes,
+                    photo = it.photo,
+                    url = it.webpage,
+                    index = i,
+                    groupSize = whisperTeam.size
+                )
+            }
+            item {
+                PreferenceGroupHeading(heading = stringResource(id = R.string.about_support))
+            }
+            item {
+                Card(
+                    shape = MaterialTheme.shapes.large,
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = stringResource(R.string.about_support_summary),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        LinkItem(
+                            icon = Phosphor.HeartStraight,
+                            label = stringResource(R.string.about_support),
+                            url = SUPPORT_URL,
+                        )
+                    }
+                }
+            }
+            item {
                 PreferenceGroupHeading(heading = stringResource(id = R.string.about_team))
             }
             itemsIndexed(contributors) { i, it ->
                 ContributorRow(
                     nameId = it.name,
                     roleId = it.descriptionRes,
-                    photoUrl = it.photoUrl,
+                    photo = it.photo,
                     url = it.webpage,
                     index = i,
                     groupSize = contributors.size
@@ -212,44 +275,114 @@ private data class Link(
 private data class TeamMember(
     @StringRes val name: Int,
     @StringRes val descriptionRes: Int,
-    val photoUrl: String,
+    /** An address, a drawable, or null for the empty circle. */
+    val photo: Any?,
     val webpage: String
 )
 
+/**
+ * Where this came from.
+ *
+ * There were four links here and all of them belonged to Neo Feed: its
+ * repository under "Source code", and its Telegram and Matrix rooms under
+ * "Channel" and "Community". Sending a Whisper reader to another project's
+ * chat rooms to ask about this app helps nobody in either place.
+ *
+ * Whisper's own repository leads the list now that it is renamed and public.
+ * It was deliberately left out while `076feed` was still the name, because a
+ * link that 404s the week after release is worse than no link.
+ */
 private val links = listOf(
     Link(
         icon = Phosphor.GithubLogo,
         labelResId = R.string.about_source_code,
+        url = "https://github.com/Nyancat-Labs/whisper_feed"
+    ),
+    // The app had no route to either of these at all: a reader who wanted to
+    // know what Whisper does with their reading had to find the repository
+    // and go looking. They lead the rest of the row for that reason, and
+    // point at the files in the repository rather than a copy on a website,
+    // so the text cannot drift from the version the source was checked
+    // against.
+    Link(
+        icon = Phosphor.EyeSlash,
+        labelResId = R.string.about_privacy,
+        url = "https://github.com/Nyancat-Labs/whisper_feed/blob/main/PRIVACY.md"
+    ),
+    Link(
+        icon = Phosphor.Info,
+        labelResId = R.string.about_disclaimer,
+        url = "https://github.com/Nyancat-Labs/whisper_feed/blob/main/DISCLAIMER.md"
+    ),
+    Link(
+        icon = Phosphor.Browser,
+        labelResId = R.string.about_website,
+        url = "https://nyancatlabs.com"
+    ),
+    Link(
+        icon = Phosphor.GithubLogo,
+        labelResId = R.string.about_upstream,
         url = "https://github.com/NeoApplications/Neo-Feed"
     ),
+    // The root of the line, and not a footnote: HomeFeeder's SDK package is
+    // still named in this app's ProGuard rules, and Lawnchair's feed whitelist
+    // still carries its package.
     Link(
-        icon = Phosphor.Megaphone,
-        labelResId = R.string.about_channel,
-        url = "https://t.me/neo_applications"
+        icon = Phosphor.GithubLogo,
+        labelResId = R.string.about_origin,
+        url = "https://github.com/iTaysonLab/HomeFeeder"
     ),
-    Link(
-        icon = Phosphor.TelegramLogo,
-        labelResId = R.string.about_community_telegram,
-        url = "https://t.me/neo_launcher"
+)
+
+/**
+ * Where to chip in, for anyone who wants to.
+ *
+ * A link out rather than an in-app purchase, and that is a decision rather
+ * than a stage on the way to one. Play's billing library is proprietary, and
+ * it would be the only proprietary dependency in an app whose whole claim is
+ * that it has none — F-Droid would flag it, and the privacy statement would
+ * have to grow a paragraph explaining an exception. For a voluntary tip that
+ * gates nothing, a link costs the reader one tap and costs the app nothing.
+ *
+ * It sits at the bottom of About, on its own, once. Nothing in the app is
+ * withheld from anyone who ignores it, and nothing changes for anyone who
+ * does not — which is the only arrangement that leaves the reader free to
+ * decide it is not for them.
+ *
+ * Ko-fi rather than GitHub Sponsors: it needed no enrolment queue, and it
+ * takes nothing from a one-off tip.
+ */
+private const val SUPPORT_URL = "https://ko-fi.com/defsix"
+
+/**
+ * Whisper's author.
+ *
+ * Kept separate from the Neo Feed credit below rather than appended to it:
+ * one list of three people under one heading would claim a team that does not
+ * exist and would take credit for Neo Feed's work at the same time.
+ */
+private val whisperTeam = listOf(
+    TeamMember(
+        name = R.string.about_whisper_author,
+        descriptionRes = R.string.about_whisper_role,
+        // Bundled rather than fetched: the About page asks nothing of the
+        // network. From docs/brand/nyancat_labs.
+        photo = R.drawable.nyancat_labs_symbol,
+        webpage = "https://nyancatlabs.com"
     ),
-    Link(
-        icon = Phosphor.BracketsSquare,
-        labelResId = R.string.about_community_matrix,
-        url = "https://matrix.to/#/#neo-launcher:matrix.org"
-    )
 )
 
 private val contributors = listOf(
     TeamMember(
         name = R.string.about_developer,
         descriptionRes = R.string.author_role,
-        photoUrl = "https://avatars.githubusercontent.com/u/6044050",
+        photo = "https://avatars.githubusercontent.com/u/6044050",
         webpage = "https://github.com/saulhdev"
     ),
     TeamMember(
         name = R.string.about_developer2,
         descriptionRes = R.string.author_role,
-        photoUrl = "https://avatars.githubusercontent.com/u/40302595",
+        photo = "https://avatars.githubusercontent.com/u/40302595",
         webpage = "https://github.com/machiav3lli"
     )
 )
@@ -262,8 +395,8 @@ fun LicensePage() {
         LazyColumn(
             modifier = Modifier
                 .padding(
-                    start = 8.dp,
-                    end = 8.dp,
+                    start = 16.dp,
+                    end = 16.dp,
                     top = 32.dp,
                     bottom = paddingValues.calculateBottomPadding()
                 )
@@ -286,63 +419,96 @@ fun ChangelogPage() {
     }
 }
 
+/**
+ * The bundled changelog and licence pages.
+ *
+ * Only ever pointed at `file:///android_asset`, and it stays that way: an
+ * asset page cannot be pointed somewhere else by anything the reader does,
+ * and a link inside one goes to the system browser rather than opening a
+ * remote page inside a WebView that trusts its own assets.
+ *
+ * JavaScript is on only to inject the stylesheet into that asset page, and
+ * off again once it has run.
+ */
+@SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun PreferencesWebView(url: String) {
+    val context = LocalContext.current
+    // The stylesheet used to be light.css whatever the phone was set to, so
+    // the changelog opened as a white sheet in the middle of a dark app.
+    val cssFile = if (isSystemInDarkTheme()) "dark.css" else "light.css"
+    val loaded = remember { mutableStateOf<String?>(null) }
 
-    val cssFile = "light.css"
     AndroidView(
-        factory = { context ->
-            WebView(context).apply {
+        factory = { ctx ->
+            WebView(ctx).apply {
                 layoutParams = ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT
                 )
+                settings.allowFileAccess = false
+                settings.allowContentAccess = false
 
                 webViewClient = object : WebViewClient() {
-                    override fun onPageFinished(view: WebView, url: String) {
-                        if (url.startsWith("file:///android_asset")) {
-                            try {
-                                settings.javaScriptEnabled = true
-                                val inputStream: InputStream = context.assets.open(cssFile)
-                                val buffer = ByteArray(inputStream.available())
-                                inputStream.read(buffer)
-                                inputStream.close()
-                                val encoded = Base64.encodeToString(buffer, Base64.NO_WRAP)
-                                loadUrl(
-                                    "javascript:(function() { " +
-                                            "var head  = document.getElementsByTagName('head')[0];" +
-                                            "var style = document.createElement('style');" +
-                                            "style.type = 'text/css';" +
-                                            "style.innerHTML =  window.atob('" + encoded + "');" +
-                                            "head.appendChild(style);" +
-                                            "})()"
+                    override fun onPageFinished(view: WebView, finishedUrl: String) {
+                        if (finishedUrl.startsWith("file:///android_asset")) {
+                            runCatching {
+                                val encoded = Base64.encodeToString(
+                                    ctx.assets.open(cssFile).use { it.readBytes() },
+                                    Base64.NO_WRAP,
                                 )
-                                settings.javaScriptEnabled = false
-                            } catch (e: Exception) {
-                                e.printStackTrace()
+                                // JavaScript is turned on for the injection
+                                // and left on until the page reports it has
+                                // run. It used to be switched off on the very
+                                // next line, while loadUrl was still queued,
+                                // so whether the stylesheet applied at all
+                                // came down to a race.
+                                settings.javaScriptEnabled = true
+                                evaluateJavascript(
+                                    """
+                                    (function() {
+                                      var head = document.getElementsByTagName('head')[0];
+                                      var style = document.createElement('style');
+                                      style.type = 'text/css';
+                                      style.innerHTML = window.atob('$encoded');
+                                      head.appendChild(style);
+                                    })()
+                                    """.trimIndent()
+                                ) { settings.javaScriptEnabled = false }
                             }
                         }
-                        super.onPageFinished(view, url.urlDecode())
+                        super.onPageFinished(view, finishedUrl)
                     }
 
                     override fun shouldOverrideUrlLoading(
                         view: WebView,
                         request: WebResourceRequest
                     ): Boolean {
-                        if (url.contains("file://")) {
-                            view.loadUrl(url)
-                        } else {
-                            try {
-                                context.launchView(url)
-                            } catch (e: ActivityNotFoundException) {
-                                view.loadUrl(url)
-                            }
-                        }
+                        // The request's own address, not the one this screen
+                        // was opened with. Testing the outer `url` meant every
+                        // link on the page led back to the page itself, or
+                        // opened the changelog in a browser.
+                        val target = request.url.toString()
+                        if (target.startsWith("file:///android_asset")) return false
+                        runCatching { context.launchView(target) }
                         return true
                     }
                 }
             }
         },
-        update = { webView -> webView.loadUrl(url.urlDecode()) }
+        // Reloaded only when the screen is pointed at a different page. It
+        // used to call loadUrl on every recomposition, throwing away the
+        // scroll position and re-running the stylesheet injection each time.
+        update = { webView ->
+            val target = url.urlDecode()
+            if (loaded.value != target) {
+                loaded.value = target
+                webView.loadUrl(target)
+            }
+        },
+        onRelease = { webView ->
+            webView.stopLoading()
+            webView.destroy()
+        },
     )
 }

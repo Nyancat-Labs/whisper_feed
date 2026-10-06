@@ -13,7 +13,10 @@ fun getVideo(src: String?): Video? {
             val videoId = match.groupValues[1]
             Video(
                 src = src,
-                imageUrl = "http://img.youtube.com/vi/$videoId/hqdefault.jpg",
+                // https, like everything else the app fetches. Cleartext is
+                // blocked by the network policy, so this address could only
+                // ever have failed.
+                imageUrl = "https://img.youtube.com/vi/$videoId/hqdefault.jpg",
                 link = "https://www.youtube.com/watch?v=$videoId"
             )
         }

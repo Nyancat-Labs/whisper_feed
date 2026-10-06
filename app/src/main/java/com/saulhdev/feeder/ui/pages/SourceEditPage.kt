@@ -19,6 +19,11 @@
 package com.saulhdev.feeder.ui.pages
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.Surface
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -66,6 +71,7 @@ import com.saulhdev.feeder.ui.components.ComposeSwitchView
 import com.saulhdev.feeder.ui.components.OutlinedActionButton
 import com.saulhdev.feeder.ui.components.ViewWithActionBar
 import com.saulhdev.feeder.ui.components.dialog.ActionsDialogUI
+import com.saulhdev.feeder.ui.components.traceFocus
 import com.saulhdev.feeder.ui.icons.Phosphor
 import com.saulhdev.feeder.ui.icons.phosphor.Check
 import com.saulhdev.feeder.ui.icons.phosphor.TrashSimple
@@ -78,6 +84,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import com.saulhdev.feeder.ui.icons.phosphor.Plus
 import com.saulhdev.feeder.viewmodels.SourceListViewModel
+import com.saulhdev.feeder.data.content.asState
 
 
 @Composable
@@ -94,8 +101,7 @@ fun SourceEditPage(
     val allTags = sourcesState.allTags
     var newTag by remember { mutableStateOf("") }
     val prefs: FeedPreferences = koinInject()
-    val fullTextForAll by prefs.fullTextForAllFeeds.get()
-        .collectAsState(initial = prefs.fullTextForAllFeeds.getValue())
+    val fullTextForAll by prefs.fullTextForAllFeeds.asState()
     // Initialise once per feed and do not overwrite user edits when viewState re-emits.
     val editState = remember(feedId) {
         mutableStateOf(viewState)
@@ -115,10 +121,6 @@ fun SourceEditPage(
                     tag = freshFeed.tag,
                     fullTextByDefault = freshFeed.fullTextByDefault,
                     isEnabled = freshFeed.isEnabled,
-                    sourceType = freshFeed.sourceType,
-                    requireLink = freshFeed.requireLink,
-                    requireImage = freshFeed.requireImage,
-                    excludeReplies = freshFeed.excludeReplies,
                 )
                 hasLoaded = true
             }
@@ -137,13 +139,26 @@ fun SourceEditPage(
         showBackButton = true,
         onBackAction = onDismiss,
         bottomBar = {
-            Column {
-                HorizontalDivider(thickness = 2.dp)
+            // The buttons used to sit flush against the bottom of the display,
+            // under the gesture bar, separated from the form by a two-pixel
+            // rule — so the most consequential control on the screen was the
+            // one hardest to hit and closest to the edge.
+            //
+            // A surface of its own with room around it, clear of the system
+            // bars and lifted by the keyboard, which is what Material's bottom
+            // button group is and what every picker on the phone already does.
+            Surface(
+                color = MaterialTheme.colorScheme.surfaceContainer,
+                tonalElevation = 3.dp,
+            ) {
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End),
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 8.dp)
+                        .windowInsetsPadding(WindowInsets.navigationBars)
+                        .imePadding()
+                        .padding(horizontal = 16.dp, vertical = 12.dp)
                 ) {
                     OutlinedActionButton(
                         text = stringResource(id = R.string.action_delete),
@@ -264,6 +279,7 @@ fun SourceEditView(
                 modifier = Modifier
                     .fillMaxWidth()
                     .heightIn(min = 64.dp)
+                    .traceFocus("url")
                     .interceptKey(Key.Enter) {
                         focusTitle.requestFocus()
                     }
@@ -299,6 +315,7 @@ fun SourceEditView(
                     .focusRequester(focusTitle)
                     .fillMaxWidth()
                     .heightIn(min = 64.dp)
+                    .traceFocus("title")
                     .interceptKey(Key.Enter) {
                         focusTag.requestFocus()
                     }
@@ -324,54 +341,20 @@ fun SourceEditView(
                     onEdited()
                 },
                 index = 0,
-                groupSize = if (editState.value.sourceType == "mastodon") 5 else 2
+                groupSize = 2
             )
             Spacer(modifier = Modifier.height(4.dp))
             ComposeSwitchView(
                 titleId = R.string.source_enabled,
+                summaryId = R.string.source_enabled_summary,
                 isChecked = editState.value.isEnabled,
                 onCheckedChange = {
                     editState.value = editState.value.copy(isEnabled = it)
                     onEdited()
                 },
                 index = 1,
-                groupSize = if (editState.value.sourceType == "mastodon") 5 else 2
+                groupSize = 2
             )
-            if (editState.value.sourceType == "mastodon") {
-                Spacer(modifier = Modifier.height(4.dp))
-                ComposeSwitchView(
-                    titleId = R.string.mastodon_exclude_replies,
-                    isChecked = editState.value.excludeReplies,
-                    onCheckedChange = {
-                        editState.value = editState.value.copy(excludeReplies = it)
-                        onEdited()
-                    },
-                    index = 2,
-                    groupSize = 5
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                ComposeSwitchView(
-                    titleId = R.string.mastodon_require_link,
-                    isChecked = editState.value.requireLink,
-                    onCheckedChange = {
-                        editState.value = editState.value.copy(requireLink = it)
-                        onEdited()
-                    },
-                    index = 3,
-                    groupSize = 5
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                ComposeSwitchView(
-                    titleId = R.string.mastodon_require_image,
-                    isChecked = editState.value.requireImage,
-                    onCheckedChange = {
-                        editState.value = editState.value.copy(requireImage = it)
-                        onEdited()
-                    },
-                    index = 4,
-                    groupSize = 5
-                )
-            }
         }
 
         item {
@@ -439,7 +422,9 @@ fun SourceEditView(
                             focusManager.clearFocus()
                         }
                     ),
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .traceFocus("add category"),
                 )
             }
         }

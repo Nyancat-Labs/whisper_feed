@@ -1,11 +1,25 @@
 package com.saulhdev.feeder.data.db.models
 
+import com.saulhdev.feeder.utils.usableImageUrl
 import android.graphics.Color
+import androidx.compose.runtime.Immutable
 import androidx.room.Embedded
 import androidx.room.Relation
 import com.saulhdev.feeder.data.entity.FeedCategory
 import com.saulhdev.feeder.manager.models.StoryCardContent
 
+/**
+ * An article with its source, as the feed shows it.
+ *
+ * Immutable to Compose, which it is in fact: every one comes out of a query
+ * and nothing writes to it after. Unannotated, the list and URL fields inside
+ * made it "unstable", and an unstable card argument is compared by identity.
+ * Every reload builds new objects, so every card on screen was redrawn on
+ * every reload, including the ones whose article had not changed at all.
+ * Stable, they are compared by value, and only a card whose article did change
+ * is drawn again.
+ */
+@Immutable
 data class FeedItem(
     @Embedded
     val article: Article,
@@ -35,6 +49,17 @@ data class FeedItem(
     val id: String
         get() = article.uuid
 
+    /**
+     * The article's picture if it can be fetched, or null.
+     *
+     * Read this rather than `article.imageUrl` anywhere the answer decides a
+     * layout or starts a request: the column also holds whatever a feed wrote
+     * before the check existed, and an address with no host is a picture that
+     * fails every single time it is asked for. See usableImageUrl.
+     */
+    val imageUrl: String?
+        get() = usableImageUrl(article.imageUrl)
+
     val link: String
         get() = article.link ?: ""
 
@@ -50,9 +75,17 @@ data class FeedItem(
      * feedImage defaults to an empty URL rather than null, and one call site
      * used to write the *feed's own address* into it, so a blank check is not
      * enough — a value that is not an image has to be treated as absent too.
+     *
+     * And the "empty URL" is not empty. The default is
+     * `sloppyLinkToStrictURL("")`, whose `URL("")` throws and is retried as
+     * `URL("https://")`, which prints back as `https:` — so every source with
+     * no icon carries that, and it passes a blank check. Each of their cards then asked
+     * for it, and OkHttp refused it with `Invalid URL host: ""`: one failed
+     * request per card, 168 in one report, before the monogram was drawn in
+     * its place. usableImageUrl knows that shape and says no.
      */
     val feedIconUrl: String?
-        get() = feed.feedImage.toString().takeIf { it.isNotBlank() && it != feed.url.toString() }
+        get() = usableImageUrl(feed.feedImage.toString())?.takeIf { it != feed.url.toString() }
 
     val displayTitle: String
         get() = "${feed.title} [RSS]"

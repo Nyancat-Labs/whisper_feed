@@ -19,6 +19,7 @@
 package com.saulhdev.feeder.ui.theme
 
 import android.util.SparseIntArray
+import com.materialkolor.dynamicColorScheme
 import com.saulhdev.feeder.data.content.FeedPreferences
 import com.saulhdev.feeder.utils.extensions.clearLightFlags
 import com.saulhdev.feeder.utils.extensions.setLightFlags
@@ -33,9 +34,12 @@ class OverlayThemeHolder(private val overlay: OverlayView) {
     val prefs: FeedPreferences by inject(FeedPreferences::class.java)
 
     /**
-     * Current theme colors mapping
+     * Current theme colors mapping. Until [setTheme] runs, the brand's own
+     * dark scheme, as [OverlayTheme.schemeFor] builds it.
      */
-    var currentTheme = CardTheme.defaultDarkThemeColors
+    var currentTheme: SparseIntArray = with(OverlayTheme) {
+        dynamicColorScheme(seedColor = WhisperSeed, isDark = true, isAmoled = false).toCardColors(isLight = false)
+    }
 
     /**
      * If we should apply light statusbar/navbar

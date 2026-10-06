@@ -1,0 +1,36 @@
+<p><b>Curate. Read. Breathe.</b></p>
+
+<p>Whisper is a calm, private reader for the news and blogs you choose. No account, no tracking: everything stays on your phone, and it works fully offline.</p>
+
+<p><b>Reading</b></p>
+<ul>
+<li>Four layouts: Cards, Magazine, List and Mosaic, in light or dark</li>
+<li>A clean reader view, with the full article fetched per feed or for all of them</li>
+<li>Read later keeps the whole article, pictures included, for reading offline</li>
+<li>Several sources covering one story become one lead card</li>
+<li>Mark read as you scroll, with read articles dimmed or hidden</li>
+<li>Chronological by default; or let Whisper give more room to what you read most, and see why for any article</li>
+<li>On a tablet the feed spreads into columns, and an article opens beside it</li>
+</ul>
+
+<p><b>Sources you control</b></p>
+<ul>
+<li>Add a feed by address, or paste a website and Whisper finds the feed</li>
+<li>Import OPML, or your browser's bookmarks, and it works out which sites publish feeds</li>
+<li>A feed library built into the app: 39 topics and 50 countries, browsed without telling anyone what you're looking for</li>
+<li>Broken feeds are flagged, with their last five fetches and the error from each</li>
+</ul>
+
+<p><b>Private by design</b></p>
+<ul>
+<li>No trackers, no ads, no analytics</li>
+<li>Weather in the glance row is off by default and needs no location permission: you type a place name</li>
+<li>Settings → Export diagnostics writes a report you can read before you share it. It holds counts and settings, never what you searched for or the addresses you typed</li>
+</ul>
+
+<p><b>Optional extras</b></p>
+<ul>
+<li>Two-way sync with your own FreshRSS server: subscriptions, read state and saved articles</li>
+<li>Scheduled backups of your feeds and settings to a folder you choose</li>
+<li>If you use Lawnchair, Whisper can live on its left-most home-screen page</li>
+</ul>

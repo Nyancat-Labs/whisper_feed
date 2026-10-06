@@ -1,0 +1,2 @@
+- The launcher panel's code is now under Whisper's own name, so F-Droid can publish Whisper.
+- Everything else is as in 1.0.1: two-step sign-in, safer backups, a cleaner reader and lighter background syncs.

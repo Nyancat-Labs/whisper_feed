@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+  <head>
+    <title>Hungary</title>
+  </head>
+  <body>
+    <outline text="News" title="News">
+      <outline type="rss" text="Daily News Hungary" title="Daily News Hungary" xmlUrl="https://dailynewshungary.com/feed/"/>
+      <outline type="rss" text="hvg.hu" title="hvg.hu" xmlUrl="https://hvg.hu/rss"/>
+      <outline type="rss" text="Index" title="Index" xmlUrl="https://index.hu/24ora/rss/"/>
+      <outline type="rss" text="Telex" title="Telex" xmlUrl="https://telex.hu/rss"/>
+      <outline type="rss" text="444.hu" title="444.hu" xmlUrl="https://444.hu/feed"/>
+      <outline type="rss" text="Magyar Nemzet" title="Magyar Nemzet" xmlUrl="https://magyarnemzet.hu/feed"/>
+    </outline>
+    <outline text="Business" title="Business">
+      <outline type="rss" text="Portfolio" title="Portfolio" xmlUrl="https://www.portfolio.hu/rss/all.xml"/>
+    </outline>
+  </body>
+</opml>

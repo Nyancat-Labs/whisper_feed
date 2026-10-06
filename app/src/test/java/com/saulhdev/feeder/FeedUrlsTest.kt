@@ -3,8 +3,10 @@ package com.saulhdev.feeder
 import com.saulhdev.feeder.utils.candidateFeedUrls
 import com.saulhdev.feeder.utils.isSameFeedUrl
 import com.saulhdev.feeder.utils.normalizeFeedUrl
+import com.saulhdev.feeder.utils.sloppyLinkToStrictURL
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.net.URL
@@ -91,5 +93,44 @@ class FeedUrlsTest {
     fun `candidates are free of duplicates`() {
         val candidates = candidateFeedUrls(URL("https://example.com/")).map(URL::toString)
         assertEquals(candidates.size, candidates.distinct().size)
+    }
+}
+
+/**
+ * Asking whether an address is already taken, without the asker matching
+ * itself.
+ *
+ * `normalizeFeedUrl` ignores the scheme on purpose — an http and an https
+ * subscription to one feed are one subscription — and that is exactly what
+ * made "is the https form of my address free?" answer "no, you have it".
+ * Every upgrade reported a collision, and the screen could move nothing.
+ */
+class SelfMatchTest {
+
+    private val http = sloppyLinkToStrictURL("http://example.com/feed")
+    private val https = sloppyLinkToStrictURL("https://example.com/feed")
+
+    @Test
+    fun `the two schemes of one address are the same subscription`() {
+        assertTrue(isSameFeedUrl(http, https))
+    }
+
+    /**
+     * Which is why a caller deciding whether it may move a feed has to
+     * exclude that feed: the question is whether somebody *else* holds the
+     * address, and this is the comparison that answers it.
+     */
+    @Test
+    fun `a feed does not collide with itself across schemes`() {
+        val feeds = listOf(1L to http, 2L to sloppyLinkToStrictURL("https://other.com/feed"))
+        val clash = feeds.firstOrNull { (id, url) -> id != 1L && isSameFeedUrl(url, https) }
+        assertNull(clash)
+    }
+
+    @Test
+    fun `a different feed on the same address does collide`() {
+        val feeds = listOf(1L to http, 2L to https)
+        val clash = feeds.firstOrNull { (id, url) -> id != 1L && isSameFeedUrl(url, https) }
+        assertEquals(2L, clash?.first)
     }
 }

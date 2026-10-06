@@ -3,6 +3,7 @@ package com.saulhdev.feeder.manager.models
 import com.saulhdev.feeder.data.db.dao.FeedSourceDao
 import com.saulhdev.feeder.data.db.models.Feed
 import com.saulhdev.feeder.utils.isSameFeedUrl
+import com.saulhdev.feeder.utils.preferringHttps
 import com.saulhdev.feeder.utils.sloppyLinkToStrictURLNoThrows
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -30,13 +31,24 @@ class SourceToRoom() : ParserToDatabase<Feed>, KoinComponent {
      * worked.
      */
     override suspend fun saveItem(item: Feed) {
-        val existing = findExisting(item.url)
+        // Recorded over https, like every other way a source arrives — see
+        // SourcesRepository.insertSource, whose reasoning this follows. This
+        // is the one import path that writes to the DAO directly rather than
+        // through the repository, so it is also the one that would have gone
+        // on storing whatever scheme an exported OPML happened to carry.
+        //
+        // Converted before findExisting, not after: the check has to be
+        // looking at the address that will be written, or an import can
+        // insert a row that collides with one it just decided was different.
+        val source = item.copy(url = item.url.preferringHttps())
+
+        val existing = findExisting(source.url)
         if (existing == null) {
-            dao.insert(item)
+            dao.insert(source)
             return
         }
 
-        val merged = (existing.tags + item.tags).distinct().joinToString(",")
+        val merged = (existing.tags + source.tags).distinct().joinToString(",")
         if (merged != existing.tag) {
             dao.update(existing.copy(tag = merged))
         }

@@ -1,0 +1,6 @@
+# The Sponsor button on the repository.
+#
+# Ko-fi rather than GitHub Sponsors: no enrolment queue, and nothing taken
+# from a one-off tip. GitHub still renders its own "Sponsor" button from this
+# file whichever platform is behind it.
+ko_fi: defsix

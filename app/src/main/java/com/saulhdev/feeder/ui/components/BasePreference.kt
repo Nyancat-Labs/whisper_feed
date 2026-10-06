@@ -25,6 +25,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,7 +37,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.saulhdev.feeder.ui.theme.GroupItemShape
+import com.saulhdev.feeder.ui.theme.groupItemShape
 import com.saulhdev.feeder.utils.extensions.addIf
 
 @Composable
@@ -49,15 +53,31 @@ fun BasePreference(
     endWidget: (@Composable () -> Unit)? = null,
     bottomWidget: (@Composable () -> Unit)? = null,
     onClick: (() -> Unit)? = null,
+    /**
+     * What kind of control this row is, for a screen reader.
+     *
+     * A settings row that toggles something is a switch, not a button, and
+     * saying so is the difference between "Pure black, button" and "Pure
+     * black, switch, off" — the second tells somebody what pressing it will do.
+     */
+    role: Role? = null,
+    /** Its current state, in words: a screen reader cannot see the switch. */
+    stateDescription: String? = null,
 ) {
     ListItem(
         modifier = modifier
             .fillMaxWidth()
             .clip(
-                GroupItemShape(index, groupSize - 1)
+                groupItemShape(index, groupSize - 1)
             )
             .addIf(onClick != null) {
                 clickable(enabled = isEnabled, onClick = onClick!!)
+            }
+            .addIf(role != null || stateDescription != null) {
+                semantics {
+                    role?.let { this.role = it }
+                    stateDescription?.let { this.stateDescription = it }
+                }
             },
         colors = ListItemDefaults.colors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,

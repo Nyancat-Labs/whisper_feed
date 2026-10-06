@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="md_theme_primary">#D0BCFF</color>
-    <color name="globalAccent">#4285f4</color>
     <!-- Near-black rather than the light ground, so a dark-themed launch
          does not flash white before the app paints. The gradient mark reads
          on both. -->

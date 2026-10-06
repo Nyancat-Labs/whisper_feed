@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+  <head>
+    <title>Germany</title>
+  </head>
+  <body>
+    <outline text="Germany" title="Germany">
+      <outline type="rss" text="ZEIT ONLINE | Nachrichten, Hintergründe und Debatten" title="ZEIT ONLINE | Nachrichten, Hintergründe und Debatten" xmlUrl="https://newsfeed.zeit.de/index"/>
+      <outline type="rss" text="Aktuell - FAZ.NET" title="Aktuell - FAZ.NET" xmlUrl="https://www.faz.net/rss/aktuell/"/>
+      <outline type="rss" text="tagesschau.de - Die Nachrichten der ARD" title="tagesschau.de - Die Nachrichten der ARD" xmlUrl="https://www.tagesschau.de/xml/rss2"/>
+      <outline type="rss" text="Deutsche Welle" title="Deutsche Welle" xmlUrl="https://rss.dw.com/rdf/rss-en-all"/>
+    </outline>
+    <outline text="News" title="News">
+      <outline type="rss" text="Der Spiegel" title="Der Spiegel" xmlUrl="https://www.spiegel.de/schlagzeilen/index.rss"/>
+    </outline>
+  </body>
+</opml>

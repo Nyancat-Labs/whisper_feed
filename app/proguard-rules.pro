@@ -6,7 +6,7 @@
 #   http://developer.android.com/guide/developing/tools/proguard.html
 -keep class com.google.android.libraries.launcherclient.** { *; }
 -keep class ua.itaysonlab.hfsdk.** { *; }
--keep class com.google.android.libraries.gsa.d.a.** { *; }
+-keep class com.saulhdev.feeder.launcherpanel.** { *; }
 
 -keep class com.saulhdev.feeder.manager.service.OverlayService.**{*;}
 
@@ -36,3 +36,53 @@
 -dontwarn org.openjsse.javax.net.ssl.SSLSocket
 -dontwarn org.openjsse.net.ssl.OpenJSSE
 -dontwarn org.slf4j.impl.StaticLoggerBinder
+# --- Moshi, used reflectively ---
+#
+# Both JSON paths in this app build their adapters with
+# KotlinJsonAdapterFactory, which reads the Kotlin class metadata at runtime
+# rather than generating an adapter at build time. moshi-kotlin ships no
+# consumer rules of its own — only moshi core does, and those cover the
+# annotations rather than the models — so without these R8 renames the fields
+# of every model and the reflective adapter no longer finds the JSON names.
+#
+# It fails only in a minified build, which is why it has never been seen: the
+# debug build these were tested with does not run R8. The two paths are
+# JsonFeed parsing (any subscription served as JSON Feed) and the Google
+# Reader sync protocol.
+-keep class kotlin.Metadata { *; }
+-keep,allowobfuscation,allowshrinking class kotlin.jvm.internal.DefaultConstructorMarker
+
+# The models themselves, with their constructors and field names intact.
+-keep class com.saulhdev.feeder.data.entity.** { *; }
+-keep class com.saulhdev.feeder.manager.sync.greader.** { *; }
+-keepclassmembers class com.saulhdev.feeder.** {
+    @com.squareup.moshi.Json <fields>;
+}
+
+# --- Logging, removed from the shipping build ---
+#
+# 71 Log calls survive into the APK otherwise: proguard-android-optimize.txt
+# does not touch them. None carries a credential — every one was read during
+# the September audit — but several carry feed and article addresses, which is
+# a record of what somebody reads sitting in a log they do not know exists.
+#
+# The exposure is modest, since Android 4.1 confines an app's log to itself and
+# to a computer attached over USB. It is also free to close, which is the
+# argument: there is no reason for a reader's subscriptions to be written down
+# at all in a build that ships.
+#
+# d, v and i only. A warning or an error is the context that makes the crash
+# after it diagnosable, and stripping those to save a few kilobytes would be
+# trading away the only thing that explains a bug report.
+#
+# R8 removes the call and, because the result is unused, the argument
+# expressions that feed it — so the string concatenation goes too rather than
+# being computed and thrown away.
+-assumenosideeffects class android.util.Log {
+    public static int d(java.lang.String, java.lang.String);
+    public static int d(java.lang.String, java.lang.String, java.lang.Throwable);
+    public static int v(java.lang.String, java.lang.String);
+    public static int v(java.lang.String, java.lang.String, java.lang.Throwable);
+    public static int i(java.lang.String, java.lang.String);
+    public static int i(java.lang.String, java.lang.String, java.lang.Throwable);
+}

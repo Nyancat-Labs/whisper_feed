@@ -3,7 +3,11 @@ plugins {
 }
 
 android {
-    namespace = "com.google.android.libraries"
+    // Whisper's own namespace, not Google's. F-Droid's scanner reads a class
+    // under com.google.android.libraries as Google's proprietary library:
+    // this module's panel classes, and the data-binding class this namespace
+    // generated, failed its check of the 1.0.1 build. See launcherpanel.
+    namespace = "com.saulhdev.feeder.launcherpanel"
     compileSdk = 37
     defaultConfig {
         minSdk = 26
@@ -30,7 +34,8 @@ android {
     }
 
     buildFeatures {
-        dataBinding = true
+        // Off: nothing here uses it, and it only generated a class.
+        dataBinding = false
         viewBinding = true
         buildConfig = true
         aidl = true

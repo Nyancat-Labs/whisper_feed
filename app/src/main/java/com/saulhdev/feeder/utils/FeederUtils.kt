@@ -89,6 +89,14 @@ fun getReadVisibility(context: Context): Map<String, String> {
     )
 }
 
+/**
+ * What "Show articles you have read" turns back on to: the way they were
+ * shown before the sheet hid them. It always came back as Keep, so somebody
+ * who faded read articles found them unfaded after hiding them once.
+ */
+fun readVisibilityOnShow(remembered: String): String =
+    remembered.takeIf { it == READ_KEEP || it == READ_DIM } ?: READ_KEEP
+
 fun getFeedLayouts(context: Context): Map<String, String> {
     return mapOf(
         LAYOUT_CARDS to context.resources.getString(R.string.layout_cards),
@@ -147,18 +155,6 @@ fun getItemsPerFeed(): Map<String, String> {
     )
 }
 
-fun getMastodonItemsPerFeed(): Map<String, String> {
-    return mapOf(
-        "5" to "5",
-        "10" to "10",
-        "20" to "20",
-        "40" to "40",
-        "60" to "60",
-        "80" to "80",
-        "100" to "100"
-    )
-}
-
 fun getBackgroundOptions(context: Context): Map<String, String> {
     return mapOf(
         "theme" to context.resources.getString(R.string.background_theme_option),
@@ -168,13 +164,36 @@ fun getBackgroundOptions(context: Context): Map<String, String> {
 }
 
 /**
- * Ensures a url is valid, having a scheme and everything. It turns 'google.com' into 'http://google.com' for example.
+ * Ensures a url is valid, having a scheme and everything. It turns
+ * 'google.com' into 'https://google.com' for example.
+ *
+ * https, not http, and the difference is a bug rather than a preference.
+ *
+ * This is what the add-a-source search box runs on whatever is typed, so
+ * somebody entering `collider.com/feed` — which is how anybody types an
+ * address — had a subscription stored as `http://collider.com/feed`. Four of
+ * them appeared on one test device in a single afternoon, all added by hand
+ * that day, and all listed by the "Feeds still on http" screen as though the
+ * publisher were at fault.
+ *
+ * What hid it is a change made in this app in September. Plaintext is refused
+ * outright, so an http address should have failed loudly and been noticed
+ * immediately; instead [com.saulhdev.feeder.manager.bookmarks.UpgradeToHttps]
+ * rewrites the scheme before the socket opens, the fetch succeeds over https,
+ * and the wrong address is quietly written down. A guard against one problem
+ * became the thing that concealed another.
+ *
+ * Nothing is lost by the new default. A host that genuinely speaks only http
+ * cannot be fetched by this app either way — the upgrade interceptor tries
+ * https regardless of what is stored — so an http default could only ever
+ * produce an address that is wrong about a feed that works, which is precisely
+ * what it did.
  */
 fun sloppyLinkToStrictURL(url: String): URL = try {
     // If no exception, it's valid
     URL(url)
 } catch (_: MalformedURLException) {
-    URL("http://$url")
+    URL("https://$url")
 }
 
 /**

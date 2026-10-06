@@ -25,6 +25,7 @@ import com.saulhdev.feeder.data.entity.SORT_SOURCE
 import com.saulhdev.feeder.data.entity.SORT_TITLE
 import com.saulhdev.feeder.data.entity.SortFilterModel
 import com.saulhdev.feeder.data.repository.ArticleRepository
+import com.saulhdev.feeder.data.repository.FEED_WINDOW
 import com.saulhdev.feeder.data.repository.SourcesRepository
 import com.saulhdev.feeder.ui.overlay.ArticleWeight.MAX_CONSECUTIVE_FROM_SOURCE
 import com.saulhdev.feeder.utils.READ_HIDE
@@ -45,13 +46,15 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import com.saulhdev.feeder.utils.FeedTrace
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 
 class ArticleListViewModel(
     private val articleRepo: ArticleRepository,
-    feedsRepo: SourcesRepository,
+    private val feedsRepo: SourcesRepository,
     val prefs: FeedPreferences,
 ) : NeoViewModel() {
     private val ioScope = viewModelScope.plus(Dispatchers.IO)
@@ -70,6 +73,44 @@ class ArticleListViewModel(
         _searchQuery.value = value
     }
 
+    /**
+     * The one source the feed is narrowed to, or null for all of them.
+     *
+     * Set by tapping a source's name on a card. Deliberately *not* stored in a
+     * preference, unlike the filter sheet's own settings: this is a detour
+     * that a back gesture ends, and a narrowing that survived a restart would
+     * be a feed that had quietly lost most of itself with nothing on screen
+     * still explaining why.
+     */
+    private val _focusedSource = MutableStateFlow<String?>(null)
+    val focusedSource: StateFlow<String?> = _focusedSource.asStateFlow()
+
+    /**
+     * The article the narrowing started from, so both edges can land on it.
+     *
+     * A filtered feed is a different list of a different length, and the
+     * scroll position is an index into whichever list is on screen. Keeping
+     * it across the change therefore points at a different story — tap a
+     * source on one article and the filtered feed opens somewhere else
+     * entirely, which is precisely what it looked like. The article id is the
+     * one thing both lists agree on.
+     *
+     * Kept when the narrowing is cleared rather than reset with it: the way
+     * out has the same problem as the way in, and it is the same article that
+     * answers it.
+     */
+    private val _focusAnchor = MutableStateFlow<String?>(null)
+    val focusAnchor: StateFlow<String?> = _focusAnchor.asStateFlow()
+
+    fun focusSource(sourceId: String, anchorArticleId: String? = null) {
+        _focusAnchor.value = anchorArticleId
+        _focusedSource.value = sourceId
+    }
+
+    fun clearFocusedSource() {
+        _focusedSource.value = null
+    }
+
     private val sortFilterState = combine(
         prefs.sortingFilter.get(),
         prefs.sortingAsc.get(),
@@ -83,6 +124,25 @@ class ArticleListViewModel(
             SharingStarted.Eagerly,
             SortFilterModel()
         )
+
+    /**
+     * The sort settings and the focused source, as one value.
+     *
+     * Folded together rather than passed separately, and the reason is a
+     * crash. The combine below takes five flows, which is the last of the
+     * typed overloads; a sixth silently selects the `Array<Any?>` version
+     * where the positions are checked by nobody, and the last time this list
+     * changed length that produced an ArrayIndexOutOfBoundsException on a
+     * background worker with no line number in it. See CombineArityTest.
+     *
+     * So anything new travels with something already there.
+     */
+    private data class FeedFilter(
+        val sort: SortFilterModel,
+        val focusedSource: String?,
+    )
+
+    private val filterState = combine(sortFilterState, _focusedSource, ::FeedFilter)
 
     /**
      * Articles for the current category selection, with sync-time invalidation
@@ -108,24 +168,43 @@ class ArticleListViewModel(
         // something about X" does not come with a memory of which category it
         // was filed under, and a search that silently only covered the chip you
         // happen to have selected would look like the article was gone.
+        //
+        // Focusing one source bypasses them for the same reason, and a sharper
+        // one: the tap named a source, not a source within whichever chip
+        // happens to be selected. Left in force, tapping a Tech source while
+        // the News chip was active would open an empty screen that had
+        // obediently done what both instructions said.
         combine(
             prefs.categoryFilter.get(),
             _searchQuery.map { it.isNotBlank() },
-        ) { categories, searching -> if (searching) emptySet() else categories }
+            _focusedSource,
+        ) { categories, searching, focused ->
+            // The searching flag travels with the categories rather than being
+            // read again inside flatMapLatest. distinctUntilChanged below
+            // compares whatever comes through here, and with only the
+            // categories in it, starting a search while no chip was selected
+            // would produce the same empty set twice — so the query would not
+            // restart and the wider limit would never take effect.
+            (if (searching || focused != null) emptySet() else categories) to searching
+        }
             .distinctUntilChanged()
-            .flatMapLatest { categories ->
+            .flatMapLatest { (categories, searching) ->
+                // A search covers everything that has been downloaded, which is
+                // what the feature promises; capping it to the window would
+                // make that quietly untrue for older articles.
+                val limit = if (searching) Int.MAX_VALUE else FEED_WINDOW
                 val source =
-                    if (categories.any()) articleRepo.getFeedItemsByTags(categories)
-                    else articleRepo.getEnabledFeedItems()
-                var isFirst = true
-                source.debounce {
-                    if (isFirst) {
-                        isFirst = false
-                        0L
-                    } else {
-                        INVALIDATION_DEBOUNCE_MS
-                    }
-                }
+                    if (categories.any()) articleRepo.getFeedItemsByTags(categories, limit)
+                    else articleRepo.getEnabledFeedItems(limit)
+                // The debounce that used to live here has moved into the
+                // repository, onto the invalidation signal itself — see
+                // ArticleRepository.whenChanged. Debouncing here dropped lists
+                // that had already been built, which is to say it saved the
+                // processing below and none of the cost that mattered.
+                //
+                // What arrives now has already survived that, so every
+                // emission counted here is a query that genuinely ran.
+                source.onEach { FeedTrace.emission(it.size) }
             }
             .conflate()
 
@@ -135,36 +214,53 @@ class ArticleListViewModel(
      * content, and combining the two meant every toggle re-sorted the whole
      * list for a result that was identical to the one before it.
      */
-    private val processedArticles: Flow<List<FeedItem>> = combine(
+    @OptIn(FlowPreview::class)
+    private val processedArticles: Flow<ProcessedFeed> = combine(
         categoryArticles,
-        sortFilterState,
+        filterState,
         prefs.removeDuplicates.get(),
-        prefs.hiddenSources.get(),
         // Debounced so a fast typist does not re-filter and re-sort the whole
         // feed on every keystroke; the list is rebuilt once they pause.
         _searchQuery.debounce { if (it.isBlank()) 0L else SEARCH_DEBOUNCE_MS },
         prefs.readVisibility.get(),
-    ) { values ->
-        @Suppress("UNCHECKED_CAST")
-        processArticles(
-            articles = values[0] as List<FeedItem>,
-            sfm = values[1] as SortFilterModel,
-            removeDuplicate = values[2] as Boolean,
-            hiddenSources = values[3] as Set<String>,
-            query = values[4] as String,
-            hideRead = values[5] as String == READ_HIDE,
-        )
+        // Named parameters rather than an indexed array, and that is the whole
+        // point of writing it this way. The array overload of `combine` takes
+        // any number of flows and hands back `Array<Any?>`, so the positions
+        // are checked by nobody: when the hidden-sources flow was taken out of
+        // the middle of this list, the two reads below it went on pointing at
+        // 4 and 5. Five flows, index 5 — every launch, on a background worker,
+        // as an ArrayIndexOutOfBoundsException with no line number in it.
+        //
+        // The five-flow overload is typed. One flow fewer and this stops
+        // compiling rather than crashing on somebody's phone.
+    ) { articles, filter, removeDuplicate, query, readVisibility ->
+        val started = System.nanoTime()
+        val processed = processArticles(
+            articles = articles,
+            sfm = filter.sort,
+            removeDuplicate = removeDuplicate,
+            query = query,
+            hideRead = readVisibility == READ_HIDE,
+            focusedSource = filter.focusedSource,
+        ).also { FeedTrace.processed((System.nanoTime() - started) / 1_000) }
+        // The narrowing travels with the list it produced rather than being
+        // combined in beside it. Read separately, the screen can be handed a
+        // fresh focus with the previous list still attached — and the scroll
+        // that lands on the anchor article would then measure the list being
+        // left rather than the one arriving.
+        ProcessedFeed(processed, filter.focusedSource)
     }.flowOn(Dispatchers.Default)
 
     val articleListState: StateFlow<ArticleListState> = combine(
         processedArticles,
         sortFilterState,
         feedsRepo.isSyncing
-    ) { articles, sfm, isSyncing ->
+    ) { feed, sfm, isSyncing ->
         ArticleListState(
-            articles = articles,
+            articles = feed.articles,
             isFilterModified = sfm != SortFilterModel(),
-            isSyncing = isSyncing
+            isSyncing = isSyncing,
+            focusedSource = feed.focusedSource,
         )
     }.stateIn(
         ioScope,
@@ -174,7 +270,10 @@ class ArticleListViewModel(
 
     @OptIn(FlowPreview::class)
     private val processedBookmarks: Flow<List<FeedItem>> = combine(
-        articleRepo.getBookmarkedFeedItems().debounce(INVALIDATION_DEBOUNCE_MS).conflate(),
+        // Debounced in the repository now, on the signal rather than on the
+        // list — the same move as the feed above, and left here it would be
+        // the one flow still paying to build lists nobody reads.
+        articleRepo.getBookmarkedFeedItems().conflate(),
         sortFilterState,
         prefs.removeDuplicates.get(),
     ) { articles, sfm, removeDuplicate ->
@@ -195,9 +294,10 @@ class ArticleListViewModel(
         BookmarksState()
     )
 
-    fun unpinArticle(id: String) {
+    /** Holds an article at the top of the feed, or lets it go. */
+    fun setPinned(id: String, pinned: Boolean) {
         viewModelScope.launch {
-            articleRepo.unpinArticle(id)
+            articleRepo.setPinned(id, pinned)
         }
     }
 
@@ -221,6 +321,55 @@ class ArticleListViewModel(
     }
 
     /**
+     * Records an article being opened, which also marks it read.
+     *
+     * The tap handlers used to call [markRead], which recorded the same thing
+     * for an article somebody chose to open as for forty that scrolled past
+     * — and then the ordering learned from the sum of the two as though they
+     * meant the same. They do not, and this is the one that is certain.
+     */
+    fun markOpened(id: String) {
+        viewModelScope.launch {
+            articleRepo.markOpened(id)
+        }
+    }
+
+    /** Adds to an article's time on screen. */
+    /**
+     * Records time spent reading an article, in milliseconds.
+     *
+     * Used by the browser-trip timer rather than the in-app clock, which
+     * reports through ArticleViewModel on the article's own screen.
+     */
+    fun addReading(id: String, millis: Long) {
+        ioScope.launch { articleRepo.addReading(id, millis) }
+    }
+
+    fun addDwell(id: String, millis: Long) {
+        viewModelScope.launch {
+            articleRepo.addDwell(id, millis)
+        }
+    }
+
+    /**
+     * Writes any dwell still held in memory, now.
+     *
+     * The batching in [ArticleRepository.addDwell] exists to keep a scroll
+     * from re-running the feed query once per article, and its timer is right
+     * for that. Leaving the feed is the one moment it is wrong for: the reason
+     * to hold the increments — more are coming — has just stopped being true,
+     * and waiting out the rest of the window would risk losing them to a
+     * process the system is now free to kill.
+     *
+     * On the repository's own scope rather than this view model's, because
+     * this is called as the screen goes away and a flush cancelled halfway
+     * through is the thing it was written to prevent.
+     */
+    fun flushDwell() {
+        ioScope.launch { articleRepo.flushDwell() }
+    }
+
+    /**
      * Records that an article was read by being looked at rather than opened.
      *
      * Kept apart from [markRead] because only this one is worth offering back:
@@ -233,13 +382,32 @@ class ArticleListViewModel(
         }
     }
 
-    /** Marks everything currently unread, offering the whole batch back. */
-    fun markAllRead() {
+    /**
+     * Marks everything unread in [range], offering the whole batch back.
+     *
+     * [nowMs] is the instant the counts were shown for, so what is marked is
+     * what the dialog said would be. [onMarked] hears how many were marked,
+     * so the screen that asked can offer them back at once.
+     */
+    fun markAllRead(
+        range: MarkReadRange = MarkReadRange.Everything,
+        nowMs: Long = System.currentTimeMillis(),
+        onMarked: (Int) -> Unit = {},
+    ) {
         viewModelScope.launch {
-            val marked = articleRepo.markAllRead()
-            if (marked.isNotEmpty()) _undoableReads.value = _undoableReads.value + marked
+            val marked = articleRepo.markAllRead(range.before(nowMs))
+            // Replaces rather than adds to what scrolling had banked: the offer
+            // names this batch's count, so Undo must put back this batch and
+            // no more. Anything scrolled past before it was in the range and
+            // is read either way.
+            if (marked.isNotEmpty()) _undoableReads.value = marked
+            onMarked(marked.size)
         }
     }
+
+    /** How many unread articles each choice would mark, at [nowMs]. */
+    suspend fun unreadCounts(nowMs: Long): Map<MarkReadRange, Int> =
+        MarkReadRange.entries.associateWith { articleRepo.unreadCountBefore(it.before(nowMs)) }
 
     /** Puts back every article marked since the offer was last dismissed. */
     fun undoReads() {
@@ -290,9 +458,39 @@ class ArticleListViewModel(
     private val _recentlyHidden = MutableStateFlow<FeedItem?>(null)
     val recentlyHidden: StateFlow<FeedItem?> = _recentlyHidden.asStateFlow()
 
+    /**
+     * Hides a source, which now also stops it fetching.
+     *
+     * These were two states: a feed switched off, and a feed in a hidden set.
+     * Both kept the source's articles out of the feed, and the only thing
+     * separating them was whether it carried on syncing in the background —
+     * a distinction nobody asked for, expressed as two controls that looked
+     * identical and lived on different screens.
+     *
+     * Hiding something should stop it costing data and battery. So there is
+     * one state now, and it is the feed's own `isEnabled` column: hiding
+     * turns a source off, the switch on the sources list does the same thing,
+     * and either can be undone from either place.
+     *
+     * Safe to collapse only because saved articles no longer depend on it —
+     * until the previous commit, switching a source off took everything the
+     * reader had bookmarked from it out of Bookmarks, and merging the two
+     * would have made hiding do that too.
+     */
+    /**
+     * Gives a breaking story back its ordinary place in the feed.
+     *
+     * Not a hide and not a read: the article stays, keeps its position, and
+     * loses only the promotion the app gave it without being asked. See
+     * `Article.dismissedAt`.
+     */
+    fun dismissStory(articleId: String) {
+        ioScope.launch { articleRepo.dismissStory(articleId) }
+    }
+
     fun hideSource(item: FeedItem) {
         ioScope.launch {
-            prefs.hiddenSources.setValue(prefs.hiddenSources.get().first() + item.sourceId)
+            feedsRepo.setEnabled(listOf(item.feed.id), enabled = false)
             _recentlyHidden.value = item
         }
     }
@@ -300,17 +498,15 @@ class ArticleListViewModel(
     fun undoHideSource() {
         val item = _recentlyHidden.value ?: return
         _recentlyHidden.value = null
-        unhideSource(item.sourceId)
+        ioScope.launch { feedsRepo.setEnabled(listOf(item.feed.id), enabled = true) }
     }
 
     fun forgetHiddenSource() {
         _recentlyHidden.value = null
     }
 
-    fun unhideSource(sourceId: String) {
-        ioScope.launch {
-            prefs.hiddenSources.setValue(prefs.hiddenSources.get().first() - sourceId)
-        }
+    fun unhideSource(feedId: Long) {
+        ioScope.launch { feedsRepo.setEnabled(listOf(feedId), enabled = true) }
     }
 
     // HELPERS
@@ -320,9 +516,9 @@ class ArticleListViewModel(
         articles: List<FeedItem>,
         sfm: SortFilterModel,
         removeDuplicate: Boolean,
-        hiddenSources: Set<String> = emptySet(),
         query: String = "",
         hideRead: Boolean = false,
+        focusedSource: String? = null,
     ): List<FeedItem> {
         val terms = query.trim().takeIf(String::isNotEmpty)
         // One pass rather than four. Each `let` here used to allocate a whole
@@ -332,11 +528,18 @@ class ArticleListViewModel(
         val filtered = articles.asSequence()
             .filter { item ->
                 when {
+                    // Matched on the source's id rather than on its name.
+                    // Reusing the search for this was the obvious shortcut and
+                    // is wrong twice over: `contains` makes "slate" match
+                    // "translate" and any article merely mentioning Slate, and
+                    // a search widens the query to every article ever stored
+                    // instead of the five-hundred-row window.
+                    focusedSource != null && item.sourceId != focusedSource -> false
+
                     terms != null && !item.matchesSearch(terms) -> false
                     seenLinks != null && !seenLinks.add(item.link) -> false
                     // "Hide source" is permanent and survives a filter reset;
                     // sourcesFilter below is the filter sheet's scratchpad.
-                    item.sourceId in hiddenSources -> false
                     item.sourceId in sfm.sourcesFilter -> false
                     // Any of the source's categories being muted hides it. This
                     // compared the whole comma-separated tag string against the
@@ -357,13 +560,29 @@ class ArticleListViewModel(
             }
             .toList()
 
+        // Newest first inside one source, whatever the feed is sorted by.
+        // The weighting exists to choose between a hundred and nineteen
+        // sources; within one there is nothing to weigh against, and an
+        // article from Tuesday sitting above one from an hour ago reads as a
+        // fault. It is also what every publication's own front page does.
+        if (focusedSource != null) {
+            return filtered.sortedByDescending { it.timeMillis }
+        }
+
         val comparator = when (sfm.sort) {
             SORT_TITLE  -> compareBy(FeedItem::contentTitle)
             SORT_SOURCE -> compareBy(FeedItem::displayTitle)
             else        -> compareBy(FeedItem::timeMillis)
         }
-        val sorted = if (sfm.sortAsc) filtered.sortedWith(comparator)
+        val ordered = if (sfm.sortAsc) filtered.sortedWith(comparator)
         else filtered.sortedWith(comparator.reversed())
+
+        // Pinned articles sit above everything, whichever sort is active. A
+        // pin means "I am following this, keep it in front of me", and a sort
+        // that moved it away would be answering a question the reader did not
+        // ask. sortedBy is stable, so the order inside each group is the one
+        // the sort just produced.
+        val sorted = ordered.sortedByDescending { it.pinned }
 
         // Sorting by source is a request to see one source's articles
         // together, so spreading them would be undoing what was asked.
@@ -383,34 +602,6 @@ class ArticleListViewModel(
      * article can only ever move later, never earlier and never past one of
      * its own.
      */
-    private fun spreadSources(articles: List<FeedItem>): List<FeedItem> {
-        if (articles.size < MAX_CONSECUTIVE_FROM_SOURCE + 1) return articles
-
-        val result = ArrayList<FeedItem>(articles.size)
-        val deferred = ArrayDeque<FeedItem>()
-        var lastSource: String? = null
-        var run = 0
-
-        fun take(item: FeedItem) {
-            if (item.sourceId == lastSource) run++ else { lastSource = item.sourceId; run = 1 }
-            result += item
-        }
-
-        articles.forEach { item ->
-            // Anything held back that would break the current run goes first:
-            // the whole point is to fill the gap rather than to leave one.
-            val released = deferred.firstOrNull { it.sourceId != lastSource || run < MAX_CONSECUTIVE_FROM_SOURCE }
-            if (released != null && item.sourceId == lastSource && run >= MAX_CONSECUTIVE_FROM_SOURCE) {
-                deferred.remove(released)
-                take(released)
-            }
-            if (item.sourceId == lastSource && run >= MAX_CONSECUTIVE_FROM_SOURCE) deferred += item
-            else take(item)
-        }
-        // Whatever is still held back goes on the end, in the order it arrived.
-        deferred.forEach(result::add)
-        return result
-    }
 }
 
 /**
@@ -440,13 +631,72 @@ private const val INVALIDATION_DEBOUNCE_MS = 300L
 /** How long to let typing settle before rebuilding the list for a search. */
 private const val SEARCH_DEBOUNCE_MS = 250L
 
+/** A processed feed and the narrowing it was processed under. */
+private data class ProcessedFeed(
+    val articles: List<FeedItem>,
+    val focusedSource: String?,
+)
+
 data class ArticleListState(
     val articles: List<FeedItem> = emptyList(),
     val isFilterModified: Boolean = false,
     val isSyncing: Boolean = false,
+    /**
+     * The one source these articles were narrowed to, or null for all of them.
+     *
+     * Carried here so the screen can tell a list built *for* the current
+     * narrowing from the previous list still on its way out. See focusAnchor.
+     */
+    val focusedSource: String? = null,
 )
 
 data class BookmarksState(
     val bookmarkedArticles: List<FeedItem> = emptyList(),
     val isSyncing: Boolean = false,
 )
+
+/**
+ * Keeps one source from filling the screen, without dropping anything.
+ *
+ * Top level and internal rather than a private method, so the guarantee that
+ * a pin survives it can be tested directly. It is a pure function over a list
+ * and never needed the view model's state.
+ */
+internal fun spreadSources(articles: List<FeedItem>): List<FeedItem> {
+    if (articles.size < MAX_CONSECUTIVE_FROM_SOURCE + 1) return articles
+
+    val result = ArrayList<FeedItem>(articles.size)
+    val deferred = ArrayDeque<FeedItem>()
+    var lastSource: String? = null
+    var run = 0
+
+    fun take(item: FeedItem) {
+        if (item.sourceId == lastSource) run++ else { lastSource = item.sourceId; run = 1 }
+        result += item
+    }
+
+    articles.forEach { item ->
+        // A pin is never deferred. This rule exists to stop one source
+        // filling the screen, and it has no business overruling an
+        // article the reader put at the top on purpose — pin four things
+        // from one source and the last of them was being posted to the
+        // bottom of the feed, which looks exactly like the pin not
+        // working.
+        if (item.pinned) {
+            take(item)
+            return@forEach
+        }
+        // Anything held back that would break the current run goes first:
+        // the whole point is to fill the gap rather than to leave one.
+        val released = deferred.firstOrNull { it.sourceId != lastSource || run < MAX_CONSECUTIVE_FROM_SOURCE }
+        if (released != null && item.sourceId == lastSource && run >= MAX_CONSECUTIVE_FROM_SOURCE) {
+            deferred.remove(released)
+            take(released)
+        }
+        if (item.sourceId == lastSource && run >= MAX_CONSECUTIVE_FROM_SOURCE) deferred += item
+        else take(item)
+    }
+    // Whatever is still held back goes on the end, in the order it arrived.
+    deferred.forEach(result::add)
+    return result
+}

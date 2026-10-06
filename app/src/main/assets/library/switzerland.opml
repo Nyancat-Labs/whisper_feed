@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+  <head>
+    <title>Switzerland</title>
+  </head>
+  <body>
+    <outline text="News" title="News">
+      <outline type="rss" text="Le Temps" title="Le Temps" xmlUrl="https://www.letemps.ch/articles.rss"/>
+      <outline type="rss" text="Neue Zürcher Zeitung" title="Neue Zürcher Zeitung" xmlUrl="https://www.nzz.ch/recent.rss"/>
+      <outline type="rss" text="SRF News" title="SRF News" xmlUrl="https://www.srf.ch/news/bnf/rss/1646"/>
+      <outline type="rss" text="20 Minuten" title="20 Minuten" xmlUrl="https://partner-feeds.20min.ch/rss/20minuten"/>
+      <outline type="rss" text="Tages-Anzeiger" title="Tages-Anzeiger" xmlUrl="https://www.tagesanzeiger.ch/rss.html"/>
+    </outline>
+  </body>
+</opml>

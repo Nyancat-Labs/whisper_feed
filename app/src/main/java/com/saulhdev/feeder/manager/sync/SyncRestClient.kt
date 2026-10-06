@@ -18,12 +18,30 @@
 
 package com.saulhdev.feeder.manager.sync
 
+import com.saulhdev.feeder.utils.SyncLog
 import com.saulhdev.feeder.data.db.ID_ALL
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class SyncRestClient() {
-    suspend fun syncAllFeeds() = withContext(Dispatchers.IO) {
-        requestFeedSync(feedId = ID_ALL, forceNetwork = true)
+    /** A sync somebody asked for - pull to refresh. It ignores the sync switches. */
+    suspend fun syncAllFeeds(origin: String = SyncLog.ORIGIN_PULL) = withContext(Dispatchers.IO) {
+        requestFeedSync(feedId = ID_ALL, forceNetwork = true, origin = origin)
+    }
+
+    /**
+     * A sync nobody asked for at this moment, which waits for what the
+     * scheduled sync would wait for.
+     *
+     * The launcher panel started a full sync whenever it was created - which
+     * is whenever the launcher shows the home screen after the process has
+     * gone - and it went through [syncAllFeeds], so it ignored both switches.
+     * With "Sync only while charging" on, the scheduled sync sat correctly at
+     * its slot waiting for a charger while this synced anyway: at 06:41 as the
+     * process started, and at 08:07 over mobile data after the phone came off
+     * the car charger. The switch said one thing and the panel did another.
+     */
+    suspend fun syncAllFeedsWhenAllowed() = withContext(Dispatchers.IO) {
+        requestAutomaticFeedSync()
     }
 }

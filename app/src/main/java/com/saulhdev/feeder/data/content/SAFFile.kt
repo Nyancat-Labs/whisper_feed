@@ -23,14 +23,14 @@ class SAFFile(context: Context, val uri: Uri) {
             return try {
                 inStream.reader().readText()
             } catch (t: Throwable) {
-                Log.e(TAG, "Failed to read $uri", t)
+                Log.e(TAG, "Failed to read the chosen file", t)
                 null
             } finally {
                 inStream.close()
                 pfd?.close()
             }
         } catch (t: Throwable) {
-            Log.e(TAG, "Failed to read $uri", t)
+            Log.e(TAG, "Failed to read the chosen file", t)
             return null
         }
     }

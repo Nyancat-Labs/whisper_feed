@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+  <head>
+    <title>Singapore</title>
+  </head>
+  <body>
+    <outline text="News" title="News">
+      <outline type="rss" text="Mothership" title="Mothership" xmlUrl="https://mothership.sg/feed/"/>
+      <outline type="rss" text="CNA" title="CNA" xmlUrl="https://www.channelnewsasia.com/api/v1/rss-outbound-feed?_format=xml"/>
+      <outline type="rss" text="The Straits Times" title="The Straits Times" xmlUrl="https://www.straitstimes.com/news/singapore/rss.xml"/>
+      <outline type="rss" text="The Independent Singapore" title="The Independent Singapore" xmlUrl="https://theindependent.sg/feed/"/>
+    </outline>
+    <outline text="Business" title="Business">
+      <outline type="rss" text="The Business Times" title="The Business Times" xmlUrl="https://www.businesstimes.com.sg/rss/singapore"/>
+    </outline>
+  </body>
+</opml>

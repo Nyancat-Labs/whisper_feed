@@ -4,6 +4,39 @@
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <!--
+      A pull to refresh runs as a foreground task so it keeps its network
+      after the reader leaves the app; see FeedSyncer. Android 14 refuses a
+      data-sync foreground task without the second of these, and Android 13
+      shows its "Syncing" line in the shade only with the third.
+    -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!--
+        SYSTEM_ALERT_WINDOW, for a reason no line of code states.
+
+        Nothing in this app calls WindowManager, and the overlay panel does not
+        need to: the launcher passes its own window token across the binder and
+        OverlayControllerCallback attaches our window to it with type 4, an
+        ordinary application window parented to the launcher's. On the drawing
+        question the permission is dead weight.
+
+        It is held for the other thing the system grants it: holding
+        SYSTEM_ALERT_WINDOW is a documented exemption from the background
+        activity launch restrictions. Opening an article from inside the
+        overlay is a background activity start, and the PendingIntent opt-in in
+        Context.safeStartActivity only lets a caller pass on privileges it
+        already has. Without the exemption, tapping an article in the panel
+        does nothing at all.
+
+        So it stays, and the one place that explains it is the launcher screen,
+        where somebody is setting that integration up. It is no longer demanded
+        by a modal dialog on the home screen — that fired on every launch, for
+        every reader, including the great majority who will never attach this
+        to a launcher.
+    -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <uses-permission
@@ -13,9 +46,57 @@
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
 
+    <!--
+        allowBackup is on, but nothing is handed over unless the reader has
+        said so. `allowBackup` is a manifest attribute with no runtime switch —
+        BackupManager can request a backup pass but cannot enable or disable
+        one — so leaving it off would have made the choice for everybody, and
+        turning it on without a gate would have made the opposite choice just
+        as silently.
+
+        PlatformBackupAgent is that gate. The system starts a backup, the agent
+        looks at what the reader chose, and writes nothing if they have not
+        asked for it. The two routes are asked separately: a phone-to-phone
+        transfer never touches a server, a cloud backup puts the same data in
+        Google's hands, and those deserve different answers.
+
+        Both default to off. The backup screen explains what each one means.
+    -->
+    <!--
+        Who Whisper is allowed to see.
+
+        Android 11 stopped an app from enumerating the others by default, and
+        nothing here declared an exception — so `getPackageInfo("app.lawnchair")`
+        threw NameNotFound on every modern phone whether or not Lawnchair was
+        installed, and the launcher setup screen told everybody they had no
+        supported launcher. `getLaunchIntentForPackage` returned null for the
+        same reason, so the button to open its settings did nothing.
+
+        Declared as intents rather than as package names: the set of launchers
+        worth working with is "the ones that can be a home screen", which is
+        also exactly the set OverlayService will accept a bind from, and it
+        does not need a list keeping up to date.
+    -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.HOME" />
+        </intent>
+        <!-- Opening an article link, and sending the diagnostics report. -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.SEND" />
+            <data android:mimeType="text/plain" />
+        </intent>
+    </queries>
+
     <application
         android:name=".NeoApp"
         android:allowBackup="true"
+        android:backupAgent=".manager.backup.PlatformBackupAgent"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:networkSecurityConfig="@xml/network_security_config"
@@ -42,33 +123,27 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <intent-filter android:autoVerify="true">
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:scheme="http" />
-                <data android:scheme="https" />
-                <data android:host="neofeed.saulhdev.com" />
-            </intent-filter>
-
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:scheme="nf-mastodon" android:host="callback" />
-            </intent-filter>
-
+            <!--
+                An autoVerify filter for neofeed.saulhdev.com used to sit here:
+                Whisper offered itself as a handler for links to a domain this
+                project does not own and cannot publish an assetlinks.json for,
+                so verification could only ever fail, and the app appeared in
+                the chooser for somebody else's website. Nothing in the app
+                routes on that host.
+            -->
 
         </activity>
 
+        <!--
+            Exported without a permission on purpose: this is the -1 screen a
+            launcher binds to, and launchers bind with no permission of ours to
+            hold. OverlayService.onBind admits only a launcher.
+        -->
         <service
             android:name=".manager.service.OverlayService"
             android:enabled="true"
-            android:exported="true">
+            android:exported="true"
+            tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="com.android.launcher3.WINDOW_OVERLAY" />
                 <action android:name="com.google.android.apps.gsa.sidekick.SidekickService" />

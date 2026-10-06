@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+  <head>
+    <title>Belgium</title>
+  </head>
+  <body>
+    <outline text="News" title="News">
+      <outline type="rss" text="RTBF Info" title="RTBF Info" xmlUrl="https://rss.rtbf.be/article/rss/highlight_rtbfinfo_info.xml"/>
+      <outline type="rss" text="De Standaard" title="De Standaard" xmlUrl="https://www.standaard.be/rss/section/1f2838d4-99ea-49f0-9102-138784c7ea7c"/>
+      <outline type="rss" text="VRT NWS" title="VRT NWS" xmlUrl="https://www.vrt.be/vrtnws/nl.rss.articles.xml"/>
+      <outline type="rss" text="Het Laatste Nieuws" title="Het Laatste Nieuws" xmlUrl="https://www.hln.be/home/rss.xml"/>
+      <outline type="rss" text="Le Soir" title="Le Soir" xmlUrl="https://www.lesoir.be/rss/155/Actualite"/>
+      <outline type="rss" text="Bruzz" title="Bruzz" xmlUrl="https://www.bruzz.be/rss.xml"/>
+    </outline>
+  </body>
+</opml>

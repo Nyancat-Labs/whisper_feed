@@ -40,7 +40,7 @@ import com.saulhdev.feeder.utils.extensions.launchView
 fun ContributorRow(
     @StringRes nameId: Int,
     @StringRes roleId: Int,
-    photoUrl: String,
+    photo: Any?,
     url: String,
     index: Int = 0,
     groupSize: Int = 1
@@ -56,7 +56,7 @@ fun ContributorRow(
         startWidget = {
             Image(
                 painter = rememberAsyncImagePainter(
-                    ImageRequest.Builder(LocalContext.current).data(data = photoUrl)
+                    ImageRequest.Builder(LocalContext.current).data(data = photo)
                         .apply(block = fun ImageRequest.Builder.() {
                             crossfade(true)
                         }).build()

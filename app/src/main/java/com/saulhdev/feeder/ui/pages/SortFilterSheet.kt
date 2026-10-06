@@ -15,17 +15,20 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -41,14 +44,17 @@ import com.saulhdev.feeder.ui.components.SelectChip
 import com.saulhdev.feeder.ui.icons.Phosphor
 import com.saulhdev.feeder.ui.icons.phosphor.ArrowUUpLeft
 import com.saulhdev.feeder.ui.icons.phosphor.Check
+import com.saulhdev.feeder.ui.icons.phosphor.CheckCircle
 import com.saulhdev.feeder.ui.icons.phosphor.SortAscending
 import com.saulhdev.feeder.ui.icons.phosphor.SortDescending
 import com.saulhdev.feeder.utils.READ_HIDE
-import com.saulhdev.feeder.utils.READ_KEEP
+import com.saulhdev.feeder.utils.readVisibilityOnShow
 import com.saulhdev.feeder.utils.extensions.koinNeoViewModel
+import com.saulhdev.feeder.viewmodels.MarkReadRange
 import com.saulhdev.feeder.viewmodels.SortFilterViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.compose.koinInject
+import com.saulhdev.feeder.data.content.asState
 
 @OptIn(
     ExperimentalCoroutinesApi::class,
@@ -58,6 +64,10 @@ import org.koin.compose.koinInject
 fun SortFilterSheet(
     viewModel: SortFilterViewModel = koinNeoViewModel(),
     prefs: FeedPreferences = koinInject(),
+    // Both or neither. The app passes them; the launcher panel has no undo
+    // for a batch of reads yet, so it does not offer one.
+    markReadCounts: (suspend (nowMs: Long) -> Map<MarkReadRange, Int>)? = null,
+    onMarkRead: ((MarkReadRange, nowMs: Long) -> Unit)? = null,
     onDismiss: () -> Unit,
 ) {
     val nestedScrollConnection = rememberNestedScrollInteropConnection()
@@ -68,8 +78,7 @@ fun SortFilterSheet(
     var sourcesPrefVar by prefs.sourcesFilter
     var tagsPrefVar by prefs.tagsFilter
     var readVisibilityPrefVar by prefs.readVisibility
-    val readVisibility by prefs.readVisibility.get()
-        .collectAsState(initial = prefs.readVisibility.getValue())
+    val readVisibility by prefs.readVisibility.asState()
     // Staged until Apply, like everything else in this sheet. A control that
     // acts the moment it is touched, sitting above an Apply button, leaves the
     // reader unsure which of the two did the work.
@@ -128,13 +137,20 @@ fun SortFilterSheet(
                             sortAscPrefVar = sortAscOption
                             sourcesPrefVar = sourcesOption.toSet()
                             tagsPrefVar = tagsOption.toSet()
-                            // Turning them back on restores Keep rather than
-                            // Fade: Fade is a deliberate choice made in
-                            // Settings, and a switch labelled "show" should
-                            // not quietly pick a different way of showing.
+                            // Turning them back on restores whichever of Keep
+                            // or Fade was set when this switch hid them. It
+                            // used to be Keep every time, which quietly undid
+                            // a Fade chosen in Settings.
                             if (showReadOption) {
-                                if (readVisibility == READ_HIDE) readVisibilityPrefVar = READ_KEEP
+                                if (readVisibility == READ_HIDE) {
+                                    readVisibilityPrefVar = readVisibilityOnShow(
+                                        prefs.readVisibilityBeforeHide.getValue()
+                                    )
+                                }
                             } else {
+                                if (readVisibility != READ_HIDE) {
+                                    prefs.readVisibilityBeforeHide.set(readVisibility)
+                                }
                                 readVisibilityPrefVar = READ_HIDE
                             }
                             onDismiss()
@@ -202,6 +218,16 @@ fun SortFilterSheet(
                 )
             }
 
+            if (markReadCounts != null && onMarkRead != null) item {
+                MarkReadBlock(
+                    counts = markReadCounts,
+                    onMark = { range, now ->
+                        onMarkRead(range, now)
+                        onDismiss()
+                    },
+                )
+            }
+
             item {
                 ExpandableItemsBlock(
                     heading = stringResource(id = R.string.title_sources),
@@ -257,4 +283,55 @@ fun SortFilterSheet(
             }
         }
     }
+}
+
+/**
+ * Marking read, in the sheet but not of it.
+ *
+ * Everything else here is staged until Apply; these act the moment they are
+ * tapped, close the sheet, and are offered back in the feed. So they are
+ * buttons rather than chips, under their own heading, with a line saying so —
+ * a control that looks like a filter and marks four hundred articles read is
+ * the one mistake this sheet must not invite.
+ *
+ * Each shows what it would mark, counted when the sheet opened, and the
+ * marking uses that same moment so the number and the result agree.
+ */
+@Composable
+private fun MarkReadBlock(
+    counts: suspend (nowMs: Long) -> Map<MarkReadRange, Int>,
+    onMark: (MarkReadRange, nowMs: Long) -> Unit,
+) {
+    val now = remember { System.currentTimeMillis() }
+    val counted by produceState<Map<MarkReadRange, Int>?>(null) { value = counts(now) }
+    ExpandableItemsBlock(
+        heading = stringResource(R.string.mark_read_title),
+        icon = Phosphor.CheckCircle,
+        preExpanded = true,
+    ) {
+        Text(
+            text = stringResource(R.string.mark_read_explained),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        MarkReadRange.entries.forEach { range ->
+            val count = counted?.get(range) ?: 0
+            OutlinedActionButton(
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(range.label()) +
+                        if (counted != null) " \u00b7 " + pluralStringResource(R.plurals.mark_read_unread, count, count)
+                        else "",
+                positive = true,
+                enabled = count > 0,
+                onClick = { onMark(range, now) },
+            )
+        }
+    }
+}
+
+private fun MarkReadRange.label(): Int = when (this) {
+    MarkReadRange.Everything -> R.string.mark_read_everything
+    MarkReadRange.OlderThanHour -> R.string.mark_read_older_hour
+    MarkReadRange.OlderThanDay -> R.string.mark_read_older_day
+    MarkReadRange.OlderThanTwoDays -> R.string.mark_read_older_two_days
 }

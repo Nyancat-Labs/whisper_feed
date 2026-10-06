@@ -84,7 +84,10 @@ fun PreferenceGroupHeading(
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
             .height(48.dp)
-            .padding(horizontal = 24.dp)
+            // Aligned with the text of the rows it heads: the group's cards
+            // start at the screen's 16dp margin and a ListItem insets its own
+            // content by another 16, so the rows read from 32.
+            .padding(horizontal = 32.dp)
             .fillMaxWidth(),
         horizontalAlignment = textAlignment
     ) {

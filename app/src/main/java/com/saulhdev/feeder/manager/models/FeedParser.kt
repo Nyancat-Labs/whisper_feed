@@ -23,6 +23,8 @@ import com.rometools.rome.io.SyndFeedInput
 import com.rometools.rome.io.XmlReader
 import com.saulhdev.feeder.data.entity.JsonFeed
 import com.saulhdev.feeder.utils.HttpIdentity.asFeedReader
+import com.saulhdev.feeder.utils.ByteCounter
+import com.saulhdev.feeder.utils.HttpStatusException
 import com.saulhdev.feeder.utils.JsonFeedParser
 import com.saulhdev.feeder.utils.extensions.asFeed
 import com.saulhdev.feeder.utils.relativeLinkIntoAbsolute
@@ -32,13 +34,19 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
 import okhttp3.CacheControl
 import okhttp3.Credentials
+import com.saulhdev.feeder.manager.bookmarks.onlyPublicHttps
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import com.saulhdev.feeder.utils.PAGE_MAX_BYTES
+import com.saulhdev.feeder.utils.bytesAtMost
+import com.saulhdev.feeder.utils.refuseMedia
+import java.io.ByteArrayInputStream
 import java.io.IOException
+import java.nio.charset.Charset
 import java.net.MalformedURLException
 import java.net.URL
 import java.net.URLDecoder
@@ -50,6 +58,12 @@ private const val YOUTUBE_CHANNEL_ID_ATTR = "data-channel-external-id"
 class FeedParser {
     private val client = OkHttpClient.Builder()
         .asFeedReader()
+        // Every hop, including the ones OkHttp follows on its own. A feed URL
+        // can come from a bookmarks file or a page's own head, so no address
+        // reached from here has been vouched for by anybody.
+        // Before the connection, so a feed still stored as http is asked
+        // over https rather than refused.
+        .onlyPublicHttps()
         .connectTimeout(10, TimeUnit.SECONDS)
         .writeTimeout(10, TimeUnit.SECONDS)
         .readTimeout(30, TimeUnit.SECONDS)
@@ -270,11 +284,19 @@ class FeedParser {
     suspend fun parseFeedResponse(
         url: URL,
         responseBody: ResponseBody,
+        /**
+         * Whether a feed that declares no icon should have its site's home
+         * page fetched to find one. Yes when a feed is being added; no from a
+         * sync, which keeps the icon it found the first time. It was yes on
+         * every sync of every such feed: a whole home page downloaded, each
+         * time, to learn what was already stored.
+         */
+        findIcon: Boolean = true,
     ): JsonFeed {
         try {
             val feed = when (responseBody.contentType()?.subtype?.contains("json")) {
                 true -> jsonFeedParser.parseJson(responseBody)
-                else -> parseRssAtom(url, responseBody)
+                else -> parseRssAtom(url, responseBody, findIcon)
             }
 
             return if (feed.feed_url == null) {
@@ -289,7 +311,7 @@ class FeedParser {
     }
 
     @Throws(FeedParsingError::class)
-    internal suspend fun parseRssAtom(baseUrl: URL, responseBody: ResponseBody): JsonFeed {
+    internal suspend fun parseRssAtom(baseUrl: URL, responseBody: ResponseBody, findIcon: Boolean = true): JsonFeed {
         try {
             responseBody.byteStream().use { bs ->
                 val feed = XmlReader(bs, true, responseBody.contentType()?.charset()?.name()).use {
@@ -300,7 +322,7 @@ class FeedParser {
                         .build(it)
                 }
                 return feed.asFeed(baseUrl = baseUrl) { siteUrl ->
-                    getFeedIconAtUrl(siteUrl)
+                    if (findIcon) getFeedIconAtUrl(siteUrl) else null
                 }
             }
         } catch (t: Throwable) {
@@ -311,7 +333,16 @@ class FeedParser {
     class FeedParsingError(val url: URL, e: Throwable) : Exception(e.message, e)
 }
 
-suspend fun OkHttpClient.getResponse(url: URL, forceNetwork: Boolean = false): Response {
+/** Whether a password written into a feed's address may answer this challenge. */
+internal fun answersFeedChallenge(asking: okhttp3.HttpUrl, feedHost: String): Boolean =
+    asking.isHttps && asking.host.equals(feedHost, ignoreCase = true)
+
+suspend fun OkHttpClient.getResponse(
+    url: URL,
+    forceNetwork: Boolean = false,
+    /** Hears this request's bytes, where the client listens; see ByteCounter. */
+    byteCounter: ByteCounter? = null,
+): Response {
     val request = Request.Builder()
         .url(url)
         .cacheControl(
@@ -327,6 +358,7 @@ suspend fun OkHttpClient.getResponse(url: URL, forceNetwork: Boolean = false): R
                 }
                 .build()
         )
+        .apply { byteCounter?.let { tag(ByteCounter::class.java, it) } }
         .build()
 
     val clientToUse = if (url.userInfo?.isNotBlank() == true) {
@@ -344,31 +376,19 @@ suspend fun OkHttpClient.getResponse(url: URL, forceNetwork: Boolean = false): R
             URLDecoder.decode(pass, "UTF-8")
         }
         val credentials = Credentials.basic(decodedUser, decodedPass)
+        val feedHost = url.host
+        // The feed's own server asks, over https, and nobody else. These
+        // answered any challenge: a host the feed redirected to got the
+        // feed's password for asking, and so did any proxy on the way,
+        // which is a different thing with its own credentials.
         newBuilder()
             .authenticator { _, response ->
                 when {
-                    response.request.header("Authorization") != null -> {
-                        null
-                    }
-
-                    else -> {
-                        response.request.newBuilder()
-                            .header("Authorization", credentials)
-                            .build()
-                    }
-                }
-            }
-            .proxyAuthenticator { _, response ->
-                when {
-                    response.request.header("Proxy-Authorization") != null -> {
-                        null
-                    }
-
-                    else -> {
-                        response.request.newBuilder()
-                            .header("Proxy-Authorization", credentials)
-                            .build()
-                    }
+                    response.request.header("Authorization") != null -> null
+                    !answersFeedChallenge(response.request.url, feedHost) -> null
+                    else -> response.request.newBuilder()
+                        .header("Authorization", credentials)
+                        .build()
                 }
             }
             .build()
@@ -381,22 +401,45 @@ suspend fun OkHttpClient.getResponse(url: URL, forceNetwork: Boolean = false): R
     }
 }
 
-suspend fun OkHttpClient.curl(url: URL): String? {
-    var result: String? = null
-    curlAndOnResponse(url) {
-        result = it.body.string()
+/**
+ * A page as it came: its bytes, and the charset the server named, if it
+ * named one. Kept as bytes so a page that names its encoding only in a
+ * `<meta>` tag can be decoded by what it says; see [pageDocument].
+ */
+class Page(val bytes: ByteArray, val charset: Charset?)
+
+/**
+ * A page, no larger than [PAGE_MAX_BYTES] and not a picture, a sound or a
+ * film. It was read whole, whatever it was.
+ */
+suspend fun OkHttpClient.fetchPage(url: URL): Page? {
+    var page: Page? = null
+    curlAndOnResponse(url) { response ->
+        val body = response.body
+        body.refuseMedia("a page")
+        page = Page(body.bytesAtMost(PAGE_MAX_BYTES), body.contentType()?.charset())
     }
-    return result
+    return page
 }
 
+/**
+ * A page as a document, in the encoding it names: the server's header if it
+ * gave one, otherwise the page's own `<meta charset>`, otherwise UTF-8.
+ * Decoding before jsoup could look meant a page in windows-1252 or Shift_JIS
+ * with no header was read as UTF-8, and every accented letter came out as a
+ * question mark in a box.
+ */
+fun pageDocument(page: Page, url: String): Document =
+    Jsoup.parse(ByteArrayInputStream(page.bytes), page.charset?.name(), url)
+
+suspend fun OkHttpClient.curl(url: URL): String? =
+    fetchPage(url)?.let { String(it.bytes, it.charset ?: Charsets.UTF_8) }
+
 suspend fun OkHttpClient.curlAndOnResponse(url: URL, block: (suspend (Response) -> Unit)) {
-    val response = getResponse(url)
-
-    if (!response.isSuccessful) {
-        throw IOException("Unexpected code $response")
-    }
-
-    response.use {
-        block(it)
+    // Closed on the failure path too. It used to throw before the use block,
+    // leaving every refused response - and its connection - open.
+    getResponse(url).use { response ->
+        if (!response.isSuccessful) throw HttpStatusException(response.code)
+        block(response)
     }
 }

@@ -275,7 +275,7 @@ fun SyndEntry.thumbnail(feedBaseUrl: URL): String? {
                     else -> null
                 }
             } catch (t: Throwable) {
-                Log.e("FeederRomeExt", "Encountered some bad link: [$siteBaseUrl, $feedBaseUrl]", t)
+                Log.e("FeederRomeExt", "Encountered a bad image link", t)
                 null
             }
         }

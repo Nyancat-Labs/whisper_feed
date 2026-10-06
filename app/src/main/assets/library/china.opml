@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+  <head>
+    <title>China</title>
+  </head>
+  <body>
+    <outline text="News" title="News">
+      <outline type="rss" text="Caixin Global" title="Caixin Global" xmlUrl="https://www.caixinglobal.com/rss/"/>
+      <outline type="rss" text="South China Morning Post" title="South China Morning Post" xmlUrl="https://www.scmp.com/rss/91/feed"/>
+      <outline type="rss" text="Sixth Tone" title="Sixth Tone" xmlUrl="https://www.sixthtone.com/rss"/>
+      <outline type="rss" text="Global Times" title="Global Times" xmlUrl="https://www.globaltimes.cn/rss/outbrain.xml"/>
+      <outline type="rss" text="The Diplomat China" title="The Diplomat China" xmlUrl="https://thediplomat.com/regions/east-asia/feed/"/>
+      <outline type="rss" text="CGTN" title="CGTN" xmlUrl="https://www.cgtn.com/subscribe/rss/section/china.xml"/>
+      <outline type="rss" text="ECNS" title="ECNS" xmlUrl="https://www.ecns.cn/rss/rss.xml"/>
+    </outline>
+    <outline text="Business" title="Business">
+      <outline type="rss" text="Nikkei Asia China" title="Nikkei Asia China" xmlUrl="https://asia.nikkei.com/rss/feed/nar"/>
+    </outline>
+  </body>
+</opml>

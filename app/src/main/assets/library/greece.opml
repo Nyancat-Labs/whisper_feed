@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+  <head>
+    <title>Greece</title>
+  </head>
+  <body>
+    <outline text="News" title="News">
+      <outline type="rss" text="Kathimerini English" title="Kathimerini English" xmlUrl="https://www.ekathimerini.com/feed/"/>
+      <outline type="rss" text="Kathimerini" title="Kathimerini" xmlUrl="https://www.kathimerini.gr/rss"/>
+      <outline type="rss" text="Protothema" title="Protothema" xmlUrl="https://www.protothema.gr/rss/"/>
+      <outline type="rss" text="To Vima" title="To Vima" xmlUrl="https://www.tovima.gr/feed/"/>
+      <outline type="rss" text="Greek Reporter" title="Greek Reporter" xmlUrl="https://greekreporter.com/feed/"/>
+    </outline>
+    <outline text="Business" title="Business">
+      <outline type="rss" text="Naftemporiki" title="Naftemporiki" xmlUrl="https://www.naftemporiki.gr/feed/"/>
+    </outline>
+  </body>
+</opml>

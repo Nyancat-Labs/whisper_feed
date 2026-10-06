@@ -1,29 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="md_theme_primary">#6750A4</color>
     <!-- Whisper brand palette -->
-    <color name="whisper_cobalt">#2563EB</color>
-    <color name="whisper_indigo">#4F46E5</color>
     <color name="whisper_sky">#7DD3FC</color>
     <color name="whisper_slate">#475569</color>
-    <color name="whisper_soft">#E5E7EB</color>
     <color name="ic_launcher_background">#FBFCFE</color>
     <!-- The splash sits on the app icon's own ground, so launching the
          app is the icon growing into it. -->
     <color name="whisper_splash_bg">#FBFCFE</color>
-    <color name="globalAccent">#4285f4</color>
-    <color name="textColorPrimary">#000000</color>
-    <color name="toggle_checked">#6200EE</color>
 
-    <color name="navbar_color">#28000000</color>
-    <color name="grey_50">#fffafafa</color>
     <color name="grey_100">#fff5f5f5</color>
     <color name="bottom_sheet_background">#80000000</color>
 </resources>

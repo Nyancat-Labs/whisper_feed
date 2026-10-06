@@ -18,6 +18,10 @@
 
 package com.saulhdev.feeder.utils
 
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,7 +40,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.selection.DisableSelection
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -44,6 +47,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,6 +62,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.LineBreak
+import androidx.compose.ui.text.style.Hyphens
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -78,11 +88,11 @@ import com.saulhdev.feeder.ui.components.withParagraph
 import com.saulhdev.feeder.ui.components.withStyle
 import com.saulhdev.feeder.ui.icons.Phosphor
 import com.saulhdev.feeder.ui.icons.phosphor.Play
-import com.saulhdev.feeder.ui.theme.BlockQuoteStyle
-import com.saulhdev.feeder.ui.theme.CodeBlockBackground
-import com.saulhdev.feeder.ui.theme.CodeBlockStyle
-import com.saulhdev.feeder.ui.theme.CodeInlineStyle
-import com.saulhdev.feeder.ui.theme.LinkTextStyle
+import com.saulhdev.feeder.ui.theme.blockQuoteStyle
+import com.saulhdev.feeder.ui.theme.codeBlockBackground
+import com.saulhdev.feeder.ui.theme.codeBlockStyle
+import com.saulhdev.feeder.ui.theme.codeInlineStyle
+import com.saulhdev.feeder.ui.theme.linkTextStyle
 import com.saulhdev.feeder.ui.theme.LocalDimens
 import org.jsoup.Jsoup
 import org.jsoup.internal.StringUtil
@@ -93,15 +103,67 @@ import java.io.InputStream
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
+/**
+ * How a paragraph of an article is set.
+ *
+ * Ragged right, unhyphenated. This was justified with hyphenation switched
+ * on, on the reasoning that a narrow justified column opens rivers unless the
+ * breaks can fall mid-word — which is true, and is an argument against
+ * justifying a column this narrow rather than for hyphenating it.
+ *
+ * Justification needs a measure wide enough that the spaces have somewhere to
+ * go. A phone gives roughly forty characters, so every line was stretched to
+ * fit and no two lines were stretched the same amount; the word gaps changed
+ * size down the page. Android's automatic hyphenation then broke words
+ * wherever the line needed it — "automot-ive", "Activ-ision", "Actu-ally" —
+ * and a reader tracking a sentence had to reassemble words as well as follow
+ * shifting gaps. Reported as disorienting, which is exactly what it is.
+ *
+ * Ragged right gives every space the same width and every word one piece. The
+ * right-hand edge is uneven, and that is the trade: an edge nobody reads
+ * against gaps and breaks inside the words they do. It is what every reading
+ * app on a phone does, for this reason.
+ *
+ * [LineBreak.Paragraph] stays. It is the slower, whole-paragraph break
+ * strategy, and it is what keeps the ragged edge shallow rather than saw
+ * toothed — it has nothing to do with justification and was never the problem.
+ */
+@Composable
+private fun bodyStyle() = MaterialTheme.typography.bodyLarge.merge(
+    TextStyle(
+        color = MaterialTheme.colorScheme.onBackground,
+        textAlign = TextAlign.Start,
+        hyphens = Hyphens.None,
+        lineBreak = LineBreak.Paragraph,
+    )
+)
+
 fun LazyListScope.htmlFormattedText(
     inputStream: InputStream,
     baseUrl: String,
     @DrawableRes imagePlaceholder: Int,
     onLinkClick: (String) -> Unit,
+    /**
+     * The headline the screen has already drawn, if any.
+     *
+     * Given so a body that opens by repeating it can have that copy taken
+     * out. See [stripRepeatedTitle].
+     */
+    articleTitle: String? = null,
+    /**
+     * The article's own picture, the one its card in the feed shows.
+     *
+     * Given so a body that arrived without it can have it put back. See
+     * [ensureLeadImage].
+     */
+    leadImageUrl: String? = null,
 ) {
     Jsoup.parse(inputStream, null, baseUrl)
         .body()
         .let { body ->
+            stripRepeatedTitle(body, articleTitle)
+            ensureLeadImage(body, leadImageUrl)
+            dropRepeatedImages(body)
             formatBody(
                 element = body,
                 imagePlaceholder = imagePlaceholder,
@@ -110,6 +172,437 @@ fun LazyListScope.htmlFormattedText(
             )
         }
 }
+
+/**
+ * Takes out a body's opening heading when it only repeats the article's title.
+ *
+ * The reader draws the headline itself, from the feed, above the source and
+ * the byline. Plenty of publishers also open the article body with the same
+ * words in an `h1`, and Readability keeps it — so the story arrived with its
+ * title twice, once in the reader's own type and again in the body's, set
+ * differently and reading like a mistake because it is one.
+ *
+ * Only the *first* text-bearing block is considered, and only when it is a
+ * heading. A later heading with the same words is a real section of the
+ * article — a list piece whose first entry repeats the title, say — and
+ * removing that would take away content rather than a duplicate.
+ */
+internal fun stripRepeatedTitle(body: Element, articleTitle: String?) {
+    val wanted = normalizedHeading(articleTitle.orEmpty())
+    if (wanted.isEmpty()) return
+    val first = body.select("h1, h2, h3, h4, p, li, blockquote, pre, td")
+        .firstOrNull { it.text().isNotBlank() }
+        ?: return
+    if (first.tagName() !in HEADING_TAGS) return
+    val heading = normalizedHeading(first.text())
+    if (heading != wanted && heading != withoutSiteName(wanted) && withoutSiteName(heading) != wanted) return
+    first.remove()
+}
+
+/**
+ * Takes out the page's own byline and date lines from the top of the text.
+ *
+ * An Investing.com article opened with three lines of its page furniture
+ * under the reader's own byline: "By", whose author's name had not survived
+ * the page, then "Published 10/04/2026, 08:15 AM" and "Updated …", saying
+ * again what the line above them already said.
+ *
+ * Only the opening lines, and only a line that is nothing but that: a bare
+ * "By", "By" and the article's own author, and "Published", "Updated",
+ * "Posted" or "Last updated" with a date. The first line that is anything
+ * else ends the search, so nothing in the article itself is touched; a line
+ * holding a picture ends it too.
+ */
+internal fun stripBylineNoise(body: Element, author: String?) {
+    val name = author?.trim()?.lowercase().orEmpty()
+    var looked = 0
+    for (line in body.select("*").filter { isTextLine(it) }) {
+        if (looked++ >= BYLINE_LINES_LOOKED_AT) return
+        if (line.selectFirst("img, picture, figure, video, svg") != null) return
+        if (!isBylineNoise(line.text(), name)) return
+        line.remove()
+    }
+}
+
+/** A block with text of its own and no block inside it: one line, as a reader sees it. */
+private fun isTextLine(element: Element): Boolean =
+    element.tagName() != "body" &&
+        (element.isBlock || element.tagName() in setOf("span", "time", "address")) &&
+        element.text().isNotBlank() &&
+        element.children().none { it.isBlock || it.tagName() in setOf("span", "time", "address") }
+
+/**
+ * Whether a line is only a byline or date stamp: "By", "By" and the author,
+ * "Published 10/04/2026, 08:15 AM", or several of them run together.
+ */
+internal fun isBylineNoise(text: String, author: String = ""): Boolean {
+    val line = text.replace('\u00A0', ' ').trim()
+    if (line.isEmpty() || line.length > 120) return false
+    val parts = line.split(STAMP_START).map { it.trim(' ', '|', '·', '•', ',', '-', '–', '—') }
+    return parts.all { part ->
+        val lower = part.lowercase()
+        when {
+            part.isEmpty() -> true
+            lower == "by" || lower == "by:" -> true
+            author.isNotEmpty() && lower.removePrefix("by").trim(' ', ':') == author -> true
+            isDateStamp(part) -> true
+            else -> false
+        }
+    }
+}
+
+/** How far down the text the byline lines are looked for. */
+private const val BYLINE_LINES_LOOKED_AT = 6
+
+/** Where a date stamp begins, so several on one line can be told apart. */
+private val STAMP_START =
+    Regex(
+        """(?i)(?=\b(?:first\s+published|last\s+updated)\b)|""" +
+            """(?<!(?:first|last)\s)(?=\b(?:published|updated|posted)\b)"""
+    )
+
+/** The keyword a date stamp starts with. */
+private val STAMP_KEYWORD =
+    Regex("""(?i)^(?:first\s+published|last\s+updated|published|updated|posted)\b\s*:?\s*""")
+
+/** The words a date or time may hold besides digits: months, days, am/pm, "2 hours ago". */
+private val DATE_WORDS = setOf(
+    "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "sept", "oct", "nov", "dec",
+    "january", "february", "march", "april", "june", "july", "august", "september",
+    "october", "november", "december",
+    "mon", "tue", "wed", "thu", "fri", "sat", "sun", "monday", "tuesday", "wednesday",
+    "thursday", "friday", "saturday", "sunday",
+    "am", "pm", "a", "p", "m", "at", "on", "th", "st", "nd", "rd",
+    "ago", "min", "mins", "minute", "minutes", "hr", "hrs", "hour", "hours", "day", "days",
+)
+
+/**
+ * "Published 10/04/2026, 08:15 AM", "Updated: Oct 4, 2026 9:10AM ET",
+ * "Posted 2 hours ago": the keyword, then a date and nothing else. Every word
+ * after the keyword has to be a number, a date word, or a time zone in
+ * capitals, so "Published in 2019 by Penguin" is not one.
+ */
+private fun isDateStamp(part: String): Boolean {
+    val keyword = STAMP_KEYWORD.find(part) ?: return false
+    val rest = part.substring(keyword.range.last + 1).trim()
+    if (rest.isEmpty() || rest.length > 40 || rest.none(Char::isDigit)) return false
+    return Regex("""[\p{L}]+|\d+""").findAll(rest).all { word ->
+        val w = word.value
+        w.all(Char::isDigit) ||
+            w.lowercase() in DATE_WORDS ||
+            (w.length in 2..4 && w.all(Char::isUpperCase)) ||
+            Regex("""\d+(?:am|pm)""", RegexOption.IGNORE_CASE).matches(w)
+    }
+}
+
+/**
+ * Puts the article's own picture back when the body arrived without it.
+ *
+ * The Verge's articles opened with no picture at all while the same story's
+ * card in the feed carried one. Fetching the page and reading it settles why:
+ * the lead image is a Next.js fill image, an `<img>` with no `src` and no
+ * `srcset`, whose real address is supplied by JavaScript after the page
+ * loads. There is no `<picture>`, no `data-src`, no `<noscript>` copy — in
+ * the HTML a fetcher receives, the address appears only in `og:image`. So it
+ * is not there to be found by looking harder at the body, and every reader
+ * that works from the page's markup loses it the same way.
+ *
+ * What makes this fixable is that the app already has the picture: it came
+ * with the feed entry, and the card has been showing it all along. Nothing
+ * needs fetching or guessing — the image the reader was looking at a moment
+ * ago is simply drawn again above the article, where the publisher put it.
+ *
+ * ## Only when it is genuinely missing
+ *
+ * Most publishers do put the lead image in the body, so this has to recognise
+ * it there or every article gains a duplicate. Matched on host and path with
+ * the query string dropped, because the same asset is routinely served at
+ * several sizes: `…/STK048.png?w=1200` in the page and `…/STK048.png?w=560`
+ * in the feed is one picture, and comparing whole addresses would call it two.
+ */
+internal fun ensureLeadImage(body: Element, leadImageUrl: String?) {
+    val lead = leadImageUrl?.trim().orEmpty()
+    if (lead.isEmpty()) return
+    val wanted = imageIdentity(lead)
+    if (wanted.isEmpty()) return
+
+    val images = body.select("img").filter { srcOf(it).isNotBlank() }
+    // The same address, so the same request and the same cache entry. Nothing
+    // to do; this is most publishers.
+    if (images.any { imageIdentity(srcOf(it)) == wanted }) return
+
+    val first = images.firstOrNull()
+    if (first != null && sameAsset(imageIdentity(srcOf(first)), wanted)) {
+        // The same photograph at a different address, which is the ordinary
+        // case and was costing a second download of a picture already on the
+        // phone. One Gear Patrol item offers the feed
+        // `...16x9-Lead-1.webp` and the body `...16x9-Lead-1.jpg?w=1920`: one
+        // asset, two addresses, two cache entries, and two separate chances to
+        // fail - which is how an article came to show a placeholder where its
+        // own card, a moment earlier, had shown the picture.
+        first.attr("src", lead)
+        // And the srcset with it, or the swap does nothing. The reader picks
+        // from srcset first and only falls back to src, so a body image that
+        // carries both went on requesting its own copy while this line
+        // appeared to have changed it - which is how the Gear Patrol picture
+        // stayed a placeholder after the first version of this fix.
+        first.removeAttr("srcset")
+        first.removeAttr("sizes")
+        return
+    }
+
+    // Put back only when the body has no opening picture of its own. BGR,
+    // Engadget and SlashGear offer the feed `l-intro-123.jpg` and open the
+    // body with `intro-123.jpg` - two files, one photograph - and adding the
+    // feed's copy above theirs was the reader's own duplicate, introduced by
+    // the first version of this function. An opening picture, whatever its
+    // name, means the publisher put the lead where it belongs already.
+    if (opensWithImage(body)) return
+    body.prependChild(Element("img").attr("src", lead))
+}
+
+/**
+ * Whether a picture comes before the article really starts.
+ *
+ * "Really starts" is the second paragraph of any substance, not the first. A
+ * dek sits between headline and photograph on a great many sites - Engadget's
+ * "It will offer several privacy-focused options for users..." comes before
+ * its lead image - and counting it as the start made this answer no for
+ * exactly the articles that had a lead image, which put the feed's copy above
+ * theirs. Short lines such as a kicker or a lone "TL;DR" do not count at all.
+ *
+ * An image that says it is small - both dimensions under [SMALL_IMAGE_PX], an
+ * avatar or an icon - is not a lead image however early it comes; How-To
+ * Geek's byline avatar is 90 by 90 and sits right at the top.
+ */
+internal fun opensWithImage(body: Element): Boolean = openingImage(body) != null
+
+/** The body's opening picture, as [opensWithImage] judges it, or null. */
+internal fun openingImage(body: Element): Element? {
+    var paragraphs = 0
+    for (e in body.select("img, p, li, blockquote, h2, h3")) {
+        if (e.tagName() == "img") {
+            if (srcOf(e).isBlank() && e.attr("srcset").isBlank()) continue
+            if (isDeclaredSmall(e)) continue
+            return e
+        }
+        if (e.text().trim().length >= OPENING_PARAGRAPH_CHARS) {
+            paragraphs++
+            if (paragraphs >= OPENING_PARAGRAPHS_ALLOWED + 1) return null
+        }
+    }
+    return null
+}
+
+/**
+ * Takes the body's opening picture out and gives back its address, for the
+ * reader to draw above the headline - edge to edge, as a card draws it - and
+ * not a second time in the article.
+ *
+ * Its figure goes with it, caption and all: a caption left at the head of the
+ * text with nothing above it to describe reads as a stray line. Null, and the
+ * body untouched, when the article opens without a picture or the one it
+ * opens with has no address this can use.
+ */
+internal fun liftLeadImage(body: Element): String? {
+    val img = openingImage(body) ?: return null
+    val src = srcOf(img).ifBlank {
+        img.attr("srcset").substringBefore(',').trim().substringBefore(' ')
+    }
+    val usable = usableImageUrl(src.trim()) ?: return null
+    (img.closest("figure") ?: img.closest("picture") ?: img).remove()
+    return usable
+}
+
+/**
+ * An article body made ready for the reader, with its lead picture taken out
+ * to be drawn above the headline. See [readerBody].
+ */
+class ReaderBody internal constructor(
+    /** The picture to draw above the headline, or null for none. */
+    val leadImage: String?,
+    internal val body: Element,
+)
+
+/**
+ * The reader's article, read once, with the picture for the top of the
+ * screen chosen and taken out of the text. Its text is drawn with
+ * [readerBodyText].
+ *
+ * The card's picture when there is one - the picture the reader tapped - and
+ * the page's opening picture taken out, whatever it is. The page's own
+ * opening picture went on top at first, and on Investing.com that is the
+ * Reuters logo: blown up to the width of the screen above a story whose card
+ * had shown the photograph. When the page's opening picture is the lead, it
+ * is the card's under another name (BGR's `intro-123.jpg` for the feed's
+ * `l-intro-123.jpg`), so it goes either way; any copy of the card's picture
+ * further down goes too. Only with no card picture does the page's opening
+ * one go on top.
+ */
+fun readerBody(
+    inputStream: InputStream,
+    baseUrl: String,
+    articleTitle: String? = null,
+    leadImageUrl: String? = null,
+    author: String? = null,
+): ReaderBody {
+    val body = Jsoup.parse(inputStream, null, baseUrl).body()
+    stripRepeatedTitle(body, articleTitle)
+    stripBylineNoise(body, author)
+    val card = usableImageUrl(leadImageUrl?.trim())
+    if (card != null) {
+        openingImage(body)?.let { (it.closest("figure") ?: it.closest("picture") ?: it).remove() }
+        dropCopiesOf(body, card)
+        dropRepeatedImages(body)
+        return ReaderBody(card, body)
+    }
+    dropRepeatedImages(body)
+    return ReaderBody(liftLeadImage(body), body)
+}
+
+/** Takes out every picture in [body] that is [picture] at some other address or size. */
+internal fun dropCopiesOf(body: Element, picture: String) {
+    val wanted = imageIdentity(picture)
+    if (wanted.isEmpty()) return
+    body.select("img").forEach { img ->
+        val src = srcOf(img).ifBlank { img.attr("srcset").substringBefore(',').trim().substringBefore(' ') }
+        val identity = imageIdentity(src)
+        if (identity.isNotEmpty() && (identity == wanted || sameAsset(identity, wanted))) {
+            (img.closest("figure") ?: img.closest("picture") ?: img).remove()
+        }
+    }
+}
+
+/** The text of a [readerBody], below the headline. */
+fun LazyListScope.readerBodyText(
+    article: ReaderBody,
+    baseUrl: String,
+    @DrawableRes imagePlaceholder: Int,
+    onLinkClick: (String) -> Unit,
+) {
+    formatBody(
+        element = article.body,
+        imagePlaceholder = imagePlaceholder,
+        onLinkClick = onLinkClick,
+        baseUrl = baseUrl,
+    )
+}
+
+/** Paragraphs allowed above the lead image before it stops being the lead: the dek. */
+private const val OPENING_PARAGRAPHS_ALLOWED = 1
+
+private fun isDeclaredSmall(img: Element): Boolean {
+    val w = img.attr("width").toIntOrNull() ?: return false
+    val h = img.attr("height").toIntOrNull() ?: return false
+    return w in 1 until SMALL_IMAGE_PX && h in 1 until SMALL_IMAGE_PX
+}
+
+private const val OPENING_PARAGRAPH_CHARS = 40
+private const val SMALL_IMAGE_PX = 150
+
+/**
+ * Keeps the first of several images that are the same picture.
+ *
+ * The Verge's byline card carries its author's photograph twice - once as a
+ * fill image and once as a small avatar, one asset at two sizes - and
+ * Readability keeps the card, so the reader showed the same face twice in a
+ * row. Compared the way [ensureLeadImage] compares, host and path with the
+ * sizing query dropped, so two sizes of one file count as one.
+ *
+ * Every later copy goes, not only an adjacent one: a photograph repeated
+ * further down is still a photograph already shown.
+ */
+internal fun dropRepeatedImages(body: Element) {
+    val seen = HashSet<String>()
+    body.select("img").forEach { img ->
+        // The srcset's first candidate when there is no src: The Verge's
+        // avatar has only a srcset, and an image this cannot name cannot be
+        // recognised as a repeat either.
+        val src = srcOf(img).ifBlank {
+            img.attr("srcset").substringBefore(',').trim().substringBefore(' ')
+        }
+        if (src.isBlank()) return@forEach
+        val identity = imageIdentity(src)
+        if (identity.isEmpty()) return@forEach
+        if (!seen.add(identity)) img.remove()
+    }
+}
+
+private fun srcOf(img: Element): String =
+    img.attr("abs:src").ifBlank { img.attr("src") }
+
+/**
+ * Whether two image addresses are the same photograph in different clothes.
+ *
+ * Identical but for the file extension. A CDN offering one picture as both
+ * webp and jpeg is naming a single asset twice, and treating those as two
+ * pictures is what makes the reader fetch what the feed already holds.
+ *
+ * Deliberately no looser than that. Sizes and crops live in the query string,
+ * which [imageIdentity] has already dropped; anything differing beyond the
+ * extension is a different file and may well be a different picture.
+ */
+private fun sameAsset(a: String, b: String): Boolean =
+    a.isNotEmpty() && b.isNotEmpty() && withoutExtension(a) == withoutExtension(b)
+
+private val IMAGE_EXTENSION = Regex("\\.[A-Za-z0-9]{1,5}$")
+
+private fun withoutExtension(identity: String): String =
+    identity.replace(IMAGE_EXTENSION, "")
+
+/**
+ * An image address reduced to the thing that identifies the picture.
+ *
+ * Host and path, lowercased, with the query string and the fragment dropped —
+ * those carry the size and the crop, which is exactly what differs between
+ * the copy in the feed and the copy in the page.
+ */
+internal fun imageIdentity(url: String): String =
+    url.substringBefore('#')
+        .substringBefore('?')
+        .substringAfter("://")
+        .trimEnd('/')
+        .lowercase()
+
+private val HEADING_TAGS = setOf("h1", "h2", "h3", "h4")
+
+/**
+ * A title with a trailing site name taken off: "... - BGR", "... | SlashGear".
+ *
+ * Page titles carry one far more often than feed titles, and the same
+ * headline with and without it is still the same headline. Only the last
+ * segment goes, and only after a spaced separator, so a hyphenated word or a
+ * title that is itself a list of phrases keeps everything but its tail.
+ */
+private fun withoutSiteName(title: String): String {
+    val cut = maxOf(title.lastIndexOf(" - "), title.lastIndexOf(" | "))
+    return if (cut > 0) title.substring(0, cut).trim() else title
+}
+
+private val WHITESPACE_RUN = Regex("\\s+")
+
+/**
+ * Two headings compared the way a reader would compare them.
+ *
+ * The feed's title and the page's own rarely match byte for byte: one has
+ * curly quotes where the other has straight ones, an em dash against a hyphen,
+ * a non-breaking space, a trailing full stop. None of those is a different
+ * headline, and a comparison that says they are would leave the duplicate on
+ * screen for most of the publishers this exists for.
+ */
+internal fun normalizedHeading(text: String): String =
+    text.replace('\u2018', '\'')
+        .replace('\u2019', '\'')
+        .replace('\u201C', '"')
+        .replace('\u201D', '"')
+        .replace('\u2013', '-')
+        .replace('\u2014', '-')
+        .replace('\u00A0', ' ')
+        .lowercase()
+        .replace(WHITESPACE_RUN, " ")
+        .trim()
+        .trim('.', ',', ':', ';', '-', '|', '\u2026')
+        .trim()
 
 private fun LazyListScope.formatBody(
     element: Element,
@@ -123,32 +616,16 @@ private fun LazyListScope.formatBody(
             val paragraph = paragraphBuilder.toComposableAnnotatedString()
 
             WithBidiDeterminedLayoutDirection(paragraph.text) {
-                // ClickableText prevents taps from deselecting selected text
-                // So use regular Text if possible
-                if (
-                    paragraph.getStringAnnotations("URL", 0, paragraph.length)
-                        .isNotEmpty()
-                ) {
-                    ClickableText(
-                        text = paragraph,
-                        style = MaterialTheme.typography.bodyLarge
-                            .merge(TextStyle(color = MaterialTheme.colorScheme.onBackground)),
-                        modifier = Modifier.width(dimens.maxContentWidth)
-                    ) { offset ->
-                        paragraph.getStringAnnotations("URL", offset, offset)
-                            .firstOrNull()
-                            ?.let {
-                                onLinkClick(it.item)
-                            }
-                    }
-                } else {
-                    Text(
-                        text = paragraph,
-                        style = MaterialTheme.typography.bodyLarge
-                            .merge(TextStyle(color = MaterialTheme.colorScheme.onBackground)),
-                        modifier = Modifier.width(dimens.maxContentWidth)
-                    )
-                }
+                // Each link is its own tappable span, so a tap anywhere else
+                // in the paragraph is left to text selection. The address
+                // still goes through onLinkClick and its scheme checks.
+                val openLink by rememberUpdatedState(onLinkClick)
+                val linked = remember(paragraph) { withLinks(paragraph) { openLink(it) } }
+                Text(
+                    text = linked,
+                    style = bodyStyle(),
+                    modifier = Modifier.width(dimens.maxContentWidth)
+                )
             }
         }
     }
@@ -175,7 +652,7 @@ private fun LazyListScope.formatCodeBlock(
             val dimens = LocalDimens.current
             val scrollState = rememberScrollState()
             Surface(
-                color = CodeBlockBackground(),
+                color = codeBlockBackground(),
                 shape = MaterialTheme.shapes.small,
                 modifier = Modifier
                     .width(dimens.maxContentWidth)
@@ -188,7 +665,7 @@ private fun LazyListScope.formatCodeBlock(
                 ) {
                     Text(
                         text = paragraphBuilder.toComposableAnnotatedString(),
-                        style = CodeBlockStyle(),
+                        style = codeBlockStyle(),
                         softWrap = false
                     )
                 }
@@ -250,7 +727,7 @@ private fun TextComposer.appendTextChildren(
                             element.hasClass("blockextract")       -> {
                                 withParagraph {
                                     withComposableStyle(
-                                        style = { BlockQuoteStyle() }
+                                        style = { blockQuoteStyle() }
                                     ) {
                                         appendTextChildren(
                                             element.childNodes(),
@@ -336,6 +813,26 @@ private fun TextComposer.appendTextChildren(
                         withParagraph {
                             withComposableStyle(
                                 style = { MaterialTheme.typography.headlineSmall.toSpanStyle() }
+                            ) {
+                                element.appendCorrectlyNormalizedWhiteSpaceRecursively(
+                                    this,
+                                    stripLeading = endsWithWhitespace
+                                )
+                            }
+                        }
+                    }
+
+                    // A caption, set as one: small and quiet, directly under
+                    // its picture. It fell through to the default branch and
+                    // was set as body text, so "Credit: Tim Brookes / How-To
+                    // Geek" read like the first sentence of the article.
+                    "figcaption"             -> {
+                        withParagraph {
+                            withComposableStyle(
+                                style = {
+                                    MaterialTheme.typography.labelMedium.toSpanStyle()
+                                        .copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
                             ) {
                                 element.appendCorrectlyNormalizedWhiteSpaceRecursively(
                                     this,
@@ -504,7 +1001,7 @@ private fun TextComposer.appendTextChildren(
                         } else {
                             // inline code
                             withComposableStyle(
-                                style = { CodeInlineStyle() }
+                                style = { codeInlineStyle() }
                             ) {
                                 appendTextChildren(
                                     element.childNodes(),
@@ -521,7 +1018,7 @@ private fun TextComposer.appendTextChildren(
                     "blockquote"             -> {
                         withParagraph {
                             withComposableStyle(
-                                style = { BlockQuoteStyle() }
+                                style = { blockQuoteStyle() }
                             ) {
                                 appendTextChildren(
                                     element.childNodes(),
@@ -536,9 +1033,9 @@ private fun TextComposer.appendTextChildren(
 
                     "a"                      -> {
                         withComposableStyle(
-                            style = { LinkTextStyle().toSpanStyle() }
+                            style = { linkTextStyle().toSpanStyle() }
                         ) {
-                            withAnnotation("URL", element.attr("abs:href") ?: "") {
+                            withAnnotation("URL", element.attr("abs:href")) {
                                 appendTextChildren(
                                     element.childNodes(),
                                     lazyListScope = lazyListScope,
@@ -691,7 +1188,7 @@ private fun TextComposer.handleImage(
     val imageCandidates = getImageSource(baseUrl, element)
     if (imageCandidates.hasImage) {
         // Some sites are silly and insert formatting in alt text
-        val alt = stripHtml(element.attr("alt") ?: "")
+        val alt = stripHtml(element.attr("alt"))
         appendImage(onLinkClick = onLinkClick) { onClick ->
             lazyListScope.item {
                 val dimens = LocalDimens.current
@@ -722,37 +1219,68 @@ private fun TextComposer.handleImage(
 //                                            }
                         ) {
                             val imageWidth = maxImageWidth()
+                            // Zero until the box has been measured, and Coil refuses a zero
+                            // dimension with an IllegalArgumentException thrown from inside the
+                            // request builder — no fetch, no retry, just the error placeholder.
+                            // Skipping the frame costs nothing: BoxWithConstraints recomposes
+                            // with the real width and the picture arrives then.
+                            // `hasImage` above is a cheap pre-check on the
+                            // attributes, not a promise of an address: a srcset
+                            // whose candidates all carry descriptors this cannot
+                            // parse, next to an empty src, satisfies it and
+                            // resolves to nothing. Coil then reports
+                            // `IllegalArgumentException: Invalid URL ""`, which
+                            // is what the device report showed. The resolved
+                            // address is the thing worth testing, so it is.
+                            val src = imageCandidates.getBestImageForMaxSize(
+                                pixelDensity = pixelDensity(),
+                                maxWidth = imageWidth.coerceAtLeast(1),
+                            )
+                            // The width the picture decoded at, once it has. Coil
+                            // decodes no larger than the source at INEXACT, so for a
+                            // small image this is the image's own size.
+                            var decodedWidth by remember(src) { mutableIntStateOf(0) }
+                            // A saved article's picture, kept on the phone, if
+                            // there is one under any address this image offers:
+                            // what makes Read later readable offline. See
+                            // SavedImages.
+                            val context = LocalContext.current
+                            val kept = remember(src) {
+                                SavedImages.local(context.filesDir, listOf(src) + imageCandidates.allUrls())
+                            }
+                            if (imageWidth > 0 && src.isNotBlank()) {
                             AsyncImage(
                                 model = ImageRequest.Builder(LocalContext.current)
-                                    .data(
-                                        imageCandidates.getBestImageForMaxSize(
-                                            pixelDensity = pixelDensity(),
-                                            maxWidth = imageWidth,
-                                        )
-                                    )
+                                    .data(kept ?: src)
                                     .placeholder(imagePlaceholder)
                                     .error(imagePlaceholder)
                                     .scale(Scale.FIT)
                                     .size(imageWidth)
                                     .precision(Precision.INEXACT)
+                                    .tag(ImageSurface::class.java, ImageSurface.Article)
                                     .build(),
                                 contentScale = ContentScale.FillWidth,
                                 contentDescription = alt,
-                                modifier = Modifier
-                                    .fillMaxWidth()
+                                onSuccess = { state ->
+                                    decodedWidth = state.painter.intrinsicSize.width
+                                        .takeIf { it.isFinite() }?.roundToInt() ?: 0
+                                },
+                                modifier = Modifier.articleImageWidth(decodedWidth, imageWidth)
                             )
+                            }
                         }
                     }
 
-                    if (alt.isNotBlank()) {
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        Text(
-                            alt,
-                            style = MaterialTheme.typography.labelMedium,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
+                    // No caption from the alt text. Alt is the picture described
+                    // for someone who cannot see it - it is the contentDescription
+                    // above, which is where TalkBack reads it - and no browser
+                    // draws it under an image that loaded. Drawn here it
+                    // described the photograph in words directly beneath the
+                    // photograph ("Two jackets shown close-up: one is orange and
+                    // brown with a visible BEAMS logo...") and then the page's
+                    // real caption or credit followed it, so most images carried
+                    // two. The page's <figcaption> is the caption; see the
+                    // "figcaption" branch.
 
                     Spacer(modifier = Modifier.height(16.dp))
                 }
@@ -772,10 +1300,9 @@ private fun TextComposer.handleTable(
     appendTable {
         lazyListScope.item {
             // Create a separate TextComposer for building cell contents
-            val cellComposer = TextComposer { builder ->
-                // This won't be called immediately, just storing the builder
-                builder
-            }
+            // Its paragraphs go nowhere: each cell's text is read from its
+            // builder below.
+            val cellComposer = TextComposer { }
 
             element.children()
                 .filter { e -> e.tagName() == "caption" }
@@ -845,13 +1372,26 @@ private fun TextComposer.handleIFrame(
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             val imageWidth = maxImageWidth()
+                            // Zero until the box has been measured, and Coil refuses a zero
+                            // dimension with an IllegalArgumentException thrown from inside the
+                            // request builder — no fetch, no retry, just the error placeholder.
+                            // Skipping the frame costs nothing: BoxWithConstraints recomposes
+                            // with the real width and the picture arrives then.
+                            if (imageWidth > 0) {
                             AsyncImage(
                                 model = ImageRequest.Builder(LocalContext.current)
+                                    // The video's own still. This request was
+                                    // built without any data at all, so every
+                                    // embedded video in every article drew the
+                                    // fallback mark and none of them ever tried
+                                    // to fetch the thumbnail they had.
+                                    .data(video.imageUrl)
                                     .placeholder(R.drawable.ic_youtube)
                                     .error(R.drawable.ic_youtube)
                                     .scale(Scale.FIT)
                                     .size(imageWidth)
                                     .precision(Precision.INEXACT)
+                                    .tag(ImageSurface::class.java, ImageSurface.Article)
                                     .build(),
                                 contentScale = ContentScale.FillWidth,
                                 contentDescription = stringResource(R.string.touch_to_play_video),
@@ -861,6 +1401,7 @@ private fun TextComposer.handleIFrame(
                                     }
                                     .fillMaxWidth()
                             )
+                            }
                         }
                     }
 
@@ -899,6 +1440,12 @@ private fun TextComposer.handleVideo(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         val imageWidth = maxImageWidth()
+                        // Zero until the box has been measured, and Coil refuses a zero
+                        // dimension with an IllegalArgumentException thrown from inside the
+                        // request builder — no fetch, no retry, just the error placeholder.
+                        // Skipping the frame costs nothing: BoxWithConstraints recomposes
+                        // with the real width and the picture arrives then.
+                        if (imageWidth > 0) {
                         AsyncImage(
                             model = ImageRequest.Builder(LocalContext.current)
                                 .data(posterSrc.ifEmpty { R.drawable.ic_youtube })
@@ -907,6 +1454,7 @@ private fun TextComposer.handleVideo(
                                 .scale(Scale.FIT)
                                 .size(imageWidth)
                                 .precision(Precision.INEXACT)
+                                .tag(ImageSurface::class.java, ImageSurface.Article)
                                 .build(),
                             contentScale = ContentScale.FillWidth,
                             contentDescription = stringResource(R.string.touch_to_play_video),
@@ -916,6 +1464,7 @@ private fun TextComposer.handleVideo(
                                 }
                                 .fillMaxWidth()
                         )
+                        }
 
                         // Play button overlay
                         Box(
@@ -1069,17 +1618,74 @@ private fun pixelDensity() = with(LocalDensity.current) {
 }
 
 @Composable
+/**
+ * How wide to decode an article's image, or zero if that is not known yet.
+ *
+ * Zero is a real answer and has to be handled by the caller. A
+ * `BoxWithConstraints` can be measured with no width — during a lazy list's
+ * first pass, or while a pane is collapsed — and `maxWidth.toPx()` is then 0.
+ *
+ * Coil refuses it: `Dimension.Pixels` carries `require(px > 0)` and throws
+ * `IllegalArgumentException("px must be > 0.")` from inside the request
+ * builder, before any fetch is attempted. The request never runs, the error
+ * placeholder is drawn, and nothing anywhere says why — which is how article
+ * images came to show Whisper's own placeholder while the same article in a
+ * browser showed the photograph. It took the image trace counting failures to
+ * see it at all.
+ */
 fun BoxWithConstraintsScope.maxImageWidth() = with(LocalDensity.current) {
-    maxWidth.toPx().roundToInt().coerceAtMost(2000)
+    maxWidth.toPx().roundToInt().coerceAtMost(2000).coerceAtLeast(0)
 }
+
+/**
+ * How wide to draw an article image: the column, unless that would stretch it.
+ *
+ * Every image filled the column whatever its size, so a byline's avatar -
+ * The Verge's and How-To Geek's are both around a hundred pixels - was blown
+ * up to the full width of the phone, blurred, and read as the article's
+ * photograph. No picture gains anything from being drawn at more than twice
+ * the pixels it has, so past that it is drawn at its own size instead.
+ *
+ * Full width until the decode says otherwise, so a photograph never starts
+ * small and grows; only an image that turns out to be small shrinks, once.
+ */
+@Composable
+private fun Modifier.articleImageWidth(decodedPx: Int, columnPx: Int): Modifier =
+    if (isTooSmallToStretch(decodedPx, columnPx)) {
+        with(LocalDensity.current) { width(decodedPx.toDp()) }
+    } else {
+        fillMaxWidth()
+    }
+
+/**
+ * [paragraph] with each "URL" annotation made a link that calls [open] with
+ * its address. The paragraph's own styling, link colour included, is kept.
+ */
+internal fun withLinks(paragraph: AnnotatedString, open: (String) -> Unit): AnnotatedString {
+    val urls = paragraph.getStringAnnotations("URL", 0, paragraph.length)
+    if (urls.isEmpty()) return paragraph
+    return buildAnnotatedString {
+        append(paragraph)
+        urls.forEach { url ->
+            addLink(LinkAnnotation.Clickable(url.item) { open(url.item) }, url.start, url.end)
+        }
+    }
+}
+
+/** Whether filling [columnPx] would stretch a [decodedPx]-wide image past [MAX_IMAGE_UPSCALE]x. */
+internal fun isTooSmallToStretch(decodedPx: Int, columnPx: Int): Boolean =
+    decodedPx > 0 && columnPx > 0 && decodedPx * MAX_IMAGE_UPSCALE < columnPx
+
+/** The most an article image is ever enlarged to fill the column. */
+internal const val MAX_IMAGE_UPSCALE = 2
 
 /**
  * Gets the url to the image in the <img> tag - could be from srcset or from src
  */
 internal fun getImageSource(baseUrl: String, element: Element) = ImageCandidates(
     baseUrl = baseUrl,
-    srcSet = element.attr("srcset") ?: "",
-    absSrc = element.attr("abs:src") ?: "",
+    srcSet = element.attr("srcset"),
+    absSrc = element.attr("abs:src"),
 )
 
 internal class ImageCandidates(
@@ -1088,6 +1694,15 @@ internal class ImageCandidates(
     val absSrc: String
 ) {
     val hasImage: Boolean = srcSet.isNotBlank() || absSrc.isNotBlank()
+
+    /** Every address on offer, resolved: each srcset candidate, then the src. */
+    fun allUrls(): List<String> =
+        (srcSet.splitToSequence(",")
+            .map { it.trim().split(SpaceRegex).first() }
+            .filter { it.isNotBlank() }
+            .map { StringUtil.resolve(baseUrl, it) }
+            .toList() + listOf(absSrc).filter { it.isNotBlank() }.map { StringUtil.resolve(baseUrl, it) })
+            .distinct()
 
     /**
      * Might throw if hasImage returns false

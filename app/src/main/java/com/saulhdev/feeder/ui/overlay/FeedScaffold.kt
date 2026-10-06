@@ -50,9 +50,9 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
@@ -65,25 +65,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import com.saulhdev.feeder.ui.components.BrandTitle
 import com.saulhdev.feeder.R
 import com.saulhdev.feeder.data.db.models.FeedItem
 import com.saulhdev.feeder.manager.glance.GlanceState
+import com.saulhdev.feeder.ui.components.PullToRefreshLazyColumn
+import com.saulhdev.feeder.ui.components.PullToRefreshStaggeredGrid
+import com.saulhdev.feeder.ui.theme.reducedMotion
 import com.saulhdev.feeder.ui.icons.Phosphor
-import com.saulhdev.feeder.ui.icons.phosphor.DotsThreeVertical
 import com.saulhdev.feeder.ui.components.HeaderToggleAction
 import com.saulhdev.feeder.ui.components.HeaderAction
 import com.saulhdev.feeder.ui.icons.phosphor.CaretUp
-import com.saulhdev.feeder.ui.icons.phosphor.FunnelSimple
 import kotlinx.coroutines.launch
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -98,7 +96,13 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.draw.clip
 import com.saulhdev.feeder.ui.pages.SortFilterSheet
 import com.saulhdev.feeder.ui.components.FeedSearchBar
+import com.saulhdev.feeder.ui.components.SourceFilterBar
+import com.saulhdev.feeder.ui.icons.phosphor.GearSix
+import com.saulhdev.feeder.ui.icons.phosphor.Filter
+import com.saulhdev.feeder.ui.icons.phosphor.Filtered
 import com.saulhdev.feeder.ui.icons.phosphor.MagnifyingGlass
+import com.saulhdev.feeder.ui.components.FeedEmptyReason
+import com.saulhdev.feeder.ui.components.FeedEmptyState
 import com.saulhdev.feeder.ui.components.SearchEmptyState
 
 /**
@@ -146,10 +150,30 @@ fun FeedScaffold(
     onSearchQueryChange: (String) -> Unit,
     isSearching: Boolean,
     onSearchingChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+    /** The one source the feed is narrowed to, or null for all of them. */
+    focusedSource: String? = null,
+    /**
+     * The narrowing [articles] was actually built under.
+     *
+     * Not the same as [focusedSource] for the moment between the tap and the
+     * query coming back, which is the moment that matters here. See
+     * [AnchorFeedOnFocusChange].
+     */
+    appliedFocus: String? = null,
+    /** The article a narrowing started from, to land on at both its edges. */
+    focusAnchor: String? = null,
+    onFocusSource: (String, String) -> Unit = { _, _ -> },
+    onClearFocusedSource: () -> Unit = {},
     onBookmarksClick: () -> Unit,
     onSettings: () -> Unit,
     onArticleSeen: (FeedItem) -> Unit = {},
-    modifier: Modifier = Modifier,
+    onArticleDwell: (String, Long) -> Unit = { _, _ -> },
+    /** Writes any batched dwell now; see TrackReading's onLeave. */
+    onDwellFlush: () -> Unit = {},
+    onPin: (FeedItem, Boolean) -> Unit = { _, _ -> },
+    /** Gives back a breaking story's promotion. See `Article.dismissedAt`. */
+    onDismissStory: (FeedItem) -> Unit = {},
 ) {
     val listState = rememberLazyListState()
     val gridState = rememberLazyStaggeredGridState()
@@ -166,6 +190,23 @@ fun FeedScaffold(
             else listState.firstVisibleItemIndex > 5
         }
     }
+
+    // What is drawn: the articles with their sizes and stories, built off the
+    // main thread and never swapped in under a moving finger. See FeedFrame.
+    val frame = rememberFeedFrame(articles, appliedFocus) {
+        listState.isScrollInProgress || gridState.isScrollInProgress
+    }
+
+    // Tapping a source narrows the feed to it, and backing out widens it
+    // again; both land on the article the tap came from. See FocusAnchor.
+    AnchorFeedOnFocusChange(
+        appliedFocus = frame.focus,
+        anchorId = focusAnchor,
+        articles = frame.articles,
+        isGrid = isGrid,
+        listState = listState,
+        gridState = gridState,
+    )
 
     // Hiding a source is one tap with no confirmation, so the way back is
     // offered here rather than left to the sources screen.
@@ -184,40 +225,50 @@ fun FeedScaffold(
         else onDismissHideSource()
     }
 
+    // Offered on this surface too, now that the panel is known to handle back
+    // for its own state — it already does for the filter sheet and for search.
+    // The earlier reasoning for withholding it, that the gesture belongs to
+    // the launcher, was simply wrong.
+    CompositionLocalProvider(LocalFocusSource provides onFocusSource) {
     Box(
         modifier = modifier
             .fillMaxSize()
             .nestedScroll(scrollBehavior.nestedScrollConnection)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            if (isSearching) {
+            if (focusedSource != null) {
+                // Ahead of the search bar, because the two cannot both be
+                // showing and this is the more specific state: a search can be
+                // started from inside a narrowed feed, and coming back out of
+                // it should land here rather than at the whole feed.
+                val focusedFeed = remember(focusedSource, articles) {
+                    articles.firstOrNull { it.sourceId == focusedSource }
+                }
+                SourceFilterBar(
+                    title = focusedFeed?.feedTitle.orEmpty(),
+                    iconUrl = focusedFeed?.feedIconUrl,
+                    onClear = onClearFocusedSource,
+                    // This window's own insets are not to be trusted; topInset
+                    // is measured by the overlay's listener. Same reasoning as
+                    // the search bar below.
+                    windowInsets = WindowInsets(0),
+                    modifier = Modifier.padding(top = topInset),
+                )
+            } else if (isSearching) {
                 FeedSearchBar(
                     query = searchQuery,
                     onQueryChange = onSearchQueryChange,
                     onClose = { onSearchingChange(false) },
+                    // This window's own insets are not to be trusted; topInset
+                    // is measured by the overlay's listener. Same reasoning as
+                    // the app bar below.
+                    windowInsets = WindowInsets(0),
                     modifier = Modifier.padding(top = topInset),
                 )
             } else TopAppBar(
-                title = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        // ic_launcher_foreground is an adaptive-icon layer:
-                        // the mark fills only half its canvas, so a 34dp box
-                        // drew a 17dp mark — the same height as the word beside
-                        // it. ic_brand_mark is the same artwork cropped to its
-                        // own bounds, so the size here is the size drawn.
-                        Image(
-                            painter = painterResource(R.drawable.ic_brand_mark),
-                            contentDescription = null,
-                            modifier = Modifier.height(36.dp),
-                        )
-                        Spacer(Modifier.width(14.dp))
-                        Text(
-                            text = stringResource(R.string.app_name),
-                            style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.SemiBold,
-                        )
-                    }
-                },
+                // The same title as the app's own header, from one place. See
+                // BrandTitle for why the name sometimes stands aside.
+                title = { BrandTitle() },
                 actions = {
                     // Both of these are modes rather than one-shot actions, so
                     // they have to show when they are on — the View header only
@@ -228,8 +279,12 @@ fun FeedScaffold(
                         description = stringResource(R.string.action_search),
                         onClick = { onSearchingChange(true) },
                     )
+                    // The same two-state icon the app uses. A funnel that
+                    // looks identical whether or not it is narrowing the feed
+                    // says nothing; the filled one says the list you are
+                    // looking at is not the whole list.
                     HeaderToggleAction(
-                        icon = Phosphor.FunnelSimple,
+                        icon = if (isFilterActive) Phosphor.Filtered else Phosphor.Filter,
                         description = stringResource(R.string.pref_cat_filters),
                         active = isFilterActive,
                         onClick = { onFilterSheetOpenChange(true) },
@@ -240,13 +295,17 @@ fun FeedScaffold(
                         active = isShowingBookmarks,
                         onClick = onBookmarksClick,
                     )
-                    // One action, not a menu: reload duplicates pull-to-refresh
-                    // and restart was a development leftover, which left
-                    // Settings as the only real entry. It keeps the three dots
-                    // rather than taking a gear, so the two headers read the
-                    // same way.
+                    // One action, not a menu: reload duplicates
+                    // pull-to-refresh and restart was a development leftover,
+                    // which left Settings as the only real entry.
+                    //
+                    // A gear, not three dots. Three dots promise a menu, and
+                    // this opens Settings directly — and the app's header has
+                    // said so with a gear since the menu went. Two icons for
+                    // one destination is the reader having to learn the app
+                    // twice.
                     HeaderAction(
-                        icon = Phosphor.DotsThreeVertical,
+                        icon = Phosphor.GearSix,
                         description = stringResource(R.string.title_settings),
                         onClick = onSettings,
                     )
@@ -270,30 +329,47 @@ fun FeedScaffold(
                 modifier = Modifier.padding(top = topInset),
             )
 
-            GlanceRow(
-                state = glanceState,
-                // Straight to settings. It used to open the overflow menu, so
-                // "set a location" meant opening a menu and then finding
-                // settings in it.
-                onSetLocation = onSettings,
-            )
+            // The glance row and the chips used to stand here, above the
+            // list and fixed: only the app bar scrolled away, so on a phone a
+            // third of the panel never moved and never showed an article. The
+            // app has scrolled them with the feed for a while; this is the
+            // overlay catching up, because the two surfaces disagreeing about
+            // what a scroll does is worse than either behaviour on its own.
+            val header: @Composable () -> Unit = {
+                Column {
+                    GlanceRow(
+                        state = glanceState,
+                        // Straight to settings. It used to open the overflow
+                        // menu, so "set a location" meant opening a menu and
+                        // then finding settings in it.
+                        onSetLocation = onSettings,
+                    )
 
-            // Hidden while searching: a search deliberately ignores the
-            // selected category, so leaving the chips up — one of them
-            // highlighted — would claim a narrowing that is not happening.
-            if (!isSearching) {
-                CategoryChipRow(
-                    categories = categories,
-                    selected = selectedCategories,
-                    onSelectedChange = onCategoriesChange,
-                )
+                    // Hidden while searching: a search deliberately ignores
+                    // the selected category, so leaving the chips up — one of
+                    // them highlighted — would claim a narrowing that is not
+                    // happening.
+                    if (!isSearching) {
+                        CategoryChipRow(
+                            categories = categories,
+                            selected = selectedCategories,
+                            onSelectedChange = onCategoriesChange,
+                        )
+                        // What the filter is doing, where the shortened feed
+                        // is. The funnel in the header says only that one is
+                        // on; this says which, and lets it be undone here.
+                        ActiveFilterBar()
+                    }
+                    // Outside the search check: how current the feed is does
+                    // not change with what is being looked for.
+                    SyncFreshnessLine()
+                }
             }
 
-            PullToRefreshBox(
-                isRefreshing = isRefreshing,
-                onRefresh = onRefresh,
-                modifier = Modifier.fillMaxSize(),
-            ) {
+            // A plain Box: pull-to-refresh belongs to the list containers
+            // below, which are the app's, so nesting a second one here would
+            // put two refresh gestures on top of each other.
+            Box(modifier = Modifier.fillMaxSize()) {
                 val padding = PaddingValues(
                     top = 4.dp,
                     bottom = bottomInset + 16.dp,
@@ -303,29 +379,66 @@ fun FeedScaffold(
                 // inside it. Everything else is a single column.
                 // Which article gets the big shape is one decision for every
                 // layout, so it is made once here rather than per container.
-                val emphasis = rememberFeedEmphasis(articles)
+                val emphasis = frame.emphasis
+                // Asked of the system rather than assumed, and asked on both
+                // surfaces: somebody who has set the animation scale to zero
+                // has said what they want, and the panel is no more exempt
+                // from that than the app is.
+                val animate = !reducedMotion()
                 val dimRead = rememberDimRead()
-                MarkReadWhileScrolling(
-                    articles = articles,
+                    val skipped = rememberSkippedSources()
+                val clusters = frame.clusters
+                TrackReading(
+                    articles = frame.articles,
                     isGrid = isGrid,
                     listState = listState,
                     gridState = gridState,
                     onRead = onArticleSeen,
+                    onDwell = onArticleDwell,
+                    onLeave = onDwellFlush,
                 )
-                if (isSearching && searchQuery.isNotBlank() && articles.isEmpty()) {
+                if (isSearching && searchQuery.isNotBlank() && frame.articles.isEmpty()) {
                     SearchEmptyState(searchQuery)
+                } else if (frame.articles.isEmpty()) {
+                    // Nothing to scroll, so the header has nowhere to scroll
+                    // away to and is drawn plainly.
+                    header()
+                    // The launcher surface cannot reach the sources list, so it
+                    // reports the two cases it can actually tell apart and
+                    // leaves "no sources" to the app, which can say where to
+                    // go and open it.
+                    FeedEmptyState(
+                        when {
+                            isRefreshing -> FeedEmptyReason.Syncing
+                            isFilterActive || selectedCategories.isNotEmpty() ->
+                                FeedEmptyReason.FilteredOut
+
+                            else -> FeedEmptyReason.NothingFetched
+                        }
+                    )
                 } else if (feedLayoutIsGrid(layout)) {
-                    LazyVerticalStaggeredGrid(
-                        columns = StaggeredGridCells.Fixed(2),
-                        state = gridState,
+                    // The app's own container, rather than a second one built
+                    // here. Two wrappers around the same Material indicator is
+                    // how the two surfaces drifted apart in the first place —
+                    // and one of them had a two-second timer on the spinner
+                    // that the other did not.
+                    PullToRefreshStaggeredGrid(
+                        isRefreshing = isRefreshing,
+                        onRefresh = { onRefresh() },
+                        gridState = gridState,
                         contentPadding = padding,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 10.dp),
-                    ) {
+                        modifier = Modifier.padding(horizontal = 10.dp),
+                        content = {
+                        item(
+                            key = FEED_HEADER_KEY,
+                            span = StaggeredGridItemSpan.FullLine,
+                        ) { header() }
                         itemsIndexed(
-                            articles,
+                            frame.articles,
                             key = { _, item -> item.id },
+                            contentType = { index, item ->
+                                feedContentType(index, item, layout, emphasis)
+                            },
                             // The grid needs the span before it composes the
                             // item, so the sizes are worked out for the whole
                             // list up front rather than asked per tile.
@@ -335,45 +448,73 @@ fun FeedScaffold(
                                 else StaggeredGridItemSpan.SingleLane
                             },
                         ) { index, item ->
-                            FeedArticleItem(
-                                item = item,
-                                index = index,
-                                onClick = { onArticleClick(item) },
-                                onBookmark = { onBookmark(item, it) },
-                                onShare = { onShare(item) },
-                                onMoreLikeThis = { onMoreLikeThis(item) },
-                                onLessLikeThis = { onLessLikeThis(item) },
-                                onHideSource = { onHideSource(item) },
-                                layout = layout,
-                                emphasis = emphasis.getOrNull(index)
-                                    ?: FeedEmphasis.Medium,
-                                dimRead = dimRead,
-                            )
+                            // Keyed and animated, as the column beside it and
+                            // the app's own grid already were: a sync should
+                            // move a card rather than replace the list under
+                            // the reader's thumb.
+                            Box(
+                                modifier = if (animate) Modifier.animateItem()
+                                else Modifier
+                            ) {
+                                FeedArticleItem(
+                                    item = item,
+                                    index = index,
+                                    onClick = { onArticleClick(item) },
+                                    onBookmark = { onBookmark(item, it) },
+                                    onShare = { onShare(item) },
+                                    onMoreLikeThis = { onMoreLikeThis(item) },
+                                    onLessLikeThis = { onLessLikeThis(item) },
+                                    onHideSource = { onHideSource(item) },
+                                    onDismissStory = { onDismissStory(item) },
+                                    layout = layout,
+                                    emphasis = emphasis.getOrNull(index)
+                                        ?: FeedEmphasis.Medium,
+                                    dimRead = dimRead,
+                                    dimSource = item.feed.id in skipped,
+                                    cluster = clusters[item.id],
+                                    onPin = { onPin(item, it) },
+                                )
+                            }
                         }
-                    }
+                        },
+                    )
                 } else {
-                    LazyColumn(
-                        state = listState,
-                        contentPadding = padding,
-                        modifier = Modifier.fillMaxSize(),
-                    ) {
-                        itemsIndexed(articles, key = { _, item -> item.id }) { index, item ->
-                            FeedArticleItem(
-                                item = item,
-                                index = index,
-                                onClick = { onArticleClick(item) },
-                                onBookmark = { onBookmark(item, it) },
-                                onShare = { onShare(item) },
-                                onMoreLikeThis = { onMoreLikeThis(item) },
-                                onLessLikeThis = { onLessLikeThis(item) },
-                                onHideSource = { onHideSource(item) },
-                                layout = layout,
-                                emphasis = emphasis.getOrNull(index)
-                                    ?: FeedEmphasis.Medium,
-                                dimRead = dimRead,
-                            )
-                        }
+                    val article: @Composable (Int, FeedItem) -> Unit = { index, item ->
+                        FeedArticleItem(
+                            item = item,
+                            index = index,
+                            onClick = { onArticleClick(item) },
+                            onBookmark = { onBookmark(item, it) },
+                            onShare = { onShare(item) },
+                            onMoreLikeThis = { onMoreLikeThis(item) },
+                            onLessLikeThis = { onLessLikeThis(item) },
+                            onHideSource = { onHideSource(item) },
+                            onDismissStory = { onDismissStory(item) },
+                            layout = layout,
+                            emphasis = emphasis.getOrNull(index) ?: FeedEmphasis.Medium,
+                            dimRead = dimRead,
+                                    dimSource = item.feed.id in skipped,
+                            cluster = clusters[item.id],
+                            onPin = { onPin(item, it) },
+                        )
                     }
+                    PullToRefreshLazyColumn(
+                        isRefreshing = isRefreshing,
+                        onRefresh = { onRefresh() },
+                        listState = listState,
+                        contentPadding = padding,
+                        content = {
+                            item(key = FEED_HEADER_KEY) { header() }
+                            feedItems(
+                                frame.articles,
+                                animate,
+                                contentType = { index, item ->
+                                    feedContentType(index, item, layout, emphasis)
+                                },
+                                article = article,
+                            )
+                        },
+                    )
                 }
             }
         }
@@ -464,6 +605,7 @@ fun FeedScaffold(
                 Icon(Phosphor.CaretUp, stringResource(R.string.back_to_top))
             }
         }
+    }
     }
 }
 

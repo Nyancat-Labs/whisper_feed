@@ -28,6 +28,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import com.saulhdev.feeder.R
 import com.saulhdev.feeder.ui.icons.Phosphor
@@ -35,18 +36,45 @@ import com.saulhdev.feeder.ui.icons.phosphor.DotsThreeVertical
 
 @Composable
 fun OverflowMenu(
+    /**
+     * What a screen reader calls the button.
+     *
+     * It announced "Settings" everywhere, on every screen that has one of
+     * these — including the ones with no settings in the menu at all.
+     */
+    description: Int = R.string.more_options,
     block: @Composable OverflowMenuScope.() -> Unit)
 {
     val showMenu = remember { mutableStateOf(false) }
     val overflowMenuScope = remember { OverflowMenuScopeImpl(showMenu) }
+    val focusManager = LocalFocusManager.current
 
     Box{
         IconButton(
-            onClick = { showMenu.value = true }
+            onClick = {
+                // Focus is dropped as the menu opens, and the menu is not
+                // what this is for. Compose restores focus to whatever held
+                // it when a popup closes; on the sources screen that is the
+                // search field, so opening the menu, choosing something and
+                // coming back brought the keyboard up over the result —
+                // unasked for, with nothing to type into.
+                //
+                // Clearing it here rather than on dismissal means there is
+                // nothing to restore, which is both simpler and right: a menu
+                // is a change of mode, and the field somebody was typing in
+                // before they opened one is no longer where they are.
+                //
+                // In the shared component because every screen with an
+                // overflow menu has the same arrangement, and because the two
+                // screens that would each need the fix are the two that would
+                // each be forgotten.
+                focusManager.clearFocus()
+                showMenu.value = true
+            }
         ) {
             Icon(
                 imageVector = Phosphor.DotsThreeVertical,
-                contentDescription = stringResource(id = R.string.title_settings),
+                contentDescription = stringResource(id = description),
                 modifier = Modifier.size(HeaderIconSize),
             )
         }

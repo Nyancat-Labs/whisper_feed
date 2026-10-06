@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+  <head>
+    <title>Japan</title>
+  </head>
+  <body>
+    <outline text="Japan" title="Japan">
+      <outline type="rss" text="Japan Times latest articles" title="Japan Times latest articles" xmlUrl="https://www.japantimes.co.jp/feed/topstories/"/>
+      <outline type="rss" text="Japan Today" title="Japan Today" xmlUrl="https://japantoday.com/feed"/>
+      <outline type="rss" text="News On Japan" title="News On Japan" xmlUrl="https://www.newsonjapan.com/rss/top.xml"/>
+      <outline type="rss" text="BRIDGE（ブリッジ）テクノロジー＆スタートアップ情報" title="BRIDGE（ブリッジ）テクノロジー＆スタートアップ情報" xmlUrl="https://feeds.feedburner.com/SdJapan"/>
+      <outline type="rss" text="NYT &gt; Japan" title="NYT &gt; Japan" xmlUrl="https://www.nytimes.com/svc/collections/v1/publish/http://www.nytimes.com/topic/destination/japan/rss.xml"/>
+      <outline type="rss" text="ライブドアニュース - 主要トピックス" title="ライブドアニュース - 主要トピックス" xmlUrl="https://news.livedoor.com/topics/rss/top.xml"/>
+      <outline type="rss" text="朝日新聞デジタル" title="朝日新聞デジタル" xmlUrl="https://rss.asahi.com/rss/asahi/newsheadlines.rdf"/>
+    </outline>
+    <outline text="News" title="News">
+    </outline>
+  </body>
+</opml>

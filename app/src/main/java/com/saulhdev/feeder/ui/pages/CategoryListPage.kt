@@ -40,6 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.saulhdev.feeder.R
@@ -79,8 +80,8 @@ fun CategoryListPage(
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(
-                start = 8.dp,
-                end = 8.dp,
+                start = 16.dp,
+                end = 16.dp,
                 top = paddingValues.calculateTopPadding(),
                 bottom = paddingValues.calculateBottomPadding(),
             ),
@@ -95,7 +96,7 @@ fun CategoryListPage(
                     ),
                     headlineContent = { Text(tag) },
                     supportingContent = {
-                        Text(stringResource(R.string.category_in_use, count))
+                        Text(pluralStringResource(R.plurals.category_in_use, count, count))
                     },
                     trailingContent = {
                         androidx.compose.foundation.layout.Row {

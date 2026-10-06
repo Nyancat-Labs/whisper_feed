@@ -12,7 +12,7 @@ interface ILauncherOverlay : IInterface {
     @Throws(RemoteException::class)
     fun openOverlay(options: Int)
 
-    fun windowAttached(bundle: Bundle?, dVar: ILauncherOverlayCallback?)
+    fun windowAttached(bundle: Bundle?, callback: ILauncherOverlayCallback?)
 
     @Throws(RemoteException::class)
     fun windowAttached( attrs: WindowManager.LayoutParams, callbacks: ILauncherOverlayCallback,options: Int)

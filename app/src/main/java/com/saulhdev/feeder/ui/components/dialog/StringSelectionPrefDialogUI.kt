@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -57,7 +58,7 @@ fun StringSelectionPrefDialogUI(
     pref: StringSelectionPref,
     openDialogCustom: MutableState<Boolean>
 ) {
-    var selected by remember { mutableStateOf(pref.getValue()) }
+    var selected by remember { mutableStateOf(pref.peekOrDefault()) }
     val entryPairs = pref.entries.toList()
 
     val scope = rememberCoroutineScope()
@@ -101,10 +102,14 @@ fun StringSelectionPrefDialogUI(
                 DialogPositiveButton(
                     modifier = Modifier.padding(start = 16.dp),
                     onClick = {
-                        scope.launch {
-                            openDialogCustom.value = false
-                            pref.setValue(selected)
-                        }
+                        // Both on this thread and in this order, because
+                        // the previous version raced itself: closing the
+                        // dialog removes the composable, which cancels the
+                        // scope this launched in, so the write that came after
+                        // it could simply never happen. set() writes on a
+                        // scope that outlives the dialog.
+                        pref.set(selected)
+                        openDialogCustom.value = false
                     }
                 )
             }
@@ -122,9 +127,12 @@ fun SingleSelectionListItem(
     onClick: () -> Unit = {}
 ) {
     Row(
+        // At least 48, not exactly: at 200% text a choice such as "Only on
+        // Wi-Fi and while charging" takes two lines, and a fixed row cut the
+        // second one off.
         modifier = modifier
             .fillMaxWidth()
-            .height(48.dp)
+            .heightIn(min = 48.dp)
             .clickable(onClick = onClick, enabled = isEnabled),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -140,7 +148,8 @@ fun SingleSelectionListItem(
         )
         Text(
             modifier = Modifier
-                .weight(1f),
+                .weight(1f)
+                .padding(vertical = 6.dp),
             text = text,
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold

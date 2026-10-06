@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+  <head>
+    <title>Vietnam</title>
+  </head>
+  <body>
+    <outline text="News" title="News">
+      <outline type="rss" text="VnExpress International" title="VnExpress International" xmlUrl="https://e.vnexpress.net/rss/news.rss"/>
+      <outline type="rss" text="Tuoi Tre News" title="Tuoi Tre News" xmlUrl="https://tuoitrenews.vn/rss/"/>
+      <outline type="rss" text="VietnamNet" title="VietnamNet" xmlUrl="https://vietnamnet.vn/rss/thoi-su.rss"/>
+      <outline type="rss" text="Vietnam News" title="Vietnam News" xmlUrl="https://vietnamnews.vn/rss/politics-laws.rss"/>
+      <outline type="rss" text="VnExpress" title="VnExpress" xmlUrl="https://vnexpress.net/rss/tin-moi-nhat.rss"/>
+      <outline type="rss" text="Thanh Nien" title="Thanh Nien" xmlUrl="https://thanhnien.vn/rss/home.rss"/>
+      <outline type="rss" text="Tuoi Tre" title="Tuoi Tre" xmlUrl="https://tuoitre.vn/rss/tin-moi-nhat.rss"/>
+    </outline>
+  </body>
+</opml>

@@ -3,6 +3,7 @@
     <string name="app_name" translatable="false">Whisper</string>
     <string name="app_tagline">Your feeds, your focus.</string>
     <string name="already_subscribed">Added</string>
+    <string name="feed_already_yours">Already in your feeds</string>
     <string name="source_removed">Removed %1$s</string>
     <string name="action_undo">Undo</string>
     <string name="action_unsave">Remove from saved</string>
@@ -15,45 +16,90 @@
     <string name="more_options">More options</string>
     <string name="more_like_this">More like this</string>
     <string name="less_like_this">Less like this</string>
+    <string name="dismiss_story">Dismiss this story</string>
     <string name="hide_source">Hide source</string>
     <string name="pref_feed_layout">Feed layout</string>
     <string name="layout_cards">Cards</string>
     <string name="layout_magazine">Magazine</string>
     <string name="layout_list">List</string>
     <string name="layout_mosaic">Mosaic</string>
+    <string name="source_pin">Pin to the top</string>
+    <string name="source_unpin">Unpin from the top</string>
+    <plurals name="source_pin_full">
+        <item quantity="one">You can pin %1$d source to the top. Unpin it first.</item>
+        <item quantity="other">You can pin %1$d sources to the top. Unpin one first.</item>
+    </plurals>
+    <string name="source_never_updated">Never updated</string>
     <string name="source_not_updating">Not updating</string>
+    <string name="sources_clear_search">Clear the search</string>
     <string name="sources_search">Search sources</string>
-    <string name="sources_selected">%1$d selected</string>
+    <plurals name="sources_selected">
+        <item quantity="one">%1$d selected</item>
+        <item quantity="other">%1$d selected</item>
+    </plurals>
     <string name="sources_select_all">Select all</string>
     <string name="sort_by_title">Name</string>
     <string name="sort_by_category">Category</string>
-    <string name="sort_by_last_sync">Least recently updated</string>
-    <string name="sort_by_added">Recently added</string>
+    <string name="sort_by_added">Added</string>
+    <string name="sort_by_latest_post">Latest post</string>
     <string name="sources_add_tag">Add category</string>
     <string name="sources_remove_tag">Remove category</string>
     <string name="sources_replace_tags">Replace categories</string>
     <string name="sources_enable">Enable</string>
     <string name="sources_disable">Disable</string>
-    <string name="sources_deleted">Removed %1$d sources</string>
+    <plurals name="sources_deleted">
+        <item quantity="one">Removed %1$d source</item>
+        <item quantity="other">Removed %1$d sources</item>
+    </plurals>
+    <string name="sources_delete_selected">Delete</string>
+    <string name="sources_clear_selection">Clear selection</string>
+    <string name="sources_more_actions">More actions</string>
+    <string name="sources_clear_articles">Clear articles</string>
+    <plurals name="sources_articles_cleared">
+        <item quantity="one">Removed %1$d article. Saved ones kept.</item>
+        <item quantity="other">Removed %1$d articles. Saved ones kept.</item>
+    </plurals>
+    <string name="sources_full_text_on">Fetch full articles</string>
+    <string name="sources_full_text_off">Summaries only</string>
+    <string name="sources_find_duplicates">Find duplicates</string>
+    <string name="sources_find_same_site">Find feeds from the same site</string>
+    <plurals name="sources_same_site_showing">
+        <item quantity="one">One group that may be the same publication. Whisper is guessing here \u2014 check before removing anything.</item>
+        <item quantity="other">%1$d groups that may each be the same publication. Whisper is guessing here \u2014 check before removing anything.</item>
+    </plurals>
+    <string name="sources_same_site_none">Nothing looks like a repeat of anything else.</string>
+    <plurals name="sources_duplicate_group">
+        <item quantity="one">%1$s · %2$d source</item>
+        <item quantity="other">%1$s · %2$d sources</item>
+    </plurals>
+    <string name="sources_duplicates_showing">Each group has the same address, or most of the same articles. One of each is enough.</string>
+    <plurals name="sources_duplicates_found">
+        <item quantity="one">One feed is subscribed more than once.</item>
+        <item quantity="other">%1$d feeds are subscribed more than once.</item>
+    </plurals>
+    <string name="sources_duplicates_review">Review</string>
+    <string name="sources_duplicates_remove_extra">Remove extra copies</string>
+    <string name="sources_duplicates_none">No duplicate sources</string>
+    <string name="sources_show_all">Show all</string>
+    <string name="category_move_left">Move left</string>
+    <string name="category_move_right">Move right</string>
     <string name="manage_categories">Manage categories</string>
     <string name="category_rename">Rename</string>
     <string name="category_delete">Delete category</string>
     <string name="category_delete_desc">Removes “%1$s” from every source. The sources themselves are kept.</string>
-    <string name="category_in_use">%1$d sources</string>
+    <plurals name="category_in_use">
+        <item quantity="one">%1$d source</item>
+        <item quantity="other">%1$d sources</item>
+    </plurals>
     <string name="category_merge_hint">Renaming onto an existing category merges the two.</string>
+    <string name="source_address_taken">%1$s was not saved \u2014 another source already uses that address.</string>
     <string name="source_hidden">Hiding %1$s</string>
     <string name="all_categories">All</string>
     <string name="home">Home</string>
-    <string name="app_id" translatable="false">Package</string>
     <string name="app_version" translatable="false">Version</string>
-    <string name="app_build" translatable="false">Build</string>
     <string name="title_settings">Settings</string>
     <string name="title_about">About</string>
     <string name="title_sources">Data sources</string>
-    <string name="summary_sources">Add or remove sources</string>
-    <string name="date_format_day_month" translatable="false">%1$d %2$s</string>
-    <string name="date_format_day_month_year" translatable="false">%1$d %2$s %3$d</string>
-    <string name="date_ago_now">now</string>
     <!-- Compact article ages, as seen under a headline: "BBC · 5h". -->
     <string name="age_now">now</string>
     <string name="age_minutes">%1$dm</string>
@@ -62,28 +108,58 @@
     <string name="age_weeks">%1$dw</string>
     <string name="age_months">%1$dmo</string>
     <string name="age_years">%1$dy</string>
-    <string name="date_at">at</string>
-    <string name="today">today</string>
-    <string name="tomorrow">tomorrow</string>
-    <string name="yesterday">yesterday</string>
-    <string name="pref_cat_contact">Contacts</string>
-    <string name="about_team">Team Members</string>
-    <string name="about_channel">Channel</string>
-    <string name="about_community">Community</string>
-    <string name="about_community_telegram">Community on Telegram</string>
-    <string name="about_community_matrix">Community on Matrix</string>
+    <!-- The line under the feed's header saying how current it is. %1$s is a compact age: "12m", "3h". -->
+    <string name="freshness_updated">Updated %1$s ago</string>
+    <string name="freshness_just_now">Updated just now</string>
+    <string name="freshness_updating">Updating…</string>
+    <string name="freshness_never">Not updated yet · pull down to update</string>
+    <string name="freshness_overdue">Updated %1$s ago · pull down to update</string>
+    <!-- Notifications sent only when syncing has stopped working. %1$s is a compact age: "26h", "2d". -->
+    <string name="sync_problems_channel">Sync problems</string>
+    <string name="sync_problems_channel_description">When feeds have stopped updating. Syncing itself is never announced.</string>
+    <string name="sync_stuck_title">Feeds last updated %1$s ago</string>
+    <string name="sync_stuck_charger">Waiting for a charger.</string>
+    <string name="sync_stuck_wifi">Waiting for Wi-Fi.</string>
+    <string name="sync_stuck_battery_saver">Battery Saver is holding it back.</string>
+    <string name="sync_stuck_more_battery">Waiting for more battery.</string>
+    <string name="sync_stuck_unknown">Android has not run it yet.</string>
+    <string name="sync_stuck_hint">Pull down on the feed to update now.</string>
+    <string name="sync_stuck_test_title">Test: %1$s</string>
+    <string name="pref_detailed_logs">Detailed logs for diagnostics</string>
+    <string name="pref_detailed_logs_summary">Adds timing and read-tracking detail to an exported diagnostics report. Leave off unless asked</string>
+    <string name="pref_test_sync_notice">Send a test sync notice</string>
+    <string name="pref_test_sync_notice_summary">Shows the notice Whisper sends when feeds stop updating, so you can see it and try tapping it</string>
+    <string name="test_notice_blocked">Notifications are off for Whisper, so nothing can be shown. Turn them on in Android\u2019s settings.</string>
+    <plurals name="sources_stuck_title">
+        <item quantity="one">%1$d feed has stopped working</item>
+        <item quantity="other">%1$d feeds have stopped working</item>
+    </plurals>
+    <string name="sources_stuck_text">Tap to see which, and look for new addresses.</string>
+    <!-- Settings, under the sync switches, when Android keeps Whisper off mobile data in the background. -->
+    <string name="background_data_blocked_title">Background syncs can\'t use mobile data</string>
+    <string name="background_data_blocked_body">Android keeps Whisper off mobile data when it isn\'t on screen, so scheduled syncs wait for Wi-Fi. Pull to refresh still works. To let scheduled syncs use mobile data, turn on Unrestricted mobile data usage for Whisper.</string>
+    <string name="background_data_blocked_action">Open mobile data settings</string>
+    <string name="about_whisper_team">Whisper</string>
+    <string name="about_whisper_author" translatable="false">Nyancat Labs</string>
+    <string name="about_whisper_role">Developer</string>
+    <string name="about_team">Built on Neo Feed, and on HomeFeeder before it</string>
     <string name="about_developer" translatable="false">Saul Henriquez</string>
     <string name="about_developer2" translatable="false">Antonios Hazim</string>
     <string name="about_build_information">Build info</string>
-    <string name="author_role">Developer</string>
+    <string name="author_role">Neo Feed author</string>
     <string name="about_licenses">License</string>
     <string name="back_to_top">Back to Top</string>
     <string name="about_changelog">Changelog</string>
-    <string name="about_open_source">Open Source Libraries</string>
-    <string name="pref_tg">Telegram channel</string>
     <string name="about_source_code">Source code</string>
+    <string name="about_privacy">Privacy</string>
+    <string name="about_disclaimer">Disclaimer</string>
+    <string name="about_publisher">Published by Nyancat Labs</string>
+    <string name="about_website">nyancatlabs.com</string>
+    <string name="about_upstream">Neo Feed on GitHub</string>
+    <string name="about_origin">HomeFeeder on GitHub</string>
+    <string name="about_support">Support Whisper</string>
+    <string name="about_support_summary">Whisper is free, has no adverts and collects nothing. If it has earned it, you can chip in — nothing in the app changes either way.</string>
     <string name="pref_cat_overlay">Appearance</string>
-    <string name="pref_cat_debug">Debug</string>
     <string name="pref_transparency">Overlay background opacity</string>
     <string name="pref_dynamic_color">Material You colours</string>
     <string name="pref_dynamic_color_summary">Follow the wallpaper instead of the Whisper palette</string>
@@ -111,7 +187,6 @@
     <string name="glance_set_location">Set location</string>
     <string name="font_inter" translatable="false">Inter</string>
     <string name="font_system">System default</string>
-    <string name="title_data_sources">Data sources</string>
     <string name="pref_article_open_mode">Open articles with</string>
     <string name="article_open_reader">Built-in reader</string>
     <string name="article_open_browser">Default browser</string>
@@ -120,44 +195,26 @@
     <string name="pref_export_diagnostics_summary">Save a log and device report to Downloads</string>
     <string name="diagnostics_saved">Saved to %1$s</string>
     <string name="diagnostics_failed">Could not write diagnostics</string>
+    <string name="diagnostics_collecting">Collecting diagnostics…</string>
     <string name="pref_sync_wifi">Sync on Wifi Only</string>
+    <string name="pref_sync_charging">Sync only while charging</string>
+    <string name="pref_sync_charging_summary">Scheduled syncs wait until the phone is plugged in. Pull to refresh still works any time.</string>
     <string name="pref_sync_frequency">Sync Frequency</string>
     <string name="pref_sync_range">Sync Range</string>
     <string name="pref_items_per_feed">Max items per feed</string>
-    <string name="pref_mastodon_items_per_feed">Max Mastodon items per feed</string>
     <string name="syncing">Syncing</string>
     <string name="sync_status">Sync status</string>
-    <string name="pref_compact">Compact item layout</string>
-    <string name="pref_card_bg">Card background</string>
-    <string name="pref_bg_color">Overlay background</string>
-    <string name="allow_notify_to_settings">Open settings</string>
-    <string name="overlay_no_permission">No permission granted</string>
-    <string name="overlay_reload">Click here to reload</string>
-    <string name="overlay_no_permission_desc">HomeFeeder needs \"Notification access\" to show notifications atop other apps.</string>
-    <string name="overlay_no_permission_snackbar">Please verify you have allowed \"Notification access\" permission and try again.</string>
-    <string name="pref_syscolors">Use system wallpaper colors</string>
-    <string name="pref_syscolors_desc">instead of \"Launcher:\" options</string>
-    <string name="pref_syscolors_disabled">Requires Android 8.1 or newer</string>
-    <string name="action_reload">Reload</string>
-    <string name="action_restart">Restart app</string>
-    <string name="pm_empty">No sources installed</string>
-    <string name="pm_desc">HomeFeeder uses them to display data</string>
+    <string name="add_feed_category">File it under</string>
     <string name="add_rss">Add new RSS</string>
     <string name="failed_to_parse">Could not parse %1$s</string>
     <string name="edit_rss">Edit Feed Item</string>
     <string name="add_input_hint" translatable="false">URL</string>
     <string name="title">Title</string>
     <string name="source_tags">Tags</string>
-    <string name="description">Description</string>
     <string name="add_feed_search_hint">Feed URL</string>
-    <string name="invalid_url">Not a valid URL</string>
     <string name="go_back">Go back</string>
     <string name="remove_title">Confirm action</string>
     <string name="remove_desc">Remove %s from feed sources\?</string>
-    <string name="remove_action_yes">Yes</string>
-    <string name="news_image_text">news story image</string>
-    <string name="title_feed_list">Feed List</string>
-    <string name="theme_auto_launcher">Automatically (from launcher)</string>
     <string name="theme_auto_system">Follow system</string>
     <string name="pref_pure_black">Pure black</string>
     <string name="pref_pure_black_summary">Use true black in dark modes, for OLED screens</string>
@@ -173,25 +230,13 @@
     <string name="sync_two_hours">Two Hours</string>
     <string name="sync_three_hours">Three Hours</string>
     <string name="sync_six_hours">Six Hours</string>
-    <string name="transparency_non_transparent">Non Transparent</string>
-    <string name="transparency_low_transparency">75% transparent</string>
-    <string name="transparency_mid_transparency">50% transparent</string>
-    <string name="transparency_high_transparency">25% transparent</string>
-    <string name="transparency_transparent">Transparent</string>
     <string name="background_theme_option">Theme based</string>
-    <string name="background_white">White</string>
-    <string name="background_amoled">Black</string>
-    <string name="background_primary_color">Launcher: Primary color</string>
-    <string name="background_secondary_color">Launcher: Secondary color</string>
-    <string name="background_tertiary_color">Launcher: Tertiary color</string>
-    <string name="debug_logcat_printing">Extensive logcat printing</string>
-    <string name="debug_content_printing">Log notification content</string>
-    <string name="summary_feed_list">Add or remove RSS sources</string>
-    <string name="source_code_url" translatable="false">https://github.com/defsix/076feed</string>
-    <string name="telegram_channel" translatable="false">t.me/neo_launcher</string>
     <string name="title_plugin_list">Plugin List</string>
     <string name="touch_to_play_video">Touch to play video</string>
     <string name="fetch_full_articles_by_default">Fetch full articles by default</string>
+    <string name="pin_article">Pin to the top</string>
+    <string name="unpin_article">Unpin</string>
+    <string name="pinned_label">Pinned</string>
     <string name="why_this_size">Why is this here?</string>
     <string name="why_explanation">Whisper sizes and orders articles from these signals alone. Nothing here comes from anywhere but your own phone.</string>
     <string name="why_no_image">No picture, so it stays small whatever else is true</string>
@@ -199,6 +244,7 @@
     <string name="why_fresh">Published in the last six hours</string>
     <string name="why_today">Published today</string>
     <string name="why_old">More than three days old</string>
+    <string name="why_fresh_for_source">New for this source</string>
     <string name="why_affinity">Your More / Less choices for this source</string>
     <string name="why_read_often">You read this source often</string>
     <string name="why_title_short">Very short headline</string>
@@ -209,21 +255,139 @@
     <string name="why_read">You have already read it</string>
     <string name="why_saved">You saved it</string>
     <string name="why_pinned">You pinned it</string>
+    <string name="pref_breaking_news">Highlight breaking news</string>
+    <string name="pref_breaking_news_summary">When several of your News sources cover the same story within a few hours, give it the largest card. Uses sources filed under a News category only.</string>
+    <string name="why_breaking">Several sources are covering this story</string>
+    <string name="pref_dim_skipped">Fade sources you skip</string>
+    <string name="pref_dim_skipped_summary">Sources whose articles you scroll past without stopping are shown faded, so the ones you read stand out. Nothing is hidden, and you can see which sources this affects under What Whisper has learned.</string>
+    <string name="empty_bookmarks">Nothing saved yet</string>
+    <string name="empty_bookmarks_hint">Save an article to read it later. Whisper downloads the whole article and keeps it here, readable offline, until you remove it.</string>
+    <string name="empty_no_sources">No sources yet</string>
+    <string name="empty_no_sources_hint">Add a website or a feed address and Whisper will do the rest. Settings, then Sources.</string>
+    <string name="empty_syncing">Fetching your feeds</string>
+    <string name="empty_syncing_hint">This is the first fetch, so it takes a moment longer than usual.</string>
+    <string name="empty_nothing_fetched">Nothing came back</string>
+    <string name="empty_nothing_fetched_hint">Your sources are set up but no articles arrived. Pull down to try again, or check Sources for a feed marked as failing.</string>
+    <string name="empty_filtered">Nothing matches</string>
+    <string name="empty_filtered_hint">Every article is filtered out by the category or filter you have chosen. Tap All, or open the filter to change it.</string>
+    <string name="pref_backup">Backup and Restore</string>
+    <string name="pref_backup_summary">Your subscriptions and your settings, kept somewhere you choose. All off until you turn something on \u2014 the only part of Whisper that can send your data anywhere.</string>
+    <string name="backup_explanation">Two things here are worth keeping: the subscription list you spent a long time building, and the settings you arranged to suit you. Both exist only on this phone. Choose somewhere to keep a copy and Whisper will write it there once a day.</string>
+    <string name="backup_only_time">Nothing on this screen happens unless you ask for it.\n\nWhisper has no server and no account of its own, so this is the only part of the app that can send your data anywhere. Everything here is off until you turn it on: no folder is chosen, and Android\u2019s own backup hands over nothing. Turn on what suits you \u2014 and nothing else will leave this phone.</string>
+    <string name="backup_stopped_title">Backups have stopped</string>
+    <string name="backup_stopped_body">Whisper could not reach the folder you chose, so the daily backup stopped on %1$s. Choose a folder again to start it.</string>
+    <string name="backup_off">Everything here is off. Nothing is leaving this phone.</string>
+    <string name="backup_on_device">Your subscriptions and settings are copied to the folder below once a day, unless the battery is low. It is on this phone, so nothing leaves it.</string>
+    <string name="backup_on_cloud">Your subscriptions and settings are copied to the folder below once a day, unless the battery is low. The two files are only a few kilobytes.</string>
+    <string name="pref_platform_device">Include in phone-to-phone transfer</string>
+    <string name="pref_platform_device_summary">When you set up a new phone next to this one. A direct copy \u2014 no server involved.</string>
+    <string name="pref_platform_cloud">Include in Google cloud backup</string>
+    <string name="pref_platform_cloud_summary">Your feeds and reading history are kept in your Google account. Convenient, but it does leave the phone.</string>
+    <string name="backup_platform_heading">Android\u2019s own backup</string>
+    <string name="backup_platform_body">Android can carry apps to a new phone by itself. Whisper hands over nothing unless you switch it on here, and the two are asked separately because they are different things. Your sign-in tokens are never included either way \u2014 they cannot survive the trip, and restoring them would stop the app starting.</string>
+    <string name="backup_choose">Choose where backups go</string>
+    <string name="backup_heading_where">Where backups go</string>
+    <string name="backup_heading_restore">Restore from a backup</string>
+    <string name="backup_restore_what">Sources are added without removing anything you already have. Settings replace what is on this phone, which is why the two are asked separately.</string>
+    <string name="backup_change">Choose a different folder</string>
+    <string name="backup_now">Back up now</string>
+    <string name="backup_restore">Restore sources from a backup</string>
+    <string name="backup_restore_settings">Restore your settings</string>
+    <plurals name="backup_settings_restored">
+        <item quantity="one">Restored %1$d setting</item>
+        <item quantity="other">Restored %1$d settings</item>
+    </plurals>
+    <string name="backup_none">No folder chosen yet</string>
+    <string name="backup_never">Not backed up yet</string>
+    <string name="backup_last">Last backed up %1$s</string>
+    <string name="backup_written">Backed up. Subscriptions saved as %1$s, settings as %2$s</string>
+    <string name="backup_written_sources_only">Subscriptions saved as %1$s. Your settings could not be written.</string>
+    <plurals name="backup_restored">
+        <item quantity="one">Added %1$d source</item>
+        <item quantity="other">Added %1$d sources</item>
+    </plurals>
+    <string name="backup_restored_none">Everything in that backup is already here</string>
+    <string name="backup_lost">Whisper can no longer write to that folder. Choose it again.</string>
+    <string name="backup_failed">That did not work</string>
+    <string name="backup_what">A backup is two files. Your sources and their categories go into an OPML file, which any other reader can open; your settings go into a JSON file beside it. Neither contains articles, and neither records what you have read.</string>
+    <string name="pref_account">Account</string>
+    <string name="pref_account_summary">Optional. Keep your subscriptions and read state in step across devices.</string>
+    <string name="account_explanation">Whisper works completely without an account — everything stays on this phone. Connecting one keeps your subscriptions and what you have read in step with another device, through a service you choose or run yourself.</string>
+    <string name="account_server">Server address</string>
+    <string name="account_username">Username</string>
+    <string name="account_password">Password</string>
+    <!-- What went wrong connecting to a sync server. Each one names the cause
+         and the next thing to try: the screen used to print the exception,
+         which told the reader neither. -->
+    <string name="account_problem_bad_address">That does not look like a web address. It should look like https://example.com/api/greader.php</string>
+    <string name="account_problem_certificate">Whisper could not verify that server\'s security certificate. Self-signed certificates are not supported — the certificate has to come from a recognised authority.</string>
+    <string name="account_problem_host_not_found">No server was found at that address. Check the spelling, and that this phone is on a network that can reach it.</string>
+    <string name="account_problem_refused">That address was reached but nothing answered on it. Check the server is running, and that the port is right.</string>
+    <string name="account_problem_timeout">The server took too long to answer. It may be busy, or not reachable from this network.</string>
+    <string name="account_problem_cleartext">Whisper only connects over https. Change the address to start with https://</string>
+    <string name="account_problem_credentials">That username or password was not accepted. Many services want an application password here rather than the one you log in with.</string>
+    <string name="account_problem_not_found">The server answered, but there is nothing at that path. A FreshRSS address usually ends in /api/greader.php</string>
+    <string name="account_problem_server_error">The server reported a problem of its own (%1$s). Nothing is wrong at this end — try again later.</string>
+    <string name="account_problem_no_token">The server answered, but not the way a Google Reader service does. Check the address points at the API rather than the website.</string>
+    <string name="account_problem_signed_out">The server no longer accepts that sign-in. Sign in again.</string>
+    <string name="account_problem_moved">That address passed the sign-in on to another server, %1$s. Whisper does not send your password on to a server you did not type. If that is the right one, sign in with its address.</string>
+    <string name="account_problem_unknown">Could not reach that server. %1$s</string>
+    <string name="account_problem_unknown_bare">Could not reach that server.</string>
+    <string name="feed_day_today">Today</string>
+    <string name="feed_day_yesterday">Yesterday</string>
+    <string name="account_tally_title">Last sync with the server</string>
+    <string name="account_today_title">Today</string>
+    <string name="account_tally_feeds">Feeds on the server: %1$d</string>
+    <string name="account_tally_feed_changes">Feeds changed · sent: %1$d, removed from the server: %2$d, added here: %3$d</string>
+    <string name="account_tally_matched">Articles the server knows: %1$d</string>
+    <string name="account_tally_sent">Sent · read: %1$d, unread: %2$d, saved: %3$d, unsaved: %4$d</string>
+    <string name="account_tally_kept">Not accepted, sent again next time: %1$d</string>
+    <string name="account_tally_received">Received · read: %1$d, unread: %2$d, saved: %3$d</string>
+    <string name="account_phone_only_title">On this phone only: %1$d</string>
+    <string name="account_phone_only_explained">Your server could not fetch these feeds, usually because the site blocks servers. They still update here as normal, but reading them will not sync to your other devices. Whisper tries again once a week, and whenever you tap Sync now.</string>
+    <string name="account_phone_only_admin">If you run the server, giving it a browser-like user agent usually fixes this.</string>
+    <string name="account_removed_there_title">Removed on the server: %1$d</string>
+    <string name="account_removed_there_explained">These were removed from the server but are kept here. Remove them here too if you no longer want them.</string>
+    <string name="account_no_write_title">Not sent to the server: %1$d</string>
+    <string name="account_no_write_explained">The server did not allow changes, so these were not added. Check the account has permission to edit subscriptions.</string>
+    <string name="account_server_hint">The address you open in your browser. For FreshRSS, Whisper adds /api/greader.php if it is needed.</string>
+    <string name="account_server_upgraded">Changed to https, so your password is not sent in the clear. Plain http will not connect.</string>
+    <string name="account_password_hint">Most services offer an application password for this. Use one if yours does — it can be revoked without changing your real password.</string>
+    <string name="account_step_server">Step 1 of 2 · Your server</string>
+    <string name="account_step_login">Step 2 of 2 · Sign in</string>
+    <string name="account_next">Next</string>
+    <string name="account_change_server">Change</string>
+    <string name="account_sign_in">Sign in</string>
+    <string name="account_sign_out">Sign out</string>
+    <string name="account_sign_out_keeps">Signing out keeps your feeds and articles on this phone.</string>
+    <string name="account_store_reset">This phone\'s secure storage could not be read, so the account was signed out. Sign in again: your feeds and articles are all still here.</string>
+    <string name="account_sync_now">Sync now</string>
+    <string name="account_never_synced">Not synced yet</string>
+    <string name="account_last_sync">Last synced %1$s</string>
+    <string name="account_what_syncs">Works with FreshRSS, Miniflux, Inoreader and BazQux. Articles are still fetched from the feeds themselves, so Whisper keeps working when your server does not.</string>
     <string name="pref_learned">What Whisper has learned</string>
     <string name="pref_learned_summary">Every score the feed reads from your own behaviour, and the way to undo any of it.</string>
-    <string name="learned_explanation">Nothing here is guessed. These are counts of what you have pressed and opened, and the effect each one has on how prominently a source appears. None of it leaves your phone.</string>
-    <string name="learned_detail">More/Less score %1$d · %2$d read in 30 days</string>
+    <string name="learned_explanation">Nothing here is guessed. These are counts of what you pressed, what reached your screen, and what you opened — and the effect each has on how prominently a source appears. An article you opened counts for a great deal more than one you scrolled past. None of it leaves your phone.</string>
+    <string name="learned_detail">More/Less score %1$d · seen: %3$d, opened: %2$d</string>
     <string name="learned_nudge">Weight: %1$+.2f</string>
     <string name="learned_forget">Forget this source\'s score</string>
     <string name="learned_unhide">Show this source again</string>
     <string name="learned_reset_all">Forget everything</string>
-    <string name="learned_reset_all_desc">Clears every More/Less score and shows any hidden sources again. Your subscriptions, saved articles and read history are not touched.</string>
-    <string name="pref_mark_all_read">Mark everything as read</string>
-    <string name="pref_mark_all_read_summary">Clears the unread count. The feed offers it back until you leave it.</string>
+    <plurals name="covered_by_sources">
+        <item quantity="one">Covered by %1$d source</item>
+        <item quantity="other">Covered by %1$d sources</item>
+    </plurals>
+    <string name="learned_reset_all_desc">Clears every More/Less score, restarts the reading counts from zero, and shows any hidden sources again. Your subscriptions, saved articles and what you have already read are not touched.</string>
+    <string name="mark_read_title">Mark as read</string>
+    <string name="mark_read_explained">Acts straight away, unlike the choices above, and you can undo it.</string>
+    <string name="mark_read_everything">Everything</string>
+    <string name="mark_read_older_hour">Older than 1 hour</string>
+    <string name="mark_read_older_day">Older than 24 hours</string>
+    <string name="mark_read_older_two_days">Older than 48 hours</string>
     <string name="pref_mark_read_on_scroll">Mark as read while scrolling</string>
-    <string name="pref_mark_read_on_scroll_summary">How long an article has to stay on screen before it counts as read. Set it to what matches your own reading — a fling past a card gives it about half a second.</string>
-    <string name="mark_read_never">Never — only when opened</string>
-    <string name="mark_read_seconds">After %1$.1f seconds on screen</string>
+    <string name="pref_mark_read_on_scroll_summary">How long an article has to be on screen before scrolling past it counts as reading it. Nothing is marked while you are still looking at it. A fling past a card gives it about half a second.</string>
+    <string name="mark_read_off">Off</string>
+    <string name="mark_read_seconds_short">%1$.0fs</string>
     <string name="pref_read_visibility">Articles you have read</string>
     <string name="pref_read_visibility_summary">A read article always loses weight and sinks. This is whether it also fades or goes.</string>
     <string name="read_visibility_keep">Keep them</string>
@@ -236,71 +400,51 @@
     <string name="report_problem_summary">Sends a report with your app version, device, settings and recent log. Describe what happened in the message itself.</string>
     <string name="pref_full_text_all_feeds">Fetch full articles for every feed</string>
     <string name="pref_full_text_all_feeds_summary">Download the whole article while syncing, for every source at once. Individual sources can still be set on their own.</string>
+    <string name="pref_full_text_on_mobile">Download full articles on mobile data</string>
+    <string name="pref_full_text_on_mobile_summary">When off, full articles are downloaded in advance only on Wi-Fi. An article you open still loads straight away on any network.</string>
     <string name="fetch_full_articles_all_feeds_on">On for every feed in Settings</string>
     <string name="fetch_full_articles_summary">Download the whole article while syncing, so it is ready offline. The reader fetches it on demand either way.</string>
     <string name="article_not_found">Local article not found</string>
-    <string name="no_articles_found">No articles found</string>
     <string name="on_date" translatable="false">%1$s</string>
     <string name="by_author_on_date">%1$s, %2$s</string>
 
-    <string name="source_enabled">Is Enabled</string>
+    <string name="source_enabled">Keep this source on</string>
+    <string name="source_enabled_summary">Off hides it from your feed and stops it fetching anything new. Articles already collected stay, and so does anything you saved from it.</string>
     <string name="sources_import_opml">Import feeds from OPML</string>
     <string name="sources_export_opml">Export feeds to OPML</string>
     <string name="failed_to_import_OPML">"Failed to import OPML"</string>
     <string name="failed_to_export_OPML">"Failed to export OPML"</string>
     <string name="share">Share</string>
-    <string name="delete_feed">Delete feed</string>
-    <string name="bookmark">Bookmark</string>
-    <string name="bookmark_remove">Remove bookmark</string>
-    <string name="action_show_bookmarks">Show bookmarks</string>
-    <string name="action_hide_bookmarks">Hide bookmarks</string>
-    <string name="title_bookmarks">Bookmarks</string>
-    <string name="summary_bookmarks">See your bookmarked articles</string>
-    <string name="title_service">Service</string>
-    <string name="title_other">Other</string>
-    <string name="no_activity_for_link">Web browser not found</string>
-    <string name="title_overlay">Overlay</string>
+    <string name="title_bookmarks">Read later</string>
     <string name="add_feed">Add feed</string>
     <string name="pref_remove_duplicates">Remove duplicate article from different sources</string>
-    <string name="sort_filter">Sort and filter</string>
-    <string name="state_modified">Modified</string>
     <string name="action_apply">Apply</string>
     <string name="action_reset">Reset</string>
     <string name="sorting_order">Sorting order</string>
     <string name="sorting_chronological">Chronological</string>
     <string name="sorting_title">Title</string>
     <string name="sorting_source">Source</string>
+    <string name="switch_on">On</string>
+    <string name="switch_off">Off</string>
+    <string name="action_open_article">Open article</string>
     <string name="sort_ascending">Ascending</string>
     <string name="sort_descending">Descending</string>
     <string name="select_all">Select all</string>
     <string name="deselect_all">Deselect all</string>
-    <string name="item_selected">Item selected</string>
 
-    <string name="collapse_handle_description">Drag to collapse bottom sheet</string>
-    <string name="section_icon_description">Section icon</string>
-    <string name="expand_section_description">Expand section</string>
-    <string name="collapse_section_description">Collapse section</string>
-    <string name="date_at_time_FORMAT">%1$s at %2$s</string>
-    <string name="draw_permission_required">This application requires the permission to draw over other apps, without it feed items would not open on click</string>
-    <string name="go_to_settings">Go to settings</string>
-    <string name="file_share_text">File from Neo Feed</string>
+    <string name="file_share_text">File from Whisper</string>
     <string name="sources_import_bookmarks">Import bookmarks</string>
     <string name="sources_export_bookmarks">Export bookmarks</string>
     <string name="enabled">Enabled</string>
     <string name="disabled">Disabled</string>
     <string name="action_delete">Delete</string>
     <string name="action_save">Save</string>
-    <string name="action_open_smry">Open in SMRY</string>
 
-    <string name="add_mastodon_account">Add Mastodon account</string>
-    <string name="mastodon_instance_hint">Instance (e.g. mastodon.social)</string>
-    <string name="mastodon_connect">Connect account</string>
-    <string name="mastodon_auth_loading">Opening Mastodon authorization…</string>
-    <string name="mastodon_auth_error">Mastodon authorization failed: %1$s</string>
-    <string name="mastodon_account_added">Mastodon account added</string>
-    <string name="mastodon_require_link">Must contain a link</string>
-    <string name="mastodon_require_image">Must contain a picture</string>
-    <string name="mastodon_exclude_replies">Hide replies</string>
+    <string name="pref_cat_fetching">Fetching</string>
+    <string name="pref_cat_feed">Your feed</string>
+    <string name="pref_cat_reading">Reading</string>
+    <string name="pref_cat_data">Your data</string>
+    <string name="pref_cat_help">Help</string>
     <string name="pref_cat_filters">Filters</string>
     <string name="pref_blocked_words">Blocked words</string>
     <string name="pref_blocked_words_summary">Hide articles containing these words</string>
@@ -308,5 +452,239 @@
     <string name="blocked_words_hint">Add a word</string>
     <string name="blocked_words_add">Add</string>
     <string name="blocked_words_empty">No blocked words</string>
-    <string name="mastodon_no_token">No Mastodon token found for this account</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_welcome_title">Curate. Read. Breathe.</string>
+    <string name="onboarding_welcome_body">A calmer, more focused way to follow the world.</string>
+    <string name="onboarding_sources_title">Your sources, your choice</string>
+    <string name="onboarding_sources_body">Add the sites you already read. No algorithm decides what you see, and nothing about your reading leaves your phone.</string>
+    <string name="onboarding_calm_title">Read at your own pace</string>
+    <string name="onboarding_calm_body">Whisper learns which sources you return to and gives them more room. Everything else stays out of the way.</string>
+    <string name="onboarding_get_started">Get started</string>
+
+    <!-- Guided tour -->
+    <string name="tour_next">Next</string>
+    <string name="tour_skip">Skip</string>
+    <string name="tour_got_it">Got it</string>
+    <string name="tour_step_of">%1$d of %2$d</string>
+    <string name="tour_glance_title">The glance</string>
+    <string name="tour_glance_body">Weather, sunset, and how much is waiting for you. Tap it to set your location.</string>
+    <string name="tour_chips_title">Categories</string>
+    <string name="tour_chips_body">Everything at once, or one subject at a time. The launcher page follows whatever you choose here.</string>
+    <string name="tour_article_title">Every article has a menu</string>
+    <string name="tour_article_body">More like this, less like this, save it, or ask why an article is the size it is.</string>
+    <string name="tour_bookmarks_title">Read later</string>
+    <string name="tour_bookmarks_body">Save an article to read it later. The whole article is downloaded and kept on your phone, readable offline, until you remove it.</string>
+    <string name="tour_filter_title">Sort and filter</string>
+    <string name="tour_filter_body">Change the order, mute a source, or hide what you have already read.</string>
+    <string name="tour_overflow_title">Settings</string>
+    <string name="tour_overflow_body">Your sources, the layout, what gets fetched in full, and what Whisper has learned about your reading. Reload and restart are at the top.</string>
+    <string name="pref_show_tour">Show the tour again</string>
+    <string name="pref_show_tour_queued">The tour will start when you go back to your feed.</string>
+    <string name="pref_show_tour_summary">Walk through the feed\'s controls</string>
+
+    <!-- Launcher page setup -->
+    <string name="pref_launcher">Launcher page</string>
+    <string name="pref_launcher_summary">Put Whisper on your home screen\'s left-most page</string>
+    <string name="launcher_explanation">Some launchers let another app fill the page to the left of the home screen — the slot Google Discover uses on a Pixel. Whisper can be that page. This is a bonus rather than a requirement: the app works exactly the same without it.</string>
+    <string name="launcher_connected">Connected. Your launcher is using Whisper for its left-most page.</string>
+    <string name="launcher_none_installed">No launcher that supports this was found on this phone. Lawnchair is the one this has been tested with.</string>
+    <string name="launcher_step_debug">Open your app drawer, tap the search field, and type <b>/lawnchairdebug</b>. Nothing appears to happen — that is expected.</string>
+    <string name="launcher_step_menu">Open Lawnchair\'s settings. A build icon has appeared in the overflow area; tap it to reach the <b>Debug menu</b>.</string>
+    <string name="launcher_step_whitelist">Turn on <b>Ignore feed whitelist</b>. Lawnchair keeps a fixed list of apps allowed to be the feed, and Whisper is not on it yet.</string>
+    <string name="launcher_step_pick">Go to <b>Home screen settings → Feed provider</b> and choose <b>Whisper</b>.</string>
+    <string name="launcher_open">Open launcher settings</string>
+    <string name="launcher_permission_title">Display over other apps</string>
+    <string name="launcher_permission_body">Without this, the page appears but tapping an article does nothing. On a sideloaded build the switch is greyed out until you allow it: Settings → Apps → Whisper → ⋮ → Allow restricted settings.</string>
+    <string name="launcher_permission_granted">Granted. Articles will open when you tap them.</string>
+    <string name="launcher_permission_open">Grant the permission</string>
+    <string name="overlay_not_on_go">This phone runs Android Go, which does not let apps show over others. The launcher page can still show your feed, but tapping a story there cannot open it: open Whisper to read it.</string>
+
+    <!-- Starter sources -->
+    <string name="starter_category_world">World</string>
+    <string name="starter_category_technology">Technology</string>
+    <string name="starter_category_science">Science</string>
+    <string name="starter_category_australia">Australia</string>
+    <string name="starter_title">A few feeds to start with</string>
+    <string name="starter_body">Take off anything you do not want. These become ordinary sources — add more or remove any of them whenever you like.</string>
+    <plurals name="starter_add">
+        <item quantity="one">Add %1$d feed</item>
+        <item quantity="other">Add %1$d feeds</item>
+    </plurals>
+    <string name="starter_none">Skip — I\'ll add my own</string>
+    <plurals name="starter_added">
+        <item quantity="one">%1$d source added</item>
+        <item quantity="other">%1$d sources added</item>
+    </plurals>
+    <string name="pref_sources_summary">The feeds you follow, and their categories</string>
+    <string name="pref_broken_feeds">Feeds that stopped working</string>
+    <string name="pref_broken_feeds_summary">Look for a new address when a feed goes quiet</string>
+    <string name="broken_explanation">A feed usually goes quiet because its address moved, not because the site stopped publishing. Whisper can ask the site where its feed lives now.</string>
+    <string name="pref_insecure_feeds">Feeds still on http</string>
+    <string name="pref_insecure_feeds_summary">Move their stored addresses to https where the site supports it</string>
+    <string name="insecure_explanation">Nothing is fetched in the clear — Whisper already asks for https even when a feed is stored as http. What is still wrong is the address itself: it is what the sources list shows and what an OPML export hands to the next reader. Each one is checked before anything is changed.</string>
+    <string name="insecure_none">Every subscription is stored as https. Nothing to do.</string>
+    <string name="insecure_check">Check this one</string>
+    <string name="insecure_checking">Asking…</string>
+    <string name="insecure_checking_progress">Checked %1$d of %2$d</string>
+    <string name="insecure_apply">Use the https address</string>
+    <string name="insecure_applied">Updated</string>
+    <string name="insecure_no_https">This site has no working https. Left as it is — the address is honest about that, and a changed one would not be.</string>
+    <string name="insecure_duplicate">The https version of this feed is already subscribed to separately. Delete whichever of the two you would rather not keep.</string>
+    <plurals name="insecure_check_all">
+        <item quantity="one">Check the one address</item>
+        <item quantity="other">Check all %1$d addresses</item>
+    </plurals>
+    <plurals name="insecure_apply_all">
+        <item quantity="one">Update the one that works</item>
+        <item quantity="other">Update all %1$d that work</item>
+    </plurals>
+    <string name="broken_none">Nothing is failing. A feed appears here after three syncs in a row have not worked \u2014 one bad afternoon on somebody\u2019s server is not a broken feed.</string>
+    <string name="broken_look">Look for a new address</string>
+    <string name="broken_looking">Asking the site\u2026</string>
+    <string name="broken_found">The site now lists a different address</string>
+    <string name="broken_use_new">Use this address</string>
+    <string name="broken_already_subscribed">That address belongs to another source you already follow, so this one cannot be moved to it. Deleting this entry is the tidy way out.</string>
+    <string name="broken_delete">Unsubscribe from this source</string>
+    <string name="broken_unchanged">The site still lists the address you have, so something else is wrong \u2014 the server may be down, or blocking.</string>
+    <string name="broken_nothing">No feed could be found at that site. It may have stopped publishing one.</string>
+    <string name="broken_forget">Stop warning me about this</string>
+    <string name="pref_import_bookmarks">Import from bookmarks</string>
+    <string name="pref_import_bookmarks_summary">Give Whisper your bookmark folders and it finds the feeds</string>
+    <string name="import_explanation">Export your bookmarks from any browser and choose the file here. Whisper reads it on this phone and looks up the feeds itself \u2014 nothing is uploaded anywhere.</string>
+    <string name="import_nothing_found">No bookmarks could be read from that file. Browsers export a .html file; that is the one to choose.</string>
+    <string name="import_choose_file">Choose a bookmarks file</string>
+    <string name="import_choose_folders">Pick the folders you actually read from. A folder you named is a reading list; a whole bookmark file is a junk drawer, and most of it publishes nothing. The folder name becomes the category.</string>
+    <string name="import_scan">Look for feeds</string>
+    <string name="import_preparing">Working out which sites to look at\u2026</string>
+    <string name="import_scanning">Looking at site %1$d of %2$d</string>
+    <string name="import_no_feeds">None of those sites publishes a feed Whisper could find.</string>
+    <string name="import_declared">The site lists this feed</string>
+    <string name="import_guessed">Found by guessing a common address</string>
+    <string name="import_add">Add %1$d</string>
+    <string name="import_start_over">Start over</string>
+    <string name="pref_suggestions">Feeds from your reading</string>
+    <string name="pref_suggestions_summary">Publications your articles keep linking to, if they publish a feed</string>
+    <string name="suggestions_explanation">Feeds you could subscribe to \u2014 never articles to read. Worked out on this phone, from links in articles you actually read. Nothing about your reading is sent anywhere, and nothing here reaches your feed unless you add it.</string>
+    <string name="filter_chip_category">Category: %1$s</string>
+    <string name="filter_chip_source">Muted: %1$s</string>
+    <string name="filter_chip_sort_title">Sorted by title</string>
+    <string name="filter_chip_sort_source">Sorted by source</string>
+    <string name="filter_chip_clear">Clear</string>
+    <plurals name="suggestion_reason_library">
+        <item quantity="one">Also in %1$s, where %2$d of your sources is</item>
+        <item quantity="other">Also in %1$s, where %2$d of your sources are</item>
+    </plurals>
+    <string name="suggestions_check_now">Look now</string>
+    <string name="suggestions_checking">Looking\u2026</string>
+    <string name="suggestions_none">Nothing yet. Once a week Whisper looks for two things: other sites that the articles you opened keep linking to, and publications that sit beside your own sources in its bundled collections \u2014 so following two papers from one country can turn up a third.\n\nNeither asks anything of anyone. The collections ship with the app, and the links are counted in articles already on your phone.</string>
+    <string name="suggestion_dismiss">Not interested</string>
+    <!-- Statistics -->
+    <string name="pref_statistics">Your reading</string>
+    <string name="pref_statistics_summary">How much you read, and when</string>
+    <string name="stats_seen">Articles seen</string>
+    <string name="stats_opened">Opened</string>
+    <string name="stats_passed">Passed over</string>
+    <string name="stats_per_day">A day</string>
+    <string name="stats_time_reading">Time reading</string>
+    <string name="stats_busiest">Busiest</string>
+    <string name="stats_streak">Best streak</string>
+    <string name="stats_hours_minutes">%1$dh %2$dm</string>
+    <string name="stats_minutes">%1$dm</string>
+    <string name="stats_hour_of_day">%1$d:00</string>
+    <string name="stats_unmeasured">\u2014</string>
+    <plurals name="stats_streak_days">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
+    <string name="stats_by_source">Where your reading comes from</string>
+    <string name="stats_by_source_caption">Your busiest sources, by articles that reached your screen.</string>
+    <string name="stats_other_sources">Everything else</string>
+    <string name="stats_removed_source">A source you have removed</string>
+    <string name="stats_band_night">Night</string>
+    <string name="stats_band_morning">Morning</string>
+    <string name="stats_band_afternoon">Afternoon</string>
+    <string name="stats_band_evening">Evening</string>
+    <string name="stats_by_day">Reading over time</string>
+    <plurals name="stats_by_day_caption">
+        <item quantity="one">Articles that reached your screen, over the last day.</item>
+        <item quantity="other">Articles that reached your screen, over the last %1$d days.</item>
+    </plurals>
+    <string name="stats_by_hour">Time of day</string>
+    <string name="stats_by_hour_caption">When you read, summed across the whole month.</string>
+    <string name="stats_by_day_description">%1$s and %2$s over %3$s.</string>
+    <plurals name="stats_articles_opened">
+        <item quantity="one">%1$d opened</item>
+        <item quantity="other">%1$d opened</item>
+    </plurals>
+    <plurals name="stats_articles_seen">
+        <item quantity="one">%1$d article seen</item>
+        <item quantity="other">%1$d articles seen</item>
+    </plurals>
+    <plurals name="stats_days">
+        <item quantity="one">%1$d day</item>
+        <item quantity="other">%1$d days</item>
+    </plurals>
+    <string name="stats_by_hour_description">Busiest around %1$s:00.</string>
+    <string name="stats_by_hour_empty">No reading recorded yet.</string>
+    <string name="stats_example_title">This is an example</string>
+    <string name="stats_example_body">There is not enough reading yet to draw your own, so the charts below show made-up figures to give you an idea of the shape. They will be replaced by yours once you have read a little more.</string>
+    <string name="stats_opening_new_title">Nothing opened yet</string>
+    <string name="stats_opening_new_body">Whisper has only counted opened articles since a recent update, so days before that show none even if you read them. This will fill in from here.</string>
+    <string name="stats_footnote">Worked out on your phone. Whisper keeps a running count of how many articles reached your screen and when \u2014 numbers only, no titles and no addresses \u2014 because the articles themselves are tidied away after a week and these charts would otherwise forget their own past. Nothing leaves the device, and the source breakdown reflects what you have been reading lately rather than the full 30 days.</string>
+    <string name="pref_feed_library">Browse the feed library</string>
+    <string name="pref_feed_library_summary">Hundreds of feeds by topic and country, bundled with the app</string>
+    <string name="library_explanation">A directory that ships with Whisper, so nothing is fetched and no one is told what you are looking for. Open a collection to see what is in it \u2014 tick the feeds you want, and nothing is added until you say so.</string>
+    <string name="library_topics">By topic</string>
+    <string name="library_countries">By country</string>
+    <plurals name="library_count">
+        <item quantity="one">1 feed</item>
+        <item quantity="other">%1$d feeds</item>
+    </plurals>
+    <string name="library_add_none">Tick the feeds you want</string>
+    <plurals name="library_add">
+        <item quantity="one">Add the one chosen</item>
+        <item quantity="other">Add the %1$d chosen</item>
+    </plurals>
+    <plurals name="library_added">
+        <item quantity="zero">Nothing added \u2014 you already follow all of those</item>
+        <item quantity="one">Added one source</item>
+        <item quantity="other">Added %1$d sources</item>
+    </plurals>
+
+    <!-- Restoring during onboarding -->
+    <string name="backup_folder_restored">%1$s and %2$s restored</string>
+    <plurals name="backup_folder_sources">
+        <item quantity="one">%1$d source</item>
+        <item quantity="other">%1$d sources</item>
+    </plurals>
+    <plurals name="backup_folder_settings">
+        <item quantity="one">%1$d setting</item>
+        <item quantity="other">%1$d settings</item>
+    </plurals>
+    <string name="backup_exists_title">This folder already has a backup</string>
+    <string name="backup_exists_body">It may be the one you made before reinstalling. Restore your feeds and settings from it, or replace it with this phone\'s. Replacing keeps the old copy beside the new one, named .previous.</string>
+    <string name="backup_exists_restore">Restore</string>
+    <string name="backup_exists_replace">Replace</string>
+    <string name="backup_nothing_found">No backup was found in that folder</string>
+    <string name="starter_returning_title">Used Whisper before?</string>
+    <string name="starter_returning_body">If you have a backup folder, this is the moment to use it — your sources and settings come back exactly as they were.</string>
+    <string name="starter_restore">Restore from a backup</string>
+    <string name="starter_restoring">Restoring…</string>
+    <plurals name="suggestion_reason">
+        <item quantity="one">%1$d article you read linked here</item>
+        <item quantity="other">%1$d articles you read linked here</item>
+    </plurals>
+    <plurals name="import_folder_sites">
+        <item quantity="one">%1$d site</item>
+        <item quantity="other">%1$d sites</item>
+    </plurals>
+    <plurals name="import_found">
+        <item quantity="one">Found %1$d feed. Untick anything you do not want.</item>
+        <item quantity="other">Found %1$d feeds. Untick anything you do not want.</item>
+    </plurals>
+    <plurals name="broken_failures">
+        <item quantity="one">Failed %1$d time in a row</item>
+        <item quantity="other">Failed %1$d times in a row</item>
+    </plurals>
 </resources>

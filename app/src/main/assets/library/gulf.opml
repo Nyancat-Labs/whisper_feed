@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+  <head>
+    <title>Gulf States</title>
+  </head>
+  <body>
+    <outline text="News" title="News">
+      <outline type="rss" text="Arab News" title="Arab News" xmlUrl="https://www.arabnews.com/rss.xml"/>
+      <outline type="rss" text="The National" title="The National" xmlUrl="https://www.thenationalnews.com/arc/outboundfeeds/rss/category/uae/?outputType=xml"/>
+      <outline type="rss" text="Al Jazeera English" title="Al Jazeera English" xmlUrl="https://www.aljazeera.com/xml/rss/all.xml"/>
+      <outline type="rss" text="Al Arabiya English" title="Al Arabiya English" xmlUrl="https://english.alarabiya.net/tools/rss"/>
+      <outline type="rss" text="Doha News" title="Doha News" xmlUrl="https://dohanews.co/feed/"/>
+    </outline>
+    <outline text="Business" title="Business">
+      <outline type="rss" text="Arabian Business" title="Arabian Business" xmlUrl="https://www.arabianbusiness.com/feed"/>
+    </outline>
+  </body>
+</opml>

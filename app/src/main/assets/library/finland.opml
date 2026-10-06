@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+  <head>
+    <title>Finland</title>
+  </head>
+  <body>
+    <outline text="News" title="News">
+      <outline type="rss" text="Yle Uutiset" title="Yle Uutiset" xmlUrl="https://feeds.yle.fi/uutiset/v1/majorHeadlines/YLE_UUTISET.rss"/>
+      <outline type="rss" text="Yle News" title="Yle News" xmlUrl="https://feeds.yle.fi/uutiset/v1/recent.rss?publisherIds=YLE_NEWS"/>
+      <outline type="rss" text="Helsingin Sanomat" title="Helsingin Sanomat" xmlUrl="https://www.hs.fi/rss/tuoreimmat.xml"/>
+      <outline type="rss" text="Iltalehti" title="Iltalehti" xmlUrl="https://www.iltalehti.fi/rss/uutiset.xml"/>
+      <outline type="rss" text="Ilta-Sanomat" title="Ilta-Sanomat" xmlUrl="https://www.is.fi/rss/tuoreimmat.xml"/>
+    </outline>
+  </body>
+</opml>

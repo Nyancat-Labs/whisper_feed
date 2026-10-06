@@ -92,8 +92,9 @@ fun HeaderAction(
     icon: ImageVector,
     description: String,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    IconButton(onClick = onClick) {
+    IconButton(onClick = onClick, modifier = modifier) {
         Icon(icon, description, modifier = Modifier.size(HeaderIconSize))
     }
 }

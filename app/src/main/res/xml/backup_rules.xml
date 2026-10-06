@@ -1,13 +1,17 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-   Sample backup rules file; uncomment and customize as necessary.
-   See https://developer.android.com/guide/topics/data/autobackup
-   for details.
-   Note: This file is ignored for devices older than API 31
-   See https://developer.android.com/about/versions/12/backup-restore
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    What may travel, once the reader has agreed to it at all. Whether a backup
+    happens is PlatformBackupAgent's decision; this is what is in it when it
+    does.
+
+    The account files never travel, on any route and whatever the reader
+    chose: whisper_account_sealed, and whisper_account, the older
+    EncryptedSharedPreferences file it replaced. Both are sealed with a key in
+    the hardware-backed Keystore, and the Keystore is not part of a backup — so
+    a restored device would get the ciphertext without the key, which could
+    never be opened. Signing in again is the honest outcome.
 -->
 <full-backup-content>
-    <!--
-   <include domain="sharedpref" path="."/>
-   <exclude domain="sharedpref" path="device.xml"/>
--->
+    <exclude domain="sharedpref" path="whisper_account.xml" />
+    <exclude domain="sharedpref" path="whisper_account_sealed.xml" />
 </full-backup-content>

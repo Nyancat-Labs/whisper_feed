@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<opml version="1.0">
+  <head>
+    <title>Export from Plenary</title>
+    <url>https://play.google.com/store/apps/details?id=com.spians.plenary</url>
+    <ownerName>Plenary app</ownerName>
+    <ownerEmail>plenarytheapp@gmail.com</ownerEmail>
+  </head>
+  <body>
+    <outline text="Fashion" title="Fashion">
+      <outline text="FashionBeans" title="FashionBeans" description="Men's Fashion Tips and Men's Style Guide - Updated Daily" xmlUrl="https://www.fashionbeans.com/rss-feed/?category=fashion" type="rss" />
+      <outline text="Fashion - ELLE" title="Fashion - ELLE" description="RSS feed for Fashion - ELLE" xmlUrl="https://www.elle.com/rss/fashion.xml/" type="rss" />
+      <outline text="Fashion | The Guardian" title="Fashion | The Guardian" description="The latest fashion news, advice and comment from the Guardian" xmlUrl="https://www.theguardian.com/fashion/rss" type="rss" />
+      <outline text="Fashionista Full" title="Fashionista Full" description="Fashionista Full" xmlUrl="https://fashionista.com/.rss/excerpt/" type="rss" />
+      <outline text="Latest from Who What Wear" title="Latest from Who What Wear" description="All the latest content from the Who What Wear team" xmlUrl="https://www.whowhatwear.com/rss" type="rss" />
+      <outline text="NYT &gt; Style" title="NYT &gt; Style" description="" xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/FashionandStyle.xml" type="rss" />
+      <outline text="POPSUGAR Fashion" title="POPSUGAR Fashion" description="Top Fashion Stories" xmlUrl="https://www.popsugar.com/fashion/feed" type="rss" />
+      <outline text="Refinery29" title="Refinery29" description="Refinery29" xmlUrl="https://www.refinery29.com/fashion/rss.xml" type="rss" />
+      <outline type="rss" text="Business of Fashion" title="Business of Fashion" xmlUrl="https://www.businessoffashion.com/feed/"/>
+      <outline type="rss" text="Dazed" title="Dazed" xmlUrl="https://www.dazeddigital.com/rss"/>
+    </outline>
+  </body>
+</opml>

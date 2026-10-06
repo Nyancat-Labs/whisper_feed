@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+  <head>
+    <title>Norway</title>
+  </head>
+  <body>
+    <outline text="Business" title="Business">
+      <outline type="rss" text="E24" title="E24" xmlUrl="https://e24.no/rss"/>
+    </outline>
+    <outline text="News" title="News">
+      <outline type="rss" text="Aftenposten" title="Aftenposten" xmlUrl="https://www.aftenposten.no/rss"/>
+      <outline type="rss" text="Dagbladet" title="Dagbladet" xmlUrl="https://www.dagbladet.no/?lab_viewport=rss"/>
+      <outline type="rss" text="NRK Nyheter" title="NRK Nyheter" xmlUrl="https://www.nrk.no/toppsaker.rss"/>
+      <outline type="rss" text="VG" title="VG" xmlUrl="https://www.vg.no/rss/feed/"/>
+    </outline>
+  </body>
+</opml>

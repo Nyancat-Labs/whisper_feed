@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+  <head>
+    <title>Hong Kong SAR China</title>
+  </head>
+  <body>
+    <outline text="Hong Kong SAR China" title="Hong Kong SAR China">
+      <outline type="rss" text="Hong Kong Free Press HKFP" title="Hong Kong Free Press HKFP" xmlUrl="https://www.hongkongfp.com/feed/"/>
+      <outline type="rss" text="香港新聞RSS - 香港經濟日報 hket.com" title="香港新聞RSS - 香港經濟日報 hket.com" xmlUrl="https://www.hket.com/rss/hongkong"/>
+      <outline type="rss" text="hongkongnews.net latest rss headlines" title="hongkongnews.net latest rss headlines" xmlUrl="https://feeds.hongkongnews.net/rss/b82693edf38ebff8"/>
+    </outline>
+    <outline text="News" title="News">
+      <outline type="rss" text="RTHK" title="RTHK" xmlUrl="https://rthk9.rthk.hk/rthk/news/rss/e_expressnews_elocal.xml"/>
+      <outline type="rss" text="SCMP Hong Kong" title="SCMP Hong Kong" xmlUrl="https://www.scmp.com/rss/2/feed"/>
+    </outline>
+  </body>
+</opml>

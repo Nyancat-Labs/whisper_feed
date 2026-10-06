@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+  <head>
+    <title>Portugal</title>
+  </head>
+  <body>
+    <outline text="News" title="News">
+      <outline type="rss" text="Expresso" title="Expresso" xmlUrl="https://expresso.pt/rss"/>
+      <outline type="rss" text="Público" title="Público" xmlUrl="https://feeds.feedburner.com/PublicoRSS"/>
+      <outline type="rss" text="Observador" title="Observador" xmlUrl="https://observador.pt/feed/"/>
+      <outline type="rss" text="RTP Notícias" title="RTP Notícias" xmlUrl="https://www.rtp.pt/noticias/rss"/>
+    </outline>
+    <outline text="Business" title="Business">
+      <outline type="rss" text="ECO" title="ECO" xmlUrl="https://eco.sapo.pt/feed/"/>
+    </outline>
+  </body>
+</opml>

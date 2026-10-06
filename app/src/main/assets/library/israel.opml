@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+  <head>
+    <title>Israel</title>
+  </head>
+  <body>
+    <outline text="News" title="News">
+      <outline type="rss" text="Haaretz" title="Haaretz" xmlUrl="https://www.haaretz.com/cmlink/1.4605102"/>
+      <outline type="rss" text="The Jerusalem Post" title="The Jerusalem Post" xmlUrl="https://www.jpost.com/rss/rssfeedsheadlines.aspx"/>
+      <outline type="rss" text="The Times of Israel" title="The Times of Israel" xmlUrl="https://www.timesofisrael.com/feed/"/>
+      <outline type="rss" text="Ynetnews" title="Ynetnews" xmlUrl="https://www.ynetnews.com/Integration/StoryRss3082.xml"/>
+      <outline type="rss" text="Arutz Sheva" title="Arutz Sheva" xmlUrl="https://www.israelnationalnews.com/Rss.aspx"/>
+    </outline>
+    <outline text="Business" title="Business">
+      <outline type="rss" text="Globes" title="Globes" xmlUrl="https://www.globes.co.il/webservice/rss/rssfeeder.asmx/FeederNode?iID=942"/>
+    </outline>
+  </body>
+</opml>

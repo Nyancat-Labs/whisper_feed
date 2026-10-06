@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+  <head>
+    <title>Netherlands</title>
+  </head>
+  <body>
+    <outline text="News" title="News">
+      <outline type="rss" text="NOS Nieuws" title="NOS Nieuws" xmlUrl="https://feeds.nos.nl/nosnieuwsalgemeen"/>
+      <outline type="rss" text="NL Times" title="NL Times" xmlUrl="https://nltimes.nl/rss.xml"/>
+      <outline type="rss" text="DutchNews.nl" title="DutchNews.nl" xmlUrl="https://www.dutchnews.nl/feed/"/>
+      <outline type="rss" text="NRC" title="NRC" xmlUrl="https://www.nrc.nl/rss/"/>
+      <outline type="rss" text="NU.nl" title="NU.nl" xmlUrl="https://www.nu.nl/rss/Algemeen"/>
+      <outline type="rss" text="de Volkskrant" title="de Volkskrant" xmlUrl="https://www.volkskrant.nl/voorpagina/rss.xml"/>
+    </outline>
+  </body>
+</opml>

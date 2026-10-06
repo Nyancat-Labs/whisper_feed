@@ -55,9 +55,9 @@ import com.saulhdev.feeder.ui.icons.phosphor.ArrowLeft
 @Composable
 fun ViewWithActionBar(
     title: String,
+    modifier: Modifier = Modifier,
     titleSize: TextUnit = 18.sp,
     subTitle: String = "",
-    modifier: Modifier = Modifier,
     bottomBar: @Composable () -> Unit = {},
     snackbarHost: @Composable () -> Unit = {},
     floatingActionButton: @Composable () -> Unit = {},
@@ -72,6 +72,15 @@ fun ViewWithActionBar(
      */
     largeTitle: Boolean = false,
     actions: @Composable (RowScope.() -> Unit) = {},
+    /**
+     * What the navigation slot shows, when it is not going back.
+     *
+     * A screen holding a selection puts a close cross here instead of the back
+     * arrow: the button dismisses the selection rather than the screen, and an
+     * arrow promising to leave would be lying about where the tap goes.
+     */
+    backIcon: ImageVector = Phosphor.ArrowLeft,
+    backDescription: Int = R.string.go_back,
     onBackAction: (() -> Unit)? = null,
     content: @Composable (PaddingValues) -> Unit
 ) {
@@ -118,8 +127,8 @@ fun ViewWithActionBar(
                             }
                         ) {
                             Icon(
-                                imageVector = Phosphor.ArrowLeft,
-                                contentDescription = stringResource(id = R.string.go_back),
+                                imageVector = backIcon,
+                                contentDescription = stringResource(id = backDescription),
                             )
                         }
                     }

@@ -18,6 +18,9 @@
 package com.saulhdev.feeder.ui.components
 
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -45,7 +48,7 @@ import androidx.compose.ui.unit.dp
 import com.saulhdev.feeder.R
 import com.saulhdev.feeder.ui.icons.Phosphor
 import com.saulhdev.feeder.ui.icons.phosphor.ArrowLeft
-import com.saulhdev.feeder.ui.icons.phosphor.SubtractSquare
+import com.saulhdev.feeder.ui.icons.phosphor.X
 
 /**
  * The search field, in place of the header while a search is running.
@@ -64,6 +67,7 @@ fun FeedSearchBar(
     onQueryChange: (String) -> Unit,
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
+    windowInsets: WindowInsets = WindowInsets.statusBars,
 ) {
     val focusRequester = remember { FocusRequester() }
     val keyboard = LocalSoftwareKeyboardController.current
@@ -77,6 +81,14 @@ fun FeedSearchBar(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            // Inset by default rather than left to the caller. This replaces a
+            // TopAppBar, which insets itself, so a call site that simply swaps
+            // one for the other gets a bar drawn *under* the status bar — and
+            // the two controls at its ends then sit where the system takes the
+            // taps. A tester reported both as broken buttons, which is exactly
+            // what they were. The launcher overlay measures its own inset and
+            // passes zero here.
+            .windowInsetsPadding(windowInsets)
             .padding(horizontal = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -118,7 +130,7 @@ fun FeedSearchBar(
                 if (query.isNotEmpty()) {
                     IconButton(onClick = { onQueryChange("") }) {
                         Icon(
-                            Phosphor.SubtractSquare,
+                            Phosphor.X,
                             stringResource(R.string.action_clear),
                             modifier = Modifier.size(HeaderIconSize),
                         )

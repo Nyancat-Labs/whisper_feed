@@ -1,5 +1,6 @@
 package com.saulhdev.feeder.ui.components
 
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -24,8 +25,46 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.Dp
 import kotlinx.coroutines.delay
+import androidx.compose.runtime.LaunchedEffect
 import kotlinx.coroutines.launch
+
+/**
+ * How long the indicator stays up once it has been shown.
+ *
+ * `syncAllFeeds` enqueues work and returns, so an indicator driven only by
+ * that call would appear and vanish within a frame. The old fix was to hold it
+ * up for a flat two seconds after the call returned, which meant the spinner
+ * had no relationship to the sync at all: it stopped on a timer whether the
+ * sync had finished, failed, or not started.
+ *
+ * The indicator follows the real syncing state now, with this as a floor so a
+ * sync that resolves instantly still reads as something having happened.
+ */
+private const val MIN_VISIBLE_MS = 600L
+
+/**
+ * The refreshing flag the indicator should actually use.
+ *
+ * True while the caller says a sync is running, and for a moment after a pull
+ * so the gesture is acknowledged even if the sync has not been reported yet.
+ */
+@Composable
+private fun rememberRefreshing(isRefreshing: Boolean): Pair<Boolean, () -> Unit> {
+    var pulledAt by remember { mutableLongStateOf(0L) }
+    var settled by remember { mutableStateOf(false) }
+
+    LaunchedEffect(pulledAt) {
+        if (pulledAt == 0L) return@LaunchedEffect
+        settled = false
+        delay(MIN_VISIBLE_MS)
+        settled = true
+    }
+
+    val showing = isRefreshing || (pulledAt != 0L && !settled)
+    return showing to { pulledAt = System.currentTimeMillis() }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,9 +76,7 @@ fun PullToRefreshLazyColumn(
     listState: LazyListState = rememberLazyListState(),
     contentPadding: PaddingValues = PaddingValues(8.dp),
 ) {
-    var isRefreshing by remember(isRefreshing) {
-        mutableStateOf(isRefreshing)
-    }
+    val (showing, onPulled) = rememberRefreshing(isRefreshing)
     val coroutineScope = rememberCoroutineScope()
     val pullToRefreshState = rememberPullToRefreshState()
 
@@ -47,15 +84,11 @@ fun PullToRefreshLazyColumn(
         modifier = modifier.fillMaxSize(),
     ) {
         PullToRefreshBox(
-            isRefreshing = isRefreshing,
+            isRefreshing = showing,
             state = pullToRefreshState,
             onRefresh = {
-                isRefreshing = true
-                coroutineScope.launch {
-                    onRefresh()
-                    delay(2_000L)
-                    isRefreshing = false
-                }
+                onPulled()
+                coroutineScope.launch { onRefresh() }
             },
             modifier = Modifier.fillMaxSize(),
         ) {
@@ -87,27 +120,26 @@ fun PullToRefreshStaggeredGrid(
     gridState: LazyStaggeredGridState = rememberLazyStaggeredGridState(),
     contentPadding: PaddingValues = PaddingValues(8.dp),
     columns: Int = 2,
+    /** Between lanes. Mosaic's tiles bring their own; full cards side by side do not. */
+    laneSpacing: Dp = 0.dp,
 ) {
-    var isRefreshing by remember(isRefreshing) { mutableStateOf(isRefreshing) }
+    val (showing, onPulled) = rememberRefreshing(isRefreshing)
     val coroutineScope = rememberCoroutineScope()
     val pullToRefreshState = rememberPullToRefreshState()
 
     Box(modifier = modifier.fillMaxSize()) {
         PullToRefreshBox(
-            isRefreshing = isRefreshing,
+            isRefreshing = showing,
             state = pullToRefreshState,
             onRefresh = {
-                isRefreshing = true
-                coroutineScope.launch {
-                    onRefresh()
-                    delay(2_000L)
-                    isRefreshing = false
-                }
+                onPulled()
+                coroutineScope.launch { onRefresh() }
             },
             modifier = Modifier.fillMaxSize(),
         ) {
             LazyVerticalStaggeredGrid(
                 columns = StaggeredGridCells.Fixed(columns),
+                horizontalArrangement = Arrangement.spacedBy(laneSpacing),
                 state = gridState,
                 contentPadding = contentPadding,
                 modifier = Modifier.fillMaxSize(),

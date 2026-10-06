@@ -60,6 +60,32 @@ fun normalizeFeedUrl(url: URL): String {
     return "$host$port$path$query"
 }
 
+/**
+ * The same address, over https.
+ *
+ * Every client that fetches a feed, an article page or an icon is built with
+ * `onlyPublicHttps()`, which rewrites the scheme before a socket is opened. So
+ * an address stored as http is *already* fetched over https: the scheme
+ * written down is cosmetic, and when it says http it is simply wrong about
+ * what the app does.
+ *
+ * Wrong in a way that is not harmless. It puts working subscriptions on the
+ * "Feeds still on http" screen, which reads as an accusation against the
+ * publisher; it makes an export carry addresses the exporting app would not
+ * itself use; and it leaves anyone reading the list believing their feeds are
+ * being fetched in the clear when none of them are.
+ *
+ * Only `http` is touched. A scheme this app does not fetch over is not this
+ * function's business to rewrite, and turning something unparseable into
+ * `https://` + rubbish would be worse than leaving it.
+ */
+fun URL.preferringHttps(): URL =
+    if (protocol.equals("http", ignoreCase = true)) {
+        runCatching { URL("https", host, port, file) }.getOrDefault(this)
+    } else {
+        this
+    }
+
 /** Whether two addresses name the same subscription. */
 fun isSameFeedUrl(a: URL, b: URL): Boolean = normalizeFeedUrl(a) == normalizeFeedUrl(b)
 

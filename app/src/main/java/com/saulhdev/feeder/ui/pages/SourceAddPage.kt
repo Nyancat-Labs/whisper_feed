@@ -53,6 +53,16 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.SoftwareKeyboardController
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.IconButton
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.input.ImeAction
@@ -69,6 +79,7 @@ import com.saulhdev.feeder.ui.components.ViewWithActionBar
 import com.saulhdev.feeder.ui.navigation.LocalNavController
 import com.saulhdev.feeder.ui.icons.Phosphor
 import com.saulhdev.feeder.ui.icons.phosphor.Check
+import com.saulhdev.feeder.ui.icons.phosphor.Info
 import com.saulhdev.feeder.utils.sloppyLinkToStrictURLNoThrows
 import com.saulhdev.feeder.viewmodels.SearchFeedViewModel
 import com.saulhdev.feeder.viewmodels.SearchResult
@@ -90,6 +101,18 @@ fun SourceAddPage(
     var results by rememberSaveable {
         mutableStateOf(listOf<SearchResult>())
     }
+
+    // Filing a feed used to mean adding it, leaving, finding it in the source
+    // list and opening the editor — four steps to answer a question the reader
+    // was already thinking about when they added it.
+    val sourcesState by sourcesViewModel.state.collectAsState()
+    val filed = remember { mutableStateMapOf<String, String>() }
+
+    // "Subscribed already" and "just subscribed" both read as Added, which
+    // meant searching for a feed you already follow looked exactly like
+    // successfully adding it. The search already knows the difference — it
+    // checks the database per candidate — so the screen only had to say it.
+    val addedNow = remember { mutableStateListOf<String>() }
 
     // Subscribing happens when a result is tapped. It used to happen when the
     // screen was *left*: every feed the search turned up was added, whether or
@@ -143,10 +166,18 @@ fun SourceAddPage(
                 onClick = { result ->
                     if (!result.alreadyAdded) {
                         sourcesViewModel.addFeed(result)
+                        addedNow += result.url
                         results = results.map {
                             if (it.url == result.url) it.copy(alreadyAdded = true) else it
                         }
                     }
+                },
+                allTags = sourcesState.allTags,
+                addedNow = addedNow,
+                filedAs = filed,
+                onFile = { result, tag ->
+                    filed[result.url] = tag
+                    sourcesViewModel.setCategory(result.url, tag)
                 }
             )
         }
@@ -162,6 +193,10 @@ fun AddFeedView(
     errors: StableHolder<List<SearchResult>>,
     currentlySearching: Boolean,
     onClick: (SearchResult) -> Unit,
+    allTags: List<String> = emptyList(),
+    addedNow: List<String> = emptyList(),
+    filedAs: Map<String, String> = emptyMap(),
+    onFile: (SearchResult, String) -> Unit = { _, _ -> },
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
@@ -190,7 +225,11 @@ fun AddFeedView(
                 results = results,
                 errors = errors,
                 currentlySearching = currentlySearching,
-                onClick = onClick
+                onClick = onClick,
+                allTags = allTags,
+                addedNow = addedNow,
+                filedAs = filedAs,
+                onFile = onFile,
             )
         }
     }
@@ -274,6 +313,10 @@ fun SearchResult(
     errors: StableHolder<List<SearchResult>>,
     currentlySearching: Boolean,
     onClick: (SearchResult) -> Unit,
+    allTags: List<String> = emptyList(),
+    addedNow: List<String> = emptyList(),
+    filedAs: Map<String, String> = emptyMap(),
+    onFile: (SearchResult, String) -> Unit = { _, _ -> },
 ) {
     if (results.item.isEmpty()) {
         for (error in errors.item) {
@@ -293,6 +336,10 @@ fun SearchResult(
             url = result.url,
             description = result.description,
             alreadyAdded = result.alreadyAdded,
+            justAdded = result.url in addedNow,
+            allTags = allTags,
+            filedAs = filedAs[result.url],
+            onFile = { onFile(result, it) },
         ) {
             onClick(result)
         }
@@ -322,6 +369,10 @@ fun SearchResultView(
     url: String,
     description: String,
     alreadyAdded: Boolean = false,
+    justAdded: Boolean = false,
+    allTags: List<String> = emptyList(),
+    filedAs: String? = null,
+    onFile: (String) -> Unit = {},
     onClick: () -> Unit,
 ) {
     Card(
@@ -349,16 +400,25 @@ fun SearchResultView(
                     modifier = Modifier.weight(1f, fill = false),
                 )
                 if (alreadyAdded) {
+                    // A tick in the primary colour is the language of "that
+                    // worked". A feed the reader already had did not just
+                    // work — nothing happened — so it says so plainly and in
+                    // the quieter colour.
+                    val tint = if (justAdded) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.onSurfaceVariant
                     Icon(
-                        imageVector = Phosphor.Check,
+                        imageVector = if (justAdded) Phosphor.Check else Phosphor.Info,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
+                        tint = tint,
                         modifier = Modifier.size(18.dp),
                     )
                     Text(
-                        stringResource(R.string.already_subscribed),
+                        stringResource(
+                            if (justAdded) R.string.already_subscribed
+                            else R.string.feed_already_yours
+                        ),
                         style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.primary,
+                        color = tint,
                     )
                 }
             }
@@ -374,8 +434,89 @@ fun SearchResultView(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
+
+            // Only after it is in. Asking before would put a decision between
+            // the reader and the one thing they came here to do, and a feed
+            // with no category is a perfectly good feed — this is an offer at
+            // the moment it is easiest to accept, not a required field.
+            if (justAdded) {
+                CategoryPicker(
+                    allTags = allTags,
+                    chosen = filedAs,
+                    onChoose = onFile,
+                )
+            }
         }
     }
+}
+
+/**
+ * Where to file the feed that has just been added.
+ *
+ * The categories that already exist, plus room to type a new one. Choosing
+ * writes it straight away rather than waiting for a Save: there is nothing
+ * else on this screen to save, and a button that only sometimes appears is
+ * worse than no button.
+ */
+@Composable
+private fun CategoryPicker(
+    allTags: List<String>,
+    chosen: String?,
+    onChoose: (String) -> Unit,
+) {
+    var typed by remember { mutableStateOf("") }
+    val named = remember(allTags) { allTags.filter { it.isNotBlank() }.sorted() }
+
+    Spacer(Modifier.height(4.dp))
+    Text(
+        text = stringResource(R.string.add_feed_category),
+        style = MaterialTheme.typography.labelMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        named.forEach { tag ->
+            FilterChip(
+                selected = tag == chosen,
+                onClick = { onChoose(tag) },
+                label = { Text(tag) },
+            )
+        }
+    }
+    OutlinedTextField(
+        value = typed,
+        onValueChange = { typed = it },
+        singleLine = true,
+        modifier = Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.medium,
+        label = { Text(stringResource(R.string.sources_add_tag)) },
+        keyboardOptions = KeyboardOptions.Default.copy(
+            capitalization = KeyboardCapitalization.Words,
+            imeAction = ImeAction.Done,
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = {
+                // A category typed but never committed is still a category the
+                // reader asked for; the same trap the edit screen already
+                // guards against.
+                val value = typed.trim()
+                if (value.isNotEmpty()) onChoose(value)
+            }
+        ),
+        trailingIcon = {
+            val value = typed.trim()
+            if (value.isNotEmpty()) {
+                IconButton(onClick = { onChoose(value) }) {
+                    Icon(
+                        imageVector = Phosphor.Check,
+                        contentDescription = stringResource(R.string.sources_add_tag),
+                    )
+                }
+            }
+        },
+    )
 }
 
 @Composable

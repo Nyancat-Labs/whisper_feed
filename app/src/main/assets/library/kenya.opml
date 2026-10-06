@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+  <head>
+    <title>Kenya</title>
+  </head>
+  <body>
+    <outline text="News" title="News">
+      <outline type="rss" text="Daily Nation" title="Daily Nation" xmlUrl="https://nation.africa/kenya/rss"/>
+      <outline type="rss" text="Capital FM" title="Capital FM" xmlUrl="https://www.capitalfm.co.ke/news/feed/"/>
+      <outline type="rss" text="The Standard" title="The Standard" xmlUrl="https://www.standardmedia.co.ke/rss/headlines.php"/>
+      <outline type="rss" text="Kenyans.co.ke" title="Kenyans.co.ke" xmlUrl="https://www.kenyans.co.ke/feeds/news"/>
+      <outline type="rss" text="Nairobi Wire" title="Nairobi Wire" xmlUrl="https://nairobiwire.com/feed"/>
+    </outline>
+  </body>
+</opml>

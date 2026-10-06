@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<opml version="1.0">
+  <head>
+    <title>Export from Plenary</title>
+    <url>https://play.google.com/store/apps/details?id=com.spians.plenary</url>
+    <ownerName>Plenary app</ownerName>
+    <ownerEmail>plenarytheapp@gmail.com</ownerEmail>
+  </head>
+  <body>
+    <outline text="Sports" title="Sports">
+      <outline text="Yahoo Sports" title="Yahoo Sports" description="Yahoo! Sports - Comprehensive news, scores, standings, fantasy games, rumors, and more" xmlUrl="https://sports.yahoo.com/rss/" type="rss" />
+      <outline text="BBC Sport" title="BBC Sport" description="BBC Sport - Sport Front Page" xmlUrl="https://feeds.bbci.co.uk/sport/rss.xml" type="rss" />
+      <outline text="NYT &gt; Sports" title="NYT &gt; Sports" description="" xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/Sports.xml" type="rss" />
+      <outline text="The Independent Sport" title="The Independent Sport" description="Sport news from The Independent." xmlUrl="https://www.independent.co.uk/sport/rss" type="rss" />
+      <outline text="Sport | The Guardian" title="Sport | The Guardian" description="Latest Sport news, comment and analysis from the Guardian, the world's leading liberal voice" xmlUrl="https://www.theguardian.com/uk/sport/rss" type="rss" />
+      <outline text="Sports News - Latest Sports and Football News | Sky News" title="Sports News - Latest Sports and Football News | Sky News" description="The best sports coverage from around the world, covering: Football, Cricket, Golf, Rugby, WWE, Boxing, Tennis and much more." xmlUrl="https://feeds.skynews.com/feeds/rss/sports.xml" type="rss" />
+      <outline text="The Times of India" title="The Times of India" description="Get the latest sports news, live cricket scores and in-depth coverage of Cricket, Football, NBA, NFL, WWE, F1, Tennis, and more on The Times of India. Stay updated with breaking sports stories, player stats, and event highlights." xmlUrl="https://timesofindia.indiatimes.com/rssfeeds/4719148.cms" type="rss" />
+      <outline text="Sports | The Indian Express" title="Sports | The Indian Express" description="Latest News Today, Breaking News, India News, Top Headlines" xmlUrl="https://indianexpress.com/section/sports/feed/" type="rss" />
+      <outline text="Sportskeeda" title="Sportskeeda" description="Latest Sports News &amp; Live Updates" xmlUrl="https://www.sportskeeda.com/feed" type="rss" />
+      <outline text="www.espn.com - TOP" title="www.espn.com - TOP" description="Latest TOP news from www.espn.com" xmlUrl="https://www.espn.com/espn/rss/news" type="rss" />
+      <outline type="rss" text="L&#x27;Équipe" title="L&#x27;Équipe" xmlUrl="https://www.lequipe.fr/rss/actu_rss.xml"/>
+      <outline type="rss" text="Marca" title="Marca" xmlUrl="https://e00-marca.uecdn.es/rss/portada.xml"/>
+      <outline type="rss" text="Gazzetta dello Sport" title="Gazzetta dello Sport" xmlUrl="https://www.gazzetta.it/rss/home.xml"/>
+    </outline>
+  </body>
+</opml>

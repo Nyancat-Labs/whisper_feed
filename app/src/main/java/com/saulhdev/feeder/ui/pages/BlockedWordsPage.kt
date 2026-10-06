@@ -55,10 +55,13 @@ import androidx.compose.ui.unit.dp
 import com.saulhdev.feeder.R
 import com.saulhdev.feeder.data.content.FeedPreferences
 import com.saulhdev.feeder.data.repository.ArticleRepository
+import com.saulhdev.feeder.ui.components.ActionButton
 import com.saulhdev.feeder.ui.components.ViewWithActionBar
 import com.saulhdev.feeder.ui.icons.Phosphor
+import com.saulhdev.feeder.ui.icons.phosphor.Plus
 import com.saulhdev.feeder.ui.icons.phosphor.TrashSimple
 import com.saulhdev.feeder.ui.navigation.LocalNavController
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
@@ -75,7 +78,9 @@ fun BlockedWordsPage(
     var newWord by remember { mutableStateOf("") }
 
     fun save(updated: Set<String>) {
-        scope.launch {
+        // IO: a blocking preference write followed by a pass over every
+        // article, from a tap.
+        scope.launch(Dispatchers.IO) {
             prefs.blockedWords.setValue(updated)
             articleRepository.deleteArticlesMatchingWords(updated, context.filesDir)
         }
@@ -83,6 +88,7 @@ fun BlockedWordsPage(
 
     ViewWithActionBar(
         title = stringResource(id = R.string.blocked_words_title),
+        largeTitle = true,
         onBackAction = { navController.popBackStack() }
     ) { paddingValues ->
         Column(
@@ -121,7 +127,14 @@ fun BlockedWordsPage(
                         }
                     )
                 )
-                Button(
+                // The same button every other action in Settings uses. A bare
+                // Material Button is filled where the app's is filled-tonal,
+                // so this one sat a shade darker than its neighbours for no
+                // reason anybody chose.
+                ActionButton(
+                    text = stringResource(id = R.string.blocked_words_add),
+                    icon = Phosphor.Plus,
+                    enabled = newWord.trim().isNotBlank(),
                     onClick = {
                         val trimmed = newWord.trim().lowercase()
                         if (trimmed.isNotBlank()) {
@@ -130,10 +143,7 @@ fun BlockedWordsPage(
                             focusManager.clearFocus()
                         }
                     },
-                    enabled = newWord.trim().isNotBlank()
-                ) {
-                    Text(text = stringResource(id = R.string.blocked_words_add))
-                }
+                )
             }
 
             HorizontalDivider()

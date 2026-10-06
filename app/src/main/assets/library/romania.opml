@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+  <head>
+    <title>Romania</title>
+  </head>
+  <body>
+    <outline text="News" title="News">
+      <outline type="rss" text="Adevărul" title="Adevărul" xmlUrl="https://adevarul.ro/rss/"/>
+      <outline type="rss" text="HotNews" title="HotNews" xmlUrl="https://hotnews.ro/feed"/>
+      <outline type="rss" text="Digi24" title="Digi24" xmlUrl="https://www.digi24.ro/rss"/>
+      <outline type="rss" text="Romania Insider" title="Romania Insider" xmlUrl="https://www.romania-insider.com/rss.xml"/>
+      <outline type="rss" text="Stirile ProTV" title="Stirile ProTV" xmlUrl="https://stirileprotv.ro/rss/"/>
+      <outline type="rss" text="G4Media" title="G4Media" xmlUrl="https://www.g4media.ro/feed"/>
+    </outline>
+  </body>
+</opml>

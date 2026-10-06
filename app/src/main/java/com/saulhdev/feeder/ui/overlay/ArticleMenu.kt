@@ -38,11 +38,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.saulhdev.feeder.R
 import com.saulhdev.feeder.ui.icons.Phosphor
 import com.saulhdev.feeder.ui.icons.phosphor.DotsThreeVertical
+import com.saulhdev.feeder.ui.icons.phosphor.Asterisk
 import com.saulhdev.feeder.ui.icons.phosphor.EyeSlash
 import com.saulhdev.feeder.ui.icons.phosphor.Info
 import com.saulhdev.feeder.ui.icons.phosphor.Prohibit
@@ -73,11 +75,33 @@ fun ArticleOverflowMenu(
     modifier: Modifier = Modifier,
     tint: Color = MaterialTheme.colorScheme.onSurfaceVariant,
     reasons: List<WeightReason> = emptyList(),
+    pinned: Boolean = false,
+    onPin: (Boolean) -> Unit = {},
+    /**
+     * Whether this card is leading a breaking story, and so has a promotion
+     * to give back. Every other card has nothing to dismiss, and an entry
+     * that does nothing on five cards out of six is worse than no entry.
+     */
+    breaking: Boolean = false,
+    onDismissStory: () -> Unit = {},
 ) {
     var expanded by remember { mutableStateOf(false) }
     var explain by remember { mutableStateOf(false) }
+    val focusManager = LocalFocusManager.current
 
-    IconButton(onClick = { expanded = true }, modifier = modifier) {
+    // The same clear OverflowMenu does, for the same reason: Compose hands
+    // focus back to whatever held it when this closes, and on a feed with the
+    // search field in use that means the keyboard returns over the article the
+    // menu was opened about. This menu is hand-rolled rather than built on
+    // OverflowMenu — it carries its own explain state — so it does not get the
+    // fix for free.
+    IconButton(
+        onClick = {
+            focusManager.clearFocus()
+            expanded = true
+        },
+        modifier = modifier,
+    ) {
         Icon(
             imageVector = Phosphor.DotsThreeVertical,
             contentDescription = stringResource(R.string.more_options),
@@ -94,6 +118,23 @@ fun ArticleOverflowMenu(
         MenuEntry(R.string.less_like_this, Phosphor.Prohibit) {
             expanded = false
             onLessLikeThis()
+        }
+        MenuEntry(
+            if (pinned) R.string.unpin_article else R.string.pin_article,
+            Phosphor.Asterisk,
+        ) {
+            expanded = false
+            onPin(!pinned)
+        }
+        if (breaking) {
+            // Only on the card that carries the promotion. Dismissing is not
+            // hiding: the article keeps its place in the feed and loses the
+            // treatment breaking news gets, which is the thing the reader is
+            // actually objecting to when they have scrolled past it twice.
+            MenuEntry(R.string.dismiss_story, Phosphor.Prohibit) {
+                expanded = false
+                onDismissStory()
+            }
         }
         MenuEntry(R.string.hide_source, Phosphor.EyeSlash) {
             expanded = false

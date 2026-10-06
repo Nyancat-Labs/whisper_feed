@@ -43,14 +43,22 @@ import com.saulhdev.feeder.ui.pages.ArticleListPage
 import com.saulhdev.feeder.ui.pages.ArticlePage
 import com.saulhdev.feeder.ui.pages.ChangelogPage
 import com.saulhdev.feeder.ui.pages.BlockedWordsPage
+import com.saulhdev.feeder.ui.pages.AccountPage
+import com.saulhdev.feeder.ui.pages.BackupPage
 import com.saulhdev.feeder.ui.pages.LearnedPage
 import com.saulhdev.feeder.ui.pages.LicensePage
 import com.saulhdev.feeder.ui.pages.MainPage
-import com.saulhdev.feeder.ui.pages.MastodonAddPage
-import com.saulhdev.feeder.ui.pages.MastodonCallbackPage
 import com.saulhdev.feeder.ui.pages.GlanceLocationPage
 import com.saulhdev.feeder.ui.pages.PreferencesPage
 import com.saulhdev.feeder.ui.pages.CategoryListPage
+import com.saulhdev.feeder.ui.pages.LauncherPage
+import com.saulhdev.feeder.ui.theme.reducedMotion
+import com.saulhdev.feeder.ui.pages.BookmarkImportPage
+import com.saulhdev.feeder.ui.pages.BrokenFeedsPage
+import com.saulhdev.feeder.ui.pages.FeedLibraryPage
+import com.saulhdev.feeder.ui.pages.InsecureFeedsPage
+import com.saulhdev.feeder.ui.pages.StatisticsPage
+import com.saulhdev.feeder.ui.pages.SuggestionsPage
 import com.saulhdev.feeder.ui.pages.SourceAddPage
 import com.saulhdev.feeder.ui.pages.SourceListPage
 import com.saulhdev.feeder.ui.views.ComposeWebView
@@ -70,14 +78,27 @@ fun NavigationManager(
     CompositionLocalProvider(
         LocalNavController provides navController
     ) {
+        // Screens slide, unless the reader has told the system they would
+        // rather things did not. A whole screen sweeping in is the largest
+        // movement the app makes, so it is the first one that should stop.
+        val animate = !reducedMotion()
+
         NavHost(
             modifier = modifier,
             navController = navController,
             startDestination = NavRoute.Main(),
-            enterTransition = { fadeIn() + slideInHorizontally { it } },
-            exitTransition = { fadeOut() + slideOutHorizontally { -it / 2 } },
-            popEnterTransition = { fadeIn() + slideInHorizontally { -it } },
-            popExitTransition = { fadeOut() + slideOutHorizontally { it / 2 } },
+            enterTransition = {
+                if (animate) fadeIn() + slideInHorizontally { it } else fadeIn()
+            },
+            exitTransition = {
+                if (animate) fadeOut() + slideOutHorizontally { -it / 2 } else fadeOut()
+            },
+            popEnterTransition = {
+                if (animate) fadeIn() + slideInHorizontally { -it } else fadeIn()
+            },
+            popExitTransition = {
+                if (animate) fadeOut() + slideOutHorizontally { it / 2 } else fadeOut()
+            },
         ) {
 
             composable<NavRoute.Main>(
@@ -102,21 +123,26 @@ fun NavigationManager(
             composable<NavRoute.SourceAdd> { SourceAddPage() }
             composable<NavRoute.Categories> { CategoryListPage() }
             composable<NavRoute.Learned> { LearnedPage() }
+            composable<NavRoute.Account> { AccountPage() }
+            composable<NavRoute.Backup> { BackupPage() }
+            composable<NavRoute.Launcher> { LauncherPage() }
+            composable<NavRoute.Suggestions> { SuggestionsPage() }
+            composable<NavRoute.BookmarkImport> { BookmarkImportPage() }
+            // Deep-linked for the "feeds have stopped working" notification,
+            // which opens the page that lists them and can fix them.
+            composable<NavRoute.BrokenFeeds>(
+                deepLinks = listOf(navDeepLink { uriPattern = "$NAV_BASE${Routes.BROKEN_FEEDS}" })
+            ) { BrokenFeedsPage() }
+            composable<NavRoute.InsecureFeeds> { InsecureFeedsPage() }
+            composable<NavRoute.FeedLibrary> { FeedLibraryPage() }
+            composable<NavRoute.Statistics> { StatisticsPage() }
             composable<NavRoute.BlockedWords> { BlockedWordsPage() }
-            composable<NavRoute.MastodonAdd> { MastodonAddPage() }
-            composable<NavRoute.MastodonCallback>(
-                deepLinks = listOf(
-                    navDeepLink {
-                        uriPattern = "nf-mastodon://callback?code={code}&state={state}"
-                    }
-                )
-            ) {
-                val args = it.toRoute<NavRoute.MastodonCallback>()
-                MastodonCallbackPage(args.code, args.state)
-            }
-            composable<NavRoute.WebView>(
-                deepLinks = listOf(navDeepLink { uriPattern = "$NAV_BASE${Routes.WEB_VIEW}/{url}" })
-            ) {
+            // No deep link, on purpose. MainActivity is exported, as the
+            // launcher entry has to be, and hands every intent it receives to
+            // navigation: a link here let any installed app open a page of its
+            // choosing inside Whisper's own browser, looking like part of the
+            // app. Nothing in the app ever used it.
+            composable<NavRoute.WebView> {
                 val args = it.toRoute<NavRoute.WebView>()
                 ComposeWebView(args.url)
             }
@@ -135,8 +161,8 @@ fun NavigationManager(
 object Routes {
     const val MAIN = "main"
     const val SETTINGS = "settings"
-    const val WEB_VIEW = "web_view"
     const val ARTICLE_VIEW = "article_page"
+    const val BROKEN_FEEDS = "broken_feeds"
 }
 
 sealed class NavItem(
@@ -175,13 +201,34 @@ open class NavRoute {
     data object Learned : NavRoute()
 
     @Serializable
+    data object Account : NavRoute()
+
+    @Serializable
+    data object Backup : NavRoute()
+
+    @Serializable
+    data object Launcher : NavRoute()
+
+    @Serializable
+    data object Suggestions : NavRoute()
+
+    @Serializable
+    data object BookmarkImport : NavRoute()
+
+    @Serializable
+    data object BrokenFeeds : NavRoute()
+
+    @Serializable
+    data object InsecureFeeds : NavRoute()
+
+    @Serializable
+    data object FeedLibrary : NavRoute()
+
+    @Serializable
+    data object Statistics : NavRoute()
+
+    @Serializable
     data object BlockedWords : NavRoute()
-
-    @Serializable
-    data object MastodonAdd : NavRoute()
-
-    @Serializable
-    data class MastodonCallback(val code: String = "", val state: String = "") : NavRoute()
 
     @Serializable
     data class ArticleView(val uuid: String = "") : NavRoute()

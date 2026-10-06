@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+  <head>
+    <title>South Korea</title>
+  </head>
+  <body>
+    <outline text="News" title="News">
+      <outline type="rss" text="Yonhap News" title="Yonhap News" xmlUrl="https://en.yna.co.kr/RSS/news.xml"/>
+      <outline type="rss" text="KBS World" title="KBS World" xmlUrl="https://world.kbs.co.kr/rss/rss_news.htm?lang=e"/>
+      <outline type="rss" text="The Korea Herald" title="The Korea Herald" xmlUrl="https://www.koreaherald.com/rss/newsAll"/>
+      <outline type="rss" text="The Korea Times" title="The Korea Times" xmlUrl="https://www.koreatimes.co.kr/www/rss/nation.xml"/>
+      <outline type="rss" text="Hankyoreh English" title="Hankyoreh English" xmlUrl="https://english.hani.co.kr/rss/"/>
+    </outline>
+  </body>
+</opml>

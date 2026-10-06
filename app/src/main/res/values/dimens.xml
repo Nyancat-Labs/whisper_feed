@@ -1,9 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="standard_padding">16dp</dimen>
-    <dimen name="small_padding">8dp</dimen>
-    <dimen name="standard_margin">16dp</dimen>
-    <dimen name="small_margin">8dp</dimen>
-    <dimen name="card_corner_radius">8dp</dimen>
-    <dimen name="card_elevation">4dp</dimen>
 </resources>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+  <head>
+    <title>Denmark</title>
+  </head>
+  <body>
+    <outline text="News" title="News">
+      <outline type="rss" text="Politiken" title="Politiken" xmlUrl="https://politiken.dk/rss/senestenyt.rss"/>
+      <outline type="rss" text="DR Nyheder" title="DR Nyheder" xmlUrl="https://www.dr.dk/nyheder/service/feeds/allenyheder"/>
+      <outline type="rss" text="The Local Denmark" title="The Local Denmark" xmlUrl="https://www.thelocal.dk/feeds/rss.php"/>
+      <outline type="rss" text="Information" title="Information" xmlUrl="https://www.information.dk/feed"/>
+      <outline type="rss" text="Ekstra Bladet" title="Ekstra Bladet" xmlUrl="https://ekstrabladet.dk/rssfeed/all/"/>
+    </outline>
+    <outline text="Business" title="Business">
+      <outline type="rss" text="Børsen" title="Børsen" xmlUrl="https://borsen.dk/rss"/>
+    </outline>
+  </body>
+</opml>

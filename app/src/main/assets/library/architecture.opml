@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<opml version="1.0">
+  <head>
+    <title>Export from Plenary</title>
+    <url>https://play.google.com/store/apps/details?id=com.spians.plenary</url>
+    <ownerName>Plenary app</ownerName>
+    <ownerEmail>plenarytheapp@gmail.com</ownerEmail>
+  </head>
+  <body>
+    <outline text="Architecture" title="Architecture">
+      <outline text="A Weekly Dose of Architecture Books" title="A Weekly Dose of Architecture Books" description="This blog wrapped in early 2024, though it continues as a Substack newsletter with the same name: &lt;a href=&quot;https://archidose.substack.com/&quot;&gt;archidose.substack.com&lt;/a&gt;" xmlUrl="https://feeds.feedburner.com/archidose" type="rss" />
+      <outline text="ArchDaily Global" title="ArchDaily Global" description="ArchDaily | Broadcasting Architecture Worldwide" xmlUrl="https://feeds.feedburner.com/Archdaily" type="rss" />
+      <outline text="Architectural Digest" title="Architectural Digest" description="The latest from www.architecturaldigest.com" xmlUrl="https://www.architecturaldigest.com/feed/rss" type="rss" />
+      <outline text="Architectural Digest" title="Architectural Digest" description="" xmlUrl="https://www.youtube.com/feeds/videos.xml?user=ArchitecturalDigest" type="rss" />
+      <outline text="Architizer Journal" title="Architizer Journal" description="Architecture projects, practice and ideas." xmlUrl="https://architizer.com/blog/feed/" type="rss" />
+      <outline text="Architecture news and projects | Dezeen" title="Architecture news and projects | Dezeen" description="architecture and design magazine" xmlUrl="https://www.dezeen.com/architecture/feed/" type="rss" />
+      <outline text="Design Milk" title="Design Milk" description="Dedicated to modern design" xmlUrl="https://design-milk.com/category/architecture/feed/" type="rss" />
+      <outline text="Living Big In A Tiny House" title="Living Big In A Tiny House" description="" xmlUrl="https://www.youtube.com/feeds/videos.xml?user=livingbigtinyhouse" type="rss" />
+      <outline text="The Architect’s Newspaper" title="The Architect’s Newspaper" description="The most authoritative voice on architecture and design in the United States." xmlUrl="https://archpaper.com/feed" type="rss" />
+      <outline text="designboom" title="designboom" description="designboom magazine | your first source for architecture, design &amp; art news" xmlUrl="https://www.designboom.com/architecture/feed/" type="rss" />
+      <outline type="rss" text="Dezeen" title="Dezeen" xmlUrl="https://www.dezeen.com/feed/"/>
+      <outline type="rss" text="ArchDaily" title="ArchDaily" xmlUrl="https://www.archdaily.com/rss/"/>
+      <outline type="rss" text="The Architects Journal" title="The Architects Journal" xmlUrl="https://www.architectsjournal.co.uk/feed"/>
+    </outline>
+  </body>
+</opml>

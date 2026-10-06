@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<opml version="1.0">
+  <head>
+    <title>Export from Plenary</title>
+    <url>https://play.google.com/store/apps/details?id=com.spians.plenary</url>
+    <ownerName>Plenary app</ownerName>
+    <ownerEmail>plenarytheapp@gmail.com</ownerEmail>
+  </head>
+  <body>
+    <outline text="News" title="News">
+      <outline text="BBC News" title="BBC News" description="BBC News - World" xmlUrl="https://feeds.bbci.co.uk/news/world/rss.xml" type="rss" />
+      <outline text="CNBC" title="CNBC" description="CNBC International is the world leader for news on business, technology, China, trade, oil prices, the Middle East and markets." xmlUrl="https://www.cnbc.com/id/100727362/device/rss/rss.html" type="rss" />
+      <outline text="NDTV News Search Records Found 1000" title="NDTV News Search Records Found 1000" description="NDTV.com provides the latest information from and in-depth coverage of India and the world. Find breaking news, India news, top stories, elections, politics, business, cricket, movies, lifestyle, health, live TV, videos, photos and more." xmlUrl="https://feeds.feedburner.com/ndtvnews-world-news" type="rss" />
+      <outline text="NYT &gt; World News" title="NYT &gt; World News" description="" xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/World.xml" type="rss" />
+      <outline text="Top stories - Google News" title="Top stories - Google News" description="Google News" xmlUrl="https://news.google.com/rss" type="rss" />
+      <outline text="The Washington Post" title="The Washington Post" description="The Washington Post World section provides information and analysis of breaking world news stories. In addition to our world news and video, Post World News offers discussions and blogs on major international news and economic issues." xmlUrl="https://feeds.washingtonpost.com/rss/world" type="rss" />
+      <outline text="Sky News World" title="Sky News World" description="World news from Sky News." xmlUrl="https://feeds.skynews.com/feeds/rss/world.xml" type="rss" />
+      <outline text="The Times of India" title="The Times of India" description="World News Today: Read the latest world news headlines, Current International breaking news world wide. In depth analysis and top news headlines world wide." xmlUrl="https://timesofindia.indiatimes.com/rssfeeds/296589292.cms" type="rss" />
+      <outline text="The Guardian" title="The Guardian" description="Latest World news news, comment and analysis from the Guardian, the world's leading liberal voice" xmlUrl="https://www.theguardian.com/world/rss" type="rss" />
+      <outline type="rss" text="Euronews" title="Euronews" xmlUrl="https://www.euronews.com/rss"/>
+      <outline type="rss" text="Associated Press" title="Associated Press" xmlUrl="https://apnews.com/index.rss"/>
+      <outline type="rss" text="Al Jazeera English" title="Al Jazeera English" xmlUrl="https://www.aljazeera.com/xml/rss/all.xml"/>
+      <outline type="rss" text="CBC News" title="CBC News" xmlUrl="https://www.cbc.ca/webfeed/rss/rss-world"/>
+      <outline type="rss" text="France 24" title="France 24" xmlUrl="https://www.france24.com/en/rss"/>
+      <outline type="rss" text="ABC News Australia" title="ABC News Australia" xmlUrl="https://www.abc.net.au/news/feed/45910/rss.xml"/>
+      <outline type="rss" text="Deutsche Welle" title="Deutsche Welle" xmlUrl="https://rss.dw.com/rdf/rss-en-world"/>
+    </outline>
+  </body>
+</opml>

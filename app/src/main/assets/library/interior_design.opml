@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<opml version="1.0">
+  <head>
+    <title>Export from Plenary</title>
+    <url>https://play.google.com/store/apps/details?id=com.spians.plenary</url>
+    <ownerName>Plenary app</ownerName>
+    <ownerEmail>plenarytheapp@gmail.com</ownerEmail>
+  </head>
+  <body>
+    <outline text="Interior design" title="Interior design">
+      <outline text="BLOG - decor8" title="BLOG - decor8" description="" xmlUrl="https://www.decor8blog.com/blog?format=rss" type="rss" />
+      <outline text="Core77" title="Core77" description="Launched in 1995, Core77 serves a devoted global audience of design professionals, corporations, students, enthusiasts and fans." xmlUrl="https://feeds.feedburner.com/core77/blog" type="rss" />
+      <outline text="Design Milk" title="Design Milk" description="Dedicated to modern design" xmlUrl="https://design-milk.com/category/interior-design/feed/" type="rss" />
+      <outline text="Fubiz Media" title="Fubiz Media" description="The latest creative news from Fubiz about art, design and pop-culture." xmlUrl="https://feeds.feedburner.com/fubiz" type="rss" />
+      <outline text="In My Own Style" title="In My Own Style" description="Top Budget DIY Home Decorating Blog and Creative Lifestyle Ideas" xmlUrl="https://inmyownstyle.com/feed" type="rss" />
+      <outline text="Interior Design" title="Interior Design" description="The leading authority for the Architecture &amp; Design community" xmlUrl="https://www.interiordesign.net/rss/" type="rss" />
+      <outline text="Apartment Therapy" title="Apartment Therapy" description="Home design, decorating and small-space living." xmlUrl="https://www.apartmenttherapy.com/main.rss" type="rss" />
+      <outline text="Interior Design Ideas" title="Interior Design Ideas" description="Inspirational Interior Design Ideas" xmlUrl="https://www.home-designing.com/feed" type="rss" />
+      <outline text="Interior design | Dezeen" title="Interior design | Dezeen" description="architecture and design magazine" xmlUrl="https://www.dezeen.com/interiors/feed/" type="rss" />
+      <outline text="Latest from Ideal Home in News" title="Latest from Ideal Home in News" description="All the latest news content from the Ideal Home team" xmlUrl="https://www.idealhome.co.uk/feed" type="rss" />
+      <outline text="Liz Marie Blog" title="Liz Marie Blog" description="" xmlUrl="https://www.lizmarieblog.com/feed/" type="rss" />
+      <outline text="The Inspired Room" title="The Inspired Room" description="Voted Readers' Favorite Top Decorating Blog Better Homes and Gardens, Decorating Ideas, How to Organize, How to Decorate, HomeBody" xmlUrl="https://theinspiredroom.net/feed/" type="rss" />
+      <outline text="Thrifty Decor Chick | Thrifty DIY, Decor and Organizing" title="Thrifty Decor Chick | Thrifty DIY, Decor and Organizing" description="Thrifty decorating blog with easy DIY, decor, entertaining and organizing ideas. Make your home beautiful for less." xmlUrl="https://feeds.feedburner.com/blogspot/ZBcZ" type="rss" />
+      <outline text="Trendir" title="Trendir" description="The Latest Trends in Modern House Design and Decorating" xmlUrl="https://www.trendir.com/feed/" type="rss" />
+      <outline text="Yanko Design" title="Yanko Design" description="Modern Industrial Design News" xmlUrl="https://feeds.feedburner.com/yankodesign" type="rss" />
+      <outline text="Yatzer | Live Beautifully. Explore Endlessly." title="Yatzer | Live Beautifully. Explore Endlessly." description="Since 2006, Yatzer has explored the many ways design shapes our lives,curating soulful interiors, visionary creatives, and immersive destinations — celebrating the art of living beautifully." xmlUrl="https://www.yatzer.com/rss.xml" type="rss" />
+      <outline text="Young House Love" title="Young House Love" description="Home Decorating &amp; DIY Tutorials" xmlUrl="https://www.younghouselove.com/feed/" type="rss" />
+      <outline text="decoist" title="decoist" description="Obsessed with the cult of beauty" xmlUrl="https://www.decoist.com/feed/" type="rss" />
+      <outline text="designboom" title="designboom" description="designboom magazine | your first source for architecture, design &amp; art news" xmlUrl="https://www.designboom.com/design/feed" type="rss" />
+    </outline>
+  </body>
+</opml>

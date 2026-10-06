@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+  <head>
+    <title>Sweden</title>
+  </head>
+  <body>
+    <outline text="News" title="News">
+      <outline type="rss" text="Radio Sweden" title="Radio Sweden" xmlUrl="https://api.sr.se/api/rss/program/2054"/>
+      <outline type="rss" text="Sveriges Radio Ekot" title="Sveriges Radio Ekot" xmlUrl="https://api.sr.se/api/rss/program/83"/>
+      <outline type="rss" text="Expressen" title="Expressen" xmlUrl="https://feeds.expressen.se/nyheter/"/>
+      <outline type="rss" text="Aftonbladet" title="Aftonbladet" xmlUrl="https://rss.aftonbladet.se/rss2/small/pages/sections/senastenytt/"/>
+      <outline type="rss" text="Dagens Nyheter" title="Dagens Nyheter" xmlUrl="https://www.dn.se/rss/"/>
+      <outline type="rss" text="Svenska Dagbladet" title="Svenska Dagbladet" xmlUrl="https://www.svd.se/feed/articles.rss"/>
+      <outline type="rss" text="SVT Nyheter" title="SVT Nyheter" xmlUrl="https://www.svt.se/nyheter/rss.xml"/>
+      <outline type="rss" text="The Local Sweden" title="The Local Sweden" xmlUrl="https://www.thelocal.se/feeds/rss.php"/>
+    </outline>
+  </body>
+</opml>

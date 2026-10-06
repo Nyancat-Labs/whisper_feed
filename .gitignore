@@ -21,3 +21,13 @@ neo/
 
 # Local SDK config (machine-specific, must not be committed)
 local.properties
+
+# Release signing. The keystore itself lives outside the repository; this
+# file only points at it, and still holds its passwords.
+keystore.properties
+*.jks
+*.p12
+*.keystore
+# The one exception: the public Android debug key, which signs debug builds
+# so two of them can replace each other. It is not a secret.
+!app/debug.keystore

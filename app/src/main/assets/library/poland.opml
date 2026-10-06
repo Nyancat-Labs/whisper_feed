@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+  <head>
+    <title>Poland</title>
+  </head>
+  <body>
+    <outline text="Poland" title="Poland">
+      <outline type="rss" text="Najnowsze" title="Najnowsze" xmlUrl="https://feeds.feedburner.com/wPolitycepl"/>
+      <outline type="rss" text="Newsweek Polska" title="Newsweek Polska" xmlUrl="https://www.newsweek.pl/rss.xml"/>
+      <outline type="rss" text="www.wirtualnemedia.pl" title="www.wirtualnemedia.pl" xmlUrl="https://www.wirtualnemedia.pl/rss/wirtualnemedia_rss.xml"/>
+      <outline type="rss" text="https://www.rp.pl" title="https://www.rp.pl" xmlUrl="https://www.rp.pl/rss/1019"/>
+      <outline type="rss" text="RMF24.pl" title="RMF24.pl" xmlUrl="https://www.rmf24.pl/feed"/>
+    </outline>
+    <outline text="News" title="News">
+      <outline type="rss" text="Notes from Poland" title="Notes from Poland" xmlUrl="https://notesfrompoland.com/feed/"/>
+      <outline type="rss" text="TVN24" title="TVN24" xmlUrl="https://tvn24.pl/najwazniejsze.xml"/>
+    </outline>
+  </body>
+</opml>

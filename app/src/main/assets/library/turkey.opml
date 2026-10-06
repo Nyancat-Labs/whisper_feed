@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+  <head>
+    <title>Turkey</title>
+  </head>
+  <body>
+    <outline text="News" title="News">
+      <outline type="rss" text="Daily Sabah" title="Daily Sabah" xmlUrl="https://www.dailysabah.com/rssFeed/home"/>
+      <outline type="rss" text="Hürriyet Daily News" title="Hürriyet Daily News" xmlUrl="https://www.hurriyetdailynews.com/rss"/>
+      <outline type="rss" text="Bianet English" title="Bianet English" xmlUrl="https://bianet.org/rss/english"/>
+      <outline type="rss" text="Cumhuriyet" title="Cumhuriyet" xmlUrl="https://www.cumhuriyet.com.tr/rss"/>
+      <outline type="rss" text="Milliyet" title="Milliyet" xmlUrl="https://www.milliyet.com.tr/rss/rssnew/gundemrss.xml"/>
+    </outline>
+  </body>
+</opml>

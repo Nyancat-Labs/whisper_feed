@@ -2,8 +2,8 @@ package com.saulhdev.feeder.manager.service
 
 import android.app.Service
 import android.content.res.Configuration
-import com.google.android.libraries.gsa.d.a.OverlayController
-import com.google.android.libraries.gsa.d.a.OverlaysController
+import com.saulhdev.feeder.launcherpanel.OverlayController
+import com.saulhdev.feeder.launcherpanel.OverlaysController
 
 class ConfigurationOverlayController(private val service: Service) : OverlaysController(service) {
 

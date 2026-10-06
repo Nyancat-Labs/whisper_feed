@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+  <head>
+    <title>Egypt</title>
+  </head>
+  <body>
+    <outline text="News" title="News">
+      <outline type="rss" text="Al-Ahram" title="Al-Ahram" xmlUrl="https://gate.ahram.org.eg/rss/1.aspx"/>
+      <outline type="rss" text="Ahram Online" title="Ahram Online" xmlUrl="https://english.ahram.org.eg/rss/1.aspx"/>
+      <outline type="rss" text="Daily News Egypt" title="Daily News Egypt" xmlUrl="https://www.dailynewsegypt.com/feed/"/>
+      <outline type="rss" text="Egypt Independent" title="Egypt Independent" xmlUrl="https://www.egyptindependent.com/feed/"/>
+      <outline type="rss" text="Egypt Today" title="Egypt Today" xmlUrl="https://www.egypttoday.com/rss"/>
+      <outline type="rss" text="Mada Masr" title="Mada Masr" xmlUrl="https://www.madamasr.com/en/feed/"/>
+    </outline>
+    <outline text="Business" title="Business">
+      <outline type="rss" text="Enterprise" title="Enterprise" xmlUrl="https://enterprise.news/feed/"/>
+    </outline>
+  </body>
+</opml>

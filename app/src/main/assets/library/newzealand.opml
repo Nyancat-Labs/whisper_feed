@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+  <head>
+    <title>New Zealand</title>
+  </head>
+  <body>
+    <outline text="News" title="News">
+      <outline type="rss" text="NZ Herald" title="NZ Herald" xmlUrl="https://www.nzherald.co.nz/arc/outboundfeeds/rss/curated/78/?outputType=xml"/>
+      <outline type="rss" text="RNZ" title="RNZ" xmlUrl="https://www.rnz.co.nz/rss/national.xml"/>
+      <outline type="rss" text="Stuff" title="Stuff" xmlUrl="https://www.stuff.co.nz/rss"/>
+      <outline type="rss" text="The Spinoff" title="The Spinoff" xmlUrl="https://thespinoff.co.nz/feed"/>
+      <outline type="rss" text="Newsroom" title="Newsroom" xmlUrl="https://www.newsroom.co.nz/feed"/>
+    </outline>
+  </body>
+</opml>

@@ -33,7 +33,11 @@ suspend fun writeOutputStream(
             it.write(
                 opml {
                     head {
-                        title { +"Neo Feeder" }
+                        // The name of the app that wrote the file, which
+                        // every other reader shows when importing it. It
+                        // said "Neo Feeder" — not this app, and not the
+                        // app it was forked from either.
+                        title { +"Whisper" }
                     }
                     body {
                         map.forEach { (tag, feeds) ->

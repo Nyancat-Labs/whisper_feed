@@ -17,17 +17,21 @@
  */
 package com.saulhdev.feeder.viewmodels
 
+import com.saulhdev.feeder.utils.usableImageUrl
 import androidx.lifecycle.viewModelScope
 import com.saulhdev.feeder.data.content.FeedPreferences
 import com.saulhdev.feeder.data.repository.ArticleRepository
 import com.saulhdev.feeder.data.repository.SourcesRepository
 import com.saulhdev.feeder.ui.overlay.ArticleWeight
+import com.saulhdev.feeder.ui.overlay.habitWindowStart
 import com.saulhdev.feeder.ui.overlay.parseAffinity
 import com.saulhdev.feeder.utils.extensions.NeoViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
@@ -45,7 +49,10 @@ data class LearnedSource(
     val title: String,
     val iconUrl: String?,
     val affinity: Int,
-    val reads: Int,
+    /** Articles opened in full — the one signal that is not inferred. */
+    val opened: Int,
+    /** Articles that reached the screen, opened or not. */
+    val seen: Int,
     val nudge: Float,
     val hidden: Boolean,
 )
@@ -60,10 +67,16 @@ data class LearnedSource(
  * that throws it away.
  *
  * Nothing here is inferred or modelled. Affinity is the count of More and Less
- * presses; reads is the count of articles opened. Both are plain tallies the
- * reader can check against their own memory, which is the point — a score
- * nobody can audit is one nobody can correct.
+ * presses. The other two are what happened to this source's articles: how many
+ * reached the screen at all, and how many were opened.
+ *
+ * Both are shown rather than the weighted total, and deliberately. The
+ * ordering works from a score that bands those encounters by how much time
+ * each one got, and "score 84" is not something anybody can check against
+ * their own memory. "Nine opened, forty seen" is. A number nobody can audit is
+ * a number nobody can correct, which would defeat the whole screen.
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 class LearnedViewModel(
     private val articleRepo: ArticleRepository,
     private val sourcesRepo: SourcesRepository,
@@ -71,34 +84,38 @@ class LearnedViewModel(
 ) : NeoViewModel() {
     private val ioScope = viewModelScope.plus(Dispatchers.IO)
 
-    private val since = System.currentTimeMillis() -
-            ArticleWeight.HABIT_WINDOW_DAYS * 24 * 60 * 60 * 1000
-
     val sources: StateFlow<List<LearnedSource>> = combine(
         sourcesRepo.getAllSourcesFlow(),
         prefs.sourceAffinity.get(),
-        prefs.hiddenSources.get(),
-        articleRepo.readsPerSource(since),
-    ) { feeds, affinityRaw, hidden, reads ->
+        // Re-reads on every reset, so the screen empties as soon as the button
+        // is pressed rather than at the next time the page is opened.
+        prefs.learnedResetAt.get().flatMapLatest { resetAt ->
+            articleRepo.engagementPerSource(habitWindowStart(resetAt))
+        },
+    ) { feeds, affinityRaw, engagement ->
         val affinity = parseAffinity(affinityRaw)
-        val most = reads.values.maxOrNull()?.takeIf { it > 0 }
+        val most = engagement.values.maxOfOrNull { it.score }?.takeIf { it > 0 }
         feeds.map { feed ->
             val id = feed.id
             val score = affinity[id.toString()] ?: 0
-            val read = reads[id] ?: 0
-            val habit = if (most == null) 0f else read.toFloat() / most
+            val row = engagement[id]
+            val habit = if (most == null || row == null) 0f else row.score.toFloat() / most
             LearnedSource(
                 id = id,
                 title = feed.title,
-                iconUrl = feed.feedImage.toString()
-                    .takeIf { it.isNotBlank() && it != feed.url.toString() },
+                iconUrl = usableImageUrl(feed.feedImage.toString())
+                    ?.takeIf { it != feed.url.toString() },
                 affinity = score,
-                reads = read,
+                opened = row?.opened ?: 0,
+                seen = row?.seen ?: 0,
                 // The same arithmetic the weighting does, not an approximation
                 // of it: a screen that explains a different sum than the one
                 // being run is worse than no screen.
                 nudge = score.coerceIn(-3, 3) * 0.35f + habit * ArticleWeight.HABIT_MAX,
-                hidden = id.toString() in hidden,
+                // One state now: a hidden source is a source that is off,
+                // so this reads the feed's own column rather than a set that
+                // said the same thing in a second place.
+                hidden = !feed.isEnabled,
             )
         }.sortedWith(
             compareByDescending<LearnedSource> { it.nudge }.thenBy { it.title.lowercase() }
@@ -107,9 +124,7 @@ class LearnedViewModel(
 
     /** Puts one source back in the feed, without touching anything else. */
     fun unhide(id: Long) {
-        ioScope.launch {
-            prefs.hiddenSources.setValue(prefs.hiddenSources.getValue() - id.toString())
-        }
+        ioScope.launch { sourcesRepo.setEnabled(listOf(id), enabled = true) }
     }
 
     /** Forgets one source's scores, leaving every other source alone. */
@@ -128,12 +143,26 @@ class LearnedViewModel(
      * Read state is deliberately not cleared. It is a record of what happened
      * rather than an opinion about it — clearing it would mark a year of read
      * articles unread, which is not what "forget what you have learned" means
-     * to anyone who presses it.
+     * to anyone who presses it. What is cleared is the *use* made of it: the
+     * habit window restarts from now, so the counts this screen shows go to
+     * zero and the weight they carried goes with them.
      */
     fun resetAll() {
         ioScope.launch {
             prefs.sourceAffinity.setValue(emptySet())
-            prefs.hiddenSources.setValue(emptySet())
+            // Every source back on, which is what "shows any hidden sources
+            // again" has always promised — it just used to mean a separate
+            // set rather than the switch.
+            sourcesRepo.setEnabled(
+                sourcesRepo.getAllSources().map { it.id },
+                enabled = true,
+            )
+            // Without this the button cleared the smaller half of what the
+            // screen shows and left the larger one: every source kept its read
+            // count and most of its weight, so "Forget everything" visibly did
+            // not. See FeedPreferences.learnedResetAt for why the counts are
+            // restarted rather than the articles unmarked.
+            prefs.learnedResetAt.setValue(System.currentTimeMillis())
         }
     }
 }

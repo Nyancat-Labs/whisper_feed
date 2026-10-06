@@ -1,19 +1,21 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-   Sample data extraction rules file; uncomment and customize as necessary.
-   See https://developer.android.com/about/versions/12/backup-restore#xml-changes
-   for details.
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    What may travel on each route, once PlatformBackupAgent has decided the
+    reader agreed to that route at all.
+
+    The account files, whisper_account_sealed and the older encrypted
+    whisper_account, are excluded from both. Their keys live in the Keystore,
+    and ciphertext restored without its key can never be opened. They are
+    excluded even from device transfer, where the Keystore does move: one rule
+    that always holds is easier to trust than one with a case in it.
 -->
 <data-extraction-rules>
     <cloud-backup>
-        <!-- TODO: Use <include> and <exclude> to control what is backed up.
-        <include .../>
-        <exclude .../>
-        -->
+    <exclude domain="sharedpref" path="whisper_account.xml" />
+    <exclude domain="sharedpref" path="whisper_account_sealed.xml" />
     </cloud-backup>
-    <!--
     <device-transfer>
-        <include .../>
-        <exclude .../>
+    <exclude domain="sharedpref" path="whisper_account.xml" />
+    <exclude domain="sharedpref" path="whisper_account_sealed.xml" />
     </device-transfer>
-    -->
 </data-extraction-rules>

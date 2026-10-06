@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+  <head>
+    <title>Thailand</title>
+  </head>
+  <body>
+    <outline text="News" title="News">
+      <outline type="rss" text="Bangkok Post" title="Bangkok Post" xmlUrl="https://www.bangkokpost.com/rss/data/topstories.xml"/>
+      <outline type="rss" text="Khaosod English" title="Khaosod English" xmlUrl="https://www.khaosodenglish.com/feed/"/>
+      <outline type="rss" text="Pattaya Mail" title="Pattaya Mail" xmlUrl="https://www.pattayamail.com/feed"/>
+      <outline type="rss" text="The Thaiger" title="The Thaiger" xmlUrl="https://thethaiger.com/feed"/>
+      <outline type="rss" text="Thai Enquirer" title="Thai Enquirer" xmlUrl="https://www.thaienquirer.com/feed/"/>
+    </outline>
+  </body>
+</opml>

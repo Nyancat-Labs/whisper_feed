@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<opml version="1.0">
+  <head>
+    <title>Export from Plenary</title>
+    <url>https://play.google.com/store/apps/details?id=com.spians.plenary</url>
+  </head>
+  <body>
+    <outline text="South Africa" title="South Africa">
+      <outline text="TechCentral" title="TechCentral" description="South Africa's best technology journalism" xmlUrl="https://techcentral.co.za/feed" type="rss" />
+      <outline text="The Citizen" title="The Citizen" description="More News Your Way" xmlUrl="https://citizen.co.za/feed/" type="rss" />
+      <outline text="Daily Maverick" title="Daily Maverick" description="Defend Truth" xmlUrl="https://www.dailymaverick.co.za/dmrss/" type="rss" />
+      <outline text="Moneyweb" title="Moneyweb" description="Business, Financial and Investment news and tools" xmlUrl="https://www.moneyweb.co.za/feed/" type="rss" />
+      <outline text="IOL section feed for News" title="IOL section feed for News" description="IOL Section Feed from Independent Media (South Africa)." xmlUrl="https://rss.iol.io/iol/news" type="rss" />
+      <outline text="The South African" title="The South African" description="South Africa News" xmlUrl="https://www.thesouthafrican.com/feed/" type="rss" />
+      <outline text="Axios" title="Axios" description="Axios" xmlUrl="https://api.axios.com/feed/" type="rss" />
+    </outline>
+  </body>
+</opml>

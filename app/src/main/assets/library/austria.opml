@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+  <head>
+    <title>Austria</title>
+  </head>
+  <body>
+    <outline text="News" title="News">
+      <outline type="rss" text="Kurier" title="Kurier" xmlUrl="https://kurier.at/xml/rss"/>
+      <outline type="rss" text="ORF News" title="ORF News" xmlUrl="https://rss.orf.at/news.xml"/>
+      <outline type="rss" text="Der Standard" title="Der Standard" xmlUrl="https://www.derstandard.at/rss"/>
+      <outline type="rss" text="Die Presse" title="Die Presse" xmlUrl="https://www.diepresse.com/rss/home"/>
+      <outline type="rss" text="Kleine Zeitung" title="Kleine Zeitung" xmlUrl="https://www.kleinezeitung.at/rss"/>
+    </outline>
+  </body>
+</opml>

@@ -17,10 +17,14 @@
  */
 package com.saulhdev.feeder.ui.overlay
 
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.layout.layout
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -30,8 +34,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -39,29 +43,36 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.saulhdev.feeder.R
 import com.saulhdev.feeder.data.db.models.FeedItem
 import com.saulhdev.feeder.ui.components.SaveButton
 import com.saulhdev.feeder.ui.icons.Phosphor
-import com.saulhdev.feeder.ui.icons.phosphor.ShareNetwork
+import com.saulhdev.feeder.ui.icons.phosphor.Asterisk
+import com.saulhdev.feeder.ui.icons.phosphor.Megaphone
 import com.saulhdev.feeder.utils.LAYOUT_CARDS
+import com.saulhdev.feeder.utils.LAYOUT_MAGAZINE
+import com.saulhdev.feeder.utils.shortSourceName
 import com.saulhdev.feeder.utils.formatArticleAge
 
 /**
@@ -85,15 +96,63 @@ fun FeedArticleItem(
     layout: String = LAYOUT_CARDS,
     emphasis: FeedEmphasis = FeedEmphasis.Medium,
     dimRead: Boolean = false,
+    /**
+     * Whether this article's source is one the reader consistently skips.
+     *
+     * Passed rather than looked up here so the set is read once per feed
+     * instead of once per card, and so a card in a preview or a test is never
+     * silently faded by state it did not ask for.
+     */
+    dimSource: Boolean = false,
+    cluster: StoryCluster? = null,
+    onPin: (Boolean) -> Unit = {},
+    /** Gives back a breaking story's promotion. See `Article.dismissedAt`. */
+    onDismissStory: () -> Unit = {},
 ) {
-    val hasImage = !item.article.imageUrl.isNullOrBlank()
+    val hasImage = !item.imageUrl.isNullOrBlank()
     // One place rather than five: every shape below takes this modifier, so a
     // read article fades whichever way the feed happens to be drawing it.
+    //
+    // A pin never fades. It is held at the top of the feed until it is
+    // unpinned, which makes it permanently visible and therefore permanently
+    // "read" the moment it is opened once — and a story somebody is following
+    // through the day greying out after the first read is the pin failing at
+    // the one job it has. The hide setting already exempts pins for the same
+    // reason; this is the half that was missed.
+    //
+    // A skipped source fades the same way and for a related reason: both mean
+    // "you are unlikely to want this". Same alpha rather than a second, milder
+    // one, because two shades of faded on one screen is a distinction nobody
+    // can read and everybody has to wonder about.
+    //
+    // The held-breaking-story exemption that used to sit here is gone with the
+    // hold itself; see FeedItems. A pin still keeps its exemption, because a
+    // pin is still kept on screen by the app rather than by the reader.
+    val faded = (dimRead && item.article.readAt != 0L) || dimSource
+    // Each story on its own panel, a shade off the background, with a narrow
+    // strip of the background between: where one story ends and the next
+    // begins, seen without reading. Cards and Magazine only. Mosaic's tiles
+    // are already blocks, and List is a list.
+    val panel = if (layout == LAYOUT_CARDS || layout == LAYOUT_MAGAZINE) {
+        Modifier
+            .padding(vertical = CARD_PANEL_GAP)
+            .background(MaterialTheme.colorScheme.surfaceContainer)
+    } else {
+        Modifier
+    }
     val shapeModifier =
-        if (dimRead && item.article.readAt != 0L) modifier.alpha(READ_ALPHA) else modifier
+        if (isCardFaded(faded, pinned = item.pinned)) {
+            modifier.then(panel).alpha(READ_ALPHA)
+        } else {
+            modifier.then(panel)
+        }
     // Worked out only when the menu is opened, not for every card in the feed:
     // this is an answer to a question almost nobody asks of almost any article.
-    val reasons = rememberWeightReasons(item)
+    val reasons = rememberWeightReasons(item, clusterOf(item, cluster))
+    // Only the card that was promoted says so. Every member of a cluster
+    // carries the same count, and putting it on all six would turn one story
+    // into six claims that a story is happening.
+    val coverage = cluster?.takeIf { it.leadId == item.id }?.sources
     val menu: @Composable (Color?) -> Unit = { tint ->
         ArticleOverflowMenu(
             onMoreLikeThis = onMoreLikeThis,
@@ -102,124 +161,64 @@ fun FeedArticleItem(
             onShare = onShare,
             tint = tint ?: MaterialTheme.colorScheme.onSurfaceVariant,
             reasons = reasons,
+            pinned = item.pinned,
+            onPin = onPin,
+            // The same test that decides whether to show "Covered by N
+            // sources": only the promoted card has a promotion to return.
+            breaking = coverage != null,
+            onDismissStory = onDismissStory,
         )
     }
     when (feedCardShape(index, hasImage, layout, emphasis)) {
-        FeedCardShape.Hero    -> ArticleHeroCard(item, onClick, onBookmark, onShare, menu, shapeModifier)
-        FeedCardShape.Card    -> ArticleCard(item, onClick, onBookmark, onShare, menu, shapeModifier)
-        FeedCardShape.Compact -> ArticleCompactRow(item, onClick, onBookmark, menu, shapeModifier)
-        FeedCardShape.Text    -> ArticleTextRow(item, onClick, onBookmark, menu, shapeModifier)
+        FeedCardShape.Hero    -> ArticleCard(
+            item, onClick, onBookmark, onShare, menu = menu, modifier = shapeModifier, coverage = coverage, lead = true,
+        )
+        FeedCardShape.Card    -> ArticleCard(
+            item, onClick, onBookmark, onShare, menu = menu, modifier = shapeModifier, coverage = coverage,
+        )
+        FeedCardShape.Compact -> ArticleCompactRow(item, onClick, onBookmark, menu = menu, modifier = shapeModifier)
+        FeedCardShape.Text    -> ArticleTextRow(item, onClick, onBookmark, menu = menu, modifier = shapeModifier)
         FeedCardShape.Tile    -> ArticleMosaicTile(
-            item, onClick, onBookmark, menu, shapeModifier,
+            item, onClick, onBookmark, menu = menu, modifier = shapeModifier,
             size = emphasis,
+            coverage = coverage,
         )
     }
 }
 
 /**
- * The anchor shape: a tall image with the headline laid over it.
+ * Four by three, as a lead story's picture always was, and never taller than
+ * half the window.
  *
- * The scrim is a gradient rather than a flat overlay because a flat one has to
- * be dark enough for the worst image, which then greys out every good one.
+ * Four by three of a phone is a third of its screen. Of a Fold opened out it
+ * was most of it: at 692 by 717 the header and one story were the whole
+ * screen, the story's source line pushed off the bottom. On a phone on its
+ * side the same. Past the cap the picture is cropped wider, as a photograph
+ * across a wide screen should be.
  */
-@Composable
-fun ArticleHeroCard(
-    item: FeedItem,
-    onClick: () -> Unit,
-    onBookmark: (Boolean) -> Unit,
-    onShare: () -> Unit,
-    menu: @Composable (Color?) -> Unit = {},
-    modifier: Modifier = Modifier,
-) {
-    val context = LocalContext.current
+private fun Modifier.leadPicture(windowHeightPx: Int): Modifier = layout { measurable, constraints ->
+    val width = if (constraints.hasBoundedWidth) constraints.maxWidth else constraints.minWidth
+    val height = leadPictureHeight(width, windowHeightPx)
+    val placeable = measurable.measure(Constraints.fixed(width, height))
+    layout(width, height) { placeable.place(0, 0) }
+}
 
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clip(MaterialTheme.shapes.large)
-            .clickable(onClick = onClick)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(4f / 3f)
-        ) {
-            AsyncImage(
-                model = item.article.imageUrl,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                placeholder = painterResource(articlePlaceholder()),
-                error = painterResource(articlePlaceholder()),
-                modifier = Modifier.fillMaxSize(),
-            )
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        Brush.verticalGradient(
-                            0.35f to Color.Transparent,
-                            1f to Color.Black.copy(alpha = 0.82f),
-                        )
-                    )
-            )
-            Column(
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(16.dp)
-            ) {
-                val category = item.feedTag
-                if (category.isNotBlank()) {
-                    Text(
-                        text = category.uppercase(),
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color.White.copy(alpha = 0.85f),
-                    )
-                    Spacer(Modifier.height(4.dp))
-                }
-                Text(
-                    text = item.contentTitle,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    maxLines = 3,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                Spacer(Modifier.height(8.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    ArticleMeta(
-                        source = item.feedTitle,
-                        age = item.relativeAge(context),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = Color.White.copy(alpha = 0.85f),
-                        modifier = Modifier.weight(1f),
-                        iconUrl = item.feedIconUrl,
-                        onImage = true,
-                    )
-                    SaveButton(
-                        saved = item.bookmarked,
-                        onSavedChange = onBookmark,
-                        onImage = true,
-                    )
-                    IconButton(onClick = onShare) {
-                        Icon(
-                            imageVector = Phosphor.ShareNetwork,
-                            contentDescription = stringResource(R.string.share),
-                            tint = Color.White,
-                            modifier = Modifier.size(22.dp),
-                        )
-                    }
-                    menu(Color.White)
-                }
-            }
-        }
-    }
+/** See [leadPicture]; a window height of nothing, before one is known, caps nothing. */
+internal fun leadPictureHeight(widthPx: Int, windowHeightPx: Int): Int {
+    val fourByThree = widthPx * 3 / 4
+    return if (windowHeightPx <= 0) fourByThree else minOf(fourByThree, windowHeightPx / 2)
 }
 
 /**
  * The middle weight: image above, headline and summary below. This is the shape
  * the Cards layout was built around and it stays the relaxed-browsing view.
+ *
+ * And, with [lead], the lead story's: its picture taller, its headline below
+ * the picture like every other card's and the same size. It was
+ * laid over the picture on a dark shade, and over a busy photograph - a
+ * publisher's logo, a crowd, a chart - it was the hardest text in the feed to
+ * read, however dark the shade. Below it, it reads the same on any picture,
+ * and the lead story is the same shape as the rest, only bigger.
  */
 @Composable
 fun ArticleCard(
@@ -227,38 +226,74 @@ fun ArticleCard(
     onClick: () -> Unit,
     onBookmark: (Boolean) -> Unit,
     onShare: () -> Unit,
-    menu: @Composable (Color?) -> Unit = {},
     modifier: Modifier = Modifier,
+    menu: @Composable (Color?) -> Unit = {},
+    coverage: Int? = null,
+    lead: Boolean = false,
 ) {
     val context = LocalContext.current
+    // Cards merge their texts for a screen reader, so the headline is
+    // already read out; what was missing was any hint that the thing read
+    // out can be opened at all.
+    val openLabel = stringResource(R.string.action_open_article)
+    val windowHeight = LocalWindowInfo.current.containerSize.height
 
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .clickable(onClickLabel = openLabel, role = Role.Button, onClick = onClick)
     ) {
-        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
-            val image = item.article.imageUrl
-            if (!image.isNullOrBlank()) {
-                AsyncImage(
-                    model = image,
-                    contentDescription = null,
-                    placeholder = painterResource(articlePlaceholder()),
-                    error = painterResource(articlePlaceholder()),
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(16f / 9f)
-                        .clip(MaterialTheme.shapes.medium),
+        val image = item.imageUrl
+        // Edge to edge, square corners, outside the text's margin — the way the
+        // launcher's own feed does it. A photograph inset by sixteen points and
+        // rounded reads as a component on a page; the same photograph running
+        // the full width reads as the article itself, which is what it is.
+        if (!image.isNullOrBlank()) {
+            AsyncImage(
+                model = image,
+                contentDescription = null,
+                placeholder = painterResource(articlePlaceholder()),
+                error = painterResource(articlePlaceholder()),
+                contentScale = ContentScale.Crop,
+                modifier = if (lead) {
+                    Modifier.fillMaxWidth().leadPicture(windowHeight)
+                } else {
+                    Modifier.fillMaxWidth().aspectRatio(16f / 9f)
+                },
+            )
+        }
+
+        Column(
+            modifier = Modifier.padding(
+                horizontal = CARD_MARGIN,
+                vertical = 12.dp,
+            )
+        ) {
+            if (item.pinned) {
+                PinnedLine(modifier = Modifier.padding(top = 0.dp))
+            }
+            coverage?.let {
+                CoverageLine(
+                    sources = it,
+                    modifier = Modifier.padding(top = if (item.pinned) 4.dp else 0.dp),
                 )
             }
 
             Text(
                 text = item.contentTitle,
+                // The same size as every other card's. A size up, the lead's
+                // headline stood out as a mistake once it sat below the
+                // picture rather than on it; the taller picture says "lead"
+                // on its own.
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
+                // Medium rather than bold: at a headline's size the weight
+                // closed the letters up, and a two-line title read as a block.
+                // The size and the summary below still set it apart.
+                fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.padding(top = if (image.isNullOrBlank()) 0.dp else 12.dp),
+                modifier = Modifier.padding(
+                    top = if (coverage != null || item.pinned) 6.dp else 0.dp
+                ),
             )
 
             val summary = item.article.description
@@ -280,27 +315,26 @@ fun ArticleCard(
                     .padding(top = 10.dp),
             ) {
                 ArticleMeta(
+                    category = item.feedTag,
                     source = item.feedTitle,
+                    sourceId = item.sourceId,
+                    articleId = item.id,
                     age = item.relativeAge(context),
-                    style = MaterialTheme.typography.labelLarge,
+                    // A size down. It is a byline, not a heading, and at
+                    // labelLarge it competed with the summary above it.
+                    style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.weight(1f),
                     iconUrl = item.feedIconUrl,
                 )
 
-                SaveButton(saved = item.bookmarked, onSavedChange = onBookmark)
-                IconButton(onClick = onShare) {
-                    Icon(
-                        imageVector = Phosphor.ShareNetwork,
-                        contentDescription = stringResource(R.string.share),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(22.dp),
-                    )
+                // Share is in the menu; see the hero above.
+                CardActions {
+                    SaveButton(saved = item.bookmarked, onSavedChange = onBookmark)
+                    menu(null)
                 }
-                menu(null)
             }
         }
-        ArticleDivider()
     }
 }
 
@@ -313,42 +347,39 @@ fun ArticleCompactRow(
     item: FeedItem,
     onClick: () -> Unit,
     onBookmark: (Boolean) -> Unit,
-    menu: @Composable (Color?) -> Unit = {},
     modifier: Modifier = Modifier,
+    menu: @Composable (Color?) -> Unit = {},
 ) {
     val context = LocalContext.current
+    // Cards merge their texts for a screen reader, so the headline is
+    // already read out; what was missing was any hint that the thing read
+    // out can be opened at all.
+    val openLabel = stringResource(R.string.action_open_article)
 
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .clickable(onClickLabel = openLabel, role = Role.Button, onClick = onClick)
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                val category = item.feedTag
-                if (category.isNotBlank()) {
-                    Text(
-                        text = category.uppercase(),
-                        style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                    Spacer(Modifier.height(2.dp))
-                }
                 Text(
                     text = item.contentTitle,
                     style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold,
+                    fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 3,
                     overflow = TextOverflow.Ellipsis,
                 )
                 Spacer(Modifier.height(6.dp))
                 ArticleMeta(
+                    category = item.feedTag,
                     source = item.feedTitle,
+                    sourceId = item.sourceId,
+                    articleId = item.id,
                     age = item.relativeAge(context),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -356,7 +387,7 @@ fun ArticleCompactRow(
                 )
             }
 
-            val image = item.article.imageUrl
+            val image = item.imageUrl
             if (!image.isNullOrBlank()) {
                 Spacer(Modifier.width(12.dp))
                 AsyncImage(
@@ -375,10 +406,16 @@ fun ArticleCompactRow(
             // the *else* branch above — the slot where a thumbnail would
             // otherwise go — so any compact row that had an image silently
             // lost its save button, which is most of them.
+            // Together, not SpaceBetween. SpaceBetween distributes over the
+            // column's height, which is the row's height — so on a row with a
+            // two-line headline the overflow dot went to the very top and the
+            // save button to the very bottom, with a gap between them that
+            // read as two unrelated controls belonging to different things.
+            // Two 20dp glyphs are a pair; they sit as one.
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.align(Alignment.Top),
+                verticalArrangement = Arrangement.spacedBy(2.dp),
+                modifier = Modifier.align(Alignment.CenterVertically),
             ) {
                 menu(null)
                 SaveButton(
@@ -388,7 +425,6 @@ fun ArticleCompactRow(
                 )
             }
         }
-        ArticleDivider()
     }
 }
 
@@ -405,46 +441,57 @@ fun ArticleTextRow(
     item: FeedItem,
     onClick: () -> Unit,
     onBookmark: (Boolean) -> Unit,
-    menu: @Composable (Color?) -> Unit = {},
     modifier: Modifier = Modifier,
+    menu: @Composable (Color?) -> Unit = {},
 ) {
     val context = LocalContext.current
+    // Cards merge their texts for a screen reader, so the headline is
+    // already read out; what was missing was any hint that the thing read
+    // out can be opened at all.
+    val openLabel = stringResource(R.string.action_open_article)
 
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .clickable(onClickLabel = openLabel, role = Role.Button, onClick = onClick)
     ) {
         Row(
-            modifier = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 12.dp),
+            // The end margin too: CardActions reaches 13dp into it to line
+            // its glyphs up with the text's edge, and without one the last
+            // glyph was cut off at the screen's edge.
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = item.contentTitle,
                     style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold,
+                    fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
                 Spacer(Modifier.height(4.dp))
                 ArticleMeta(
+                    category = item.feedTag,
                     source = item.feedTitle,
+                    sourceId = item.sourceId,
+                    articleId = item.id,
                     age = item.relativeAge(context),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     iconUrl = item.feedIconUrl,
                 )
             }
-            SaveButton(
-                saved = item.bookmarked,
-                onSavedChange = onBookmark,
-                size = 20.dp,
-            )
-            menu(null)
+            CardActions {
+                SaveButton(
+                    saved = item.bookmarked,
+                    onSavedChange = onBookmark,
+                    size = 20.dp,
+                )
+                menu(null)
+            }
         }
-        ArticleDivider()
     }
 }
 
@@ -466,13 +513,18 @@ fun ArticleMosaicTile(
     item: FeedItem,
     onClick: () -> Unit,
     onBookmark: (Boolean) -> Unit,
-    menu: @Composable (Color?) -> Unit = {},
     modifier: Modifier = Modifier,
+    menu: @Composable (Color?) -> Unit = {},
     size: FeedEmphasis = FeedEmphasis.Medium,
+    coverage: Int? = null,
 ) {
     val context = LocalContext.current
+    // Cards merge their texts for a screen reader, so the headline is
+    // already read out; what was missing was any hint that the thing read
+    // out can be opened at all.
+    val openLabel = stringResource(R.string.action_open_article)
     val large = size == FeedEmphasis.Large
-    val image = item.article.imageUrl
+    val image = item.imageUrl
     // A URL is a promise, not a picture. Until it resolves — and if it 404s,
     // for ever — there is nothing there, and the tile was still drawing the
     // scrim and the two buttons over the nothing: a grey band and a gap above
@@ -486,7 +538,7 @@ fun ArticleMosaicTile(
             .padding(6.dp)
             .clip(MaterialTheme.shapes.medium)
             .background(MaterialTheme.colorScheme.surfaceContainerLow)
-            .clickable(onClick = onClick)
+            .clickable(onClickLabel = openLabel, role = Role.Button, onClick = onClick)
     ) {
         if (hasImage) {
             // The two buttons sit on the picture rather than under the text.
@@ -522,40 +574,41 @@ fun ArticleMosaicTile(
                         )
                         .background(MaterialTheme.colorScheme.surfaceContainerHigh),
                 )
-                // A short scrim under the controls only. A photograph can be
-                // white in the corner, and a white icon on it disappears.
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .fillMaxWidth()
-                        .height(52.dp)
-                        .background(
-                            Brush.verticalGradient(
-                                0f to Color.Black.copy(alpha = 0.45f),
-                                1f to Color.Transparent,
-                            )
-                        )
-                )
+                // A dark disc under each control. A photograph can be white
+                // in the corner, and a white icon on it disappears; the fade
+                // across the top that was here before had thinned to a
+                // quarter by the icons' middle, and the menu's three dots
+                // vanished on a white glasshouse roof.
                 Row(
                     modifier = Modifier.align(Alignment.TopEnd),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    SaveButton(
-                        saved = item.bookmarked,
-                        onSavedChange = onBookmark,
-                        size = 20.dp,
-                        onImage = true,
-                    )
-                    menu(Color.White)
+                    OnPhoto {
+                        SaveButton(
+                            saved = item.bookmarked,
+                            onSavedChange = onBookmark,
+                            size = 20.dp,
+                            onImage = true,
+                        )
+                    }
+                    OnPhoto { menu(Color.White) }
                 }
             }
         }
         Column(modifier = Modifier.padding(10.dp)) {
+            if (item.pinned) {
+                PinnedLine()
+                Spacer(Modifier.height(4.dp))
+            }
+            coverage?.let {
+                CoverageLine(sources = it)
+                Spacer(Modifier.height(4.dp))
+            }
             Text(
                 text = item.contentTitle,
                 style = if (large) MaterialTheme.typography.titleMedium
                 else MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.SemiBold,
+                fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = when (size) {
                     FeedEmphasis.Small  -> 2
@@ -578,25 +631,47 @@ fun ArticleMosaicTile(
                 }
             }
             Spacer(Modifier.height(6.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            val meta: @Composable (Modifier) -> Unit = { metaModifier ->
                 ArticleMeta(
+                    category = item.feedTag,
                     source = item.feedTitle,
+                    sourceId = item.sourceId,
+                    articleId = item.id,
                     age = item.relativeAge(context),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.weight(1f),
+                    modifier = metaModifier,
                     iconUrl = item.feedIconUrl,
                 )
-                // Only where there was no image to put them on. The buttons
-                // keep their full 48dp targets either way — the fix was to
-                // stop them claiming a row of their own, not to shrink them.
-                if (!hasImage) {
+            }
+            // Only where there was no image to put them on. The buttons
+            // keep their full 48dp targets either way — the fix was to
+            // stop them claiming a row of their own, not to shrink them.
+            val actions: @Composable () -> Unit = {
+                CardActions {
                     SaveButton(
                         saved = item.bookmarked,
                         onSavedChange = onBookmark,
                         size = 18.dp,
                     )
                     menu(null)
+                }
+            }
+            BoxWithConstraints {
+                // Except on a narrow tile. Beside the buttons, a two-column
+                // Mosaic tile's line under the headline is ~55dp, and the
+                // source's name, the part allowed to shorten, shortened to
+                // nothing: "NEWS · · 2h". There they go under the line.
+                if (hasImage || !actionsCrowdMeta(maxWidth)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        meta(Modifier.weight(1f))
+                        if (!hasImage) actions()
+                    }
+                } else {
+                    Column {
+                        meta(Modifier.fillMaxWidth())
+                        Box(Modifier.align(Alignment.End)) { actions() }
+                    }
                 }
             }
         }
@@ -612,27 +687,75 @@ fun ArticleMosaicTile(
  * row's 231dp on its own. The age is given its intrinsic width first, so only
  * the source name shortens and the age is always readable.
  */
+/**
+ * Narrows the feed to one source, where that is possible.
+ *
+ * Takes the article the tap came from as well as the source, because the
+ * filtered feed is a shorter list and the scroll index kept across the change
+ * lands on a different story. Both surfaces provide it — the panel intercepts
+ * back for the filter the same way it already does for search.
+ */
+val LocalFocusSource = compositionLocalOf<((String, String) -> Unit)?> { null }
+
+/** The byline under a headline, on every card and in the reader. */
 @Composable
-private fun ArticleMeta(
+internal fun ArticleMeta(
     source: String,
     age: String,
     style: androidx.compose.ui.text.TextStyle,
     color: androidx.compose.ui.graphics.Color,
     modifier: Modifier = Modifier,
+    sourceId: String? = null,
+    articleId: String? = null,
     iconUrl: String? = null,
     onImage: Boolean = false,
+    /** The article's category, after the mark; nothing when it has none. */
+    category: String = "",
 ) {
+    // Null on a surface that cannot narrow the feed.
+    // A CompositionLocal rather than another parameter because this row is
+    // reached through five card shapes, and threading an optional callback
+    // through all of them to be ignored by one surface is how the two feeds
+    // drift apart.
+    val focusSource = LocalFocusSource.current
+
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
-        SourceMark(iconUrl = iconUrl, sourceName = source, onImage = onImage)
-        Spacer(Modifier.width(6.dp))
-        Text(
-            text = source,
-            style = style,
-            color = color,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f, fill = false),
-        )
+        // The mark, the category and the name together, and nothing else. The age sits
+        // beside them and the buttons beyond that; a target that swallowed
+        // the whole row would take taps meant for the article, since this row
+        // sits directly under the headline.
+        val identity = if (focusSource != null && sourceId != null && articleId != null) {
+            Modifier.clickable { focusSource(sourceId, articleId) }
+        } else {
+            Modifier
+        }
+        Row(
+            modifier = identity.weight(1f, fill = false),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            SourceMark(iconUrl = iconUrl, sourceName = source, onImage = onImage)
+            Spacer(Modifier.width(6.dp))
+            // On the source's line rather than one of its own above the
+            // headline: the same words, a line less of every card. Never cut
+            // short; the source's name gives way first.
+            if (category.isNotBlank()) {
+                Text(
+                    text = "${category.uppercase()} · ",
+                    style = style,
+                    color = color,
+                    maxLines = 1,
+                    softWrap = false,
+                )
+            }
+            Text(
+                // The publication, not its strapline; see shortSourceName.
+                text = shortSourceName(source),
+                style = style,
+                color = color,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
         Text(
             text = " · $age",
             style = style,
@@ -640,24 +763,6 @@ private fun ArticleMeta(
             maxLines = 1,
         )
     }
-}
-
-/**
- * The hairline between articles.
- *
- * Replaces the rounded container each article used to sit in. A column of
- * filled boxes puts a border around every headline and reads as a stack of
- * separate objects; a divider says "next item" with one line and lets the
- * content own the width. Inset from the left so it starts under the text
- * rather than cutting across the whole page.
- */
-@Composable
-private fun ArticleDivider() {
-    HorizontalDivider(
-        modifier = Modifier.padding(start = 16.dp),
-        thickness = 1.dp,
-        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
-    )
 }
 
 /**
@@ -686,5 +791,157 @@ fun articlePlaceholder(): Int =
     if (MaterialTheme.colorScheme.surface.luminance() < 0.5f) R.drawable.placeholder_article_dark
     else R.drawable.placeholder_article_light
 
+/**
+ * The margin every piece of text in the feed lines up on.
+ *
+ * Named because three different rows were using three values a couple of
+ * points apart — enough that the glance row, the chips and the article text
+ * each started in a slightly different place, which reads as sloppiness rather
+ * than as a difference. Pictures ignore it on purpose and run full width.
+ */
+val CARD_MARGIN = 16.dp
+
+/**
+ * Half the strip of background between two stories' panels: six points in
+ * all. Twelve was tried first and cost a story a screen; the panel's shade
+ * does most of the separating, and the strip only has to show it is there.
+ */
+val CARD_PANEL_GAP = 3.dp
+
 /** How far a read article fades, when the reader has asked for that. */
 private const val READ_ALPHA = 0.55f
+
+/**
+ * The mark on an article the reader is following.
+ *
+ * Without it a pinned article is simply first for no visible reason, which
+ * reads as the sort being broken — and the reader has no way to find the thing
+ * they need to press to release it.
+ */
+@Composable
+private fun PinnedLine(
+    modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colorScheme.primary,
+) {
+    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+        Icon(
+            imageVector = Phosphor.Asterisk,
+            contentDescription = null,
+            tint = color,
+            modifier = Modifier.size(13.dp),
+        )
+        Spacer(Modifier.width(4.dp))
+        Text(
+            text = stringResource(R.string.pinned_label),
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = color,
+        )
+    }
+}
+
+/** The cluster map [rememberWeightReasons] wants, from the one cluster a card has. */
+private fun clusterOf(item: FeedItem, cluster: StoryCluster?): Map<String, StoryCluster> =
+    if (cluster == null) emptyMap() else mapOf(item.id to cluster)
+
+/**
+ * "Covered by 5 sources" — why this card is the size it is, said out loud.
+ *
+ * The count is the whole claim and it is worth stating plainly: a reader who
+ * sees one story given the largest card should be able to tell at a glance
+ * whether that is because several papers ran it or because the app guessed.
+ */
+@Composable
+private fun CoverageLine(
+    sources: Int,
+    modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colorScheme.primary,
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            imageVector = Phosphor.Megaphone,
+            contentDescription = null,
+            tint = color,
+            modifier = Modifier.size(14.dp),
+        )
+        Spacer(Modifier.width(4.dp))
+        Text(
+            text = pluralStringResource(R.plurals.covered_by_sources, sources, sources),
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = color,
+        )
+    }
+}
+
+
+/**
+ * Whether a card is drawn faded.
+ *
+ * Pulled out of the composable so the exemption can be argued with in a test:
+ * an article the app is keeping on screen by itself cannot be dimmed for
+ * having been seen, because it was the app that put it there and kept it
+ * there.
+ *
+ * There were two. The second was a clustered story held to the top by a
+ * sticky header, which needed the exemption for a mechanical reason as well —
+ * a sticky header is drawn over the list, so fading one did not dim a card,
+ * it opened a window onto the articles sliding underneath. The hold is gone;
+ * see FeedItems.
+ */
+internal fun isCardFaded(faded: Boolean, pinned: Boolean): Boolean =
+    faded && !pinned
+
+/**
+ * Save and the menu, as one pair at the end of a byline.
+ *
+ * Each is a 48dp touch target around a 22dp glyph, so side by side the glyphs
+ * sat a whole button apart, and the menu's dots a button's padding in from
+ * the edge - while the source icon at the other end sat right on it. Drawn
+ * [CARD_ACTIONS_OVERLAP] closer together and [CARD_ACTIONS_EDGE] further out,
+ * the dots line up with the edge the source icon starts from. Only drawn
+ * there: both targets keep their full size, and overlap where they meet.
+ */
+@Composable
+fun CardActions(content: @Composable () -> Unit) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(-CARD_ACTIONS_OVERLAP),
+        modifier = Modifier.offset(x = CARD_ACTIONS_EDGE),
+    ) { content() }
+}
+
+/**
+ * A white control over a photograph, on a disc dark enough to read on any
+ * picture: white on 45% black is at least 3:1 even over a white sky.
+ */
+@Composable
+private fun OnPhoto(content: @Composable () -> Unit) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.drawBehind {
+            drawCircle(color = Color.Black.copy(alpha = PHOTO_DISC_ALPHA), radius = PHOTO_DISC_RADIUS.toPx())
+        },
+    ) { content() }
+}
+
+internal const val PHOTO_DISC_ALPHA = 0.45f
+private val PHOTO_DISC_RADIUS = 16.dp
+
+/**
+ * Whether the save and menu buttons, beside the line under a headline, leave
+ * its source's name too little room to read. The two buttons take 84dp; the
+ * mark, a category and an age about 75dp more; a name wants 60dp or so.
+ */
+internal fun actionsCrowdMeta(width: Dp): Boolean = width < MIN_WIDTH_FOR_ACTIONS_BESIDE_META
+
+internal val MIN_WIDTH_FOR_ACTIONS_BESIDE_META = 220.dp
+
+/** Half a button's spare width: where a 22dp glyph's box meets a 48dp target's edge. */
+val CARD_ACTIONS_EDGE = 13.dp
+
+/** How much closer the two glyphs sit than two buttons side by side would put them. */
+val CARD_ACTIONS_OVERLAP = 12.dp

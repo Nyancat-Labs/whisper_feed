@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+  <head>
+    <title>Russia</title>
+  </head>
+  <body>
+    <outline text="News" title="News">
+      <outline type="rss" text="Meduza" title="Meduza" xmlUrl="https://meduza.io/rss/all"/>
+      <outline type="rss" text="Meduza English" title="Meduza English" xmlUrl="https://meduza.io/rss/en/all"/>
+      <outline type="rss" text="Interfax" title="Interfax" xmlUrl="https://www.interfax.ru/rss.asp"/>
+      <outline type="rss" text="Kommersant" title="Kommersant" xmlUrl="https://www.kommersant.ru/RSS/news.xml"/>
+      <outline type="rss" text="The Moscow Times" title="The Moscow Times" xmlUrl="https://www.themoscowtimes.com/rss/news"/>
+    </outline>
+  </body>
+</opml>

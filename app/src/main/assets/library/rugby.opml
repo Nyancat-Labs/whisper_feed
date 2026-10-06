@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<opml version="1.0">
+  <head>
+    <title>Rugby</title>
+  </head>
+  <body>
+    <outline text="Rugby" title="Rugby">
+      <outline text="Americas Rugby News" title="Americas Rugby News" xmlUrl="https://www.americasrugbynews.com/feed/" type="rss" />
+      <outline text="BBC Sport - Rugby League" title="BBC Sport - Rugby League" xmlUrl="https://feeds.bbci.co.uk/sport/rugby-league/rss.xml" type="rss" />
+      <outline text="BBC Sport - Rugby Union" title="BBC Sport - Rugby Union" xmlUrl="https://feeds.bbci.co.uk/sport/rugby-union/rss.xml" type="rss" />
+      <outline text="Daily Mail - Rugby union" title="Daily Mail - Rugby union" xmlUrl="https://www.dailymail.com/sport/rugbyunion/index.rss" type="rss" />
+      <outline text="Planet Rugby" title="Planet Rugby" xmlUrl="https://www.planetrugby.com/rss" type="rss" />
+      <outline text="RTÉ Sport - Rugby" title="RTÉ Sport - Rugby" xmlUrl="https://www.rte.ie/feeds/rss/?index=/sport/rugby/" type="rss" />
+      <outline text="Rugby World" title="Rugby World" xmlUrl="https://www.rugbyworld.com/feed" type="rss" />
+      <outline text="Sky Sports - Rugby Union" title="Sky Sports - Rugby Union" xmlUrl="https://www.skysports.com/rss/12333" type="rss" />
+      <outline text="The Guardian - Rugby league" title="The Guardian - Rugby league" xmlUrl="https://www.theguardian.com/sport/rugbyleague/rss" type="rss" />
+      <outline text="The Guardian - Rugby union" title="The Guardian - Rugby union" xmlUrl="https://www.theguardian.com/sport/rugby-union/rss" type="rss" />
+      <outline text="The Independent - Rugby union" title="The Independent - Rugby union" xmlUrl="https://www.independent.co.uk/sport/rugby/rugby-union/rss" type="rss" />
+      <outline text="The Ruck" title="The Ruck" xmlUrl="https://www.ruck.co.uk/feed/" type="rss" />
+      <outline text="The Telegraph - Rugby union" title="The Telegraph - Rugby union" xmlUrl="https://www.telegraph.co.uk/rugby-union/rss.xml" type="rss" />
+      <outline text="Total Rugby League" title="Total Rugby League" xmlUrl="https://www.totalrl.com/feed/" type="rss" />
+      <outline text="WalesOnline - Rugby" title="WalesOnline - Rugby" xmlUrl="https://www.walesonline.co.uk/sport/rugby/?service=rss" type="rss" />
+    </outline>
+  </body>
+</opml>
