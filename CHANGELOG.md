@@ -24,6 +24,13 @@ Unreleased
   the save and menu buttons shared the line under the headline and squeezed
   the source's name to nothing: "NEWS · · 2h". On a narrow tile they now sit
   under that line instead.
+- **Adding a feed can no longer run the phone out of memory.** A sync
+  stops reading a feed at 10 MB, but adding one, checking it for https and
+  the weekly look for new sources read it whole, however long it went on.
+  An address that never stopped sending would have crashed the app. They all
+  stop at 10 MB now.
+- **The share sheet is titled in your language.** It said "Where to Send?" in
+  English on every phone. It says "Share", translated.
 - **The save button stays put when the "⋮" menu opens.** Opening a story's
   menu nudged the bookmark icon beside it sideways, and closing it moved the
   icon back.

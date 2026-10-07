@@ -39,8 +39,10 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody
+import okhttp3.ResponseBody.Companion.toResponseBody
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import com.saulhdev.feeder.utils.FEED_MAX_BYTES
 import com.saulhdev.feeder.utils.PAGE_MAX_BYTES
 import com.saulhdev.feeder.utils.bytesAtMost
 import com.saulhdev.feeder.utils.refuseMedia
@@ -266,13 +268,22 @@ class FeedParser {
         }
     }
 
+    /**
+     * A feed fetched to be added or checked, read no further than a sync
+     * would read it.
+     *
+     * Only the sync applied [FEED_MAX_BYTES]. Adding a feed, the discovery
+     * pass and the https check came here and read the body whole, so an
+     * address that never stopped sending, one a website's link could hand to
+     * the weekly discovery pass, read until the app ran out of memory.
+     */
     @Throws(FeedParsingError::class)
     suspend fun parseFeedResponse(response: Response): JsonFeed {
         return response.body.use {
-            // OkHttp string method handles BOM and Content-Type header in request
+            it.refuseMedia("a feed")
             parseFeedResponse(
                 response.request.url.toUrl(),
-                it,
+                it.bytesAtMost(FEED_MAX_BYTES).toResponseBody(it.contentType()),
             )
         }
     }
