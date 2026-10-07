@@ -2944,6 +2944,78 @@ so the threshold is a share of the card's width, not a fixed distance.
 reachable somewhere (a "Dismissed today" list under the filter sheet would cost
 little and answer "where did that go?").
 
+## From HeadlineDeck, 7 October 2026
+
+Looked at [HeadlineDeck](https://headlinedeck.app/), a card-deck news reader on
+both stores. Most of what it does well is where Whisper has not gone yet; most
+of what Whisper does well (your own feeds, the Lawnchair page, bookmark import,
+FreshRSS, clusters, ordering that explains itself, F-Droid) it does not do. Its
+summaries are Gemini behind a Pro tier and it has accounts, which leaves the
+"nothing leaves the phone" claim with us. Four things are worth taking, in this
+order. Android Auto and AI summaries are not: one costs a great deal for a few
+readers, the other undoes the privacy pitch.
+
+### A home-screen widget
+
+The answer to "is any other launcher supported?" for everybody not on
+Lawnchair, which is nearly everybody. Medium-sized: about two to four days.
+
+- **Built with Jetpack Glance** (`androidx.glance:glance-appwidget`, Apache 2,
+  fine for F-Droid). A widget is drawn by the launcher from a description, not
+  by our Compose code, so the cards cannot be reused; it is its own small
+  layout.
+- **First version: the top five to eight headlines**, source and age, in the
+  order the feed would show them, light and dark, resizable. Tapping one opens
+  it through the existing article deep link; a refresh button runs a sync.
+- **Refreshed after each sync**, not on its own timer, so it costs no extra
+  network or battery.
+- **Pictures later.** A widget's images are bitmaps passed across processes,
+  with a size limit; a lead image on the first row is the most worth having.
+
+### Reading time
+
+"4 min" on the card and under the reader's headline. Small: a day.
+
+**How it is counted, given most pages are never downloaded.** Words divided by
+about 230 a minute, from the best text Whisper already has:
+
+1. **The downloaded page**, when full text fetched it. With "full text for all
+   feeds" on, that is most unread articles from the last two days.
+2. **The feed's own text, when the feed carries the whole article.** Many do
+   (Ars Technica, The Verge, most blogs). A feed text is treated as whole when
+   it is long, say 250 words or more, and not obviously a teaser.
+3. **Otherwise nothing.** A teaser of forty words would say "1 min" for a
+   three-thousand-word feature. No estimate beats a wrong one; the time appears
+   once the page is fetched or opened.
+
+Counted once, when the text is stored, into a new column, so scrolling never
+reads a file. The reader can show it for every article, since it has the text
+in hand.
+
+### Read aloud
+
+Not a differentiator: Feeder and FeedMe both have it. Not having it is the gap.
+Medium: two to three days for a good first version.
+
+- **Android's own text-to-speech** (`TextToSpeech`), so it costs nothing, works
+  offline and sends nothing anywhere. On a phone without Google's voices, any
+  engine works, such as SherpaTTS from F-Droid.
+- **A play button in the reader**, reading the title then the body, paragraph
+  by paragraph, with the paragraph being read highlighted and followed.
+- **It keeps going with the screen off**, with pause and stop in the
+  notification and on headphone buttons, which is a media session and a
+  foreground service of the media-playback type.
+- **Speed and voice** from the system settings in the first version; our own
+  controls later if asked.
+- **Later: "play saved"**, reading saved articles one after another, which is
+  the commute use.
+
+### A Whisper page on nyancatlabs.com — later
+
+One screen per feature, with the store and F-Droid badges, modelled on
+HeadlineDeck's. Somewhere for the Play listing, F-Droid, Reddit and the README
+to point at. After the stores are live, so the badges link to real listings.
+
 ## Text size — asked for, not yet designed
 
 Raised from the device. Worth recording carefully, because the obvious version
