@@ -18,6 +18,7 @@
 package com.saulhdev.feeder.ui.overlay
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -89,68 +90,73 @@ fun ArticleOverflowMenu(
     var explain by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
 
-    // The same clear OverflowMenu does, for the same reason: Compose hands
-    // focus back to whatever held it when this closes, and on a feed with the
-    // search field in use that means the keyboard returns over the article the
-    // menu was opened about. This menu is hand-rolled rather than built on
-    // OverflowMenu — it carries its own explain state — so it does not get the
-    // fix for free.
-    IconButton(
-        onClick = {
-            focusManager.clearFocus()
-            expanded = true
-        },
-        modifier = modifier,
-    ) {
-        Icon(
-            imageVector = Phosphor.DotsThreeVertical,
-            contentDescription = stringResource(R.string.more_options),
-            tint = tint,
-            modifier = Modifier.size(22.dp),
-        )
-    }
-
-    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-        MenuEntry(R.string.more_like_this, Phosphor.Sparkle) {
-            expanded = false
-            onMoreLikeThis()
-        }
-        MenuEntry(R.string.less_like_this, Phosphor.Prohibit) {
-            expanded = false
-            onLessLikeThis()
-        }
-        MenuEntry(
-            if (pinned) R.string.unpin_article else R.string.pin_article,
-            Phosphor.Asterisk,
+    // One box for the button and its menu. Side by side they were two
+    // children of whatever row held them, and an open menu is a child too:
+    // in the card's overlapping action row that extra child pulled the save
+    // button 12dp sideways every time the menu opened, and back on close.
+    Box(modifier = modifier) {
+        // The same clear OverflowMenu does, for the same reason: Compose hands
+        // focus back to whatever held it when this closes, and on a feed with the
+        // search field in use that means the keyboard returns over the article the
+        // menu was opened about. This menu is hand-rolled rather than built on
+        // OverflowMenu — it carries its own explain state — so it does not get the
+        // fix for free.
+        IconButton(
+            onClick = {
+                focusManager.clearFocus()
+                expanded = true
+            },
         ) {
-            expanded = false
-            onPin(!pinned)
+            Icon(
+                imageVector = Phosphor.DotsThreeVertical,
+                contentDescription = stringResource(R.string.more_options),
+                tint = tint,
+                modifier = Modifier.size(22.dp),
+            )
         }
-        if (breaking) {
-            // Only on the card that carries the promotion. Dismissing is not
-            // hiding: the article keeps its place in the feed and loses the
-            // treatment breaking news gets, which is the thing the reader is
-            // actually objecting to when they have scrolled past it twice.
-            MenuEntry(R.string.dismiss_story, Phosphor.Prohibit) {
+
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            MenuEntry(R.string.more_like_this, Phosphor.Sparkle) {
                 expanded = false
-                onDismissStory()
+                onMoreLikeThis()
+            }
+            MenuEntry(R.string.less_like_this, Phosphor.Prohibit) {
+                expanded = false
+                onLessLikeThis()
+            }
+            MenuEntry(
+                if (pinned) R.string.unpin_article else R.string.pin_article,
+                Phosphor.Asterisk,
+            ) {
+                expanded = false
+                onPin(!pinned)
+            }
+            if (breaking) {
+                // Only on the card that carries the promotion. Dismissing is not
+                // hiding: the article keeps its place in the feed and loses the
+                // treatment breaking news gets, which is the thing the reader is
+                // actually objecting to when they have scrolled past it twice.
+                MenuEntry(R.string.dismiss_story, Phosphor.Prohibit) {
+                    expanded = false
+                    onDismissStory()
+                }
+            }
+            MenuEntry(R.string.hide_source, Phosphor.EyeSlash) {
+                expanded = false
+                onHideSource()
+            }
+            MenuEntry(R.string.share, Phosphor.ShareNetwork) {
+                expanded = false
+                onShare()
+            }
+            MenuEntry(R.string.why_this_size, Phosphor.Info) {
+                expanded = false
+                explain = true
             }
         }
-        MenuEntry(R.string.hide_source, Phosphor.EyeSlash) {
-            expanded = false
-            onHideSource()
-        }
-        MenuEntry(R.string.share, Phosphor.ShareNetwork) {
-            expanded = false
-            onShare()
-        }
-        MenuEntry(R.string.why_this_size, Phosphor.Info) {
-            expanded = false
-            explain = true
-        }
-    }
 
-    if (explain) WhyThisSizeDialog(reasons = reasons) { explain = false }
+        if (explain) WhyThisSizeDialog(reasons = reasons) { explain = false }
+    }
 }
 
 /**
