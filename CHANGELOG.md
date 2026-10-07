@@ -24,6 +24,12 @@ Unreleased
   the save and menu buttons shared the line under the headline and squeezed
   the source's name to nothing: "NEWS · · 2h". On a narrow tile they now sit
   under that line instead.
+- **FreshRSS matching is much faster on the phone.** Diagnostics showed the
+  server answering a match in 2.5 seconds and the phone taking a minute,
+  once nearly three, to file the answer: it saved each article's server id
+  as its own database write, up to two thousand of them. A page of 250 is
+  now one write. The history's "to send" also counts only what is actually
+  going to the server, not every article newly matched.
 - **Adding a feed can no longer run the phone out of memory.** A sync
   stops reading a feed at 10 MB, but adding one, checking it for https and
   the weekly look for new sources read it whole, however long it went on.

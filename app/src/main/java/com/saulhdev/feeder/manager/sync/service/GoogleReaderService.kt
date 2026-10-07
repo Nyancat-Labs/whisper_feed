@@ -421,11 +421,8 @@ class GoogleReaderService(
             pages++
             seen += items.size
             val linking = System.currentTimeMillis()
-            var pageAttached = 0
-            items.forEach { item ->
-                val (link, remoteId) = item.mapping() ?: return@forEach
-                pageAttached += articles.attachRemoteId(link, remoteId)
-            }
+            // The whole page in one commit; see attachRemoteIds.
+            val pageAttached = articles.attachRemoteIds(items.mapNotNull { it.mapping() })
             attached += pageAttached
             val linked = System.currentTimeMillis()
             linkMs += linked - linking
@@ -472,16 +469,19 @@ class GoogleReaderService(
     private suspend fun queueNewlyMatched(before: MutableSet<String>): Int {
         val newlyMapped = articles.mappedArticles().filter { it.uuid !in before }
         if (newlyMapped.isEmpty()) return 0
+        // What is actually going up, not how many were newly matched: the
+        // history said "1172 matched (1172 to send)" while 14 were waiting.
+        var queued = 0
         GoogleReaderState.updateOutbox(context) { outbox ->
+            val read = newlyMapped.filter { it.readAt != 0L && it.uuid !in outbox.unread }.map { it.uuid }
+            val starred = newlyMapped.filter { it.bookmarked && it.uuid !in outbox.unstar }
+            queued = (read + starred.map { it.uuid }).toSet().size
             outbox
-                .withRead(newlyMapped.filter { it.readAt != 0L && it.uuid !in outbox.unread }.map { it.uuid }, true)
-                .let { o ->
-                    newlyMapped.filter { it.bookmarked && it.uuid !in o.unstar }
-                        .fold(o) { acc, a -> acc.withStar(a.uuid, true) }
-                }
+                .withRead(read, true)
+                .let { o -> starred.fold(o) { acc, a -> acc.withStar(a.uuid, true) } }
         }
         newlyMapped.mapTo(before) { it.uuid }
-        return newlyMapped.size
+        return queued
     }
 
     /**

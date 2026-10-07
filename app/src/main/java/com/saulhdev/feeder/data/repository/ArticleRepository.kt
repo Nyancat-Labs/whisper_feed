@@ -615,6 +615,23 @@ class ArticleRepository(db: NeoFeedDb) {
         articlesDao.attachRemoteId(link, remoteId)
     }
 
+    /**
+     * Attaches a page of server ids at once: (link, id) pairs, in one
+     * transaction.
+     *
+     * One at a time, a match of two thousand items was two thousand commits,
+     * each queued behind whatever else was writing (a full-text run often
+     * was) and each telling every open screen the articles had changed. The
+     * server answered a match in 2.5s and the phone took 60s to file it; one
+     * evening 171s.
+     */
+    suspend fun attachRemoteIds(pairs: List<Pair<String, String>>): Int = withContext(cc) {
+        if (pairs.isEmpty()) return@withContext 0
+        db.withTransaction {
+            pairs.sumOf { (link, remoteId) -> articlesDao.attachRemoteId(link, remoteId) }
+        }
+    }
+
     /** The server's id for one article, if a server has claimed it. */
     suspend fun remoteIdFor(uuid: String): String? = withContext(cc) {
         articlesDao.remoteIdFor(uuid)

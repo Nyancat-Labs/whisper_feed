@@ -152,7 +152,7 @@ class AccountRecoveryTest {
         assertTrue(service.contains("while (pages < maxPages) {"))
         val map = service.substring(service.indexOf("private suspend fun mapRemoteIds(")).substringBefore("\n    }\n")
         val loop = map.substring(map.indexOf("while (pages < maxPages)"))
-        assertTrue("matched per page", loop.substringBefore("if (next == null").contains("articles.attachRemoteId(link, remoteId)"))
+        assertTrue("matched per page", loop.substringBefore("if (next == null").contains("articles.attachRemoteIds(items.mapNotNull { it.mapping() })"))
         assertTrue("and the next match starts from here", map.contains("GoogleReaderState.setMappedAt(context, startedAt)\n        Log.i"))
     }
 
