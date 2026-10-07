@@ -100,6 +100,18 @@ class ScreenshotGlitchesTest {
         assertTrue(body.trimEnd().endsWith("explain = false }\n    }\n}"))
     }
 
+    // 5. "Where to Send?" over the share sheet, in English on every phone.
+
+    @Test
+    fun `the share sheet is titled in the reader's language`() {
+        val offenders = File("src/main/java").walkTopDown()
+            .filter { it.isFile && it.extension == "kt" }
+            .filter { f -> Regex("""createChooser\([^)]*"""").containsMatchIn(f.readText()) }
+            .map { it.path }
+            .toList()
+        assertEquals("a chooser titled in English: $offenders", emptyList<String>(), offenders)
+    }
+
     private fun luminance(channel: Double): Double {
         val c = if (channel <= 0.03928) channel / 12.92 else ((channel + 0.055) / 1.055).pow(2.4)
         return c // grey: R = G = B, so the weights sum to 1

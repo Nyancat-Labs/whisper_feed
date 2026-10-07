@@ -114,7 +114,7 @@ fun Context.safeShareIntent(url: String, title: String) {
             putExtra(Intent.EXTRA_SUBJECT, title)
             putExtra(Intent.EXTRA_TEXT, url)
         }
-        val chooserIntent = Intent.createChooser(shareIntent, "Where to Send?")
+        val chooserIntent = Intent.createChooser(shareIntent, getString(R.string.share))
 
         val canStartDirectly = this is Activity
 
@@ -192,7 +192,7 @@ fun Context.shareIntent(url: String, title: String) {
     shareIntent.putExtra(Intent.EXTRA_SUBJECT, title)
     shareIntent.putExtra(Intent.EXTRA_TEXT, url)
 
-    startActivity(Intent.createChooser(shareIntent, "Where to Send?"))
+    startActivity(Intent.createChooser(shareIntent, getString(R.string.share)))
 }
 
 
