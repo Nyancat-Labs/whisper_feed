@@ -2904,6 +2904,46 @@ tap target is the mark and the name only, because that row sits directly under
 the headline and a wider one would take taps meant for the article. Whether
 that target is comfortable is a question only a device answers.
 
+## Swipe to dismiss — asked for, not yet built
+
+Raised 7 October 2026: swipe a card away to say "not interested in this one".
+Discover has it, and on a feed of ten thousand unread articles the menu is two
+taps too many for the commonest judgement a reader makes.
+
+**What it means.** This article, not this source. "Less like this" and "Hide
+source" already answer the wider questions; a swipe answers the narrow one.
+So the card leaves the feed with an Undo for a few seconds, and nothing more
+drastic happens to anything else.
+
+**What it should do underneath**, for a first version:
+
+- **Hide it, in a column of its own.** `Article.dismissedAt` exists but means
+  something else, a breaking story's promotion given back; reusing it would
+  tie two unrelated gestures together. A new `hiddenAt`, with a migration, and
+  the feed queries leave those rows out.
+- **Mark it read.** Otherwise it comes back on a FreshRSS account's other
+  devices, and the read count says there is more to get through than there is.
+- **A small negative signal, smaller than "Less like this".** One dismissal
+  says little about a source; ten from the same source in a week say a lot,
+  and the weighting already accumulates. Shown in "Why is this here?" like
+  every other signal, and reset with the rest.
+- **Not on saved or pinned cards.** The reader has already said they want
+  those; a stray swipe should not undo that.
+- **The same action in the ⋮ menu**, as "Not interested", which is also what
+  TalkBack and keyboard users get, as a custom action on the card.
+
+**The gesture is the hard part, on the launcher panel.** On Lawnchair's
+left-most page, a leftward swipe is how the reader goes back to the home
+screen, and the launcher is listening for it. So the card swipe is rightward
+only, or it fights the launcher. Two more places compete for sideways drags:
+the glance row and the category chips both scroll horizontally, so the swipe
+belongs to the cards and never to the rows above them. A Mosaic tile is narrow,
+so the threshold is a share of the card's width, not a fixed distance.
+
+**To decide before building:** whether a dismissed article is gone for good or
+reachable somewhere (a "Dismissed today" list under the filter sheet would cost
+little and answer "where did that go?").
+
 ## Text size — asked for, not yet designed
 
 Raised from the device. Worth recording carefully, because the obvious version
