@@ -29,7 +29,7 @@ import org.junit.Test
 import java.io.File
 import kotlin.math.pow
 
-/** Three glitches found in the Play Store screenshots. */
+/** Glitches found in the Play Store screenshots, and in testing after. */
 class ScreenshotGlitchesTest {
 
     private val card = File("src/main/java/com/saulhdev/feeder/ui/overlay/ArticleCard.kt").readText()
@@ -81,6 +81,23 @@ class ScreenshotGlitchesTest {
         val reader = File("src/main/java/com/saulhdev/feeder/ui/pages/ArticlePage.kt").readText()
         assertTrue(reader.contains("val author = authorName(state?.article?.author)"))
         assertFalse(reader.contains("unicodeWrap(state?.article?.author"))
+    }
+
+    // 4. The save button jumping 12dp sideways as the "⋮" menu opened.
+
+    @Test
+    fun `the menu button and its menu are one child of the action row`() {
+        // An open DropdownMenu is a child of the layout it is written in. Loose
+        // in the card's overlapping action row, it was a third child, and the
+        // row's negative spacing moved the save button beside it.
+        val menu = File("src/main/java/com/saulhdev/feeder/ui/overlay/ArticleMenu.kt").readText()
+        val start = menu.indexOf("fun ArticleOverflowMenu(")
+        val body = menu.substring(start, menu.indexOf("\n}\n", start) + 3)
+        val box = body.indexOf("    Box(modifier = modifier) {\n")
+        assertTrue("wrapped in a box", box > 0)
+        assertTrue(box < body.indexOf("IconButton(") && body.indexOf("IconButton(") < body.indexOf("DropdownMenu("))
+        // The box closes after the menu and the dialog, at the function's end.
+        assertTrue(body.trimEnd().endsWith("explain = false }\n    }\n}"))
     }
 
     private fun luminance(channel: Double): Double {

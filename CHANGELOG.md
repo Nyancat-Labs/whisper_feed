@@ -24,6 +24,9 @@ Unreleased
   the save and menu buttons shared the line under the headline and squeezed
   the source's name to nothing: "NEWS · · 2h". On a narrow tile they now sit
   under that line instead.
+- **The save button stays put when the "⋮" menu opens.** Opening a story's
+  menu nudged the bookmark icon beside it sideways, and closing it moved the
+  icon back.
 - **Buttons on pictures can always be seen.** The save and menu icons over a
   photo had only a faint fade behind them and vanished on white or pale
   pictures. Each now sits on a small dark disc.
