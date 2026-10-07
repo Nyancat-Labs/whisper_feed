@@ -252,6 +252,22 @@ remaining problems. See §8 for what each store needs and the order of work.
 account screen says what each sync did. That leaves §8 as the one large thing
 between the app and the people who would use it.
 
+**After the stores, set 7 October 2026.** 1.0.2 is in Play review and the
+F-Droid merge request is waiting for their testing. Then, in this order:
+
+1. **Release 1.0.3**, after a few more days of testing on the device.
+2. **Reading time** (*From HeadlineDeck*). It needs a column; if swipe to
+   dismiss is next, its `hiddenAt` column goes in the same migration, so one
+   release carries one database change.
+3. **The home-screen widget**, headlines only.
+4. **Read aloud.**
+5. **Coil 2 to 3** (§19d), together with pictures in the widget: the first
+   time image handling is opened for its own reasons.
+6. **Material 3 Expressive** (§19e), once `material3` 1.5.0 is stable. It was
+   at `1.5.0-beta01` on 7 October.
+
+Swipe to dismiss and the Whisper page on nyancatlabs.com are not yet placed.
+
 ### 1. Adding a feed should be forgiving
 
 The whole "add source" flow is the roughest edge left, and it is what a new
