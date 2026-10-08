@@ -262,13 +262,16 @@ F-Droid merge request is waiting for their testing. Then, in this order:
    release carries one database change.
 4. **The home-screen widget**, headlines only.
 5. **Read aloud.**
-6. **Coil 2 to 3** (§19d), together with pictures in the widget: the first
+6. **Translations, through Weblate** (*Translations — later, and whole*).
+   Here because the four features above each add screens and words; a
+   translation drafted before them would be redone. Coil and Expressive
+   below change no text, so translators are not held up by them.
+7. **Coil 2 to 3** (§19d), together with pictures in the widget: the first
    time image handling is opened for its own reasons.
-7. **Material 3 Expressive** (§19e), once `material3` 1.5.0 is stable. It was
+8. **Material 3 Expressive** (§19e), once `material3` 1.5.0 is stable. It was
    at `1.5.0-beta01` on 7 October.
 
-Swipe to dismiss, the Whisper page on nyancatlabs.com and full translations
-are not yet placed.
+Swipe to dismiss and the Whisper page on nyancatlabs.com are not yet placed.
 
 ### 1. Adding a feed should be forgiving
 
@@ -2962,7 +2965,7 @@ so the threshold is a share of the card's width, not a fixed distance.
 reachable somewhere (a "Dismissed today" list under the filter sheet would cost
 little and answer "where did that go?").
 
-## Translations — later, and whole
+## Translations — later, and whole (sixth in the order)
 
 Until 1.0.3 the app carried 28 languages from Neo Feed, none above 13% of
 its 564 strings. They are removed, and the build is English only
