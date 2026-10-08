@@ -40,6 +40,7 @@ object LogScrub {
     const val ADDRESS = "<address>"
     const val IP = "<ip>"
     const val PLACE = "<place>"
+    const val ID = "<id>"
 
     /** Shorter than this, a value of the reader's own is left alone. */
     private const val MIN_OWN = 3
@@ -63,6 +64,13 @@ object LogScrub {
             "|:(?::[0-9a-fA-F]{1,4}){1,7}" +
             ")(?![\\w:])"
     )
+
+    /**
+     * An article's id. Random and local, so it identifies nothing elsewhere,
+     * but the report's rule is no ids at all, and the full-text log printed
+     * one on every failed page.
+     */
+    private val UUID = Regex("""(?<![0-9a-fA-F-])[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}(?![0-9a-fA-F-])""")
 
     /** A latitude or longitude by name, as a query parameter or a JSON field. */
     private val COORDINATE = Regex(
@@ -89,6 +97,7 @@ object LogScrub {
             .forEach { (value, label) ->
                 out = ownValue(value.trim()).replace(out, Regex.escapeReplacement(label))
             }
+        out = UUID.replace(out, ID)
         out = COORDINATE.replace(out) { "${it.groupValues[1]}${it.groupValues[2]}$PLACE" }
         out = COORDINATE_PAIR.replace(out, PLACE)
         out = IPV4.replace(out, IP)

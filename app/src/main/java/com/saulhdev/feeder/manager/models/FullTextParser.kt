@@ -422,7 +422,7 @@ suspend fun parseFullArticle(
         // and picture in the reader. Kept as the feed has it instead.
         val extracted = article.textContent.orEmpty().trim().length
         if (isThinExtraction(extracted, feedTextLength(feedItem.uuid, filesDir))) {
-            Log.i("FeederFullText", "Page gave less than the feed for ${feedItem.uuid}; keeping the feed's")
+            Log.i("FeederFullText", "Page gave less than the feed; keeping the feed's")
             return@withContext false to ThinExtraction()
         }
 
@@ -442,8 +442,9 @@ suspend fun parseFullArticle(
     } catch (e: Throwable) {
         Log.e(
             "FeederFullText",
-            // The article's id, not its link: this ends up in a shared report.
-            "Failed to get fulltext for ${feedItem.uuid}: ${e.message}",
+            // Neither its link nor its id: this ends up in a shared report,
+            // and the reason is what the report needs.
+            "Failed to get fulltext: ${e.message}",
             e
         )
         false to e

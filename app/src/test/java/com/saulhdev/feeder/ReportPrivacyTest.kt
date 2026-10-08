@@ -153,6 +153,31 @@ class ReportPrivacyTest {
     }
 
     @Test
+    fun `an article's id goes`() {
+        // From a real report, 8 October 2026.
+        assertEquals(
+            "10-08 19:46:28.870 E/FeederFullText( 7039): Failed to get fulltext for <id>: HTTP 403",
+            scrub("10-08 19:46:28.870 E/FeederFullText( 7039): Failed to get fulltext for a62e9ae6-1d15-4c7a-aa8e-9801154d8208: HTTP 403"),
+        )
+    }
+
+    @Test
+    fun `no log line names an article by its id`() {
+        val id = Regex("""\$\{?[\w.?]*?(uuid|remoteId|articleId)\b""")
+        // The whole call, across lines: the one that did it put its message on
+        // the line after `Log.e(`.
+        val call = Regex("""(?:Log\.[iwe]|Log\.println)\((?:[^()]|\([^()]*\))*\)""")
+        val offenders = kotlinFiles().flatMap { file ->
+            val source = file.readText()
+            call.findAll(source)
+                .filter { id.containsMatchIn(it.value) }
+                .map { "${file.path}:${source.substring(0, it.range.first).count { c -> c == '\n' } + 1}" }
+                .toList()
+        }
+        assertEquals("these log an article's id: $offenders", emptyList<String>(), offenders)
+    }
+
+    @Test
     fun `the reader's own values go only as whole words`() {
         // The account name "reader" must not eat "Whisper RSS reader-mode"
         // or "readers", only the word itself.
