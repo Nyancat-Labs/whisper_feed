@@ -256,14 +256,15 @@ between the app and the people who would use it.
 F-Droid merge request is waiting for their testing. Then, in this order:
 
 1. **Release 1.0.3**, after a few more days of testing on the device.
-2. **Reading time** (*From HeadlineDeck*). It needs a column; if swipe to
+2. **Auto-scroll** (*Auto-scroll*, below), wanted sooner rather than later.
+3. **Reading time** (*From HeadlineDeck*). It needs a column; if swipe to
    dismiss is next, its `hiddenAt` column goes in the same migration, so one
    release carries one database change.
-3. **The home-screen widget**, headlines only.
-4. **Read aloud.**
-5. **Coil 2 to 3** (§19d), together with pictures in the widget: the first
+4. **The home-screen widget**, headlines only.
+5. **Read aloud.**
+6. **Coil 2 to 3** (§19d), together with pictures in the widget: the first
    time image handling is opened for its own reasons.
-6. **Material 3 Expressive** (§19e), once `material3` 1.5.0 is stable. It was
+7. **Material 3 Expressive** (§19e), once `material3` 1.5.0 is stable. It was
    at `1.5.0-beta01` on 7 October.
 
 Swipe to dismiss and the Whisper page on nyancatlabs.com are not yet placed.
@@ -2959,6 +2960,34 @@ so the threshold is a share of the card's width, not a fixed distance.
 **To decide before building:** whether a dismissed article is gone for good or
 reachable somewhere (a "Dismissed today" list under the filter sheet would cost
 little and answer "where did that go?").
+
+## Auto-scroll — asked for 8 October 2026, next after 1.0.3
+
+The feed scrolls itself, slowly enough to read the headlines, to the end; then
+a full refresh, back to the top, and round again. A news ticker for a phone on
+the desk or a tablet on a stand. A day or two.
+
+Decided with the user:
+
+- **In the app only**, not on the launcher panel, which the launcher can close
+  at any moment.
+- **Started from the feed's top bar**, with a speed setting. A smooth,
+  continuous scroll rather than card by card.
+- **Nothing it passes counts as read.** No dwell banked, no mark-read on
+  scroll, no reading statistics: the reader did not read them, and the
+  weighting must not learn that every card was equally interesting.
+- **At the end, a full refresh** (the pull-to-refresh sync, every feed), then
+  from the top. Data use was raised and is not a concern.
+- **"The end" is the end of the feed as shown**, the newest few hundred, not
+  every unread article.
+- **It stops when the screen goes off.** Keeping the screen on is the reader's
+  choice, not the app's; no wake lock.
+- **A touch pauses it**, and it carries on a few seconds after; opening an
+  article stops it. With Android's "remove animations" on, it does not run.
+
+**Later: a screensaver.** Android's daydream (`DreamService`) would let the
+same scroll run while the phone charges, without the app open. A separate
+build, once the in-app version has been lived with.
 
 ## From HeadlineDeck, 7 October 2026
 
