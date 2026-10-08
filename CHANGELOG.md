@@ -24,6 +24,10 @@ Unreleased
   the save and menu buttons shared the line under the headline and squeezed
   the source's name to nothing: "NEWS · · 2h". On a narrow tile they now sit
   under that line instead.
+- **One language on every screen.** Whisper came with 28 languages from Neo
+  Feed, none of them more than 13% translated, so a phone set to German showed
+  a few German words on screens that were otherwise English. They are removed
+  until full translations exist; until then the app is in English throughout.
 - **FreshRSS matching is much faster on the phone.** Diagnostics showed the
   server answering a match in 2.5 seconds and the phone taking a minute,
   once nearly three, to file the answer: it saved each article's server id
