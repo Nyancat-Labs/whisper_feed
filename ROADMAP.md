@@ -267,7 +267,8 @@ F-Droid merge request is waiting for their testing. Then, in this order:
 7. **Material 3 Expressive** (§19e), once `material3` 1.5.0 is stable. It was
    at `1.5.0-beta01` on 7 October.
 
-Swipe to dismiss and the Whisper page on nyancatlabs.com are not yet placed.
+Swipe to dismiss, the Whisper page on nyancatlabs.com and full translations
+are not yet placed.
 
 ### 1. Adding a feed should be forgiving
 
@@ -2960,6 +2961,27 @@ so the threshold is a share of the card's width, not a fixed distance.
 **To decide before building:** whether a dismissed article is gone for good or
 reachable somewhere (a "Dismissed today" list under the filter sheet would cost
 little and answer "where did that go?").
+
+## Translations — later, and whole
+
+Until 1.0.3 the app carried 28 languages from Neo Feed, none above 13% of
+its 564 strings. They are removed, and the build is English only
+(`localeFilters`), so every screen is one language. `TranslationCoverageTest`
+keeps it that way: a language under `res/` must cover 90% of the strings and
+be listed in `localeFilters`.
+
+The plan, when it is time:
+
+1. **Hosted Weblate**, free for open-source projects and what F-Droid uses.
+   Volunteers translate on the web; changes come back as commits. A "Help
+   translate" link in About, the README and the F-Droid listing.
+2. **First drafts** of German, French, Spanish, Portuguese (Brazil) and Italian
+   written here, for native speakers to correct rather than start from
+   nothing. Not shipped unreviewed: the English is chosen with care.
+3. **The store listings** in the same languages, where translation is what
+   helps people find the app.
+4. **A format check**: a translation that drops a `%1$s` or adds one fails the
+   build instead of crashing a screen.
 
 ## Auto-scroll — asked for 8 October 2026, next after 1.0.3
 
