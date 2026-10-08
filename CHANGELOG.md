@@ -24,6 +24,10 @@ Unreleased
   the save and menu buttons shared the line under the headline and squeezed
   the source's name to nothing: "NEWS · · 2h". On a narrow tile they now sit
   under that line instead.
+- **The FreshRSS match reports its real size.** Twice it said "<1 KB" for
+  hundreds of items, because it read Android's count of everything the app had
+  downloaded and that count had not caught up yet. It now counts what the
+  server sends as it arrives.
 - **Diagnostics no longer name articles.** A failed full-article download
   wrote the article's internal id into the report. The line no longer carries
   it, and the report blanks out any such id it finds, wherever it came from.

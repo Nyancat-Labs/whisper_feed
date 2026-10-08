@@ -35,10 +35,8 @@ import com.saulhdev.feeder.utils.normalizeFeedUrl
 import com.saulhdev.feeder.utils.isUnmetered
 import com.saulhdev.feeder.manager.sync.greader.AccountTally
 import com.saulhdev.feeder.manager.sync.greader.MatchStats
-import com.saulhdev.feeder.utils.bytesSince
 import com.saulhdev.feeder.utils.formatBytes
 import com.saulhdev.feeder.utils.StepTrace
-import com.saulhdev.feeder.utils.receivedBytes
 import com.saulhdev.feeder.manager.sync.greader.AccountTallyStore
 import com.saulhdev.feeder.manager.sync.greader.GoogleReaderState
 import com.saulhdev.feeder.manager.sync.greader.MissingFeed
@@ -371,7 +369,8 @@ class GoogleReaderService(
      */
     private suspend fun mapRemoteIds(auth: String, maxPages: Int = MAP_MAX_PAGES): MatchStats? {
         val startedAt = System.currentTimeMillis()
-        val receivedBefore = receivedBytes()
+        // This server's own bytes; see GoogleReaderApi.receivedBytes.
+        val receivedBefore = api.receivedBytes
         val before = articles.mappedArticles().mapTo(HashSet()) { it.uuid }
         val last = GoogleReaderState.mappedAt(context)
         // The first match brings the server's copy of every article in the
@@ -411,7 +410,7 @@ class GoogleReaderService(
         var queueMs = 0L
         while (pages < maxPages) {
             val asked = System.currentTimeMillis()
-            val bytesBefore = receivedBytes()
+            val bytesBefore = api.receivedBytes
             val (items, next) = api.contentsPage(
                 auth, GoogleReaderIds.STREAM_READING_LIST, MAP_PAGE_SIZE, since, continuation, oldestFirst = true,
             )
@@ -435,7 +434,7 @@ class GoogleReaderService(
             // Counts and times only: no link, title or id reaches the log.
             Log.i(
                 TAG,
-                "Match page $pages: ${items.size} items, ${bytesSince(bytesBefore)?.let(::formatBytes) ?: "size unknown"}, " +
+                "Match page $pages: ${items.size} items, ${formatBytes(api.receivedBytes - bytesBefore)}, " +
                     "server ${waited}ms, linked $pageAttached in ${linked - linking}ms, " +
                     "queued $pageQueued in ${System.currentTimeMillis() - linked}ms",
             )
@@ -453,7 +452,7 @@ class GoogleReaderService(
         if (finished) GoogleReaderState.setMappedAt(context, startedAt)
         Log.i(TAG, "Mapped $attached of $seen server items in $pages pages, $newly newly${if (finished) "" else ", more next time"}")
         return MatchStats(
-            pages = pages, items = seen, bytes = bytesSince(receivedBefore), finished = finished,
+            pages = pages, items = seen, bytes = api.receivedBytes - receivedBefore, finished = finished,
             serverMs = serverMs, slowestPageMs = slowestPageMs,
             attached = attached, queued = newly, linkMs = linkMs, queueMs = queueMs,
             fromAgoMs = (startedAt - since).coerceAtLeast(0),

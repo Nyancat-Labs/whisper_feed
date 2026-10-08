@@ -28,6 +28,7 @@ import okhttp3.FormBody
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
+import com.saulhdev.feeder.utils.ByteCounter
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
@@ -54,8 +55,21 @@ import java.io.IOException
  */
 class GoogleReaderApi(
     private val serverUrl: String,
-    private val client: OkHttpClient = defaultClient,
+    client: OkHttpClient = defaultClient,
 ) {
+
+    /**
+     * Every byte this server has sent this instance, counted as it arrives.
+     *
+     * The match's size came from Android's count for the whole app, which on
+     * some syncs had not caught up by the time it was read: 484 items reported
+     * as "<1 KB". Counted here, it is this server's bytes and nobody else's,
+     * and it is up to date the moment a response has been read.
+     */
+    private val received = ByteCounter()
+    val receivedBytes: Long get() = received.bytes
+
+    private val client: OkHttpClient = client.newBuilder().eventListenerFactory(ByteCounter.factory).build()
 
     /**
      * What a sign-in produced, or why it did not.
@@ -352,6 +366,7 @@ class GoogleReaderApi(
 
     private fun authorised(auth: String, url: HttpUrl) = Request.Builder()
         .url(url)
+        .tag(ByteCounter::class.java, received)
         // The protocol's own header, unchanged since Google Reader.
         .header("Authorization", "GoogleLogin auth=$auth")
 
