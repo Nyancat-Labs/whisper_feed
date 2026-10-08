@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="title_settings">Nastavení</string>
-    <string name="title_about">O aplikaci</string>
-    <string name="title_sources">Zdroje dat</string>
-    <string name="about_licenses">Licence</string>
-    <string name="about_changelog">Seznam změn</string>
-</resources>

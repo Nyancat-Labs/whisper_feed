@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="title_sources">डेटा केंद्र</string>
-    <string name="about_changelog">बदलाव</string>
-    <string name="pref_cat_overlay">दिखावा</string>
-    <string name="title_settings">सेटिंग्स</string>
-    <string name="title_about">जानकारी</string>
-    <string name="about_licenses">लाइसेंस</string>
-</resources>

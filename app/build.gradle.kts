@@ -96,6 +96,19 @@ android {
         multiDexEnabled = true
     }
 
+    /**
+     * English only, until a language is translated in full.
+     *
+     * The 28 languages inherited from Neo Feed covered at most 13% of the
+     * app, so a German phone showed a few German words on otherwise English
+     * screens. They were removed in 1.0.3, and this keeps the libraries' own
+     * translations out too, so every screen is one language. A language added
+     * later goes in this list as well; TranslationCoverageTest says so.
+     */
+    androidResources {
+        localeFilters += listOf("en")
+    }
+
     signingConfigs {
         /**
          * The test-signing key, held in the repository on purpose.
