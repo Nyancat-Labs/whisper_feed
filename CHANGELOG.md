@@ -24,6 +24,9 @@ Unreleased
   the save and menu buttons shared the line under the headline and squeezed
   the source's name to nothing: "NEWS · · 2h". On a narrow tile they now sit
   under that line instead.
+- **Diagnostics no longer name articles.** A failed full-article download
+  wrote the article's internal id into the report. The line no longer carries
+  it, and the report blanks out any such id it finds, wherever it came from.
 - **One language on every screen.** Whisper came with 28 languages from Neo
   Feed, none of them more than 13% translated, so a phone set to German showed
   a few German words on screens that were otherwise English. They are removed
