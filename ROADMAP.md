@@ -270,6 +270,9 @@ F-Droid merge request is waiting for their testing. Then, in this order:
    time image handling is opened for its own reasons.
 8. **Material 3 Expressive** (§19e), once `material3` 1.5.0 is stable. It was
    at `1.5.0-beta01` on 7 October.
+9. **Reading inside the launcher panel** (*Back from an article lands on
+   the home screen*, below). Last, because it only affects readers who use
+   the Lawnchair panel, a minority of a minority.
 
 Swipe to dismiss and the Whisper page on nyancatlabs.com are not yet placed.
 
@@ -2964,6 +2967,29 @@ so the threshold is a share of the card's width, not a fixed distance.
 **To decide before building:** whether a dismissed article is gone for good or
 reachable somewhere (a "Dismissed today" list under the filter sheet would cost
 little and answer "where did that go?").
+
+## Back from an article lands on the home screen — ninth in the order
+
+Raised again 9 October 2026: opened from the Lawnchair panel, an article and
+then back leaves the reader on the home screen, not on the feed. The cause is
+in Lawnchair and is recorded under *Reported bugs*: any full-screen activity
+stops the launcher, the launcher disconnects the overlay, and reconnecting it
+ends in `onOverlayScrollChanged(0)`, which snaps the workspace home. Nothing
+the overlay sends prevents it.
+
+Two ways out, both recorded here so neither is lost:
+
+1. **Read the article inside the panel.** Draw the reader in the overlay's own
+   window instead of starting an activity: nothing stops, so back returns to
+   the feed where it was. Covers Whisper's reader only; a browser is another
+   app by definition. A few days, most of it in the panel's own scrolling and
+   in back handling inside an overlay window.
+2. **Ask Lawnchair** to keep the overlay's scroll state across a stop and
+   resume. That would fix the browser too, but is theirs to accept. Raise it
+   with the whitelist request (`docs/LAWNCHAIR_WHITELIST.md`), not separately.
+
+Placed last because it affects only readers who use the panel. Until then the
+answer for them is to read from the app, where back works.
 
 ## Translations — later, and whole (sixth in the order)
 
