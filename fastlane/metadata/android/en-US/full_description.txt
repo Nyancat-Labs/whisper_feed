@@ -24,7 +24,7 @@
 <p><b>Private by design</b></p>
 <ul>
 <li>No trackers, no ads, no analytics</li>
-<li>Weather in the glance row is off by default and needs no location permission: you type a place name</li>
+<li>Weather in the glance row is off by default and needs no location permission: you type a place name, and the forecast comes from Open-Meteo (open-meteo.com)</li>
 <li>Settings → Export diagnostics writes a report you can read before you share it. It holds counts and settings, never what you searched for or the addresses you typed</li>
 </ul>
 

@@ -21,7 +21,6 @@ ksp = "2.3.11"
 lifecycle = "2.11.0"
 material = "1.14.0"
 moshi = "1.15.2"
-multidex = "2.0.1"
 navigation = "2.10.0"
 okhttp = "5.5.0"
 readability4j = "1.0.8"
@@ -50,7 +49,6 @@ documentfile = { group = "androidx.documentfile", name = "documentfile", version
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 browser = { group = "androidx.browser", name = "browser", version.ref = "browser" }
 materialkolor = { group = "com.materialkolor", name = "material-kolor", version.ref = "materialkolor" }
-multidex = { group = "androidx.multidex", name = "multidex", version.ref = "multidex" }
 work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "work-runtime-ktx" }
 work-testing = { group = "androidx.work", name = "work-testing", version.ref = "work-runtime-ktx" }
 datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "datetime" }
