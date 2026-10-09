@@ -3,9 +3,9 @@ package com.saulhdev.feeder
 import com.saulhdev.feeder.manager.sync.greader.GoogleReaderState
 import com.saulhdev.feeder.data.content.SyncAccount
 import android.app.Activity
+import android.app.Application
 import android.app.Application.ActivityLifecycleCallbacks
 import android.os.Bundle
-import androidx.multidex.MultiDexApplication
 import coil.ImageLoader
 import coil.ImageLoaderFactory
 import coil.disk.DiskCache
@@ -50,7 +50,9 @@ import org.koin.dsl.koinConfiguration
 import org.koin.java.KoinJavaComponent.inject
 
 @OptIn(KoinExperimentalAPI::class)
-class NeoApp : MultiDexApplication(), KoinStartup, ImageLoaderFactory {
+// A plain Application: with minSdk 26 the platform loads every dex file
+// itself, so the multidex library had nothing to do.
+class NeoApp : Application(), KoinStartup, ImageLoaderFactory {
     val activityHandler = ActivityHandler()
     // Built by coreModule now, not here; see AppModules.kt.
     private val applicationCoroutineScope: ApplicationCoroutineScope by inject(
