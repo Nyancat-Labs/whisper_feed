@@ -2988,6 +2988,17 @@ Two ways out, both recorded here so neither is lost:
    resume. That would fix the browser too, but is theirs to accept. Raise it
    with the whitelist request (`docs/LAWNCHAIR_WHITELIST.md`), not separately.
 
+With the first, the panel gets **its own open setting**, separate from the
+app's, decided 11 October 2026. A reader may want the in-panel reader there,
+so back works, and the browser in the app, where back already works.
+
+- **App:** *Open articles in* stays as it is: reader or browser.
+- **Panel:** a new *In the launcher panel, open articles in*, also reader or
+  browser, defaulting to the reader. Choosing the browser shows one line
+  under it: back will land on the home screen.
+- An existing install keeps the app setting it has; the panel setting starts
+  at its default.
+
 Placed last because it affects only readers who use the panel. Until then the
 answer for them is to read from the app, where back works.
 
