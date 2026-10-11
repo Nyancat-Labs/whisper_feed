@@ -4,9 +4,10 @@
 [fdroiddata](https://gitlab.com/fdroid/fdroiddata). It lives there, as
 `metadata/com.nyancatlabs.whisper.yml`; this copy is the one to edit and paste.
 
-- **Builds from the tag.** `commit: v1.0.2` is the release; F-Droid checks out
-  that tag, runs the `release` build (unsigned without `keystore.properties`)
-  and signs the APK with its own key.
+- **Builds from the tag's commit.** Each release's `commit:` is the full hash
+  its `vX.Y.Z` tag points to (fdroiddata asks for the hash, not the tag).
+  F-Droid checks it out, runs the `release` build (unsigned without
+  `keystore.properties`) and signs the APK with its own key.
 - **The listing text is not in this file.** Title, descriptions, changelog and
   screenshots come from `fastlane/metadata/android/en-US` in this repository.
 - **No anti-features.** No trackers, no proprietary libraries, and the network
@@ -34,6 +35,6 @@
   with fdroiddata's `config/categories.yml`; and on a fresh copy with
   `remove_signing_keys` applied and a keyless `assembleRelease`, the
   scanner's `scan_source` on the tree and `scan_binary` on the APK. All
-  clean for 1.0.2; `scan_binary` on the 1.0.1 build finds the same 20
+  clean for 1.0.2 and 1.0.3; `scan_binary` on the 1.0.1 build finds the same 20
   problems F-Droid's pipeline did.
 
