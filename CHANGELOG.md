@@ -9,6 +9,14 @@ Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 Unreleased
 ----------
 
+- **Buttons say what they do.** Dialogs that act now confirm with the action
+  itself, such as "Remove", "Rename" or "Forget everything", instead of "OK".
+- **Deleting a category can be undone.** It happens straight away, with Undo on
+  the message that follows, the same as removing a source. There is no
+  question first.
+- **Source cards lead with the name.** The site and categories sit under it
+  ("science.org · Tech"). The full address is still on the source's own page,
+  and on the duplicates view, where it is what tells two feeds apart.
 - **"Show all" is readable on the duplicates banner.** Its buttons were in the
   page's accent colour, pale on the banner's own colour; they now use the
   banner's text colour.

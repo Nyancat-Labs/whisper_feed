@@ -500,11 +500,29 @@ class SourcesRepository(db: NeoFeedDb) {
         if (from in order) prefs.categoryOrder.setValue(CategoryOrder.encode(CategoryOrder.renamed(order, from, to)))
     }
 
-    /** Removes a category from every source, leaving the sources themselves. */
-    suspend fun deleteTag(tag: String) = withContext(jcc) {
+    /**
+     * Removes a category from every source, leaving the sources themselves.
+     * Returns the ids of the sources it came off, which is what [restoreTag]
+     * needs to undo it.
+     */
+    suspend fun deleteTag(tag: String): List<Long> = withContext(jcc) {
         val updated = feedsDao.loadAllFeeds()
             .filter { tag in it.tags }
             .map { feed -> feed.copy(tag = (feed.tags - tag).joinToString(",")) }
+        if (updated.isNotEmpty()) feedsDao.updateAll(updated)
+        updated.map(Feed::id)
+    }
+
+    /**
+     * Puts a deleted category back on the sources it came off.
+     *
+     * Adds the one category rather than writing back each source's old list,
+     * so a source edited in the seconds before Undo keeps that edit.
+     */
+    suspend fun restoreTag(tag: String, ids: Collection<Long>) = withContext(jcc) {
+        val updated = feedsDao.loadAllFeeds()
+            .filter { it.id in ids && tag !in it.tags }
+            .map { feed -> feed.copy(tag = (feed.tags + tag).joinToString(",")) }
         if (updated.isNotEmpty()) feedsDao.updateAll(updated)
     }
 

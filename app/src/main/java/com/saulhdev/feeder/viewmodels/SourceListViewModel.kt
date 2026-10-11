@@ -490,8 +490,27 @@ class SourceListViewModel(
         viewModelScope.launch { feedsRepo.renameTag(from, to) }
     }
 
+    /** A category just deleted, and the sources it came off, while Undo is offered. */
+    data class DeletedTag(val tag: String, val ids: List<Long>)
+
+    private val _deletedTag = MutableStateFlow<DeletedTag?>(null)
+    val deletedTag: StateFlow<DeletedTag?> = _deletedTag.asStateFlow()
+
     fun deleteTag(tag: String) {
-        viewModelScope.launch { feedsRepo.deleteTag(tag) }
+        viewModelScope.launch {
+            val ids = feedsRepo.deleteTag(tag)
+            if (ids.isNotEmpty()) _deletedTag.value = DeletedTag(tag, ids)
+        }
+    }
+
+    fun undoDeleteTag(deleted: DeletedTag) {
+        forgetDeletedTag(deleted)
+        viewModelScope.launch { feedsRepo.restoreTag(deleted.tag, deleted.ids) }
+    }
+
+    /** Clears the offer, unless a newer deletion has replaced it. */
+    fun forgetDeletedTag(deleted: DeletedTag) {
+        _deletedTag.compareAndSet(deleted, null)
     }
 
     val recentlyDeletedMany = feedsRepo.recentlyDeletedMany

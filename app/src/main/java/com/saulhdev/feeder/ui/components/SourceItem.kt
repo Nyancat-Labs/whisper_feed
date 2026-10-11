@@ -82,6 +82,13 @@ fun SourceItem(
     pinned: Boolean = false,
     /** Null hides the control entirely, for the screens that have no list to top. */
     onPin: ((Feed) -> Unit)? = null,
+    /**
+     * Shows the feed's address above its name. Off in the ordinary list, where
+     * the name is what people recognise and the site under it is enough; on
+     * in the duplicates view, where two feeds from one site differ only in
+     * the rest of the address.
+     */
+    showAddress: Boolean = false,
 ) {
     val extend = onExtendSelection ?: onLongClick
     val (isEnabled, enable) = remember(source.isEnabled) {
@@ -116,19 +123,23 @@ fun SourceItem(
             containerColor = if (selected) MaterialTheme.colorScheme.secondaryContainer
             else backgroundColor,
         ),
-        overlineContent = {
-            Text(
-                text = source.url.toString(),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        },
+        overlineContent = if (showAddress) {
+            {
+                Text(
+                    text = source.url.toString().substringAfter("://"),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+        } else null,
         headlineContent = {
             Text(text = source.title, maxLines = 2, overflow = TextOverflow.Ellipsis)
         },
         supportingContent = {
-            val tags = source.tags
-            if (tags.isNotEmpty() || isStale) {
+            // The site, then the categories: "science.org · Tech". The full
+            // address is on the source's own page.
+            val details = listOfNotNull(siteOf(source).takeIf { !showAddress }) + source.tags
+            if (details.isNotEmpty() || isStale) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -152,9 +163,9 @@ fun SourceItem(
                             color = MaterialTheme.colorScheme.error,
                         )
                     }
-                    if (tags.isNotEmpty()) {
+                    if (details.isNotEmpty()) {
                         Text(
-                            text = tags.joinToString(" · "),
+                            text = details.joinToString(" · "),
                             style = MaterialTheme.typography.labelMedium,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -266,3 +277,7 @@ fun sourceHealth(
     lastSyncMs < staleSince -> SourceHealth.NotUpdating
     else -> SourceHealth.Fine
 }
+
+/** The address's host without "www.", or null for an address with none. */
+internal fun siteOf(source: Feed): String? =
+    source.url.host?.lowercase()?.removePrefix("www.")?.takeIf(String::isNotEmpty)

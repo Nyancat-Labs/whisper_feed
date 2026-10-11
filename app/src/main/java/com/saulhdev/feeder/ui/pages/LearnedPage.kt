@@ -131,7 +131,7 @@ fun LearnedPage(
                 TextButton(onClick = {
                     viewModel.resetAll()
                     confirmReset = false
-                }) { Text(stringResource(android.R.string.ok)) }
+                }) { Text(stringResource(R.string.learned_reset_all)) }
             },
             dismissButton = {
                 TextButton(onClick = { confirmReset = false }) {
