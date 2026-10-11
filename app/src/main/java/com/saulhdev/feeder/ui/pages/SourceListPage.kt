@@ -125,6 +125,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableStateOf
@@ -1116,12 +1117,21 @@ private fun DuplicatesFound(count: Int, onReview: () -> Unit) {
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.weight(1f),
             )
-            TextButton(onClick = onReview) {
+            TextButton(onClick = onReview, colors = bannerButtonColors()) {
                 Text(stringResource(R.string.sources_duplicates_review))
             }
         }
     }
 }
+
+/**
+ * Text buttons on the banners' tertiary container. The default colour is
+ * primary, which is drawn for the page behind and was close to unreadable on
+ * the banner itself (Pixel 10 Pro, 11 October 2026).
+ */
+@Composable
+private fun bannerButtonColors() =
+    ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onTertiaryContainer)
 
 /**
  * Says why the list is short, while the duplicates filter is on.
@@ -1166,11 +1176,11 @@ private fun DuplicatesBanner(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 if (onRemoveExtra != null) {
-                    TextButton(onClick = onRemoveExtra) {
+                    TextButton(onClick = onRemoveExtra, colors = bannerButtonColors()) {
                         Text(stringResource(R.string.sources_duplicates_remove_extra))
                     }
                 }
-                TextButton(onClick = onClear) {
+                TextButton(onClick = onClear, colors = bannerButtonColors()) {
                     Text(stringResource(R.string.sources_show_all))
                 }
             }
