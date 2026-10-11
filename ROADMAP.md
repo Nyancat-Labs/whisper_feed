@@ -257,22 +257,26 @@ F-Droid merge request is waiting for their testing. Then, in this order:
 
 1. **Release 1.0.3**, after a few more days of testing on the device.
 2. **Auto-scroll** (*Auto-scroll*, below), wanted sooner rather than later.
-3. **Reading time** (*From HeadlineDeck*). It needs a column; if swipe to
+3. **Saying an update is out**, to GitHub installs only (*Telling a GitHub
+   install that an update is out*, below). Early, because it only helps from
+   the release that carries it: everyone on an older APK has to find the
+   next one by themselves.
+4. **Reading time** (*From HeadlineDeck*). It needs a column; if swipe to
    dismiss is next, its `hiddenAt` column goes in the same migration, so one
    release carries one database change.
-4. **The home-screen widget**, headlines only.
-5. **Read aloud.**
-6. **Translations, through Weblate** (*Translations — later, and whole*).
-   Here because the four features above each add screens and words; a
+5. **The home-screen widget**, headlines only.
+6. **Read aloud.**
+7. **Translations, through Weblate** (*Translations — later, and whole*).
+   Here because the features above each add screens and words; a
    translation drafted before them would be redone. Coil and Expressive
    below change no text, so translators are not held up by them.
-7. **Coil 2 to 3** (§19d), together with pictures in the widget: the first
+8. **Coil 2 to 3** (§19d), together with pictures in the widget: the first
    time image handling is opened for its own reasons.
-8. **Material 3 Expressive** (§19e), once `material3` 1.5.0 is stable. It was
+9. **Material 3 Expressive** (§19e), once `material3` 1.5.0 is stable. It was
    at `1.5.0-beta01` on 7 October.
-9. **Reading inside the launcher panel** (*Back from an article lands on
-   the home screen*, below). Last, because it only affects readers who use
-   the Lawnchair panel, a minority of a minority.
+10. **Reading inside the launcher panel** (*Back from an article lands on
+    the home screen*, below). Last, because it only affects readers who use
+    the Lawnchair panel, a minority of a minority.
 
 Swipe to dismiss and the Whisper page on nyancatlabs.com are not yet placed.
 
@@ -2969,7 +2973,7 @@ so the threshold is a share of the card's width, not a fixed distance.
 reachable somewhere (a "Dismissed today" list under the filter sheet would cost
 little and answer "where did that go?").
 
-## Back from an article lands on the home screen — ninth in the order
+## Back from an article lands on the home screen — tenth in the order
 
 Raised again 9 October 2026: opened from the Lawnchair panel, an article and
 then back leaves the reader on the home screen, not on the feed. The cause is
@@ -3003,7 +3007,7 @@ so back works, and the browser in the app, where back already works.
 Placed last because it affects only readers who use the panel. Until then the
 answer for them is to read from the app, where back works.
 
-## Translations — later, and whole (sixth in the order)
+## Translations — later, and whole (seventh in the order)
 
 Until 1.0.3 the app carried 28 languages from Neo Feed, none above 13% of
 its 564 strings. They are removed, and the build is English only
@@ -3023,6 +3027,33 @@ The plan, when it is time:
    helps people find the app.
 4. **A format check**: a translation that drops a `%1$s` or adds one fails the
    build instead of crashing a screen.
+
+## Telling a GitHub install that an update is out — third in the order
+
+Asked 11 October 2026. Play and F-Droid tell their users about a new version
+themselves; an APK installed from GitHub Releases (the Reddit post) hears
+nothing, so it stays on the version it came with.
+
+- **Only for GitHub installs.** Whisper reads which app installed it
+  (`getInstallSourceInfo`). From Play, F-Droid or any other store it says
+  nothing, because the store already does, and a second notice could point
+  someone at an APK signed differently from the one they have.
+- **One request, nothing sent.** At most once a day, with a sync on any
+  network: `GET` the latest release of `Nyancat-Labs/whisper_feed` and
+  compare its tag with the installed version. No id, no counts. GitHub sees
+  the address the request came from, which is why it is a choice and not a
+  default.
+- **Off until asked.** A switch at the top of About, shown to GitHub
+  installs only: *Check GitHub for new versions*. The privacy policy names
+  it. Whisper says it "collects nothing", and this keeps that true.
+- **Says, never installs.** A line in About ("Whisper 1.0.4 is out —
+  Download") and one notification per version, opening the release page.
+  Installing it itself would need `REQUEST_INSTALL_PACKAGES`, which Play
+  restricts and F-Droid flags.
+- **Until then:** the README can point GitHub installs at Obtainium, which
+  watches GitHub releases for any app.
+
+About a day, most of it the installer check and its tests.
 
 ## Auto-scroll — asked for 8 October 2026, next after 1.0.3
 
