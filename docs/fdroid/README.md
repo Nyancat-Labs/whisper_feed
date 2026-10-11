@@ -6,6 +6,8 @@
 
 - **Builds from the tag's commit.** Each release's `commit:` is the full hash
   its `vX.Y.Z` tag points to (fdroiddata asks for the hash, not the tag).
+  Until the merge request is merged, only the latest release is listed:
+  the MR checklist asks for it.
   F-Droid checks it out, runs the `release` build (unsigned without
   `keystore.properties`) and signs the APK with its own key.
 - **The listing text is not in this file.** Title, descriptions, changelog and
