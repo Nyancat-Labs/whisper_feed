@@ -414,7 +414,8 @@ fun FeedScaffold(
                                 FeedEmptyReason.FilteredOut
 
                             else -> FeedEmptyReason.NothingFetched
-                        }
+                        },
+                        onRetry = onRefresh,
                     )
                 } else if (feedLayoutIsGrid(layout)) {
                     // The app's own container, rather than a second one built

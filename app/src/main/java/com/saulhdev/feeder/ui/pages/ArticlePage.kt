@@ -28,6 +28,10 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import com.saulhdev.feeder.R
@@ -242,128 +246,140 @@ fun ArticlePage(
         }
     ) { paddingValues ->
         SelectionContainer {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(
-                        top = paddingValues.calculateTopPadding(),
-                        // The margin the feed uses. Both of these screens sat
-                        // at four points, so an article opened from a card
-                        // that started sixteen points in began four points in,
-                        // and the two screens read as different apps.
-                        start = CARD_MARGIN,
-                        end = CARD_MARGIN,
-                        bottom = paddingValues.calculateBottomPadding() + 8.dp
-                    ),
-            ) {
-                // Read once, before anything is drawn: the article's opening
-                // picture is drawn above the headline, and has to come out of
-                // the body first so it is not drawn twice. See readerBody.
-                // Also matched on the id: a Ready left by the article read
-                // before this one is no full text for this one.
-                val baseUrl = state?.article?.link ?: ""
-                val cardPicture = usableImageUrl(state?.article?.imageUrl)
-                val article = when {
-                    showFullArticle && blobFullFile(articleId, context.filesDir).isFile ->
-                        blobFullInputStream(articleId, context.filesDir).use {
-                            readerBody(it, baseUrl, articleTitle = title, leadImageUrl = cardPicture, author = author)
-                        }
-                    !showFullArticle && blobFile(articleId, context.filesDir).isFile ->
-                        blobInputStream(articleId, context.filesDir).use {
-                            readerBody(it, baseUrl, articleTitle = title, leadImageUrl = cardPicture, author = author)
-                        }
-                    else -> null
+            BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+                // At most about 75 characters a line. A phone on its side or a
+                // tablet gave over a hundred, and the eye loses its place
+                // between the end of one line and the start of the next. In
+                // ems of the body text, so a larger text size keeps the same
+                // count rather than the same width.
+                val measure = with(LocalDensity.current) {
+                    (MaterialTheme.typography.bodyLarge.fontSize * READER_MEASURE_EM).toDp()
                 }
+                val side = max(CARD_MARGIN, (maxWidth - measure) / 2)
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(
+                            top = paddingValues.calculateTopPadding(),
+                            bottom = paddingValues.calculateBottomPadding() + 8.dp
+                        ),
+                    // The margin the feed uses, or more where the screen is wide.
+                    // Both of these screens sat at four points, so an article
+                    // opened from a card that started sixteen points in began four
+                    // points in, and the two screens read as different apps.
+                    // Padding inside the list rather than around it, so the wide
+                    // margins still scroll.
+                    contentPadding = PaddingValues(horizontal = side),
+                ) {
+                    // Read once, before anything is drawn: the article's opening
+                    // picture is drawn above the headline, and has to come out of
+                    // the body first so it is not drawn twice. See readerBody.
+                    // Also matched on the id: a Ready left by the article read
+                    // before this one is no full text for this one.
+                    val baseUrl = state?.article?.link ?: ""
+                    val cardPicture = usableImageUrl(state?.article?.imageUrl)
+                    val article = when {
+                        showFullArticle && blobFullFile(articleId, context.filesDir).isFile ->
+                            blobFullInputStream(articleId, context.filesDir).use {
+                                readerBody(it, baseUrl, articleTitle = title, leadImageUrl = cardPicture, author = author)
+                            }
+                        !showFullArticle && blobFile(articleId, context.filesDir).isFile ->
+                            blobInputStream(articleId, context.filesDir).use {
+                                readerBody(it, baseUrl, articleTitle = title, leadImageUrl = cardPicture, author = author)
+                            }
+                        else -> null
+                    }
 
-                // The picture first and edge to edge, then the headline, as a
-                // card has them, so an article opens looking like the card it
-                // was opened from. It sat between the byline and the text,
-                // inset by the margins, and the two screens read as two apps.
-                article?.leadImage?.let { picture ->
+                    // The picture first and edge to edge, then the headline, as a
+                    // card has them, so an article opens looking like the card it
+                    // was opened from. It sat between the byline and the text,
+                    // inset by the margins, and the two screens read as two apps.
+                    article?.leadImage?.let { picture ->
+                        item {
+                            AsyncImage(
+                                model = picture,
+                                contentDescription = null,
+                                placeholder = painterResource(placeholder),
+                                error = painterResource(placeholder),
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .bleed(CARD_MARGIN)
+                                    .aspectRatio(16f / 9f),
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                        }
+                    }
+
                     item {
-                        AsyncImage(
-                            model = picture,
-                            contentDescription = null,
-                            placeholder = painterResource(placeholder),
-                            error = painterResource(placeholder),
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .bleed(CARD_MARGIN)
-                                .aspectRatio(16f / 9f),
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                    }
-                }
-
-                item {
-                    WithBidiDeterminedLayoutDirection(paragraph = title) {
-                        Text(
-                            text = title,
-                            style = MaterialTheme.typography.headlineMedium,
-                            // Medium, as the cards' headlines are.
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    // The card's byline, the same line in the same type: the
-                    // source's mark, its category, the publication's name and
-                    // the article's age. The name was a line of its own at
-                    // headline size, in full - "GSMArena.com - Latest
-                    // articles" - and louder than anything but the title.
-                    ArticleMeta(
-                        category = state?.source?.tags?.firstOrNull().orEmpty(),
-                        source = feedTitle,
-                        age = state?.article?.let {
-                            formatArticleAge(context, it.primarySortTime.toEpochMilliseconds())
-                        }.orEmpty(),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        iconUrl = usableImageUrl(state?.source?.feedImage?.toString()),
-                    )
-
-                    if (authorDate != null) {
-                        Spacer(modifier = Modifier.height(4.dp))
-                        WithBidiDeterminedLayoutDirection(paragraph = authorDate) {
+                        WithBidiDeterminedLayoutDirection(paragraph = title) {
                             Text(
-                                text = authorDate,
-                                // Quiet: the card's byline above already says
-                                // how long ago; this is for who and exactly when.
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                text = title,
+                                style = MaterialTheme.typography.headlineMedium,
+                                // Medium, as the cards' headlines are.
+                                fontWeight = FontWeight.Medium,
                                 modifier = Modifier
                                     .fillMaxWidth()
                             )
                         }
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
+                        Spacer(modifier = Modifier.height(12.dp))
 
-                // Also matched on the id: a progress bar for the article
-                // read before this one is a progress bar that never finishes.
-                if (fullText.articleId == articleId &&
-                    fullText.state == ArticleViewModel.FullText.Loading
-                ) {
-                    item {
-                        // The feed's own excerpt stays on screen while the full
-                        // article is fetched, so the screen has something to
-                        // read immediately rather than a spinner over nothing.
-                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-                    }
-                }
+                        // The card's byline, the same line in the same type: the
+                        // source's mark, its category, the publication's name and
+                        // the article's age. The name was a line of its own at
+                        // headline size, in full - "GSMArena.com - Latest
+                        // articles" - and louder than anything but the title.
+                        ArticleMeta(
+                            category = state?.source?.tags?.firstOrNull().orEmpty(),
+                            source = feedTitle,
+                            age = state?.article?.let {
+                                formatArticleAge(context, it.primarySortTime.toEpochMilliseconds())
+                            }.orEmpty(),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            iconUrl = usableImageUrl(state?.source?.feedImage?.toString()),
+                        )
 
-                if (article != null) {
-                    readerBodyText(
-                        article = article,
-                        baseUrl = baseUrl,
-                        imagePlaceholder = placeholder,
-                        onLinkClick = context::launchView,
-                    )
-                } else {
-                    item {
-                        NotFoundView()
+                        if (authorDate != null) {
+                            Spacer(modifier = Modifier.height(4.dp))
+                            WithBidiDeterminedLayoutDirection(paragraph = authorDate) {
+                                Text(
+                                    text = authorDate,
+                                    // Quiet: the card's byline above already says
+                                    // how long ago; this is for who and exactly when.
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+
+                    // Also matched on the id: a progress bar for the article
+                    // read before this one is a progress bar that never finishes.
+                    if (fullText.articleId == articleId &&
+                        fullText.state == ArticleViewModel.FullText.Loading
+                    ) {
+                        item {
+                            // The feed's own excerpt stays on screen while the full
+                            // article is fetched, so the screen has something to
+                            // read immediately rather than a spinner over nothing.
+                            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                        }
+                    }
+
+                    if (article != null) {
+                        readerBodyText(
+                            article = article,
+                            baseUrl = baseUrl,
+                            imagePlaceholder = placeholder,
+                            onLinkClick = context::launchView,
+                        )
+                    } else {
+                        item {
+                            NotFoundView()
+                        }
                     }
                 }
             }
@@ -371,10 +387,14 @@ fun ArticlePage(
     }
 }
 
+/** The reading column's widest, in ems of the body text: about 75 characters. */
+private const val READER_MEASURE_EM = 36f
+
 /**
  * Out through the list's side margins to the screen's edges: the reader's
  * text keeps the feed's margin, and its lead picture runs the full width as a
- * card's does.
+ * card's does. Where the screen is wider than the reading column, it reaches
+ * one margin past the text instead, not the screen's edges.
  */
 private fun Modifier.bleed(margin: Dp): Modifier = layout { measurable, constraints ->
     val edge = margin.roundToPx()

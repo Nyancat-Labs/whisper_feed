@@ -9,6 +9,12 @@ Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 Unreleased
 ----------
 
+- **Comfortable line length in the reader.** On a phone turned sideways or a
+  tablet, the text keeps to about 75 characters a line instead of running past
+  100. It scales with the text size.
+- **Empty feeds have a button.** "No sources yet" offers *Add a source*,
+  "Nothing came back" offers *Try again*, and "Nothing matches" offers *Show
+  all*, instead of describing where to go.
 - **Buttons say what they do.** Dialogs that act now confirm with the action
   itself, such as "Remove", "Rename" or "Forget everything", instead of "OK".
 - **Deleting a category can be undone.** It happens straight away, with Undo on

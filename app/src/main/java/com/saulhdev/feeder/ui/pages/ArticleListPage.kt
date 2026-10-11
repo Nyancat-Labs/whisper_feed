@@ -699,7 +699,11 @@ fun ArticleListPage(
                                                     FeedEmptyReason.FilteredOut
 
                                                 else -> FeedEmptyReason.NothingFetched
-                                            }
+                                            },
+                                            onAddSource = {
+                                                navController.navigate(NavRoute.SourceAdd)
+                                            },
+                                            onRetry = { scope.launch { syncClient.syncAllFeeds() } },
                                         )
                                     } else if (isGridLayout) {
                                         PullToRefreshStaggeredGrid(
