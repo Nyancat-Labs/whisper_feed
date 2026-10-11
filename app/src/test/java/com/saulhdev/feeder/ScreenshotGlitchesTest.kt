@@ -112,6 +112,22 @@ class ScreenshotGlitchesTest {
         assertEquals("a chooser titled in English: $offenders", emptyList<String>(), offenders)
     }
 
+    // 6. "Show all" in primary on the pink banner, hard to read (11 October).
+
+    @Test
+    fun `buttons on the duplicates banners use the banner's own ink`() {
+        val page = File("src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt").readText()
+        for (name in listOf("DuplicatesFound", "DuplicatesBanner")) {
+            val start = page.indexOf("private fun $name(")
+            val body = page.substring(start, page.indexOf("\n}\n", start))
+            assertTrue("$name is on tertiaryContainer", body.contains("colorScheme.tertiaryContainer"))
+            val buttons = Regex("""TextButton\((.*?)\) \{""").findAll(body).map { it.groupValues[1] }.toList()
+            assertTrue("$name has buttons", buttons.isNotEmpty())
+            buttons.forEach { assertTrue("$name: TextButton($it) in primary", it.contains("colors = bannerButtonColors()")) }
+        }
+        assertTrue(page.contains("textButtonColors(contentColor = MaterialTheme.colorScheme.onTertiaryContainer)"))
+    }
+
     private fun luminance(channel: Double): Double {
         val c = if (channel <= 0.03928) channel / 12.92 else ((channel + 0.055) / 1.055).pow(2.4)
         return c // grey: R = G = B, so the weights sum to 1

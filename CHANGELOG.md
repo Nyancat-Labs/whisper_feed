@@ -9,6 +9,9 @@ Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 Unreleased
 ----------
 
+- **"Show all" is readable on the duplicates banner.** Its buttons were in the
+  page's accent colour, pale on the banner's own colour; they now use the
+  banner's text colour.
 - **No more "display over other apps" card in Settings.** It sat under
   Appearance for every reader without the permission and said feed items would
   not open, which was only ever true of the launcher panel. The permission is
