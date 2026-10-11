@@ -300,8 +300,9 @@ user meets first.
   `https://www.example.com/feed/` are the same subscription. An OPML import
   should merge against the same rule instead of doubling everything.
 
-- **Undo remove** — deleting a source with dozens of articles is currently
-  irreversible and instant.
+- ~~**Undo remove** — deleting a source with dozens of articles is currently
+  irreversible and instant.~~ — done. Removing one source or a selection
+  offers Undo, and since 11 October 2026 so does deleting a category.
 
 ### 2. Source management worth the name
 

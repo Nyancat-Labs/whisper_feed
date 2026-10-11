@@ -86,7 +86,10 @@
     <string name="manage_categories">Manage categories</string>
     <string name="category_rename">Rename</string>
     <string name="category_delete">Delete category</string>
-    <string name="category_delete_desc">Removes “%1$s” from every source. The sources themselves are kept.</string>
+    <plurals name="category_deleted">
+        <item quantity="one">Removed “%1$s” from %2$d source</item>
+        <item quantity="other">Removed “%1$s” from %2$d sources</item>
+    </plurals>
     <plurals name="category_in_use">
         <item quantity="one">%1$d source</item>
         <item quantity="other">%1$d sources</item>
@@ -213,7 +216,7 @@
     <string name="source_tags">Tags</string>
     <string name="add_feed_search_hint">Feed URL</string>
     <string name="go_back">Go back</string>
-    <string name="remove_title">Confirm action</string>
+    <string name="remove_title">Remove source</string>
     <string name="remove_desc">Remove %s from feed sources\?</string>
     <string name="theme_auto_system">Follow system</string>
     <string name="pref_pure_black">Pure black</string>
@@ -438,6 +441,7 @@
     <string name="enabled">Enabled</string>
     <string name="disabled">Disabled</string>
     <string name="action_delete">Delete</string>
+    <string name="action_remove">Remove</string>
     <string name="action_save">Save</string>
 
     <string name="pref_cat_fetching">Fetching</string>

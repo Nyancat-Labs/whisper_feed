@@ -31,6 +31,10 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -39,6 +43,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalResources
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -63,7 +69,8 @@ import com.saulhdev.feeder.viewmodels.SourceListViewModel
  * outcome beats two that overlap. Deleting removes the category from every
  * source and keeps the sources, which is the only sane reading — the
  * alternative would be a screen where deleting a label silently unsubscribes
- * you from things.
+ * you from things. It happens straight away with Undo offered, as deleting a
+ * source does, rather than behind a question asked first.
  */
 @Composable
 fun CategoryListPage(
@@ -71,11 +78,37 @@ fun CategoryListPage(
 ) {
     val state by viewModel.state.collectAsState()
     var renaming by remember { mutableStateOf<String?>(null) }
-    var deleting by remember { mutableStateOf<String?>(null) }
+    val deletedTag by viewModel.deletedTag.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val resources = LocalResources.current
+    val undoLabel = stringResource(R.string.action_undo)
+
+    LaunchedEffect(deletedTag) {
+        val deleted = deletedTag ?: return@LaunchedEffect
+        try {
+            val result = snackbarHostState.showSnackbar(
+                message = resources.getQuantityString(
+                    R.plurals.category_deleted,
+                    deleted.ids.size,
+                    deleted.tag,
+                    deleted.ids.size,
+                ),
+                actionLabel = undoLabel,
+                withDismissAction = true,
+                duration = SnackbarDuration.Long,
+            )
+            if (result == SnackbarResult.ActionPerformed) viewModel.undoDeleteTag(deleted)
+        } finally {
+            // Also on leaving the screen, so the offer is not made again on
+            // coming back to it.
+            viewModel.forgetDeletedTag(deleted)
+        }
+    }
 
     ViewWithActionBar(
         title = stringResource(R.string.manage_categories),
         largeTitle = true,
+        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
@@ -103,7 +136,7 @@ fun CategoryListPage(
                             IconButton(onClick = { renaming = tag }) {
                                 Icon(Phosphor.PaintRoller, stringResource(R.string.category_rename))
                             }
-                            IconButton(onClick = { deleting = tag }) {
+                            IconButton(onClick = { viewModel.deleteTag(tag) }) {
                                 Icon(Phosphor.TrashSimple, stringResource(R.string.category_delete))
                             }
                         }
@@ -141,29 +174,10 @@ fun CategoryListPage(
                         viewModel.renameTag(from, text.trim())
                         renaming = null
                     },
-                ) { Text(stringResource(android.R.string.ok)) }
+                ) { Text(stringResource(R.string.category_rename)) }
             },
             dismissButton = {
                 TextButton(onClick = { renaming = null }) {
-                    Text(stringResource(android.R.string.cancel))
-                }
-            },
-        )
-    }
-
-    deleting?.let { tag ->
-        AlertDialog(
-            onDismissRequest = { deleting = null },
-            title = { Text(stringResource(R.string.category_delete)) },
-            text = { Text(stringResource(R.string.category_delete_desc, tag)) },
-            confirmButton = {
-                TextButton(onClick = {
-                    viewModel.deleteTag(tag)
-                    deleting = null
-                }) { Text(stringResource(android.R.string.ok)) }
-            },
-            dismissButton = {
-                TextButton(onClick = { deleting = null }) {
                     Text(stringResource(android.R.string.cancel))
                 }
             },

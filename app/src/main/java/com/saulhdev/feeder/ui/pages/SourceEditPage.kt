@@ -228,7 +228,7 @@ fun SourceEditPage(
                     viewState.title,
                 ),
                 openDialogCustom = showDialog,
-                primaryText = stringResource(id = android.R.string.ok),
+                primaryText = stringResource(id = R.string.action_remove),
                 primaryAction = {
                     onDismiss()
                     viewModel.deleteFeed(feedId)

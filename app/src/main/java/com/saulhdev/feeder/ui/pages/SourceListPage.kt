@@ -747,6 +747,7 @@ fun SourceListPage(
                                     SourceItem(
                                         modifier = Modifier.animateItem(),
                                         source = item,
+                                        showAddress = true,
                                         selectionMode = selection.isNotEmpty(),
                                         selected = item.id in selection,
                                         onLongClick = { viewModel.toggleSelected(it.id) },
@@ -1242,7 +1243,7 @@ private fun TagPickerDialog(
                 // non-empty result.
                 enabled = result.isNotEmpty() || action == TagAction.Replace,
                 onClick = { onConfirm(result) },
-            ) { Text(stringResource(android.R.string.ok)) }
+            ) { Text(stringResource(action.labelId)) }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) { Text(stringResource(android.R.string.cancel)) }
