@@ -36,11 +36,12 @@ That is a bonus rather than the point — see
 
 ## Status
 
-**Version 1.0.0, feature complete, in private testing. Not yet released.**
+**Version 1.0.2, released 5 October 2026.** The signed APK is on GitHub;
+Google Play and F-Droid are reviewing it. 1.0.3 is in testing.
 
-The feature work is done, the app has been through a full security,
-correctness and performance audit — see [`docs/AUDIT_2026-09.md`](docs/AUDIT_2026-09.md) —
-and it is in daily use on three devices:
+The app has been through a full security, correctness and performance
+audit — see [`docs/AUDIT_2026-09.md`](docs/AUDIT_2026-09.md) — and is in
+daily use on three devices:
 
 | Device | Android | Screen |
 |---|---|---|
@@ -48,15 +49,12 @@ and it is in daily use on three devices:
 | Sony Xperia (XQ-BC52) | 13 | Phone |
 | Samsung Galaxy Tab S5e | 11 | 10.5" tablet |
 
-What is left before a public release is a release signing key and the two
-store listings: **Google Play and F-Droid**, together.
-
 Two things are worth knowing:
 
 - **Sync is supported with FreshRSS only.** It has run two way against a live
-  FreshRSS server, with 114 feeds, since September 2026, on both devices at
-  once. Miniflux and the other Google Reader services speak the same protocol
-  and may work, but are not tested or supported.
+  FreshRSS server, now with 128 feeds, since September 2026, on more than one
+  device at once. Miniflux and the other Google Reader services speak the
+  same protocol and may work, but are not tested or supported.
 - **There are no instrumentation or screenshot tests.** 1106 unit tests cover
   the logic, some under Robolectric (every database upgrade from version 3,
   the download queue, the account store); every on-device check has been
