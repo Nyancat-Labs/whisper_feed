@@ -11,7 +11,7 @@ An RSS reader that tells you why it put an article where it did — and lets you
 disagree.
 
 [![Licence: GPL v3](https://img.shields.io/badge/licence-GPL--3.0-blue)](LICENSE)
-![Version 1.0.2](https://img.shields.io/badge/version-1.0.2-informational)
+![Version 1.0.3](https://img.shields.io/badge/version-1.0.3-informational)
 ![Android 8.0+](https://img.shields.io/badge/Android-8.0%2B-brightgreen)
 ![Tests](https://img.shields.io/badge/tests-1106%20passing-success)
 ![No trackers](https://img.shields.io/badge/trackers-none-success)
@@ -36,8 +36,8 @@ That is a bonus rather than the point — see
 
 ## Status
 
-**Version 1.0.2, released 5 October 2026.** The signed APK is on GitHub;
-Google Play and F-Droid are reviewing it. 1.0.3 is in testing.
+**Version 1.0.3, released 11 October 2026.** The signed APK is on GitHub.
+Google Play and F-Droid are reviewing Whisper.
 
 The app has been through a full security, correctness and performance
 audit — see [`docs/AUDIT_2026-09.md`](docs/AUDIT_2026-09.md) — and is in

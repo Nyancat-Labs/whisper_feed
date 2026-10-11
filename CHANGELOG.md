@@ -6,8 +6,8 @@ kept because Whisper is a fork of it and the work is inherited rather than
 replaced — but those are not Whisper releases, and the version numbers are not
 Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 
-Unreleased
-----------
+1.0.3 — 11 October 2026
+-----------------------
 
 - **Comfortable line length in the reader.** On a phone turned sideways or a
   tablet, the text keeps to about 75 characters a line instead of running past
@@ -69,8 +69,9 @@ Unreleased
   the weekly look for new sources read it whole, however long it went on.
   An address that never stopped sending would have crashed the app. They all
   stop at 10 MB now.
-- **The share sheet is titled in your language.** It said "Where to Send?" in
-  English on every phone. It says "Share", translated.
+- **The share sheet is titled properly.** It said "Where to Send?", a
+  phrase written into the code where no translation could reach it. It says
+  "Share", from the app's own strings.
 - **The save button stays put when the "⋮" menu opens.** Opening a story's
   menu nudged the bookmark icon beside it sideways, and closing it moved the
   icon back.

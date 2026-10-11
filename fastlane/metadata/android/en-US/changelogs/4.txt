@@ -1,0 +1,5 @@
+- FreshRSS matching is much faster on the phone.
+- Source cards lead with the name, buttons say what they do, and deleting a category can be undone.
+- Empty feeds offer a button, and the reader keeps lines short on wide screens.
+- English throughout until full translations are ready.
+- Fixes: the save button that moved, stock tickers in articles, source names on Mosaic tiles, buttons on pale pictures, and a size cap on new feeds.
