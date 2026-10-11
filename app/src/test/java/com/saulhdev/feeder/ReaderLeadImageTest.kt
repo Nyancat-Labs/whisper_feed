@@ -115,8 +115,9 @@ class ReaderLeadImageTest {
         assertTrue(picture in 1 until headline && headline < byline)
         assertTrue(page.contains(".bleed(CARD_MARGIN)"))
         assertTrue(page.contains("fontWeight = FontWeight.Medium,"))
-        assertTrue("the date line is quiet", page.contains("style = MaterialTheme.typography.bodySmall,\n                                color = MaterialTheme.colorScheme.onSurfaceVariant,"))
-        assertTrue("the body is read once, for both", page.contains("readerBodyText(\n                        article = article,"))
+        // Either side of the line break, whatever the indentation.
+        assertTrue("the date line is quiet", Regex("""style = MaterialTheme\.typography\.bodySmall,\s+color = MaterialTheme\.colorScheme\.onSurfaceVariant,""").containsMatchIn(page))
+        assertTrue("the body is read once, for both", Regex("""readerBodyText\(\s+article = article,""").containsMatchIn(page))
         assertFalse(page.contains("htmlFormattedText("))
     }
 }

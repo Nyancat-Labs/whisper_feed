@@ -23,10 +23,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.luminance
@@ -35,6 +37,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.saulhdev.feeder.R
+import com.saulhdev.feeder.data.content.FeedPreferences
+import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 
 /** Why the feed has nothing in it. The four cases are genuinely different. */
 enum class FeedEmptyReason {
@@ -64,13 +69,23 @@ enum class FeedEmptyReason {
  * somebody whose sync returned nothing has a problem worth looking at; and
  * somebody who has filtered everything out has done it to themselves and needs
  * to know that rather than to be told their feed is empty.
+ *
+ * Three of the four carry the way out as a button, not as directions to it:
+ * add a source, try again, show everything. Waiting needs no button.
  */
 @Composable
 fun FeedEmptyState(
     reason: FeedEmptyReason,
     modifier: Modifier = Modifier,
+    /** Opens the add-source screen. Only the app has one to open. */
+    onAddSource: (() -> Unit)? = null,
+    onRetry: (() -> Unit)? = null,
 ) {
     val dark = MaterialTheme.colorScheme.surface.luminance() < 0.5f
+    // Read here rather than passed in, as ActiveFilterBar does: both surfaces
+    // show this, and clearing the filter is the same on either.
+    val prefs: FeedPreferences = koinInject()
+    val scope = rememberCoroutineScope()
 
     Column(
         modifier = modifier
@@ -118,5 +133,24 @@ fun FeedEmptyState(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
         )
+
+        val action: Pair<Int, () -> Unit>? = when (reason) {
+            FeedEmptyReason.NoSources -> onAddSource?.let { R.string.empty_add_source to it }
+            FeedEmptyReason.NothingFetched -> onRetry?.let { R.string.empty_try_again to it }
+            FeedEmptyReason.FilteredOut -> R.string.sources_show_all to {
+                scope.launch {
+                    prefs.categoryFilter.setValue(emptySet())
+                    prefs.tagsFilter.setValue(emptySet())
+                    prefs.sourcesFilter.setValue(emptySet())
+                }
+                Unit
+            }
+            FeedEmptyReason.Syncing -> null
+        }
+        action?.let { (label, onClick) ->
+            Button(onClick = onClick, modifier = Modifier.padding(top = 4.dp)) {
+                Text(stringResource(label))
+            }
+        }
     }
 }

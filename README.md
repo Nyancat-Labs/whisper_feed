@@ -13,7 +13,7 @@ disagree.
 [![Licence: GPL v3](https://img.shields.io/badge/licence-GPL--3.0-blue)](LICENSE)
 ![Version 1.0.2](https://img.shields.io/badge/version-1.0.2-informational)
 ![Android 8.0+](https://img.shields.io/badge/Android-8.0%2B-brightgreen)
-![Tests](https://img.shields.io/badge/tests-1103%20passing-success)
+![Tests](https://img.shields.io/badge/tests-1106%20passing-success)
 ![No trackers](https://img.shields.io/badge/trackers-none-success)
 
 </div>
@@ -57,7 +57,7 @@ Two things are worth knowing:
   FreshRSS server, with 114 feeds, since September 2026, on both devices at
   once. Miniflux and the other Google Reader services speak the same protocol
   and may work, but are not tested or supported.
-- **There are no instrumentation or screenshot tests.** 1103 unit tests cover
+- **There are no instrumentation or screenshot tests.** 1106 unit tests cover
   the logic, some under Robolectric (every database upgrade from version 3,
   the download queue, the account store); every on-device check has been
   done by hand.
@@ -88,11 +88,23 @@ leaves the phone.
 
 ## Download
 
-No public release yet. The first will be on **Google Play** and **F-Droid**.
+- **GitHub:** the signed APK is on the
+  [Releases page](https://github.com/Nyancat-Labs/whisper_feed/releases).
+- **Google Play** and **F-Droid:** in review.
 
-Until then, build it yourself — see [Building](#building). Test builds are
-handed out privately and are signed with the repository's public test key, so
-they are not upgradeable to a real release and are not for distribution.
+**Staying up to date from GitHub.** Whisper does not check for updates by
+itself. [Obtainium](https://github.com/ImranR98/Obtainium) does it for you:
+add `https://github.com/Nyancat-Labs/whisper_feed` as an app, and it tells you
+when a new release is out and installs it.
+
+Updates have to come from the place you installed from. GitHub, Play and
+F-Droid sign the app with three different keys, and Android will not update
+an app with a copy signed by a different key. To switch, uninstall first
+(back up your sources first, in Settings → Backup and Restore).
+
+Test builds are handed out privately and are signed with the repository's
+public test key, so they are not upgradeable to a real release and are not
+for distribution.
 
 ## What it does
 

@@ -140,4 +140,49 @@ class DesignPassTest {
         assertEquals("news.google.com", siteOf(Feed(url = URL("https://news.google.com/?output=rss"))))
         assertNull(siteOf(Feed(url = URL("file:/feed.xml"))))
     }
+
+    // From uxpeak's UI/UX Playbook, the same day.
+
+    @Test
+    fun `the reader keeps to about 75 characters a line on a wide screen`() {
+        val page = source("ui/pages/ArticlePage.kt")
+        assertTrue(page.contains("private const val READER_MEASURE_EM = 36f"))
+        assertTrue(page.contains("(MaterialTheme.typography.bodyLarge.fontSize * READER_MEASURE_EM).toDp()"))
+        assertTrue(page.contains("val side = max(CARD_MARGIN, (maxWidth - measure) / 2)"))
+        assertTrue("inside the list, so the margins scroll", page.contains("contentPadding = PaddingValues(horizontal = side)"))
+        assertFalse("a fixed margin around the list again", page.contains("start = CARD_MARGIN,"))
+    }
+
+    @Test
+    fun `an empty feed offers the way out as a button`() {
+        val state = source("ui/components/FeedEmptyState.kt")
+        assertTrue(state.contains("FeedEmptyReason.NoSources -> onAddSource?.let { R.string.empty_add_source to it }"))
+        assertTrue(state.contains("FeedEmptyReason.NothingFetched -> onRetry?.let { R.string.empty_try_again to it }"))
+        val showAll = state.substring(state.indexOf("FeedEmptyReason.FilteredOut -> R.string.sources_show_all"))
+        listOf("categoryFilter", "tagsFilter", "sourcesFilter").forEach {
+            assertTrue("Show all leaves $it on", showAll.substringBefore("FeedEmptyReason.Syncing").contains("prefs.$it.setValue(emptySet())"))
+        }
+        assertTrue(state.contains("FeedEmptyReason.Syncing -> null"))
+
+        val app = source("ui/pages/ArticleListPage.kt")
+        assertTrue(app.contains("navController.navigate(NavRoute.SourceAdd)"))
+        assertTrue(app.contains("onRetry = { scope.launch { syncClient.syncAllFeeds() } }"))
+        assertTrue(source("ui/overlay/FeedScaffold.kt").contains("onRetry = onRefresh,"))
+
+        // The hints no longer give directions to what the button now does.
+        val strings = File("src/main/res/values/strings.xml").readText()
+        listOf("Settings, then Sources", "Pull down to try again", "Tap All").forEach {
+            assertFalse("still says \"$it\"", strings.contains(it))
+        }
+    }
+
+    @Test
+    fun `the README points GitHub installs at Obtainium`() {
+        val readme = File("../README.md").readText()
+        val download = readme.substring(readme.indexOf("## Download"), readme.indexOf("## What it does"))
+        assertTrue(download.contains("https://github.com/Nyancat-Labs/whisper_feed/releases"))
+        assertTrue(download.contains("[Obtainium](https://github.com/ImranR98/Obtainium)"))
+        assertTrue(download.contains("three different keys"))
+        assertFalse(download.contains("No public release yet"))
+    }
 }
