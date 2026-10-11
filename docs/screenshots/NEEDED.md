@@ -1,34 +1,28 @@
-# Screenshots the README is waiting for
+# The README's screenshots
 
-The README has a gallery with these filenames in it. Until the files exist,
-GitHub renders a broken-image icon for each, so the gallery is commented out —
-uncomment it once the first three are here.
+The README's gallery is the Play Store set, the eight styled images made for
+the listing on 6 October 2026, at half size (675 × 1200). Half size is crisp
+at the width the README draws them and keeps the set under 2.5 MB.
+
+| File | Play caption |
+|---|---|
+| `01-calm.png` | Your news, calmly. |
+| `02-discover.png` | Swipe-right news, your feed. The launcher panel. |
+| `03-sizes.png` | Big stories get more room. |
+| `04-layouts.png` | Four layouts to choose from. |
+| `05-list.png` | The whole list at a glance. |
+| `06-reader.png` | Read without the clutter. |
+| `07-catch-up.png` | Catch up in one tap. |
+| `08-dark.png` | Easy on the eyes at night. |
+
+They replace the first four, taken by hand, which showed the
+source cards before they led with the name. When the Play set is redone,
+redo these from it, so the README and the listing show the same app.
 
 **These must be real screenshots from a real device.** There are UI mockups in
 `docs/brand/06_ui_mockups/`, drawn before the interface existed, and they must
 not be used here: a concept board presented as a screenshot is a claim about
 what the app looks like that the app cannot keep.
-
-## What is still missing
-
-Only one, and it is the one that matters most:
-
-| File | What to capture |
-|---|---|
-| `02-overlay.png` | The **launcher panel** — swipe right from the Lawnchair home screen. It is the only image that shows the thing no other reader does, and the README currently says "still to come" in its place. |
-
-## Already in
-
-`01-feed-cards`, `03-feed-mosaic`, `04-what-whisper-learned` and `05-sources`.
-All four were sterilised before committing: the status bar's notification icons
-painted out in each, and the place name removed from the glance chip in the two
-feed shots. Half-size, which is crisp at the width the README renders them and
-keeps the whole set around a megabyte.
-
-Kept deliberately, and worth knowing if these are ever replaced: the real
-subscription list, the real reading counts, and the clock and battery. A
-learned-scores screen full of zeroes proves nothing, and a blank status bar
-looks doctored.
 
 ## Practical notes
 

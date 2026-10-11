@@ -67,22 +67,20 @@ was deliberately left undone and why.
 
 <div align="center">
 
-| The feed | Mosaic |
+| | |
 |---|---|
-| <img src="docs/screenshots/01-feed-cards.png" width="300" alt="The feed in the Cards layout, light theme"> | <img src="docs/screenshots/03-feed-mosaic.png" width="300" alt="The Mosaic layout, dark theme, showing two stories marked as covered by three sources"> |
-
-| What it has learned | Your sources |
-|---|---|
-| <img src="docs/screenshots/04-what-whisper-learned.png" width="300" alt="A list of sources with, for each, the more/less score, how many articles were read in thirty days, and the resulting weight"> | <img src="docs/screenshots/05-sources.png" width="300" alt="The source list, searchable and filterable by category, each feed showing its address and whether it is updating"> |
+| <img src="docs/screenshots/01-calm.png" width="300" alt="Your news, calmly: the feed with the weather and sunset glance row, category chips and cards"> | <img src="docs/screenshots/02-discover.png" width="300" alt="Swipe-right news, your feed: Whisper on Lawnchair's left-most home screen"> |
+| <img src="docs/screenshots/03-sizes.png" width="300" alt="Big stories get more room: a large card between smaller ones"> | <img src="docs/screenshots/04-layouts.png" width="300" alt="Four layouts to choose from: the Mosaic layout"> |
+| <img src="docs/screenshots/05-list.png" width="300" alt="The whole list at a glance: the compact List layout"> | <img src="docs/screenshots/06-reader.png" width="300" alt="Read without the clutter: a full article in the reader"> |
+| <img src="docs/screenshots/07-catch-up.png" width="300" alt="Catch up in one tap: the filter sheet with mark-as-read choices by age"> | <img src="docs/screenshots/08-dark.png" width="300" alt="Easy on the eyes at night: the feed in dark mode"> |
 
 </div>
 
-The third image is the one to look at. Every source carries the number of
-articles actually read from it, the effect that has on how prominently it
-appears, and a way to undo any of it. Nothing there is inferred and none of it
-leaves the phone.
-
-*Still to come: the launcher panel.*
+The third image is the one to look at. Some stories get more room than
+others, and Whisper will tell you why for any card: ⋮ → *Why is this here?*
+Settings → *What Whisper has learned* lists, for every source, the articles
+actually read from it, the effect that has, and a way to undo any of it.
+Nothing there is inferred and none of it leaves the phone.
 
 ## Download
 
