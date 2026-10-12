@@ -6,6 +6,17 @@ kept because Whisper is a fork of it and the work is inherited rather than
 replaced — but those are not Whisper releases, and the version numbers are not
 Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 
+Unreleased
+----------
+
+- **Contact us, in the app.** About now opens with a Contact us section: the
+  email address, the website, and where to report a problem. Settings says
+  it is there. Google Play asks news apps for exactly this, and turned 1.0.2
+  down without it.
+- **Every link in About can be seen.** The links under the app's name sat in
+  a row that ran off the side of the screen, so the website, the fourth of
+  them, only appeared after swiping. They now wrap onto a second line.
+
 1.0.3 — 11 October 2026
 -----------------------
 

@@ -43,8 +43,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -58,6 +56,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
@@ -181,17 +181,62 @@ fun AboutPage() {
                         }
                     )
 
-                    LazyRow(
+                    // Wrapped, not scrolled sideways: in a row that ran off
+                    // the screen only the first three links were ever seen,
+                    // and the website was the fourth.
+                    FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        contentPadding = PaddingValues(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 8.dp, end = 8.dp, bottom = 12.dp),
                     ) {
-                        items(links) { link ->
+                        links.forEach { link ->
                             LinkItem(
                                 icon = link.icon,
                                 label = stringResource(id = link.labelResId),
                                 url = link.url,
                             )
                         }
+                    }
+                }
+            }
+            // Contact, second on the page and labelled as such. Google
+            // Play's News policy asks for a clearly named contact section in
+            // the app with an email address, and turned 1.0.2 down for want
+            // of one: the website link was there, the address was not.
+            item {
+                PreferenceGroupHeading(heading = stringResource(id = R.string.about_contact))
+            }
+            item {
+                val context = LocalContext.current
+                Card(
+                    shape = MaterialTheme.shapes.large,
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
+                ) {
+                    Text(
+                        text = stringResource(R.string.about_contact_summary),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp),
+                    )
+                    contactRows.forEach { row ->
+                        ListItem(
+                            modifier = Modifier.clickable { context.launchView(row.url) },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                            overlineContent = { Text(stringResource(row.labelResId)) },
+                            headlineContent = {
+                                Text(
+                                    text = row.shown,
+                                    color = MaterialTheme.colorScheme.primary,
+                                )
+                            },
+                        )
                     }
                 }
             }
@@ -265,6 +310,21 @@ fun AboutPage() {
     }
 }
 
+
+/** Where to reach Nyancat Labs. The address is the one on nyancatlabs.com and in the Play listing. */
+internal const val CONTACT_EMAIL = "hej@nyancatlabs.com"
+
+private data class ContactRow(@StringRes val labelResId: Int, val shown: String, val url: String)
+
+private val contactRows = listOf(
+    ContactRow(R.string.about_contact_email, CONTACT_EMAIL, "mailto:$CONTACT_EMAIL"),
+    ContactRow(R.string.about_contact_website, "nyancatlabs.com", "https://nyancatlabs.com"),
+    ContactRow(
+        R.string.about_contact_issues,
+        "github.com/Nyancat-Labs/whisper_feed/issues",
+        "https://github.com/Nyancat-Labs/whisper_feed/issues",
+    ),
+)
 
 private data class Link(
     val icon: ImageVector,
