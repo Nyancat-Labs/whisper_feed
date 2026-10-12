@@ -160,6 +160,12 @@
     <string name="about_website">nyancatlabs.com</string>
     <string name="about_upstream">Neo Feed on GitHub</string>
     <string name="about_origin">HomeFeeder on GitHub</string>
+    <string name="about_contact">Contact us</string>
+    <string name="about_contact_summary">Questions, a feed that will not load, or something that looks wrong: write to us. Every message is read.</string>
+    <string name="about_contact_email">Email</string>
+    <string name="about_contact_website">Website</string>
+    <string name="about_contact_issues">Report a problem</string>
+    <string name="about_summary">Version, contact us and licences</string>
     <string name="about_support">Support Whisper</string>
     <string name="about_support_summary">Whisper is free, has no adverts and collects nothing. If it has earned it, you can chip in — nothing in the app changes either way.</string>
     <string name="pref_cat_overlay">Appearance</string>

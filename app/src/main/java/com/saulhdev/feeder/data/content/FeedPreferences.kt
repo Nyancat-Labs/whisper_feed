@@ -788,6 +788,9 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
 
     var about = StringPref(
         titleId = R.string.title_about,
+        // Says where contact details are, so they are found from Settings
+        // without opening About to look.
+        summaryId = R.string.about_summary,
         icon = Phosphor.Info,
         key = ABOUT,
         dataStore = get(),
