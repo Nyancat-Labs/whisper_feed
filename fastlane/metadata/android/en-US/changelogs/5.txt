@@ -1,0 +1,3 @@
+- Contact us in About: the email address, the website, and where to file a bug report.
+- Every link in About can be seen; none run off the side of the screen.
+- From 1.0.3: much faster FreshRSS matching, source cards that lead with the name, buttons that say what they do, undo for deleting a category, and a comfortable line length in the reader on wide screens.

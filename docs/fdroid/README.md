@@ -37,6 +37,6 @@
   with fdroiddata's `config/categories.yml`; and on a fresh copy with
   `remove_signing_keys` applied and a keyless `assembleRelease`, the
   scanner's `scan_source` on the tree and `scan_binary` on the APK. All
-  clean for 1.0.2 and 1.0.3; `scan_binary` on the 1.0.1 build finds the same 20
+  clean for 1.0.2, 1.0.3 and 1.0.4; `scan_binary` on the 1.0.1 build finds the same 20
   problems F-Droid's pipeline did.
 
