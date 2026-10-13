@@ -75,6 +75,9 @@ class SyncWatchdog(context: Context, params: WorkerParameters) :
 
     override suspend fun doWork(): Result {
         check(applicationContext, sources.getAllSources(), prefs)
+        // A left-over "Syncing" notice, for a phone where the app is not
+        // opened between syncs. See clearStaleSyncNotice.
+        runCatching { clearStaleSyncNotice(applicationContext) }
         return Result.success()
     }
 
