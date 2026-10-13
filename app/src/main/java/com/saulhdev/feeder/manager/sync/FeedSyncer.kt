@@ -36,6 +36,8 @@ import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
+import kotlinx.coroutines.flow.first
+import androidx.work.WorkInfo
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.saulhdev.feeder.R
@@ -359,6 +361,33 @@ fun createForegroundInfo(
         else 0
     )
 }
+
+/**
+ * Takes down a "Syncing" notice that no sync is behind.
+ *
+ * WorkManager shows the notice while a sync runs in the foreground and is
+ * meant to remove it when the sync ends. On 13 October 2026 it did not: the
+ * 08:58 sync finished at 09:01, just as the phone dozed and its network was
+ * cut, and the notice was still up at 09:45 with nothing running. So the app
+ * checks for itself when it comes to the front and when the watchdog runs.
+ * A sync that is running keeps its notice; this only touches one left over.
+ *
+ * Returns whether it took one down.
+ */
+suspend fun clearStaleSyncNotice(context: Context): Boolean {
+    val manager = context.getSystemService(NotificationManager::class.java) ?: return false
+    if (manager.activeNotifications.none { it.id == syncNotificationId }) return false
+    val running = WorkManager.getInstance(context)
+        .getWorkInfosByTagFlow(FeedSyncer::class.qualifiedName!!)
+        .first()
+        .any { it.state == WorkInfo.State.RUNNING }
+    if (running) return false
+    manager.cancel(syncNotificationId)
+    Log.i(TAG_STALE_NOTICE, "Took down a Syncing notice no sync was behind")
+    return true
+}
+
+private const val TAG_STALE_NOTICE = "SyncNotice"
 
 const val ACCOUNT_PROBLEM_KEY = "account_problem"
 const val ACCOUNT_DETAIL_KEY = "account_detail"

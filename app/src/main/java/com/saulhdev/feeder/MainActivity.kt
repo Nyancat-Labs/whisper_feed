@@ -26,6 +26,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.saulhdev.feeder.manager.sync.clearStaleSyncNotice
 import androidx.activity.result.ActivityResult
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.imePadding
@@ -217,6 +218,7 @@ class MainActivity : ComponentActivity() {
         super.onResume()
         BrowserReadTimer.settle()?.let { (id, millis) -> viewModel.addReading(id, millis) }
         syncIfStale()
+        lifecycleScope.launch(Dispatchers.IO) { runCatching { clearStaleSyncNotice(applicationContext) } }
     }
 
     /**

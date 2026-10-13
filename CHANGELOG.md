@@ -6,6 +6,14 @@ kept because Whisper is a fork of it and the work is inherited rather than
 replaced — but those are not Whisper releases, and the version numbers are not
 Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 
+Unreleased
+----------
+
+- **No "Syncing" notice left behind.** One sync ended as the phone dozed and
+  its notice stayed up for most of an hour with nothing running. Whisper now
+  checks when it is opened, and again every few hours, and takes down a
+  "Syncing" notice no sync is behind. A sync that is running keeps its notice.
+
 1.0.4 — 12 October 2026
 -----------------------
 
