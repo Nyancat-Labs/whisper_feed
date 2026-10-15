@@ -36,8 +36,8 @@ That is a bonus rather than the point — see
 
 ## Status
 
-**Version 1.0.4, released 12 October 2026.** The signed APK is on GitHub.
-Google Play and F-Droid are reviewing Whisper.
+**Version 1.0.4, released 12 October 2026.** On Google Play since
+15 October, accepted into F-Droid on 14 October, and on GitHub.
 
 The app has been through a full security, correctness and performance
 audit — see [`docs/AUDIT_2026-09.md`](docs/AUDIT_2026-09.md) — and is in
@@ -84,9 +84,11 @@ Nothing there is inferred and none of it leaves the phone.
 
 ## Download
 
+- **Google Play:** [Whisper: RSS Reader](https://play.google.com/store/apps/details?id=com.nyancatlabs.whisper).
+- **F-Droid:** accepted on 14 October 2026; it appears there once F-Droid's
+  build server has published it.
 - **GitHub:** the signed APK is on the
   [Releases page](https://github.com/Nyancat-Labs/whisper_feed/releases).
-- **Google Play** and **F-Droid:** in review.
 
 **Staying up to date from GitHub.** Whisper does not check for updates by
 itself. [Obtainium](https://github.com/ImranR98/Obtainium) does it for you:
