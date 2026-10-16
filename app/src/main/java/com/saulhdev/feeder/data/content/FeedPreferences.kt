@@ -182,6 +182,23 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
         entries = getFeedLayouts(context),
     )
 
+    /**
+     * The text under each headline, on the shapes that have it.
+     *
+     * Asked for by a reader who wanted pictures and headlines without the
+     * summaries: List drops the summary but drops the pictures with it, and
+     * there was nothing in between. On by default, since the summary is most
+     * of what tells one story from the next.
+     */
+    val showSummaries = BooleanPref(
+        titleId = R.string.pref_show_summaries,
+        summaryId = R.string.pref_show_summaries_summary,
+        icon = Phosphor.SubtractSquare,
+        key = SHOW_SUMMARIES,
+        dataStore = dataStore,
+        defaultValue = true
+    )
+
     /* Glance row */
 
     /**
@@ -1194,6 +1211,7 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
         val FEED_LIBRARY = stringKey("pref_feed_library")
         val BREAKING_NEWS = booleanKey("pref_breaking_news")
         val DIM_SKIPPED = booleanKey("pref_dim_skipped")
+        val SHOW_SUMMARIES = booleanKey("pref_show_summaries")
 
         val FULL_TEXT_ALL_FEEDS = booleanKey("pref_full_text_all_feeds")
         val FULL_TEXT_ON_MOBILE = booleanKey("pref_full_text_on_mobile")

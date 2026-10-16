@@ -118,6 +118,7 @@ fun PreferencesPage(
 
     val themePrefs = listOf(
         prefs.feedLayout,
+        prefs.showSummaries,
         prefs.overlayTheme,
         prefs.pureBlack,
         prefs.appFont,

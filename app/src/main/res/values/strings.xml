@@ -225,6 +225,8 @@
     <string name="remove_title">Remove source</string>
     <string name="remove_desc">Remove %s from feed sources\?</string>
     <string name="theme_auto_system">Follow system</string>
+    <string name="pref_show_summaries">Show summaries</string>
+    <string name="pref_show_summaries_summary">The text under each headline. Turn off to keep just the picture and headline.</string>
     <string name="pref_pure_black">Pure black</string>
     <string name="pref_pure_black_summary">Use true black in dark modes, for OLED screens</string>
     <string name="theme_light">Light mode</string>

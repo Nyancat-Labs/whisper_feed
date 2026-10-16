@@ -96,6 +96,8 @@ fun FeedArticleItem(
     layout: String = LAYOUT_CARDS,
     emphasis: FeedEmphasis = FeedEmphasis.Medium,
     dimRead: Boolean = false,
+    /** Whether the cards that carry a summary show it. Off keeps picture and headline. */
+    showSummaries: Boolean = true,
     /**
      * Whether this article's source is one the reader consistently skips.
      *
@@ -172,9 +174,11 @@ fun FeedArticleItem(
     when (feedCardShape(index, hasImage, layout, emphasis)) {
         FeedCardShape.Hero    -> ArticleCard(
             item, onClick, onBookmark, onShare, menu = menu, modifier = shapeModifier, coverage = coverage, lead = true,
+            showSummary = showSummaries,
         )
         FeedCardShape.Card    -> ArticleCard(
             item, onClick, onBookmark, onShare, menu = menu, modifier = shapeModifier, coverage = coverage,
+            showSummary = showSummaries,
         )
         FeedCardShape.Compact -> ArticleCompactRow(item, onClick, onBookmark, menu = menu, modifier = shapeModifier)
         FeedCardShape.Text    -> ArticleTextRow(item, onClick, onBookmark, menu = menu, modifier = shapeModifier)
@@ -182,6 +186,7 @@ fun FeedArticleItem(
             item, onClick, onBookmark, menu = menu, modifier = shapeModifier,
             size = emphasis,
             coverage = coverage,
+            showSummary = showSummaries,
         )
     }
 }
@@ -230,6 +235,7 @@ fun ArticleCard(
     menu: @Composable (Color?) -> Unit = {},
     coverage: Int? = null,
     lead: Boolean = false,
+    showSummary: Boolean = true,
 ) {
     val context = LocalContext.current
     // Cards merge their texts for a screen reader, so the headline is
@@ -297,7 +303,7 @@ fun ArticleCard(
             )
 
             val summary = item.article.description
-            if (summary.isNotBlank()) {
+            if (showSummary && summary.isNotBlank()) {
                 Text(
                     text = summary,
                     style = MaterialTheme.typography.bodyMedium,
@@ -517,6 +523,7 @@ fun ArticleMosaicTile(
     menu: @Composable (Color?) -> Unit = {},
     size: FeedEmphasis = FeedEmphasis.Medium,
     coverage: Int? = null,
+    showSummary: Boolean = true,
 ) {
     val context = LocalContext.current
     // Cards merge their texts for a screen reader, so the headline is
@@ -617,7 +624,7 @@ fun ArticleMosaicTile(
                 },
                 overflow = TextOverflow.Ellipsis,
             )
-            if (large) {
+            if (large && showSummary) {
                 val summary = item.article.description
                 if (summary.isNotBlank()) {
                     Spacer(Modifier.height(4.dp))
