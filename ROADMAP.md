@@ -3166,20 +3166,26 @@ First, these four, in this order:
 
 - **Text size in the app** — already here as *Text size*, below. The second
   person to ask.
-- **A setting to hide summaries** — keep the picture and headline, drop the
+- ~~**A setting to hide summaries**~~ — **done** (Settings → Show summaries). Keep the picture and headline, drop the
   text underneath. She confirmed this is what "headlines only" meant (the
   List layout already covers no pictures at all). Small: one switch read by
   the cards.
 - **How many new articles a sync brought**, shown in the top bar.
-- **Exact times as well as "2h ago"**, as a choice, possibly in a different
-  colour.
+- ~~**Exact times as well as "2h ago"**, as a choice~~ — **done** (Settings →
+  Article times: 2h, 14:32, or both). The different colour she mentioned was
+  left out: the byline stays one colour.
 
 After those:
 
 - **Images in the reader**: tap to enlarge, and save.
-- **Tapping the reader's headline opens the article in the browser.**
 - **A comments link on cards** when the feed gives one (RSS `<comments>`,
   `slash:comments`), so a reader can go straight to the discussion.
+
+Low priority, by decision (16 October):
+
+- **Tapping the reader's headline opens the article in the browser.** The
+  open-in-browser button in the reader's top bar already does this; a second,
+  hidden way would also catch taps meant to select the headline.
 
 ## Text size — asked for, not yet designed
 

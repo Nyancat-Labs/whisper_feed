@@ -1,5 +1,7 @@
 package com.saulhdev.feeder.manager.service
 
+import com.saulhdev.feeder.utils.TIME_RELATIVE
+import com.saulhdev.feeder.ui.overlay.LocalTimeFormat
 import android.annotation.SuppressLint
 import androidx.compose.runtime.mutableIntStateOf
 import com.saulhdev.feeder.utils.SyncLog
@@ -503,8 +505,13 @@ class OverlayView(val context: Context) :
                     .collectAsState(initial = emptySet())
                 val layout by prefs.feedLayout.get()
                     .collectAsState(initial = LAYOUT_CARDS)
+                val timeFormat by prefs.timeFormat.get()
+                    .collectAsState(initial = TIME_RELATIVE)
 
-                CompositionLocalProvider(LocalFeedVisible provides panelVisible.value) {
+                CompositionLocalProvider(
+                    LocalFeedVisible provides panelVisible.value,
+                    LocalTimeFormat provides timeFormat,
+                ) {
                     FeedScaffold(
                         articles = if (showBookmarks.value) bookmarksState.value
                         else articlesState.value,

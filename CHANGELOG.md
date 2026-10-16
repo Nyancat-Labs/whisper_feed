@@ -17,6 +17,10 @@ Unreleased
   summaries, under Feed layout. Off, Cards, Magazine and Mosaic keep their
   pictures and headlines and drop the text underneath. List already has no
   summaries. Suggested by a reader.
+- **Times as a clock, if you prefer.** Settings → Article times: how long
+  ago ("2h"), the time published ("14:32"), or both. Older than a week, the
+  date stands in for the time. The 12- or 24-hour clock follows the phone.
+  Suggested by the same reader.
 - **The tour's highlight stays on screen.** Around a full-width card or the
   gear in the corner, two sides of the box ran off the edge of the display.
 

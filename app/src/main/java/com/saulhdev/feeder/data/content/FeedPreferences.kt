@@ -35,6 +35,8 @@ import com.saulhdev.feeder.ui.icons.Phosphor
 import com.saulhdev.feeder.ui.icons.phosphor.ListDashes
 import com.saulhdev.feeder.ui.icons.phosphor.Prohibit
 import com.saulhdev.feeder.utils.getFeedLayouts
+import com.saulhdev.feeder.utils.getTimeFormats
+import com.saulhdev.feeder.utils.TIME_RELATIVE
 import com.saulhdev.feeder.utils.LAYOUT_CARDS
 import com.saulhdev.feeder.ui.icons.phosphor.Asterisk
 import com.saulhdev.feeder.ui.icons.phosphor.BookBookmark
@@ -197,6 +199,21 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
         key = SHOW_SUMMARIES,
         dataStore = dataStore,
         defaultValue = true
+    )
+
+    /**
+     * How an article's time is shown: "2h", "14:32", or both.
+     *
+     * Asked for by a reader: some people want how long ago, others the time it
+     * was published. Relative by default, as it always was.
+     */
+    var timeFormat = StringSelectionPref(
+        titleId = R.string.pref_time_format,
+        icon = Phosphor.Clock,
+        key = TIME_FORMAT,
+        dataStore = dataStore,
+        defaultValue = TIME_RELATIVE,
+        entries = getTimeFormats(context),
     )
 
     /* Glance row */
@@ -1212,6 +1229,7 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
         val BREAKING_NEWS = booleanKey("pref_breaking_news")
         val DIM_SKIPPED = booleanKey("pref_dim_skipped")
         val SHOW_SUMMARIES = booleanKey("pref_show_summaries")
+        val TIME_FORMAT = stringKey("pref_time_format")
 
         val FULL_TEXT_ALL_FEEDS = booleanKey("pref_full_text_all_feeds")
         val FULL_TEXT_ON_MOBILE = booleanKey("pref_full_text_on_mobile")

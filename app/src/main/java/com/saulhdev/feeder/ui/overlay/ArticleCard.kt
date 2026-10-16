@@ -73,7 +73,8 @@ import com.saulhdev.feeder.ui.icons.phosphor.Megaphone
 import com.saulhdev.feeder.utils.LAYOUT_CARDS
 import com.saulhdev.feeder.utils.LAYOUT_MAGAZINE
 import com.saulhdev.feeder.utils.shortSourceName
-import com.saulhdev.feeder.utils.formatArticleAge
+import com.saulhdev.feeder.utils.TIME_RELATIVE
+import com.saulhdev.feeder.utils.formatArticleTime
 
 /**
  * One article in the feed, drawn in whichever shape the rhythm asks for.
@@ -325,7 +326,7 @@ fun ArticleCard(
                     source = item.feedTitle,
                     sourceId = item.sourceId,
                     articleId = item.id,
-                    age = item.relativeAge(context),
+                    age = item.relativeAge(context, LocalTimeFormat.current),
                     // A size down. It is a byline, not a heading, and at
                     // labelLarge it competed with the summary above it.
                     style = MaterialTheme.typography.labelMedium,
@@ -386,7 +387,7 @@ fun ArticleCompactRow(
                     source = item.feedTitle,
                     sourceId = item.sourceId,
                     articleId = item.id,
-                    age = item.relativeAge(context),
+                    age = item.relativeAge(context, LocalTimeFormat.current),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     iconUrl = item.feedIconUrl,
@@ -483,7 +484,7 @@ fun ArticleTextRow(
                     source = item.feedTitle,
                     sourceId = item.sourceId,
                     articleId = item.id,
-                    age = item.relativeAge(context),
+                    age = item.relativeAge(context, LocalTimeFormat.current),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     iconUrl = item.feedIconUrl,
@@ -644,7 +645,7 @@ fun ArticleMosaicTile(
                     source = item.feedTitle,
                     sourceId = item.sourceId,
                     articleId = item.id,
-                    age = item.relativeAge(context),
+                    age = item.relativeAge(context, LocalTimeFormat.current),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = metaModifier,
@@ -703,6 +704,14 @@ fun ArticleMosaicTile(
  * back for the filter the same way it already does for search.
  */
 val LocalFocusSource = compositionLocalOf<((String, String) -> Unit)?> { null }
+
+/**
+ * How article times are written: `TIME_RELATIVE`, `TIME_CLOCK` or `TIME_BOTH`.
+ *
+ * Provided once at the top of each surface - the app and the launcher panel -
+ * rather than read from the preferences by every card's byline.
+ */
+val LocalTimeFormat = compositionLocalOf { TIME_RELATIVE }
 
 /** The byline under a headline, on every card and in the reader. */
 @Composable
@@ -779,8 +788,8 @@ internal fun ArticleMeta(
  * by primarySortTime and showing the other meant the date on a card could
  * disagree with the position it appeared in.
  */
-private fun FeedItem.relativeAge(context: android.content.Context): String =
-    formatArticleAge(context, article.primarySortTime.toEpochMilliseconds())
+private fun FeedItem.relativeAge(context: android.content.Context, format: String): String =
+    formatArticleTime(context, article.primarySortTime.toEpochMilliseconds(), format)
 
 /**
  * The stand-in for an article image, in the theme's own colourway.
