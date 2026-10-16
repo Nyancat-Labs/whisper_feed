@@ -3157,7 +3157,8 @@ to point at. After the stores are live, so the badges link to real listings.
 
 ## From the first user email, 16 October 2026
 
-Jitka wrote to hej@nyancatlabs.com after installing from Play. Liked: saving
+Jitka wrote to hej@nyancatlabs.com (from which store isn't known). Her
+principle: everything should be at your fingertips on the main screen. Liked: saving
 in one tap, saved articles and sources one tap from the feed, the top bar
 hiding on scroll, and day headings. Asked for, in the order she wrote them.
 
