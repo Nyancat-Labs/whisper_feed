@@ -59,9 +59,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
@@ -192,9 +190,15 @@ fun TourOverlay(
                 .clearAndSetSemantics { }
         ) {
             drawRect(Color.Black.copy(alpha = SCRIM_ALPHA))
-            val pad = PADDING_PX * density.density
-            val topLeft = Offset(hole.left - pad, hole.top - pad)
-            val size = Size(hole.width + pad * 2, hole.height + pad * 2)
+            val lit = spotlightBounds(
+                hole = hole,
+                pad = PADDING_PX * density.density,
+                inset = (RING_WIDTH_DP / 2 + EDGE_MARGIN_DP) * density.density,
+                width = size.width,
+                height = size.height,
+            )
+            val topLeft = lit.topLeft
+            val size = lit.size
             val radius = androidx.compose.ui.geometry.CornerRadius(
                 HOLE_RADIUS_DP * density.density
             )
@@ -229,6 +233,29 @@ fun TourOverlay(
         )
     }
 }
+
+/**
+ * Where the hole and its ring are drawn: the target plus a little padding,
+ * kept inside the screen.
+ *
+ * A full-width article card and the gear in the corner both sit against the
+ * edge of the display, so the padding pushed their ring off it. Two sides of
+ * the box simply vanished, and what was left looked like a drawing mistake
+ * rather than a frame. Clamping keeps all four sides visible; `inset` leaves
+ * room for half the ring's stroke, which is drawn centred on the edge.
+ */
+internal fun spotlightBounds(
+    hole: Rect,
+    pad: Float,
+    inset: Float,
+    width: Float,
+    height: Float,
+): Rect = Rect(
+    left = (hole.left - pad).coerceAtLeast(inset),
+    top = (hole.top - pad).coerceAtLeast(inset),
+    right = (hole.right + pad).coerceAtMost(width - inset),
+    bottom = (hole.bottom + pad).coerceAtMost(height - inset),
+)
 
 /**
  * The card, placed so it does not cover the thing it is talking about.
@@ -388,3 +415,6 @@ private const val HOLE_RADIUS_DP = 16f
 /** How heavy the ring around the lit control is. */
 private const val RING_WIDTH_DP = 2.5f
 private const val GAP_DP = 12f
+
+/** How far the ring stays from the edge of the screen. */
+private const val EDGE_MARGIN_DP = 2f
