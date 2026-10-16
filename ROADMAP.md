@@ -3163,8 +3163,10 @@ hiding on scroll, and day headings. Asked for, each still to be decided:
 
 - **Text size in the app** — already here as *Text size*, below. The second
   person to ask.
-- **Headlines only** — the List layout does this today (Settings → Feed
-  layout → List). Worth making easier to find rather than building again.
+- **A setting to hide summaries** — keep the picture and headline, drop the
+  text underneath. She confirmed this is what "headlines only" meant (the
+  List layout already covers no pictures at all). Small: one switch read by
+  the cards.
 - **How many new articles a sync brought**, shown in the top bar.
 - **Exact times as well as "2h ago"**, as a choice, possibly in a different
   colour.
