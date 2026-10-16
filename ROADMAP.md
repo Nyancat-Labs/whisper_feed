@@ -3155,6 +3155,24 @@ One screen per feature, with the store and F-Droid badges, modelled on
 HeadlineDeck's. Somewhere for the Play listing, F-Droid, Reddit and the README
 to point at. After the stores are live, so the badges link to real listings.
 
+## From the first user email, 16 October 2026
+
+Jitka wrote to hej@nyancatlabs.com after installing from Play. Liked: saving
+in one tap, saved articles and sources one tap from the feed, the top bar
+hiding on scroll, and day headings. Asked for, each still to be decided:
+
+- **Text size in the app** — already here as *Text size*, below. The second
+  person to ask.
+- **Headlines only** — the List layout does this today (Settings → Feed
+  layout → List). Worth making easier to find rather than building again.
+- **How many new articles a sync brought**, shown in the top bar.
+- **Exact times as well as "2h ago"**, as a choice, possibly in a different
+  colour.
+- **Images in the reader**: tap to enlarge, and save.
+- **Tapping the reader's headline opens the article in the browser.**
+- **A comments link on cards** when the feed gives one (RSS `<comments>`,
+  `slash:comments`), so a reader can go straight to the discussion.
+
 ## Text size — asked for, not yet designed
 
 Raised from the device. Worth recording carefully, because the obvious version
