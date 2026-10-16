@@ -119,6 +119,7 @@ fun PreferencesPage(
     val themePrefs = listOf(
         prefs.feedLayout,
         prefs.showSummaries,
+        prefs.timeFormat,
         prefs.overlayTheme,
         prefs.pureBlack,
         prefs.appFont,

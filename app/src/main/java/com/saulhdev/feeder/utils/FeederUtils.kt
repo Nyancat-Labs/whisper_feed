@@ -106,6 +106,14 @@ fun getFeedLayouts(context: Context): Map<String, String> {
     )
 }
 
+fun getTimeFormats(context: Context): Map<String, String> {
+    return mapOf(
+        TIME_RELATIVE to context.resources.getString(R.string.time_format_relative),
+        TIME_CLOCK to context.resources.getString(R.string.time_format_clock),
+        TIME_BOTH to context.resources.getString(R.string.time_format_both),
+    )
+}
+
 fun getSortingOptions(context: Context): Map<String, String> {
     return mapOf(
         SORT_CHRONOLOGICAL to context.resources.getString(R.string.sorting_chronological),

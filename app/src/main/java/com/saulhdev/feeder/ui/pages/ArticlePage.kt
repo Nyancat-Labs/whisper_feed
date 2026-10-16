@@ -1,6 +1,7 @@
 package com.saulhdev.feeder.ui.pages
 
 
+import com.saulhdev.feeder.ui.overlay.LocalTimeFormat
 import androidx.core.net.toUri
 import com.saulhdev.feeder.utils.usableImageUrl
 import androidx.activity.compose.BackHandler
@@ -55,7 +56,7 @@ import com.saulhdev.feeder.utils.extensions.launchView
 import com.saulhdev.feeder.utils.extensions.shareIntent
 import com.saulhdev.feeder.utils.readerBody
 import com.saulhdev.feeder.utils.readerBodyText
-import com.saulhdev.feeder.utils.formatArticleAge
+import com.saulhdev.feeder.utils.formatArticleTime
 import com.saulhdev.feeder.ui.overlay.ArticleMeta
 import coil.compose.AsyncImage
 import androidx.compose.foundation.layout.aspectRatio
@@ -85,6 +86,7 @@ fun ArticlePage(
     onDismiss: (() -> Unit)? = null,
 ) {
     val context = LocalContext.current
+    val timeFormat = LocalTimeFormat.current
     val activity = LocalActivity.current
 
     val state by viewModel.articleState.collectAsState(initial = null)
@@ -332,7 +334,9 @@ fun ArticlePage(
                             category = state?.source?.tags?.firstOrNull().orEmpty(),
                             source = feedTitle,
                             age = state?.article?.let {
-                                formatArticleAge(context, it.primarySortTime.toEpochMilliseconds())
+                                formatArticleTime(
+                                    context, it.primarySortTime.toEpochMilliseconds(), timeFormat,
+                                )
                             }.orEmpty(),
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,

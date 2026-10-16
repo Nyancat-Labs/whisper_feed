@@ -1,5 +1,7 @@
 package com.saulhdev.feeder
 
+import com.saulhdev.feeder.ui.overlay.LocalTimeFormat
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.work.workDataOf
 import com.saulhdev.feeder.utils.SyncLog
 import com.saulhdev.feeder.utils.openedSyncDue
@@ -118,6 +120,7 @@ class MainActivity : ComponentActivity() {
             val dynamic by prefs.dynamicColor.asState()
             val fontPref by prefs.appFont.asState()
             val pureBlack by prefs.pureBlack.asState()
+            val timeFormat by prefs.timeFormat.asState()
 
             // One place decides light or dark, and the bars follow it rather
             // than re-deriving it from the preference on their own.
@@ -161,10 +164,12 @@ class MainActivity : ComponentActivity() {
                         // to every screen it can be deep-linked into.
                         enabled = launchedDirectly,
                     ) {
-                        NavigationManager(
-                            modifier = Modifier.imePadding(),
-                            navController = navController,
-                        )
+                        CompositionLocalProvider(LocalTimeFormat provides timeFormat) {
+                            NavigationManager(
+                                modifier = Modifier.imePadding(),
+                                navController = navController,
+                            )
+                        }
                     }
                 }
             }
