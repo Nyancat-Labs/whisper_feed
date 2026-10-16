@@ -3203,13 +3203,11 @@ layout problem above and covers the case people actually complain about.
 
 ## Debt worth clearing
 
-- **F-Droid shows the old screenshots** (noted 16 October 2026). Its listing
-  takes them from `fastlane/metadata/android/en-US/images/phoneScreenshots/`,
-  which still holds the seven hand-taken shots from 6 October, while Play and
-  the README use the eight styled ones. Replace them with the styled set at
-  full size (from `out/play/styled/`, which is not in the repository, so ask
-  for it if the machine was reset), plus the tablet set once it exists. F-Droid
-  picks them up with the next release it builds.
+- ~~**F-Droid shows the old screenshots**~~ — done on 16 October 2026:
+  `fastlane/metadata/android/en-US/images/phoneScreenshots/` now holds the
+  eight styled Play images at full size, so F-Droid matches Play from its
+  next build. Still to add: the tablet set, as `tenInchScreenshots/`, once
+  taken.
 
 Small, and cheaper now than later.
 
