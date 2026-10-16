@@ -3159,7 +3159,9 @@ to point at. After the stores are live, so the badges link to real listings.
 
 Jitka wrote to hej@nyancatlabs.com after installing from Play. Liked: saving
 in one tap, saved articles and sources one tap from the feed, the top bar
-hiding on scroll, and day headings. Asked for, each still to be decided:
+hiding on scroll, and day headings. Asked for, in the order she wrote them.
+
+First, these four, in this order:
 
 - **Text size in the app** — already here as *Text size*, below. The second
   person to ask.
@@ -3170,6 +3172,9 @@ hiding on scroll, and day headings. Asked for, each still to be decided:
 - **How many new articles a sync brought**, shown in the top bar.
 - **Exact times as well as "2h ago"**, as a choice, possibly in a different
   colour.
+
+After those:
+
 - **Images in the reader**: tap to enlarge, and save.
 - **Tapping the reader's headline opens the article in the browser.**
 - **A comments link on cards** when the feed gives one (RSS `<comments>`,
