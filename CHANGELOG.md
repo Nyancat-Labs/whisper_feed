@@ -13,6 +13,12 @@ Unreleased
   its notice stayed up for most of an hour with nothing running. Whisper now
   checks when it is opened, and again every few hours, and takes down a
   "Syncing" notice no sync is behind. A sync that is running keeps its notice.
+- **Pictures and headlines, without the summaries.** Settings → Show
+  summaries, under Feed layout. Off, Cards, Magazine and Mosaic keep their
+  pictures and headlines and drop the text underneath. List already has no
+  summaries. Suggested by a reader.
+- **The tour's highlight stays on screen.** Around a full-width card or the
+  gear in the corner, two sides of the box ran off the edge of the display.
 
 1.0.4 — 12 October 2026
 -----------------------

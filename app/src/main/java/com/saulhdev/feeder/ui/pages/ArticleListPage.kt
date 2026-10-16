@@ -130,6 +130,7 @@ import com.saulhdev.feeder.utils.VolumeScroll
 import com.saulhdev.feeder.ui.overlay.FeedEmphasis
 import com.saulhdev.feeder.ui.overlay.TrackReading
 import com.saulhdev.feeder.ui.overlay.rememberDimRead
+import com.saulhdev.feeder.ui.overlay.rememberShowSummaries
 import com.saulhdev.feeder.ui.overlay.rememberSkippedSources
 import com.saulhdev.feeder.ui.theme.reducedMotion
 import com.saulhdev.feeder.ui.overlay.feedItems
@@ -619,6 +620,7 @@ fun ArticleListPage(
                                 // Mosaic is a staggered grid rather than a column.
                                 else          -> {
                                     val dimRead = rememberDimRead()
+                                    val showSummaries = rememberShowSummaries()
                     val skipped = rememberSkippedSources()
                                     val clusters = frame.clusters
                                     TrackReading(
@@ -644,6 +646,7 @@ fun ArticleListPage(
                                             layout = layout,
                                             emphasis = emphasis,
                                             dimRead = dimRead,
+                                            showSummaries = showSummaries,
                                     dimSource = item.feed.id in skipped,
                                             cluster = clusters[item.id],
                                             onPin = { viewModel.setPinned(item.id, it) },

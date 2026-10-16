@@ -854,6 +854,14 @@ fun rememberDimRead(): Boolean {
     return setting == READ_DIM
 }
 
+/** Whether cards show the text under the headline. See `FeedPreferences.showSummaries`. */
+@Composable
+fun rememberShowSummaries(): Boolean {
+    val prefs: FeedPreferences = koinInject()
+    val setting by prefs.showSummaries.asState()
+    return setting
+}
+
 /**
  * One line of the answer to "why is this the size it is".
  *

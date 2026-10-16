@@ -386,6 +386,7 @@ fun FeedScaffold(
                 // from that than the app is.
                 val animate = !reducedMotion()
                 val dimRead = rememberDimRead()
+                val showSummaries = rememberShowSummaries()
                     val skipped = rememberSkippedSources()
                 val clusters = frame.clusters
                 TrackReading(
@@ -471,6 +472,7 @@ fun FeedScaffold(
                                     emphasis = emphasis.getOrNull(index)
                                         ?: FeedEmphasis.Medium,
                                     dimRead = dimRead,
+                                    showSummaries = showSummaries,
                                     dimSource = item.feed.id in skipped,
                                     cluster = clusters[item.id],
                                     onPin = { onPin(item, it) },
@@ -494,6 +496,7 @@ fun FeedScaffold(
                             layout = layout,
                             emphasis = emphasis.getOrNull(index) ?: FeedEmphasis.Medium,
                             dimRead = dimRead,
+                            showSummaries = showSummaries,
                                     dimSource = item.feed.id in skipped,
                             cluster = clusters[item.id],
                             onPin = { onPin(item, it) },
