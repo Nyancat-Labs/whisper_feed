@@ -121,6 +121,7 @@ fun SourceEditPage(
                     tag = freshFeed.tag,
                     fullTextByDefault = freshFeed.fullTextByDefault,
                     isEnabled = freshFeed.isEnabled,
+                    showInAll = freshFeed.showInAll,
                 )
                 hasLoaded = true
             }
@@ -326,7 +327,7 @@ fun SourceEditView(
         }
         item {
             // Above the categories, not below them: the chip cloud grows with
-            // every category the user has, and these two switches were being
+            // every category the user has, and these switches were being
             // pushed off the bottom of the screen by it.
             ComposeSwitchView(
                 titleId = R.string.fetch_full_articles_by_default,
@@ -341,7 +342,7 @@ fun SourceEditView(
                     onEdited()
                 },
                 index = 0,
-                groupSize = 2
+                groupSize = 3
             )
             Spacer(modifier = Modifier.height(4.dp))
             ComposeSwitchView(
@@ -353,7 +354,23 @@ fun SourceEditView(
                     onEdited()
                 },
                 index = 1,
-                groupSize = 2
+                groupSize = 3
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            // Off with no category, the source would only turn up in search,
+            // so the line under the switch says so while that is the case.
+            val uncategorised = editState.value.tag.split(",").none { it.isNotBlank() }
+            ComposeSwitchView(
+                titleId = R.string.source_show_in_all,
+                summaryId = if (!editState.value.showInAll && uncategorised) R.string.source_show_in_all_no_category
+                else R.string.source_show_in_all_summary,
+                isChecked = editState.value.showInAll,
+                onCheckedChange = {
+                    editState.value = editState.value.copy(showInAll = it)
+                    onEdited()
+                },
+                index = 2,
+                groupSize = 3
             )
         }
 

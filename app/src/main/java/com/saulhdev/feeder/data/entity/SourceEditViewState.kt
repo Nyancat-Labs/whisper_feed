@@ -28,4 +28,5 @@ data class SourceEditViewState(
     val tag: String = "",
     val fullTextByDefault: Boolean = true,
     val isEnabled: Boolean = true,
+    val showInAll: Boolean = true,
 )

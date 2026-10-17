@@ -185,17 +185,22 @@ class ArticleListViewModel(
             // categories in it, starting a search while no chip was selected
             // would produce the same empty set twice — so the query would not
             // restart and the wider limit would never take effect.
-            (if (searching || focused != null) emptySet() else categories) to searching
+            //
+            // All itself - no chip, no search, no focus - is the one view that
+            // leaves out the sources kept out of it. See Feed.showInAll.
+            val all = categories.isEmpty() && !searching && focused == null
+            val chips = (if (searching || focused != null) emptySet() else categories)
+            Triple(chips, searching, all)
         }
             .distinctUntilChanged()
-            .flatMapLatest { (categories, searching) ->
+            .flatMapLatest { (categories, searching, all) ->
                 // A search covers everything that has been downloaded, which is
                 // what the feature promises; capping it to the window would
                 // make that quietly untrue for older articles.
                 val limit = if (searching) Int.MAX_VALUE else FEED_WINDOW
                 val source =
                     if (categories.any()) articleRepo.getFeedItemsByTags(categories, limit)
-                    else articleRepo.getEnabledFeedItems(limit)
+                    else articleRepo.getEnabledFeedItems(limit, everything = !all)
                 // The debounce that used to live here has moved into the
                 // repository, onto the invalidation signal itself — see
                 // ArticleRepository.whenChanged. Debouncing here dropped lists

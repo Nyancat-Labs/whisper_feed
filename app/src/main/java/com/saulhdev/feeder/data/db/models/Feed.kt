@@ -113,6 +113,18 @@ data class Feed(
     /** When the run of failures started, so "since Tuesday" can be said. */
     @ColumnInfo(defaultValue = "0")
     val failingSince: Long = 0L,
+
+    /**
+     * Whether this source's articles appear in All.
+     *
+     * Off, the source is still fetched and still shows under its categories,
+     * when it is focused, and in search - everywhere a reader goes looking
+     * for it by name or by category - just not in the stream of everything.
+     * For a source added to read in its own corner, rather than one to hear
+     * from all day. Asked for on 17 October 2026.
+     */
+    @ColumnInfo(defaultValue = "1")
+    val showInAll: Boolean = true,
 ) {
     /**
      * The feed's categories.

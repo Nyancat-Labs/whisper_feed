@@ -168,8 +168,15 @@ class ArticleRepository(db: NeoFeedDb) {
         articlesDao.loadArticleById(id = articleId)
             .flowOn(cc)
 
-    fun getEnabledFeedItems(limit: Int = FEED_WINDOW): Flow<List<FeedItem>> =
-        whenChanged { articlesDao.loadAllEnabledFeedItems(limit) }
+    /**
+     * Articles from every source that is on.
+     *
+     * [everything] false is All itself, which leaves out the sources kept out
+     * of it (Feed.showInAll). Search and a focused source pass true: both are
+     * the reader looking for something by name, and it is there.
+     */
+    fun getEnabledFeedItems(limit: Int = FEED_WINDOW, everything: Boolean = true): Flow<List<FeedItem>> =
+        whenChanged { articlesDao.loadAllEnabledFeedItems(limit, everything) }
 
     /**
      * Articles from every source carrying any of [tags].

@@ -426,6 +426,9 @@
     <string name="by_author_on_date">%1$s, %2$s</string>
 
     <string name="source_enabled">Keep this source on</string>
+    <string name="source_show_in_all">Show in All</string>
+    <string name="source_show_in_all_summary">Off keeps it out of All. It still updates, and shows under its categories and in search.</string>
+    <string name="source_show_in_all_no_category">It has no category yet, so for now it will only show in search. Pick one below.</string>
     <string name="source_enabled_summary">Off hides it from your feed and stops it fetching anything new. Articles already collected stay, and so does anything you saved from it.</string>
     <string name="sources_import_opml">Import feeds from OPML</string>
     <string name="sources_export_opml">Export feeds to OPML</string>

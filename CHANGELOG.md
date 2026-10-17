@@ -14,6 +14,10 @@ Unreleased
   looks a minute after every sync, when the app or the launcher panel is
   opened, and every few hours, and takes down a "Syncing" notice no sync is
   behind. A sync that is running keeps its notice.
+- **Keep a source out of All.** A source's settings have a new switch,
+  Show in All. Turn it off and the source still updates and still shows
+  under its categories and in search, but not in the main feed. For a feed
+  you want to read in its own corner.
 - **Pictures and headlines, without the summaries.** Settings → Show
   summaries, under Feed layout. Off, Cards, Magazine and Mosaic keep their
   pictures and headlines and drop the text underneath. List already has no

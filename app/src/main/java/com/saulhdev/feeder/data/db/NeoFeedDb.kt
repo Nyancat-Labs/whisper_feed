@@ -52,7 +52,7 @@ const val ID_ALL: Long = -1L
         Suggestion::class,
         ReadingTally::class,
     ],
-    version = 26,
+    version = 27,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -233,6 +233,7 @@ abstract class NeoFeedDb : RoomDatabase() {
 }
 
 val allMigrations = arrayOf(
+    MIGRATION_26_27,
     MIGRATION_25_26,
     MIGRATION_24_25,
     MIGRATION_23_24,
@@ -255,6 +256,14 @@ val allMigrations = arrayOf(
     MIGRATION_12_13,
     MIGRATION_13_14,
 )
+
+@Suppress("ClassName")
+object MIGRATION_26_27 : Migration(26, 27) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Every source was in All until now, so every source stays there.
+        db.execSQL("ALTER TABLE Feeds ADD COLUMN showInAll INTEGER NOT NULL DEFAULT 1")
+    }
+}
 
 @Suppress("ClassName")
 object MIGRATION_25_26 : Migration(25, 26) {

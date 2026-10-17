@@ -3178,7 +3178,8 @@ First, these four, in this order:
   text underneath. She confirmed this is what "headlines only" meant (the
   List layout already covers no pictures at all). Small: one switch read by
   the cards.
-- **How many new articles a sync brought**, shown in the top bar.
+- **How many new articles a sync brought**, shown in the top bar. In All,
+  count only the sources shown there (Feed.showInAll).
 - ~~**Exact times as well as "2h ago"**, as a choice~~ — **done** (Settings →
   Article times: 2h, 14:32, or both). The different colour she mentioned was
   left out: the byline stays one colour.

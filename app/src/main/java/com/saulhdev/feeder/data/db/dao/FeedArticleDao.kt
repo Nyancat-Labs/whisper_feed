@@ -469,7 +469,7 @@ interface FeedArticleDao {
         """
     SELECT Article.* FROM Article
     JOIN Feeds ON Article.feedId = Feeds.id
-    WHERE Feeds.isEnabled = 1
+    WHERE Feeds.isEnabled = 1 AND (:everything OR Feeds.showInAll = 1)
     ORDER BY Article.primarySortTime DESC
     LIMIT :limit
     """
@@ -484,7 +484,7 @@ interface FeedArticleDao {
      * search passes a larger one, because a search that only covered the
      * newest few hundred would quietly stop being true.
      */
-    fun getAllEnabledFeedItems(limit: Int): Flow<List<FeedItem>>
+    fun getAllEnabledFeedItems(limit: Int, everything: Boolean): Flow<List<FeedItem>>
 
     /**
      * The same query, run once on demand.
@@ -504,12 +504,12 @@ interface FeedArticleDao {
         """
     SELECT Article.* FROM Article
     JOIN Feeds ON Article.feedId = Feeds.id
-    WHERE Feeds.isEnabled = 1
+    WHERE Feeds.isEnabled = 1 AND (:everything OR Feeds.showInAll = 1)
     ORDER BY Article.primarySortTime DESC
     LIMIT :limit
     """
     )
-    suspend fun loadAllEnabledFeedItems(limit: Int): List<FeedItem>
+    suspend fun loadAllEnabledFeedItems(limit: Int, everything: Boolean): List<FeedItem>
 
     @Transaction
     @Query(

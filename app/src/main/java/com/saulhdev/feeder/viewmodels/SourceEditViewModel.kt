@@ -99,6 +99,7 @@ class SourceEditViewModel : NeoViewModel() {
                 tag = state.tag,
                 fullTextByDefault = state.fullTextByDefault,
                 isEnabled = state.isEnabled,
+                showInAll = state.showInAll,
             ),
             resync = needsResync
         )
@@ -129,6 +130,7 @@ class SourceEditViewModel : NeoViewModel() {
             tag = feed.tag,
             fullTextByDefault = feed.fullTextByDefault,
             isEnabled = feed.isEnabled,
+            showInAll = feed.showInAll,
         )
     }.stateIn(
         viewModelScope,
