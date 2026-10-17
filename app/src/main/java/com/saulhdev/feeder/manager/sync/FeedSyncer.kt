@@ -64,7 +64,27 @@ class FeedSyncer(val context: Context, workerParams: WorkerParameters) :
         return createForegroundInfo(context, notificationManager)
     }
 
-    override suspend fun doWork(): Result {
+    // Whether this run put up the "Syncing" notice. See doWork.
+    private var inForeground = false
+
+    /**
+     * The sync, and then a look a minute later for the notice it may leave.
+     *
+     * WorkManager is meant to take the "Syncing" notice down when a run in
+     * the foreground ends, and twice it has not: on 13 October and again on
+     * 17 October, when the 10:52 sync lost its network as the phone went to
+     * sleep and ended at 10:54, and the notice was still up at 12:06. The
+     * reader had only used the launcher panel since, so neither the app's
+     * resume nor the six-hourly watchdog had looked. Every way out of the
+     * run - finished, failed, out of time, stopped - goes through here.
+     */
+    override suspend fun doWork(): Result = try {
+        sync()
+    } finally {
+        if (inForeground) SyncNoticeCheck.schedule(applicationContext)
+    }
+
+    private suspend fun sync(): Result {
         var result: SyncResult
         // What went wrong with the account, for the account screen to say.
         var output = Data.EMPTY
@@ -153,7 +173,6 @@ class FeedSyncer(val context: Context, workerParams: WorkerParameters) :
         // as before, saying so in its line, so a report shows which it was.
         val pluggedIn = powerState(applicationContext).pluggedIn
         val foreground = runInForeground(origin, dataBlocked, onScreen, pluggedIn)
-        var inForeground = false
         var foregroundRefused = false
         if (foreground) {
             try {

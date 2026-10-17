@@ -56,6 +56,7 @@ import com.saulhdev.feeder.utils.extensions.safeStartActivity
 import com.saulhdev.feeder.utils.extensions.setCustomTheme
 import com.saulhdev.feeder.viewmodels.ArticleListViewModel
 import kotlinx.coroutines.CoroutineName
+import com.saulhdev.feeder.manager.sync.clearStaleSyncNotice
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -620,6 +621,12 @@ class OverlayView(val context: Context) :
         // this surface there is no Activity whose resume could notice. Settling
         // is idempotent, so the app's own hook firing as well costs nothing.
         if (panelVisible.value) settleBrowserRead()
+        // Opening the panel is "the reader is back" on this surface, as the
+        // app's resume is in MainActivity: a left-over "Syncing" notice comes
+        // down. See clearStaleSyncNotice.
+        if (was == PanelState.CLOSED && panelVisible.value) {
+            syncScope.launch { runCatching { clearStaleSyncNotice(context.applicationContext) } }
+        }
         // The other half of the read-on-scroll gate, under the same tag as
         // ReadOnScroll's own trace. If a launcher never calls this, that gate
         // is stuck shut and the tracker silently does nothing — which a

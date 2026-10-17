@@ -79,6 +79,14 @@ layout; the four layouts are what the user chooses between. Both exist now.
 Found on device, so they take precedence over anything below when they are in
 the way.
 
+- **A sync in the foreground lost its network.** 17 October, Pixel 10 Pro on
+  Android 17: the 10:52 scheduled sync started on screen and ran as a
+  foreground task, which is meant to keep its network when the reader looks
+  away. 86 s in it ended "blocked for Whisper" with `UnknownHostException`.
+  Seen once. If it comes back, find out whether Android 17 cuts a data-sync
+  foreground task's network on screen-off, and what keeps it. The "Syncing"
+  notice it left behind is fixed (`SyncNoticeCheck`).
+
 - ~~**The guided tour could consume itself without ever appearing.**~~ Found by
   audit, never seen on a device — which is the point. `onGloballyPositioned`
   runs *after* composition, so on the frame the tour started, the map of

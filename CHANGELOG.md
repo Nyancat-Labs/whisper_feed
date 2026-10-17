@@ -11,8 +11,9 @@ Unreleased
 
 - **No "Syncing" notice left behind.** One sync ended as the phone dozed and
   its notice stayed up for most of an hour with nothing running. Whisper now
-  checks when it is opened, and again every few hours, and takes down a
-  "Syncing" notice no sync is behind. A sync that is running keeps its notice.
+  looks a minute after every sync, when the app or the launcher panel is
+  opened, and every few hours, and takes down a "Syncing" notice no sync is
+  behind. A sync that is running keeps its notice.
 - **Pictures and headlines, without the summaries.** Settings → Show
   summaries, under Feed layout. Off, Cards, Magazine and Mosaic keep their
   pictures and headlines and drop the text underneath. List already has no
