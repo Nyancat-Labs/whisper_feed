@@ -553,12 +553,8 @@ class ArticleListViewModel(
                     sfm.tagsFilter.isNotEmpty() &&
                             item.feedTags.any { it in sfm.tagsFilter } -> false
 
-                    // Saved and pinned survive: those are the two ways a
-                    // reader has said "keep this", and a setting about
-                    // tidying away what is finished must not throw away
-                    // what was deliberately kept.
-                    hideRead && item.article.readAt != 0L &&
-                            !item.bookmarked && !item.pinned -> false
+                    // See hiddenAsRead.
+                    hiddenAsRead(hideRead, item.article.readAt, item.pinned) -> false
 
                     else -> true
                 }
@@ -623,6 +619,20 @@ class ArticleListViewModel(
  * off disk on every keystroke, or building an index — neither of which is
  * worth it before the shorter fields prove too thin.
  */
+/**
+ * Whether "Hide them" takes this article out of the feed.
+ *
+ * Pinned stays: pinning says "keep this in my feed". Saved used to stay too,
+ * on the reasoning that a tidying setting must not throw away what was
+ * deliberately kept - but hiding a saved article from the feed throws nothing
+ * away, because Bookmarks is where it is kept. With read articles hidden, the
+ * saved ones piled up at the bottom of the feed instead, and a reader asked on
+ * 17 October 2026 for them to be only in Bookmarks. A saved article not yet
+ * read is still unread, so it stays until it is.
+ */
+internal fun hiddenAsRead(hideRead: Boolean, readAt: Long, pinned: Boolean): Boolean =
+    hideRead && readAt != 0L && !pinned
+
 internal fun FeedItem.matchesSearch(query: String): Boolean {
     val q = query.trim()
     if (q.isEmpty()) return true

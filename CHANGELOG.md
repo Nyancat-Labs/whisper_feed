@@ -14,6 +14,11 @@ Unreleased
   looks a minute after every sync, when the app or the launcher panel is
   opened, and every few hours, and takes down a "Syncing" notice no sync is
   behind. A sync that is running keeps its notice.
+- **Saved articles, once read, are only in Bookmarks.** With read articles
+  hidden, the saved ones stayed in the feed and gathered at the bottom. A
+  saved article now leaves the feed once it is read, like any other, and
+  stays in Bookmarks. Unread saved articles and pinned ones stay. Suggested
+  by a reader.
 - **The last articles can be scrolled past too.** With "mark read while
   scrolling" on, an article counts as read once it leaves the top of the
   screen, and the last few in the feed never could: there was nothing below
