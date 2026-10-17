@@ -137,8 +137,15 @@ fun SourceItem(
         },
         supportingContent = {
             // The site, then the categories: "science.org · Tech". The full
-            // address is on the source's own page.
-            val details = listOfNotNull(siteOf(source).takeIf { !showAddress }) + source.tags
+            // address is on the source's own page. Then "Not in All" for a
+            // source kept out of it, which is otherwise said nowhere outside
+            // its own page - and its articles never turning up in All is easy
+            // to forget the reason for. A source switched off is out of
+            // everything, so it does not need saying there.
+            val notInAll = stringResource(R.string.source_not_in_all)
+                .takeIf { !source.showInAll && source.isEnabled }
+            val details = listOfNotNull(siteOf(source).takeIf { !showAddress }) + source.tags +
+                listOfNotNull(notInAll)
             if (details.isNotEmpty() || isStale) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,

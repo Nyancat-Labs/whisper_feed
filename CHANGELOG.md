@@ -17,7 +17,9 @@ Unreleased
 - **Keep a source out of All.** A source's settings have a new switch,
   Show in All. Turn it off and the source still updates and still shows
   under its categories and in search, but not in the main feed. For a feed
-  you want to read in its own corner.
+  you want to read in its own corner. Data sources marks it "Not in All".
+- **"Categories" throughout.** The source editor and the filter called them
+  tags in one place and categories in the next.
 - **Pictures and headlines, without the summaries.** Settings → Show
   summaries, under Feed layout. Off, Cards, Magazine and Mosaic keep their
   pictures and headlines and drop the text underneath. List already has no

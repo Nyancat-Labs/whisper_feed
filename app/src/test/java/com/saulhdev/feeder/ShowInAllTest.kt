@@ -108,4 +108,13 @@ class ShowInAllTest {
         assertTrue(vm.contains("val all = categories.isEmpty() && !searching && focused == null"))
         assertTrue(vm.contains("articleRepo.getEnabledFeedItems(limit, everything = !all)"))
     }
+
+    /** Said in the sources list too, or the reason is forgotten. */
+    @Test
+    fun `the sources list says a source is not in All`() {
+        val row = File("src/main/java/com/saulhdev/feeder/ui/components/SourceItem.kt").readText()
+        assertTrue(row.contains(".takeIf { !source.showInAll && source.isEnabled }"))
+        assertTrue(row.contains("listOfNotNull(notInAll)"))
+    }
+
 }
