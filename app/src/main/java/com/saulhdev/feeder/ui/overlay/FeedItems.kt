@@ -18,11 +18,30 @@
 package com.saulhdev.feeder.ui.overlay
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridScope
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import com.saulhdev.feeder.R
+import com.saulhdev.feeder.data.content.FeedPreferences
+import com.saulhdev.feeder.data.content.asState
 import com.saulhdev.feeder.data.db.models.FeedItem
+import org.koin.compose.koinInject
 
 /**
  * The feed, as a list of cards.
@@ -108,3 +127,67 @@ fun feedContentType(
     layout = layout,
     emphasis = emphasis.getOrNull(index) ?: FeedEmphasis.Medium,
 )
+
+const val FEED_END_KEY = "feed-end"
+
+/**
+ * How tall the space after the last article is, or null for none.
+ *
+ * Mark read on scroll counts an article read once it has been scrolled off the
+ * top of the screen (see passedIds), which the last screenful never could be:
+ * there was nothing below them to scroll. They stayed unread for good, and
+ * with read articles hidden, stayed in the feed - reported on 17 October 2026,
+ * "the last two remain because it's no longer possible to scroll further".
+ *
+ * A screen of space after them lets them leave like every other article, and
+ * the rule stays the one that keeps an article from vanishing while it is
+ * read. Only while the feature is on: nobody else has a reason to scroll into
+ * an empty screen. A whole viewport, so the last card clears the top padding
+ * too. The height is read through derivedStateOf, so scrolling does not
+ * recompose the feed - only a change of window size does.
+ */
+@Composable
+fun rememberFeedEndSpace(viewportHeightPx: () -> Int): Dp? {
+    val prefs: FeedPreferences = koinInject()
+    val setting by prefs.markReadOnScroll.asState()
+    // The same "off" TrackReading reads: below a quarter of a second.
+    if (setting < 0.25f) return null
+    val px by remember { derivedStateOf(viewportHeightPx) }
+    if (px <= 0) return null
+    return with(LocalDensity.current) { px.toDp() }
+}
+
+/** The space after the last article; see [rememberFeedEndSpace]. */
+fun LazyListScope.feedEnd(height: Dp?) {
+    if (height == null) return
+    item(key = FEED_END_KEY, contentType = FEED_END_KEY) { FeedEnd(height) }
+}
+
+/** The grid's, across both lanes. */
+fun LazyStaggeredGridScope.feedEnd(height: Dp?) {
+    if (height == null) return
+    item(key = FEED_END_KEY, contentType = FEED_END_KEY, span = StaggeredGridItemSpan.FullLine) {
+        FeedEnd(height)
+    }
+}
+
+/**
+ * "That's everything", rather than "all caught up": an article skimmed past
+ * quicker than the threshold is not read, and the line should not say it is.
+ */
+@Composable
+private fun FeedEnd(height: Dp) {
+    Box(
+        contentAlignment = Alignment.TopCenter,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(height),
+    ) {
+        Text(
+            text = stringResource(R.string.feed_end),
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = 32.dp),
+        )
+    }
+}

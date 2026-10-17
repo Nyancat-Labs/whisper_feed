@@ -139,6 +139,8 @@ import com.saulhdev.feeder.ui.overlay.feedContentType
 import com.saulhdev.feeder.ui.overlay.ActiveFilterBar
 import com.saulhdev.feeder.ui.overlay.AnchorFeedOnFocusChange
 import com.saulhdev.feeder.ui.overlay.FEED_HEADER_KEY
+import com.saulhdev.feeder.ui.overlay.rememberFeedEndSpace
+import com.saulhdev.feeder.ui.overlay.feedEnd
 import com.saulhdev.feeder.utils.BrowserReadTimer
 import com.saulhdev.feeder.utils.LAYOUT_CARDS
 import com.saulhdev.feeder.ui.overlay.FeedArticleItem
@@ -263,6 +265,8 @@ fun ArticleListPage(
     // has said what they want.
     val animate = !reducedMotion()
     val listState = rememberLazyListState()
+    val listEnd = rememberFeedEndSpace { listState.layoutInfo.viewportSize.height }
+    val gridEnd = rememberFeedEndSpace { gridState.layoutInfo.viewportSize.height }
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
     val showFAB by remember { derivedStateOf { listState.firstVisibleItemIndex > 4 } }
 
@@ -787,6 +791,7 @@ fun ArticleListPage(
                                                     }
                                                 }
                                                 }
+                                                feedEnd(gridEnd)
                                             },
                                         )
                                     } else {
@@ -834,6 +839,7 @@ fun ArticleListPage(
                                                         )
                                                     }
                                                 }
+                                                feedEnd(listEnd)
                                             },
                                         )
                                     }

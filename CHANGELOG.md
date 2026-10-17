@@ -14,6 +14,12 @@ Unreleased
   looks a minute after every sync, when the app or the launcher panel is
   opened, and every few hours, and takes down a "Syncing" notice no sync is
   behind. A sync that is running keeps its notice.
+- **The last articles can be scrolled past too.** With "mark read while
+  scrolling" on, an article counts as read once it leaves the top of the
+  screen, and the last few in the feed never could: there was nothing below
+  them. With read articles hidden, they stayed. The feed now ends with a
+  screen of space ("That's everything"), so they leave like the rest.
+  Suggested by a reader.
 - **Keep a source out of All.** A source's settings have a new switch,
   Show in All. Turn it off and the source still updates and still shows
   under its categories and in search, but not in the main feed. For a feed

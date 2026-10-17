@@ -427,6 +427,7 @@
 
     <string name="source_enabled">Keep this source on</string>
     <string name="source_show_in_all">Show in All</string>
+    <string name="feed_end">That\'s everything</string>
     <string name="source_not_in_all">Not in All</string>
     <string name="source_show_in_all_summary">Off keeps it out of All. It still updates, and shows under its categories and in search.</string>
     <string name="source_show_in_all_no_category">It has no category yet, so for now it will only show in search. Pick one below.</string>

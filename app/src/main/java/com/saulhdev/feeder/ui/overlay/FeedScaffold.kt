@@ -177,6 +177,8 @@ fun FeedScaffold(
 ) {
     val listState = rememberLazyListState()
     val gridState = rememberLazyStaggeredGridState()
+    val listEnd = rememberFeedEndSpace { listState.layoutInfo.viewportSize.height }
+    val gridEnd = rememberFeedEndSpace { gridState.layoutInfo.viewportSize.height }
     val scope = rememberCoroutineScope()
     val appBarState = rememberTopAppBarState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(appBarState)
@@ -479,6 +481,7 @@ fun FeedScaffold(
                                 )
                             }
                         }
+                        feedEnd(gridEnd)
                         },
                     )
                 } else {
@@ -517,6 +520,7 @@ fun FeedScaffold(
                                 },
                                 article = article,
                             )
+                            feedEnd(listEnd)
                         },
                     )
                 }

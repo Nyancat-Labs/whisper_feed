@@ -172,12 +172,7 @@ fun TrackReading(
     //
     // Rebuilt when the list really changes, and read live by the loop below
     // rather than captured by it. See the effect's keys for why.
-    val lookup = remember(articles) {
-        FeedLookup(
-            byId = articles.associateBy { it.id },
-            position = articles.withIndex().associate { (i, item) -> item.id to i },
-        )
-    }
+    val lookup = remember(articles) { feedLookup(articles) }
     val currentLookup by rememberUpdatedState(lookup)
 
     // Deliberately not keyed on `articles`.
@@ -442,4 +437,20 @@ internal fun passedIds(
 internal data class FeedLookup(
     val byId: Map<String, FeedItem>,
     val position: Map<String, Int>,
+)
+
+/**
+ * The lookup for [articles], with the space after them placed just below the
+ * last one.
+ *
+ * That space (see rememberFeedEndSpace) is what lets the last articles be
+ * scrolled past, and it only can if it counts as being below them. Without a
+ * position, a screen showing nothing but the space would read as a screen
+ * showing nothing at all, which passedIds rightly treats as a list still
+ * being measured - and the last articles would stay unread exactly as before.
+ */
+internal fun feedLookup(articles: List<FeedItem>) = FeedLookup(
+    byId = articles.associateBy { it.id },
+    position = articles.withIndex().associate { (i, item) -> item.id to i } +
+        (FEED_END_KEY to articles.size),
 )
