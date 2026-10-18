@@ -66,6 +66,7 @@ import org.jsoup.nodes.Element
  */
 fun stripPageChrome(document: Document) {
     document.select("aside").remove()
+    figuresFromCredits(document)
 
     val body = document.body()
     val pageText = body.text().length
@@ -120,3 +121,33 @@ private val NEVER_STRIPPED = setOf("html", "head", "body", "main", "article")
  * How-To Geek's, biography included, is a few percent of its article.
  */
 private const val MAX_BYLINE_SHARE = 0.25
+
+/**
+ * A picture and its credit side by side in a plain wrapper, made a figure.
+ *
+ * Engadget sets its pictures as `div > picture + span.gallery-image-credit`,
+ * no `<figure>`, and extraction then drops the class that said which line
+ * was the credit. When the reader moved the opening picture above the
+ * headline, "Joshua Westbrook/Getty Images" stayed behind as a paragraph of
+ * its own (18 October 2026). Said with the elements made for it - figure and
+ * figcaption - the pairing survives extraction, a lifted picture takes its
+ * credit along, and a picture further down keeps its credit under it.
+ *
+ * Only a wrapper holding one picture and nothing else but the caption or
+ * credit, so a container of article text is never renamed.
+ */
+internal fun figuresFromCredits(document: Document) {
+    document.body().select("[class*=credit], [class*=caption]")
+        .filter { it.tagName() != "figcaption" && it.closest("figure") == null }
+        .forEach { credit ->
+            val wrapper = credit.parent() ?: return@forEach
+            if (wrapper == document.body() || wrapper.tagName() == "figure") return@forEach
+            if (wrapper.select("img").size != 1) return@forEach
+            val others = wrapper.children().filter { it != credit && it.select("img").isEmpty() }
+            if (others.any { it.text().isNotBlank() }) return@forEach
+            if (wrapper.ownText().isNotBlank()) return@forEach
+            wrapper.tagName("figure")
+            credit.tagName("figcaption")
+        }
+}
+

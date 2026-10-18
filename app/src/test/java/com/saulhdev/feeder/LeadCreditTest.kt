@@ -19,6 +19,8 @@ package com.saulhdev.feeder
 
 import com.saulhdev.feeder.data.db.models.authorName
 import com.saulhdev.feeder.utils.readerBody
+import com.saulhdev.feeder.utils.stripPageChrome
+import org.jsoup.Jsoup
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -72,4 +74,56 @@ class LeadCreditTest {
         assertEquals("staff@example.org", authorName("staff@example.org"))
         assertEquals(null, authorName(" "))
     }
+
+    /** The page's picture and credit, told apart before extraction can drop their classes. */
+    @Test
+    fun `cleaning the page makes a picture and its credit a figure`() {
+        val page = Jsoup.parse("""<html><body>
+            <div class="image-holder credit-image-wrap lead-image-holder">
+              <picture><img src="https://www.engadget.com/img/intro-1791990292.jpg"></picture>
+              <span class="gallery-image-credit">Joshua Westbrook/Getty Images</span>
+            </div><p>Text.</p></body></html>""", "https://www.engadget.com/a/").also(::stripPageChrome)
+        assertEquals("Joshua Westbrook/Getty Images", page.select("figure > figcaption").text())
+        assertEquals(1, page.select("figure img").size)
+    }
+
+    /**
+     * What extraction made of the real Engadget page on 18 October, cut down:
+     * the figure and figcaption came through, and the reader takes both.
+     */
+    @Test
+    fun `the stored figure leaves the reader whole`() {
+        val stored = """<div><figure>
+              <picture><img src="https://www.engadget.com/img/gallery/roku/intro-1791990292.jpg" width="780" height="438"></picture>
+              <figcaption>Joshua Westbrook/Getty Images</figcaption>
+            </figure>
+            <div><p dir="ltr">A Roku system's remote control is one of the most straightforward remote designs you'll find.</p></div></div>"""
+        val text = body(stored, card = "https://www.engadget.com/img/gallery/roku/l-intro-1791990292.jpg").body.text()
+        assertFalse(text, text.contains("Westbrook"))
+        assertTrue(text.contains("A Roku system's remote"))
+    }
+
+    /** A wrapper with article text in it is not a figure, whatever it holds. */
+    @Test
+    fun `a wrapper of article text is left as it is`() {
+        val page = Jsoup.parse("""<html><body><div class="content">
+            <img src="https://example.org/a.jpg"><span class="credit">Someone/Agency</span>
+            <p>The article's own paragraph.</p></div></body></html>""", "https://example.org/").also(::stripPageChrome)
+        assertTrue(page.select("figure").isEmpty())
+    }
+
+    /** A picture further down keeps its credit, now a caption under it. */
+    @Test
+    fun `a later picture keeps its credit`() {
+        val url = "https://www.engadget.com/a/"
+        val page = Jsoup.parse("""<html><body>
+            <p>Opening paragraph of the article, long enough to count as text before any picture.</p>
+            <p>A second paragraph, so the picture below is not the article's opening one.</p>
+            <div class="image-holder"><picture><img src="https://www.engadget.com/img/slide-2.jpg" width="780" height="438"></picture>
+              <span class="gallery-image-credit">Delbert Harper/Getty Images</span></div>
+            <p>More of the article.</p></body></html>""", url).also(::stripPageChrome)
+        val text = readerBody(page.outerHtml().byteInputStream(), url).body.text()
+        assertTrue(text, text.contains("Delbert Harper/Getty Images"))
+    }
+
 }
