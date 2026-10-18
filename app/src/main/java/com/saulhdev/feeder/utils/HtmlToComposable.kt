@@ -161,6 +161,7 @@ fun LazyListScope.htmlFormattedText(
     Jsoup.parse(inputStream, null, baseUrl)
         .body()
         .let { body ->
+            restoreLazyImages(body)
             stripRepeatedTitle(body, articleTitle)
             ensureLeadImage(body, leadImageUrl)
             dropRepeatedImages(body)
@@ -544,6 +545,7 @@ fun readerBody(
     author: String? = null,
 ): ReaderBody {
     val body = Jsoup.parse(inputStream, null, baseUrl).body()
+    restoreLazyImages(body)
     stripRepeatedTitle(body, articleTitle)
     stripBylineNoise(body, author)
     val card = usableImageUrl(leadImageUrl?.trim())
@@ -555,6 +557,40 @@ fun readerBody(
     }
     dropRepeatedImages(body)
     return ReaderBody(liftLeadImage(body), body)
+}
+
+/**
+ * Gives a lazily loaded picture its real address back.
+ *
+ * Pages that load pictures as they scroll into view send each `<img>` with a
+ * blank stand-in for `src`, often a one-line `data:` SVG, and the real
+ * address in an attribute of their own that a script swaps in: IEEE
+ * Spectrum's `data-runner-src`, SoraNews24's `data-sco-src`, the commoner
+ * `data-src` and `data-lazy-src`. No script runs here, so the reader drew the
+ * stand-in, which is nothing. Any `data-…src` holding an address takes the
+ * place of a `src` that is missing or `data:`, and `data-…srcset` of a
+ * missing `srcset`. A picture with a real `src` is left as it is.
+ */
+internal fun restoreLazyImages(body: Element) {
+    body.select("img").forEach { img ->
+        val src = img.attr("src").trim()
+        if (src.isEmpty() || src.startsWith("data:")) {
+            img.attributes().firstOrNull { LAZY_SRC.matches(it.key) && isAddress(it.value) }
+                ?.let { img.attr("src", it.value.trim()) }
+        }
+        if (img.attr("srcset").isBlank()) {
+            img.attributes().firstOrNull { LAZY_SRCSET.matches(it.key) && isAddress(it.value) }
+                ?.let { img.attr("srcset", it.value.trim()) }
+        }
+    }
+}
+
+private val LAZY_SRC = Regex("""data-[\w-]*src""", RegexOption.IGNORE_CASE)
+private val LAZY_SRCSET = Regex("""data-[\w-]*srcset""", RegexOption.IGNORE_CASE)
+
+private fun isAddress(value: String): Boolean {
+    val v = value.trim()
+    return v.startsWith("https://") || v.startsWith("http://") || v.startsWith("//") || v.startsWith("/")
 }
 
 /** Takes out every picture in [body] that is [picture] at some other address or size. */
