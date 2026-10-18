@@ -424,5 +424,15 @@ data class HourCount(val hour: String, val seen: Int, val opened: Int)
  * A feed's author name as it should be shown: trimmed, and none when blank.
  * Tom's Hardware's ends in a space, and the reader printed it as
  * "Zhiye Liu , Tuesday 6 October"; an author of "" read as ", Tuesday".
+ *
+ * RSS 2.0's own form for an author is an address with the name after it in
+ * brackets, and Engadget uses it: the reader printed "staff@engadget.com
+ * (Deven McClure)" (18 October 2026). The name alone, when there is one.
  */
-internal fun authorName(raw: String?): String? = raw?.trim()?.takeIf { it.isNotEmpty() }
+internal fun authorName(raw: String?): String? {
+    val name = raw?.trim()?.takeIf { it.isNotEmpty() } ?: return null
+    return RSS_AUTHOR.matchEntire(name)?.groupValues?.get(1)?.trim()?.takeIf { it.isNotEmpty() } ?: name
+}
+
+/** `address (Name)`, as RSS 2.0 writes an author. */
+private val RSS_AUTHOR = Regex("""^\S+@\S+\s*\((.+)\)$""")

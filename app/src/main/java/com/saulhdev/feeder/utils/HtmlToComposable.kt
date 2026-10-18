@@ -410,9 +410,54 @@ internal fun liftLeadImage(body: Element): String? {
         img.attr("srcset").substringBefore(',').trim().substringBefore(' ')
     }
     val usable = usableImageUrl(src.trim()) ?: return null
-    (img.closest("figure") ?: img.closest("picture") ?: img).remove()
+    removePicture(img)
     return usable
 }
+
+/**
+ * Takes a picture out of the body, and its caption and credit with it.
+ *
+ * Its figure goes whole when it has one. Without one, the credit is a
+ * sibling of the picture and was left behind: Engadget puts the picture and
+ * a `gallery-image-credit` side by side in a plain div, and the reader
+ * showed "Joshua Westbrook/Getty Images" as a paragraph of its own, crediting
+ * nothing (18 October 2026). So a caption or credit right after it goes too,
+ * and the wrapper once nothing is left in it. Only once nothing is: a short
+ * line beside a picture can be the article's own.
+ */
+internal fun removePicture(img: Element) {
+    val figure = img.closest("figure")
+    if (figure != null) {
+        figure.remove()
+        return
+    }
+    val picture = img.closest("picture") ?: img
+    val wrapper = picture.parent()
+    var next = picture.nextElementSibling()
+    while (next != null && isCaptionOrCredit(next)) {
+        val after = next.nextElementSibling()
+        next.remove()
+        next = after
+    }
+    picture.remove()
+    if (wrapper != null && wrapper.tagName() != "body" && wrapper.select("img").isEmpty() &&
+        wrapper.text().isBlank()
+    ) {
+        wrapper.remove()
+    }
+}
+
+/** A caption or a credit, by its tag or by the class the page gave it. */
+private fun isCaptionOrCredit(e: Element): Boolean =
+    e.tagName() == "figcaption" ||
+        e.className().contains(CAPTION_CLASS) ||
+        e.text().trim().length <= LEFTOVER_CAPTION_CHARS && e.select("img").isEmpty() &&
+        e.className().isEmpty() && e.tagName() in setOf("small", "cite")
+
+private val CAPTION_CLASS = Regex("caption|credit", RegexOption.IGNORE_CASE)
+
+/** As much text as a credit or a one-line caption runs to. */
+private const val LEFTOVER_CAPTION_CHARS = 160
 
 /**
  * An article body made ready for the reader, with its lead picture taken out
@@ -451,7 +496,7 @@ fun readerBody(
     stripBylineNoise(body, author)
     val card = usableImageUrl(leadImageUrl?.trim())
     if (card != null) {
-        openingImage(body)?.let { (it.closest("figure") ?: it.closest("picture") ?: it).remove() }
+        openingImage(body)?.let(::removePicture)
         dropCopiesOf(body, card)
         dropRepeatedImages(body)
         return ReaderBody(card, body)
@@ -468,7 +513,7 @@ internal fun dropCopiesOf(body: Element, picture: String) {
         val src = srcOf(img).ifBlank { img.attr("srcset").substringBefore(',').trim().substringBefore(' ') }
         val identity = imageIdentity(src)
         if (identity.isNotEmpty() && (identity == wanted || sameAsset(identity, wanted))) {
-            (img.closest("figure") ?: img.closest("picture") ?: img).remove()
+            removePicture(img)
         }
     }
 }
