@@ -4,6 +4,17 @@ What was done, when, and anything worth knowing next time. Newest first.
 What changed for users is in [`CHANGELOG.md`](CHANGELOG.md); what is next is
 in [`ROADMAP.md`](ROADMAP.md).
 
+## 18 October 2026 — Reader checked against real feeds
+
+- `scripts/real-feed-check.py` and `RealFeedReport`: the owner's 129 feeds,
+  476 articles, through the app's own parser and reader. Findings and the
+  fix order are in ROADMAP.md under "Checking the reader against real feeds".
+- `RealFeedReport` is skipped in a normal test run; it only runs with
+  REAL_FEED_DIR set. The fetched pages stay out of the repository.
+- The first fetch did not unpack pages servers compressed unasked (The
+  Independent's feed, Archaeology's pages), which looked like parse failures.
+  OkHttp unpacks those for the app; the script now does too.
+
 ## 18 October 2026 — Lawnchair whitelist request
 
 - Opened [LawnchairLauncher/lawnchair#7399](https://github.com/LawnchairLauncher/lawnchair/pull/7399)

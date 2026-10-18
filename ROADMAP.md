@@ -3273,34 +3273,66 @@ styling. What to take, and when:
 Already ours, so not taken: settings in categories, an About page that opens
 with how to get in touch, and a picker for what the feed shows (the chips).
 
-## Checking the reader against real feeds — after 1.0.5
+## Checking the reader against real feeds — first pass, 18 October 2026
 
-Asked for on 18 October 2026, after two reader faults turned up on one
-Engadget article in an evening (a picture's credit left behind, an RSS
-address in the byline). Both would have been caught by looking at many
-articles at once rather than one at a time on the phone.
+The owner's 129 feeds, newest four articles each, run through the app's own
+code: the feed parser, then the full-text path (stripPageChrome, Readability,
+the thin-page guard), then readerBody. `scripts/real-feed-check.py` fetches;
+`RealFeedReport` (skipped unless REAL_FEED_DIR is set) runs the app's code and
+flags what looks wrong; every flag below was then looked at by hand.
 
-No emulator in the cloud container (no hardware virtualisation), so not the
-app itself. Instead, two passes:
+476 articles: 290 read from the page, 79 kept the feed's text because the page
+gave less, the rest from the feed because the page did not come back. Most of
+those were 403s from sites refusing a data-centre address, which the phone is
+not; 8 feeds could not be fetched at all for the same reason.
 
-- **The reader's own code over real articles.** Take the owner's OPML (128
-  feeds), fetch each feed and its newest articles, and run every one through
-  the same `readerBody` the app uses. Flag what is already known to go wrong:
-  a caption or credit with no picture, a picture twice, the headline
-  repeated, an address or "By" in the byline, an article left nearly empty,
-  a picture with no usable address. A report per feed, so a site's habit
-  shows up once rather than as fifty articles.
-- **Screens rendered off the device**, with the settings backup applied:
-  reader pages at each text size, feed cards in each layout, the settings
-  screens, as images to look over. Robolectric renders Compose already for
-  the tests.
+### Faults, in the order worth fixing
 
-What it cannot see: scrolling, the launcher panel, notifications, sync
-timing. Those stay with testing on the phone.
+1. **The headline twice.** 12 sources (Ars Technica, TechCrunch, The Register,
+   Polygon, Futurism, Inverse, Al Jazeera, TheJournal.ie, 404 Media, TechHive,
+   Uncrate, Droid Gamers). `stripRepeatedTitle` only looks at the first line,
+   and these pages put something short above their headline: a kicker
+   ("offbeat", "NewsFeed"), a date, "Advertisement", an affiliate notice.
+   Fix: find the headline within the first few lines and take it out with
+   the short lines above it.
+2. **Lazy-loaded pictures missing.** IEEE Spectrum (`data-runner-src`),
+   SoraNews24 (`data-sco-src`): `src` is a blank placeholder and the real
+   address is in a data attribute. The reader shows nothing there. Fix in the
+   reader, so articles already stored are mended too: an img whose src is
+   missing or `data:` takes a `data-…src` / `data-…srcset` that is an address.
+3. **xkcd shows the footer, not the comic.** The feed's entry is only a
+   picture, which the thin-page guard counts as no text, so the page wins,
+   and Readability keeps the footer ("best viewed with Netscape Navigator").
+   Fix: the guard counts pictures as well as characters; a feed entry with a
+   picture beats a page with none.
+4. **A credit left behind by a lifted picture.** Inverse ("Splashdown/Michael
+   Nolan/Shutterstock"), Lifehacker ("Credit: … /Shutterstock"). The Engadget
+   fault in another shape: the credit sits apart from the picture, after the
+   byline, so neither fix so far sees it. Fix: with the opening picture gone,
+   a short credit-shaped line near the top goes too.
+5. **Page furniture.** Standalone "Advertisement" (Darknet, 404 Media, New
+   Scientist), "Sign up to newsletter", "Subscribe to JetBrains Blog
+   updates", "Related articles" (The Portugal News), "Add as a preferred
+   source on Google" (Lifehacker). Fix: drop a line that is exactly one of
+   these, never a sentence that contains one.
+6. **Smaller.** The Portugal News leaves "By , in News · 18 Oct 2026 · 0
+   Comments"; 9to5Toys keeps its related-deals block, pictures and all.
 
-The owner's OPML and settings backup were handed over on 18 October for
-this. They are not in the repository: the settings carry a home location.
-A session that picks this up asks for them again.
+### Not faults
+
+Paywalls (FT, WSJ) and video pages (Al Jazeera, i24 on YouTube, ABC) have
+only the feed's line to show. Google News links are Google's page, not the
+story. Science's table of contents carries only a page reference. All as
+expected from what those sources offer.
+
+### Still to do
+
+The second pass, screens rendered off the device with the settings backup
+applied, is not done. Re-running this one after the fixes above is how to
+check them: same command, same feeds, fewer flags.
+
+The owner's OPML and settings backup are not in the repository: the settings
+carry a home location. A session that picks this up asks for them again.
 
 ## Saved articles in the backup — noted 18 October 2026
 
