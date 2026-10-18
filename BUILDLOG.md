@@ -4,6 +4,10 @@ What was done, when, and anything worth knowing next time. Newest first.
 What changed for users is in [`CHANGELOG.md`](CHANGELOG.md); what is next is
 in [`ROADMAP.md`](ROADMAP.md).
 
+**Test devices.** The owner runs preview builds (`.dev`, signed with the
+release key, so each installs over the last with data kept) on a Pixel 10,
+and Google Play builds on two other devices.
+
 ## 18 October 2026 — Reader fixes from the real-feed check
 
 - Headline repeated under a kicker, lazily loaded pictures, xkcd's comic,
