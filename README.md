@@ -44,13 +44,7 @@ That is a bonus rather than the point — see
 
 The app has been through a full security, correctness and performance
 audit — see [`docs/AUDIT_2026-09.md`](docs/AUDIT_2026-09.md) — and is in
-daily use on three devices:
-
-| Device | Android | Screen |
-|---|---|---|
-| Google Pixel 10 Pro | 17 | Phone |
-| Sony Xperia (XQ-BC52) | 13 | Phone |
-| Samsung Galaxy Tab S5e | 11 | 10.5" tablet |
+daily use on phones and a tablet.
 
 Two things are worth knowing:
 
@@ -76,6 +70,12 @@ was deliberately left undone and why.
 | <img src="docs/screenshots/03-sizes.png" width="300" alt="Big stories get more room: a large card between smaller ones"> | <img src="docs/screenshots/04-layouts.png" width="300" alt="Four layouts to choose from: the Mosaic layout"> |
 | <img src="docs/screenshots/05-list.png" width="300" alt="The whole list at a glance: the compact List layout"> | <img src="docs/screenshots/06-reader.png" width="300" alt="Read without the clutter: a full article in the reader"> |
 | <img src="docs/screenshots/07-catch-up.png" width="300" alt="Catch up in one tap: the filter sheet with mark-as-read choices by age"> | <img src="docs/screenshots/08-dark.png" width="300" alt="Easy on the eyes at night: the feed in dark mode"> |
+
+On a tablet:
+
+<img src="docs/screenshots/09-tablet-columns.png" width="620" alt="Made for the big screen: three columns of headlines on a tablet">
+
+<img src="docs/screenshots/10-tablet-side-by-side.png" width="620" alt="Your feed stays in view: an article open with the feed beside it">
 
 </div>
 
