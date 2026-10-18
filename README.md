@@ -98,6 +98,13 @@ itself. [Obtainium](https://github.com/ImranR98/Obtainium) does it for you:
 add `https://github.com/Nyancat-Labs/whisper_feed` as an app, and it tells you
 when a new release is out and installs it.
 
+**Pick one source and stay with it.** Each one signs Whisper with a different
+key: Google Play with Google's, F-Droid with its own, and GitHub (and so
+Obtainium) with ours. Android only installs an update signed with the same key
+as the copy on your phone, so moving between them means uninstalling first.
+Make a copy in Settings → Backup and Restore before you do, and restore it
+afterwards: your subscriptions and settings come across, saved articles don't.
+
 Updates have to come from the place you installed from. GitHub, Play and
 F-Droid sign the app with three different keys, and Android will not update
 an app with a copy signed by a different key. To switch, uninstall first

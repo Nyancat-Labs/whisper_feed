@@ -68,9 +68,12 @@ import java.io.File
 @Config(sdk = [35], application = Application::class)
 class MigrationTest {
 
-    private val current = 26
     private val first = 3
     private val schemas = File("schemas/${NeoFeedDb::class.java.name}")
+
+    // The newest exported schema, so a new version is covered the moment
+    // its schema is exported rather than when someone remembers this test.
+    private val current = schemas.list()!!.maxOf { it.removeSuffix(".json").toInt() }
 
     @get:Rule
     val folder = TemporaryFolder()
@@ -191,6 +194,8 @@ class MigrationTest {
                     .build()
                 try {
                     val db = room.openHelper.writableDatabase
+                    // The app's own version, so an unexported schema shows up here.
+                    if (db.version != current) failures += "from $from: opened at ${db.version}, newest schema is $current"
                     val names = seeded.map { it.name }
                     // What each surviving table should still hold. Version 3
                     // kept its articles in FeedArticle, and the move to
@@ -205,6 +210,10 @@ class MigrationTest {
                         val found = count(db, table)
                         if (found != rows) failures += "from $from: $table has $found rows, expected $rows"
                     }
+                    // A feed that existed before Show in All must stay in All.
+                    val hidden = db.query("SELECT COUNT(*) FROM Feeds WHERE showInAll != 1")
+                        .use { it.moveToFirst(); it.getInt(0) }
+                    if (hidden != 0) failures += "from $from: $hidden feeds left out of All"
                 } finally {
                     room.close()
                 }
