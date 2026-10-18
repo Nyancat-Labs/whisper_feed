@@ -76,5 +76,11 @@ class SyncTimingTest {
         assertFalse(isThinExtraction(extractedChars = 4_800, feedChars = 340))
         // A feed with no text of its own takes whatever the page gives.
         assertFalse(isThinExtraction(extractedChars = 25, feedChars = 0))
+        // xkcd: the entry is the comic alone, the page only the site's footer.
+        assertTrue(isThinExtraction(extractedChars = 340, feedChars = 0, extractedPictures = 0, feedPictures = 1))
+        // The page has the picture too: the page.
+        assertFalse(isThinExtraction(extractedChars = 340, feedChars = 0, extractedPictures = 1, feedPictures = 1))
+        // A thumbnail and a summary against a full article without pictures: still the page.
+        assertFalse(isThinExtraction(extractedChars = 4_800, feedChars = 200, extractedPictures = 0, feedPictures = 1))
     }
 }

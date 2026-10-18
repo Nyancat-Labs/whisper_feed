@@ -421,7 +421,13 @@ suspend fun parseFullArticle(
         // back as its timestamp alone, and replaced the feed's own paragraph
         // and picture in the reader. Kept as the feed has it instead.
         val extracted = article.textContent.orEmpty().trim().length
-        if (isThinExtraction(extracted, feedTextLength(feedItem.uuid, filesDir))) {
+        val feed = feedMeasure(feedItem.uuid, filesDir)
+        if (isThinExtraction(
+                extracted, feed.chars,
+                extractedPictures = article.articleContent?.select("img")?.size ?: 0,
+                feedPictures = feed.pictures,
+            )
+        ) {
             Log.i("FeederFullText", "Page gave less than the feed; keeping the feed's")
             return@withContext false to ThinExtraction()
         }
@@ -458,13 +464,27 @@ class ThinExtraction : java.io.IOException("the page gave less than the feed")
  * Whether [extractedChars] from the page is worth less than the [feedChars]
  * the feed already carried. A full article is more than its excerpt; one that
  * is not was extracted from the wrong part of the page. A feed with no text
- * of its own takes whatever the page gives.
+ * of its own takes whatever the page gives - unless what it has is a
+ * picture and the page gave none. xkcd's entry is the comic and nothing
+ * else, and its page came out as the site's footer ("best viewed with
+ * Netscape Navigator"), which replaced the comic in the reader.
  */
-internal fun isThinExtraction(extractedChars: Int, feedChars: Int): Boolean =
-    feedChars > 0 && extractedChars < feedChars
+internal fun isThinExtraction(
+    extractedChars: Int,
+    feedChars: Int,
+    extractedPictures: Int = 0,
+    feedPictures: Int = 0,
+): Boolean =
+    feedChars > 0 && extractedChars < feedChars ||
+        feedChars == 0 && feedPictures > 0 && extractedPictures == 0
 
-/** The visible length of the feed's own text for an article, or 0. */
-private fun feedTextLength(uuid: String, filesDir: File): Int = runCatching {
-    if (!blobFile(uuid, filesDir).isFile) return@runCatching 0
-    blobInputStream(uuid, filesDir).bufferedReader().use { org.jsoup.Jsoup.parse(it.readText()).text().trim().length }
-}.getOrDefault(0)
+private class FeedMeasure(val chars: Int, val pictures: Int)
+
+/** The visible length of the feed's own text for an article, and its pictures; nothing when there is none. */
+private fun feedMeasure(uuid: String, filesDir: File): FeedMeasure = runCatching {
+    if (!blobFile(uuid, filesDir).isFile) return@runCatching FeedMeasure(0, 0)
+    blobInputStream(uuid, filesDir).bufferedReader().use {
+        val document = org.jsoup.Jsoup.parse(it.readText())
+        FeedMeasure(document.text().trim().length, document.select("img").size)
+    }
+}.getOrDefault(FeedMeasure(0, 0))

@@ -143,7 +143,11 @@ class RealFeedReport {
                 val chars = extracted?.textContent.orEmpty().trim().length
                 when {
                     extracted == null -> source = "feed (extraction failed)"
-                    isThinExtraction(chars, Jsoup.parse(feedText).text().trim().length) -> source = "feed (page thinner)"
+                    isThinExtraction(
+                        chars, Jsoup.parse(feedText).text().trim().length,
+                        extractedPictures = extracted.articleContent?.select("img")?.size ?: 0,
+                        feedPictures = Jsoup.parse(feedText).select("img").size,
+                    ) -> source = "feed (page thinner)"
                     else -> {
                         source = "page"
                         stored = extracted.contentWithUtf8Encoding.orEmpty()
