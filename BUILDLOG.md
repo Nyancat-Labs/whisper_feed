@@ -4,6 +4,16 @@ What was done, when, and anything worth knowing next time. Newest first.
 What changed for users is in [`CHANGELOG.md`](CHANGELOG.md); what is next is
 in [`ROADMAP.md`](ROADMAP.md).
 
+## 18 October 2026 — Lawnchair whitelist request
+
+- Opened [LawnchairLauncher/lawnchair#7399](https://github.com/LawnchairLauncher/lawnchair/pull/7399)
+  against `16-dev` (their default now, not `15-dev`). One line in
+  `FeedBridge.kt`, using `getSignatureHash` like Neo Feed, since a fixed hash
+  would match only one of Play, F-Droid and GitHub. Edited in the browser,
+  which forked to `defsix/lawnchair` and committed to `patch-1`.
+- Waiting on a maintainer. This session cannot read Lawnchair's PR checks;
+  GitHub notifies the PR's author.
+
 ## 18 October 2026 — 1.0.5 released
 
 - **Google Play:** `Whisper_1.0.5_release.aab` (version code 6) sent to

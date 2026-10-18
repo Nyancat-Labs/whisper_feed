@@ -77,4 +77,9 @@ Whisper has been in daily use on Lawnchair through the debug toggle. I have not 
 
 - [x] Release signing key, and all three signers known
 - [x] A tagged release on every channel (1.0.5, 18 October 2026)
-- [ ] Pull request opened
+- [x] Pull request opened, 18 October 2026:
+      [LawnchairLauncher/lawnchair#7399](https://github.com/LawnchairLauncher/lawnchair/pull/7399),
+      from `defsix:patch-1`, commit 0f13ea3
+- [ ] Merged
+- [ ] In a Lawnchair release (then: README and the in-app Lawnchair note can
+      drop the "Ignore feed whitelist" step)
