@@ -3273,6 +3273,35 @@ styling. What to take, and when:
 Already ours, so not taken: settings in categories, an About page that opens
 with how to get in touch, and a picker for what the feed shows (the chips).
 
+## Checking the reader against real feeds — after 1.0.5
+
+Asked for on 18 October 2026, after two reader faults turned up on one
+Engadget article in an evening (a picture's credit left behind, an RSS
+address in the byline). Both would have been caught by looking at many
+articles at once rather than one at a time on the phone.
+
+No emulator in the cloud container (no hardware virtualisation), so not the
+app itself. Instead, two passes:
+
+- **The reader's own code over real articles.** Take the owner's OPML (128
+  feeds), fetch each feed and its newest articles, and run every one through
+  the same `readerBody` the app uses. Flag what is already known to go wrong:
+  a caption or credit with no picture, a picture twice, the headline
+  repeated, an address or "By" in the byline, an article left nearly empty,
+  a picture with no usable address. A report per feed, so a site's habit
+  shows up once rather than as fifty articles.
+- **Screens rendered off the device**, with the settings backup applied:
+  reader pages at each text size, feed cards in each layout, the settings
+  screens, as images to look over. Robolectric renders Compose already for
+  the tests.
+
+What it cannot see: scrolling, the launcher panel, notifications, sync
+timing. Those stay with testing on the phone.
+
+The owner's OPML and settings backup were handed over on 18 October for
+this. They are not in the repository: the settings carry a home location.
+A session that picks this up asks for them again.
+
 ## Debt worth clearing
 
 - ~~**F-Droid shows the old screenshots**~~ — done on 16 October 2026:
