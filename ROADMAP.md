@@ -3302,6 +3302,15 @@ The owner's OPML and settings backup were handed over on 18 October for
 this. They are not in the repository: the settings carry a home location.
 A session that picks this up asks for them again.
 
+## Saved articles in the backup — noted 18 October 2026
+
+The backup holds subscriptions and settings, not saved articles. That matters
+most to someone moving between Play, F-Droid and GitHub, who has to uninstall
+to do it (each is signed with a different key) and loses their Bookmarks on
+the way. Worth adding to the backup file.
+
+---
+
 ## Debt worth clearing
 
 - ~~**F-Droid shows the old screenshots**~~ — done on 16 October 2026:
