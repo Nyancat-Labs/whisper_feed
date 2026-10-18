@@ -3,80 +3,78 @@
 ## Where to send it
 
 **A pull request to [LawnchairLauncher/lawnchair](https://github.com/LawnchairLauncher/lawnchair),
-targeting the `15-dev` branch.** Their CONTRIBUTING.md is explicit that all PRs
-target `15-dev`, and classes a one-line whitelist addition as "simple,
-self-contained work": open the PR, assign a reviewer, enable auto-merge.
+targeting `16-dev`.** Their development workflow
+(docs.lawnchair.app/developers/standards/development-workflow) says PRs target
+`16-dev`, and a single-file change is "Simple": open the PR, assign a reviewer,
+enable auto-merge. Commits follow Conventional Commits, `type(scope): subject`.
 
-Worth raising it in chat first, since it needs a maintainer to accept a
-third-party package:
+## The line
 
-- Telegram: https://t.me/lccommunity
-- Discord: https://discord.com/invite/3x8qNWxgGZ
-
-## What has to be in the PR
-
-One line in `lawnchair/src/app/lawnchair/FeedBridge.kt`, in
-`initializeWhitelist`:
+In `lawnchair/src/app/lawnchair/FeedBridge.kt`, in `initializeWhitelist`,
+straight after the Neo Feed entry:
 
 ```kotlin
-whitelist["com.nyancatlabs.whisper"] = 0x________   // release signing certificate hash
+whitelist["com.nyancatlabs.whisper"] = getSignatureHash(context, "com.nyancatlabs.whisper")
 ```
 
-**This cannot be written until the release signing key exists.** The value is
-the hash of the certificate the release APK is signed with; a debug-signed
-build would put the wrong number in Lawnchair's source permanently.
+### Why this form and not a fixed hash
 
-There is a second form already in that file:
+The whitelist is a map with one hash per package, and Whisper is signed three
+ways:
 
-```kotlin
-whitelist["com.saulhdev.neofeed"] = getSignatureHash(context, "com.saulhdev.neofeed")
+- Google Play: Google's app signing key (Play re-signs bundles)
+- F-Droid: F-Droid's key, SHA-256 A8:DD:E0:89:93:25:1F:DF:4A:35:99:C2:C4:FF:53:CF:CE:88:0C:19:26:3E:20:08:03:04:5C:81:16:AB:71:6B
+- GitHub releases and Obtainium: ours, SHA-256 D4:54:52:45:6C:89:FE:AF:2D:D5:A4:90:10:EF:14:93:70:A4:09:B6:3A:15:31:02:7B:D4:CA:A8:2F:88:B1:64
+
+A fixed entry would let in one of the three. `getSignatureHash` reads the hash
+of whatever is installed, which is how Neo Feed, Whisper's parent, is listed.
+
+Known limit, shared with Neo Feed: the whitelist is built once when Lawnchair
+starts, so a Whisper installed afterwards shows up after Lawnchair restarts.
+
+## The pull request
+
+**Commit message:** `feat(feed): add Whisper to the feed provider whitelist`
+
+**Title:** `feat(feed): add Whisper to the feed provider whitelist`
+
+**Body** (their template's headings):
+
+```
+### Description
+
+Adds Whisper (`com.nyancatlabs.whisper`) to the feed provider whitelist, so it can be chosen as the feed without turning on "Ignore feed whitelist".
+
+Whisper is an open-source RSS reader (GPL-3.0, https://github.com/Nyancat-Labs/whisper_feed) and a fork of Neo Feed, which is already on the list. It implements the same `com.android.launcher3.WINDOW_OVERLAY` service, so nothing else changes on Lawnchair's side.
+
+### Reasoning
+
+The entry uses `getSignatureHash`, as Neo Feed's does, rather than a fixed hash. Whisper ships signed three ways: Google Play re-signs it with Google's key, F-Droid builds and signs it with theirs, and GitHub releases carry ours. The whitelist holds one hash per package, so a fixed value would only let in one of the three. Like Neo Feed, a Whisper installed while Lawnchair is running appears after Lawnchair restarts.
+
+Whisper is a reader rather than a Discover replacement: sources the user picks, no account, no recommendation service, and nothing leaves the device unless the user turns on a backup.
+
+### Testing
+
+1. Install Whisper from Google Play, F-Droid or the GitHub release.
+2. With "Ignore feed whitelist" off, open Lawnchair's settings, then Feed provider.
+3. Whisper is listed and can be chosen; swiping right from the home screen opens it.
+
+Whisper has been in daily use on Lawnchair through the debug toggle. I have not built Lawnchair with this change myself; the line mirrors the Neo Feed entry above it.
+
+### Type of change
+
+:x: **Bug fix** (A non-breaking change that fixes an issue)
+:white_check_mark: **New feature** (A non-breaking change that adds functionality)
+:x: **Breaking change** (A fix or feature that would cause existing functionality to not work as expected)
+:x: **Refactor** (A code change that neither fixes a bug nor adds a feature)
+:x: **Performance** (A code change that improves performance)
+:x: **Style** (Code style changes)
+:x: **Docs** (Changes to documentation)
+:x: **Chore** (Changes to the build process or other tooling)
 ```
 
-which computes the hash from whatever is installed — i.e. accepts any
-signature. Neo Feed has it; nothing else does. Asking for the fixed-hash form
-is the better ask: it is what the other six entries use, and it is the form
-that actually verifies anything.
+## Status
 
-## The draft
-
-> **Subject / PR title:** Add Whisper to the feed provider whitelist
->
-> Hello,
->
-> I maintain Whisper, an open-source RSS reader that can serve as a launcher
-> feed provider. I would like to ask for its package to be added to
-> `FeedBridge`'s whitelist so that Lawnchair users can select it without
-> turning on "Ignore feed whitelist" in the debug menu.
->
-> **Package:** `com.nyancatlabs.whisper`
-> **Source:** https://github.com/Nyancat-Labs/whisper_feed
-> **Licence:** GPL-3.0
-> **Signature hash:** `0x________`
->
-> Whisper is a fork of Neo Feed (`com.saulhdev.neofeed`), which is itself a
-> fork of iTaysonLab's HomeFeeder (`ua.itaysonlab.homefeeder`) — both of which
-> are already on the whitelist. It implements the same
-> `com.android.launcher3.WINDOW_OVERLAY` service and the same
-> `ua.itaysonlab.hfsdk` interface, so nothing on Lawnchair's side needs to
-> change beyond the whitelist entry itself.
->
-> It is a reader rather than a Discover replacement: user-chosen RSS sources,
-> no recommendation service, no account required, and no data leaves the device
-> unless the user turns on a backup themselves. It has been tested against
-> Lawnchair on-device using the debug toggle, which is the only reason this
-> request is about convenience rather than function.
->
-> I am happy to open the pull request against `15-dev` myself, or to provide
-> anything else you need — a signed release build to verify the hash against,
-> for instance.
->
-> Thank you for maintaining Lawnchair.
->
-> — defsix
-
-## Before sending
-
-- [ ] Release signing key created, and the certificate hash computed
-- [ ] A tagged release exists that the hash corresponds to
-- [ ] The repository is renamed, if that is happening first — the PR should not
-      contain a link that is about to move
+- [x] Release signing key, and all three signers known
+- [x] A tagged release on every channel (1.0.5, 18 October 2026)
+- [ ] Pull request opened
