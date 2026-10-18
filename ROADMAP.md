@@ -3242,13 +3242,46 @@ only, three or four steps, applied in `HtmlToComposable` where the reader's
 text is composed, leaving the feed and the chrome alone. That avoids every
 layout problem above and covers the case people actually complain about.
 
+**Decided, 18 October 2026.** The smallest version above goes in 1.0.5:
+article body only, Small / Default / Large / Larger, in the reader. The full
+version comes in a later release, shaped by Harmonic (see *From Harmonic*,
+below): a sample card pinned at the top of the Feed settings that changes as
+each setting does, with two sliders under it, one for feed text and one for
+article text. The sample card is what makes the feed slider safe to offer: a
+headline cut short by a larger size shows there, before the reader leaves
+Settings.
+
+## From Harmonic, 18 October 2026
+
+Harmonic, the open-source Hacker News reader, as a reference for settings and
+styling. What to take, and when:
+
+- **The sample card and two text sizes**, as above. Release after 1.0.5.
+- **Choices as button rows rather than dialogs** (Off / Small / Large), for
+  the settings that still open a picker. Small. Same release as the sample
+  card, since both are settings work.
+- **Cards tinted from their picture or site icon.** Optional, and very muted
+  if at all: a tinted feed is a busier one, which is against "calm". Costs a
+  colour pass per image, so with Coil 3. Expressive release.
+- **Grouped, rounded settings and large bold titles**, Expressive's own shape.
+  Waits for `material3` 1.5.0 stable. Expressive release.
+- **A choice of look on first launch** (Harmonic's "Expressive / Simple"),
+  as Calm or Vivid in the onboarding. Only once there is a vivid look to
+  offer, so after the tinted cards. Expressive release.
+
+Already ours, so not taken: settings in categories, an About page that opens
+with how to get in touch, and a picker for what the feed shows (the chips).
+
 ## Debt worth clearing
 
 - ~~**F-Droid shows the old screenshots**~~ — done on 16 October 2026:
   `fastlane/metadata/android/en-US/images/phoneScreenshots/` now holds the
   eight styled Play images at full size, so F-Droid matches Play from its
-  next build. Still to add: the tablet set, as `tenInchScreenshots/`, once
-  taken.
+  next build. The tablet set followed on 18 October, as `tenInchScreenshots/`:
+  four images from the Galaxy Tab S5e, styled to match.
+- ~~**Android developer verification**~~ — confirmed 18 October 2026: Play
+  Console lists both signing keys as Verified, ours (`D4:54:52:45…B1:64`) and
+  F-Droid's (`A8:DD:E0:89…71:6B`).
 
 Small, and cheaper now than later.
 

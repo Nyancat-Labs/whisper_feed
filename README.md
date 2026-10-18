@@ -16,6 +16,9 @@ disagree.
 ![Tests](https://img.shields.io/badge/tests-1136%20passing-success)
 ![No trackers](https://img.shields.io/badge/trackers-none-success)
 
+<a href="https://play.google.com/store/apps/details?id=com.nyancatlabs.whisper"><img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play" height="80"></a>
+<a href="https://f-droid.org/packages/com.nyancatlabs.whisper/"><img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" alt="Get it on F-Droid" height="80"></a>
+
 </div>
 
 ---
