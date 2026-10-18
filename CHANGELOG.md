@@ -6,6 +6,28 @@ kept because Whisper is a fork of it and the work is inherited rather than
 replaced — but those are not Whisper releases, and the version numbers are not
 Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 
+Unreleased
+----------
+
+- **The headline once, not twice.** Many sites put a short line above their
+  own headline, such as a category, a date or "Advertisement", and the
+  reader kept the page's copy of the headline under its own. It now finds
+  it a few lines down and takes it out, along with that short line.
+- **Pictures that load as you scroll now show.** On sites such as IEEE
+  Spectrum and SoraNews24 the reader drew a blank where each picture should
+  be. Articles already saved get their pictures back too.
+- **Pictures kept for browsers without scripts come through.** Inverse's
+  pictures inside its articles only exist in that form, and none of them
+  survived into the reader.
+- **xkcd shows the comic.** The reader preferred the page to the feed, and
+  the page gave the site's footer instead of the comic.
+- **A picture's credit leaves with the picture**, now also when the page
+  sets the credit apart from it.
+- **No leftover labels.** Lines that are only "Advertisement", "Sign up to
+  newsletter", "Related articles" and the like are taken out.
+
+These came from running the reader over 476 articles from 129 real feeds.
+
 1.0.5 — 18 October 2026
 -----------------------
 

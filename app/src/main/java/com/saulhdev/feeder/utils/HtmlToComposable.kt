@@ -162,6 +162,7 @@ fun LazyListScope.htmlFormattedText(
         .body()
         .let { body ->
             restoreLazyImages(body)
+            dropFurnitureLines(body)
             stripRepeatedTitle(body, articleTitle)
             ensureLeadImage(body, leadImageUrl)
             dropRepeatedImages(body)
@@ -548,6 +549,7 @@ fun readerBody(
 ): ReaderBody {
     val body = Jsoup.parse(inputStream, null, baseUrl).body()
     restoreLazyImages(body)
+    dropFurnitureLines(body)
     stripRepeatedTitle(body, articleTitle)
     stripBylineNoise(body, author)
     val card = usableImageUrl(leadImageUrl?.trim())
@@ -631,6 +633,30 @@ private val STRAY_CREDIT = Regex(
         """^(?:photo|image|picture|photograph)\s*:|^courtesy\b|""" +
         """(?:shutterstock|getty images|alamy|reuters|afp|ap photo|epa|kobal|imagebroker|""" +
         """pa images|pa wire|sportsfile|inpho|bloomberg|unsplash)\)?$""",
+)
+
+/**
+ * Takes out lines that are only page furniture: "Advertisement", "Sign up to
+ * newsletter", "Related articles", "Add as a preferred source on Google".
+ *
+ * Found across 129 real feeds where an ad slot or a sign-up box had been
+ * emptied but kept its label. A line goes only when it is one of these and
+ * nothing else; a sentence that mentions an advertisement is the article's.
+ * "Sign up for free access to this post" stays: on a gated story it is what
+ * says why the text stops.
+ */
+internal fun dropFurnitureLines(body: Element) {
+    body.select("*")
+        .filter { isTextLine(it) && it.selectFirst("img, picture, figure, video") == null }
+        .filter { FURNITURE.matches(it.text().replace('\u00A0', ' ').trim()) }
+        .forEach { it.remove() }
+}
+
+private val FURNITURE = Regex(
+    """(?i)(?:advertisements?|sponsored(?: content)?|related (?:articles|stories|content)|""" +
+        """you may also like|recommended for you|most popular|add as a preferred source on google|""" +
+        """subscriber-only newsletter|sign up to (?:our |the )?newsletters?|sign up to [\p{L}'’ ]{1,30}|""" +
+        """subscribe to [\p{L}'’ ]{1,40} updates)""",
 )
 
 /** Takes out every picture in [body] that is [picture] at some other address or size. */

@@ -4,6 +4,17 @@ What was done, when, and anything worth knowing next time. Newest first.
 What changed for users is in [`CHANGELOG.md`](CHANGELOG.md); what is next is
 in [`ROADMAP.md`](ROADMAP.md).
 
+## 18 October 2026 — Reader fixes from the real-feed check
+
+- Headline repeated under a kicker, lazily loaded pictures, xkcd's comic,
+  stray credits, furniture labels, and noscript-only pictures. Each pushed
+  separately with its tests; details in CHANGELOG.md under Unreleased.
+- Measured on the same 476 articles: 100 flags to 16, pictures 1512 to 1526.
+- Full suite: 1170 passing, 1 skipped (RealFeedReport, which needs the data).
+- The noscript and xkcd fixes act when an article is fetched, so articles
+  already stored keep their old text until they age out. The others act in
+  the reader and mend stored articles as well.
+
 ## 18 October 2026 — Reader checked against real feeds
 
 - `scripts/real-feed-check.py` and `RealFeedReport`: the owner's 129 feeds,

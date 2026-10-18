@@ -3286,7 +3286,19 @@ gave less, the rest from the feed because the page did not come back. Most of
 those were 403s from sites refusing a data-centre address, which the phone is
 not; 8 feeds could not be fetched at all for the same reason.
 
-### Faults, in the order worth fixing
+### Fixed, same day
+
+All five below, and the noscript pictures found while fixing them, are in
+main for the next release. Re-running the check on the same 476 articles: 100
+flags down to 16, and 14 more pictures shown (1512 to 1526). Of the 16, one is
+a deliberate keep (404 Media's "Sign up for free access to this post", which
+says why a gated story stops), six are the smaller items under 6, and the
+rest are the check misreading an intact caption.
+
+Also found while fixing: **Inverse's pictures inside the article** were only
+in `<noscript>`, which Readability removes; now unwrapped before extraction.
+
+### Faults, in the order they were fixed
 
 1. **The headline twice.** 12 sources (Ars Technica, TechCrunch, The Register,
    Polygon, Futurism, Inverse, Al Jazeera, TheJournal.ie, 404 Media, TechHive,
@@ -3315,8 +3327,13 @@ not; 8 feeds could not be fetched at all for the same reason.
    updates", "Related articles" (The Portugal News), "Add as a preferred
    source on Google" (Lifehacker). Fix: drop a line that is exactly one of
    these, never a sentence that contains one.
-6. **Smaller.** The Portugal News leaves "By , in News · 18 Oct 2026 · 0
-   Comments"; 9to5Toys keeps its related-deals block, pictures and all.
+6. **Smaller, not yet fixed.** The Portugal News leaves "By , in News · 18
+   Oct 2026 · 0 Comments"; 9to5Toys keeps its related-deals block, pictures
+   and all; Ars Technica's captions appear twice (a hidden copy for its
+   gallery); Lifehacker's author hover card ("Experience … Read Full Bio")
+   comes through at the top, with the lead picture's credit under it; xkcd's
+   hover text, the joke under the joke, is lost when the comic moves to the
+   top.
 
 ### Not faults
 
