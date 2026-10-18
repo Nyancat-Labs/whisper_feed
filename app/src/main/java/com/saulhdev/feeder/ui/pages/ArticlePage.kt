@@ -51,6 +51,11 @@ import com.saulhdev.feeder.utils.blobFile
 import com.saulhdev.feeder.utils.blobFullFile
 import com.saulhdev.feeder.utils.blobFullInputStream
 import com.saulhdev.feeder.utils.blobInputStream
+import com.saulhdev.feeder.data.content.FeedPreferences
+import com.saulhdev.feeder.data.content.asState
+import org.koin.compose.koinInject
+import com.saulhdev.feeder.ui.theme.scaled
+import com.saulhdev.feeder.utils.readerTextScale
 import com.saulhdev.feeder.utils.extensions.koinNeoViewModel
 import com.saulhdev.feeder.utils.extensions.launchView
 import com.saulhdev.feeder.utils.extensions.shareIntent
@@ -87,6 +92,8 @@ fun ArticlePage(
 ) {
     val context = LocalContext.current
     val timeFormat = LocalTimeFormat.current
+    val prefs: FeedPreferences = koinInject()
+    val textSize by prefs.readerTextSize.asState()
     val activity = LocalActivity.current
 
     val state by viewModel.articleState.collectAsState(initial = null)
@@ -247,6 +254,13 @@ fun ArticlePage(
             }
         }
     ) { paddingValues ->
+      // The article's text at the reader's chosen size, and only the article:
+      // the top bar above stays the app's own size. See readerTextScale.
+      MaterialTheme(
+          colorScheme = MaterialTheme.colorScheme,
+          shapes = MaterialTheme.shapes,
+          typography = MaterialTheme.typography.scaled(readerTextScale(textSize)),
+      ) {
         SelectionContainer {
             BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
                 // At most about 75 characters a line. A phone on its side or a
@@ -388,6 +402,7 @@ fun ArticlePage(
                 }
             }
         }
+      }
     }
 }
 

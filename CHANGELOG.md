@@ -9,6 +9,10 @@ Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 Unreleased
 ----------
 
+- **Article text size.** Settings → Article text size, under Reading: Small,
+  Default, Large or Larger. It sizes the article in the reader, headline and
+  all, and leaves the feed as it is. Android's own font size still applies on
+  top. Suggested by a reader, and the second person to ask.
 - **No "Syncing" notice left behind.** One sync ended as the phone dozed and
   its notice stayed up for most of an hour with nothing running. Whisper now
   looks a minute after every sync, when the app or the launcher panel is

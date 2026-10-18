@@ -114,6 +114,35 @@ fun getTimeFormats(context: Context): Map<String, String> {
     )
 }
 
+const val READER_TEXT_SMALL = "small"
+const val READER_TEXT_DEFAULT = "default"
+const val READER_TEXT_LARGE = "large"
+const val READER_TEXT_LARGER = "larger"
+
+fun getReaderTextSizes(context: Context): Map<String, String> {
+    return mapOf(
+        READER_TEXT_SMALL to context.resources.getString(R.string.reader_text_small),
+        READER_TEXT_DEFAULT to context.resources.getString(R.string.reader_text_default),
+        READER_TEXT_LARGE to context.resources.getString(R.string.reader_text_large),
+        READER_TEXT_LARGER to context.resources.getString(R.string.reader_text_larger),
+    )
+}
+
+/**
+ * How much the reader's text is scaled for each step.
+ *
+ * On top of Android's own font size, which still applies: the two multiply,
+ * so Larger at a 130% system size is about 170%. Steps of roughly 15%, each
+ * one a visible change without the largest pushing a phone's line below
+ * thirty-odd characters.
+ */
+fun readerTextScale(size: String): Float = when (size) {
+    READER_TEXT_SMALL -> 0.9f
+    READER_TEXT_LARGE -> 1.15f
+    READER_TEXT_LARGER -> 1.3f
+    else -> 1f
+}
+
 fun getSortingOptions(context: Context): Map<String, String> {
     return mapOf(
         SORT_CHRONOLOGICAL to context.resources.getString(R.string.sorting_chronological),

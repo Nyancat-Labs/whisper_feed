@@ -36,6 +36,8 @@ import com.saulhdev.feeder.ui.icons.phosphor.ListDashes
 import com.saulhdev.feeder.ui.icons.phosphor.Prohibit
 import com.saulhdev.feeder.utils.getFeedLayouts
 import com.saulhdev.feeder.utils.getTimeFormats
+import com.saulhdev.feeder.utils.getReaderTextSizes
+import com.saulhdev.feeder.utils.READER_TEXT_DEFAULT
 import com.saulhdev.feeder.utils.TIME_RELATIVE
 import com.saulhdev.feeder.utils.LAYOUT_CARDS
 import com.saulhdev.feeder.ui.icons.phosphor.Asterisk
@@ -214,6 +216,24 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
         dataStore = dataStore,
         defaultValue = TIME_RELATIVE,
         entries = getTimeFormats(context),
+    )
+
+    /**
+     * The size of an article's text in the reader: Small, Default, Large or
+     * Larger.
+     *
+     * Asked for by two readers, the second on 16 October 2026. The reader
+     * only, by decision: the feed's cards are laid out for the text they
+     * have, and a larger headline there needs a preview to choose by (see
+     * ROADMAP, *Text size*). The article is where small text is felt.
+     */
+    var readerTextSize = StringSelectionPref(
+        titleId = R.string.pref_reader_text_size,
+        icon = Phosphor.BookOpenUser,
+        key = READER_TEXT_SIZE,
+        dataStore = dataStore,
+        defaultValue = READER_TEXT_DEFAULT,
+        entries = getReaderTextSizes(context),
     )
 
     /* Glance row */
@@ -1230,6 +1250,7 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
         val DIM_SKIPPED = booleanKey("pref_dim_skipped")
         val SHOW_SUMMARIES = booleanKey("pref_show_summaries")
         val TIME_FORMAT = stringKey("pref_time_format")
+        val READER_TEXT_SIZE = stringKey("pref_reader_text_size")
 
         val FULL_TEXT_ALL_FEEDS = booleanKey("pref_full_text_all_feeds")
         val FULL_TEXT_ON_MOBILE = booleanKey("pref_full_text_on_mobile")

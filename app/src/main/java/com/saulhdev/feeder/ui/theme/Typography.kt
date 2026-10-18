@@ -1,5 +1,6 @@
 package com.saulhdev.feeder.ui.theme
 
+import androidx.compose.ui.unit.isSpecified
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
@@ -55,6 +56,39 @@ fun typographyFor(family: FontFamily): Typography {
         labelLarge = base.labelLarge.copy(fontFamily = family),
         labelMedium = base.labelMedium.copy(fontFamily = family),
         labelSmall = base.labelSmall.copy(fontFamily = family),
+    )
+}
+
+/**
+ * The same scale, every style's size and line height multiplied by [factor].
+ *
+ * For the reader's text size: the article is set from the type scale (body,
+ * headings, byline), so scaling the scale moves all of it together and keeps
+ * their proportions. Line heights move with the sizes, or larger text would
+ * crowd its own lines. Unspecified units stay unspecified.
+ */
+fun Typography.scaled(factor: Float): Typography {
+    if (factor == 1f) return this
+    fun TextStyle.scaled() = copy(
+        fontSize = if (fontSize.isSpecified) fontSize * factor else fontSize,
+        lineHeight = if (lineHeight.isSpecified) lineHeight * factor else lineHeight,
+    )
+    return Typography(
+        displayLarge = displayLarge.scaled(),
+        displayMedium = displayMedium.scaled(),
+        displaySmall = displaySmall.scaled(),
+        headlineLarge = headlineLarge.scaled(),
+        headlineMedium = headlineMedium.scaled(),
+        headlineSmall = headlineSmall.scaled(),
+        titleLarge = titleLarge.scaled(),
+        titleMedium = titleMedium.scaled(),
+        titleSmall = titleSmall.scaled(),
+        bodyLarge = bodyLarge.scaled(),
+        bodyMedium = bodyMedium.scaled(),
+        bodySmall = bodySmall.scaled(),
+        labelLarge = labelLarge.scaled(),
+        labelMedium = labelMedium.scaled(),
+        labelSmall = labelSmall.scaled(),
     )
 }
 

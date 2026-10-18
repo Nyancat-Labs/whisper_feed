@@ -228,6 +228,11 @@
     <string name="pref_show_summaries">Show summaries</string>
     <string name="pref_show_summaries_summary">The text under each headline. Turn off to keep just the picture and headline.</string>
     <string name="pref_time_format">Article times</string>
+    <string name="pref_reader_text_size">Article text size</string>
+    <string name="reader_text_small">Small</string>
+    <string name="reader_text_default">Default</string>
+    <string name="reader_text_large">Large</string>
+    <string name="reader_text_larger">Larger</string>
     <string name="time_format_relative">How long ago (2h)</string>
     <string name="time_format_clock">Time published (14:32)</string>
     <string name="time_format_both">Both (2h · 14:32)</string>

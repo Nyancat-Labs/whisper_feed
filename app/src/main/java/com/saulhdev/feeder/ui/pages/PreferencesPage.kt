@@ -111,6 +111,7 @@ fun PreferencesPage(
     /** What happens while reading it. */
     val readingPrefs = listOf(
         prefs.articleOpenMode,
+        prefs.readerTextSize,
         prefs.readVisibility,
         prefs.markReadOnScroll,
         prefs.volumeKeyScroll,

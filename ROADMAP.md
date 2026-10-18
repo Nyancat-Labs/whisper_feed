@@ -3172,8 +3172,9 @@ hiding on scroll, and day headings. Asked for, in the order she wrote them.
 
 First, these four, in this order:
 
-- **Text size in the app** — already here as *Text size*, below. The second
-  person to ask.
+- ~~**Text size in the app**~~ — **first version done** (Settings → Article
+  text size, reader only). The fuller version is *Text size*, below. The
+  second person to ask.
 - ~~**A setting to hide summaries**~~ — **done** (Settings → Show summaries). Keep the picture and headline, drop the
   text underneath. She confirmed this is what "headlines only" meant (the
   List layout already covers no pictures at all). Small: one switch read by
