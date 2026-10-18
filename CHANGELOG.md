@@ -6,8 +6,8 @@ kept because Whisper is a fork of it and the work is inherited rather than
 replaced — but those are not Whisper releases, and the version numbers are not
 Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 
-Unreleased
-----------
+1.0.5 — 18 October 2026
+-----------------------
 
 - **Article text size.** Settings → Article text size, under Reading: Small,
   Default, Large or Larger. It sizes the article in the reader, headline and

@@ -1,0 +1,5 @@
+- Article text size: Small to Larger, in Settings under Reading.
+- Keep a source out of All, so it has a tab of its own under its category.
+- Show summaries and Article times (2h, 14:32 or both) in Settings.
+- With read articles hidden, the last ones scroll away too, and saved ones move to Bookmarks once read.
+- Fixes: a stuck "Syncing" notice, picture credits left in the text, email addresses in bylines.

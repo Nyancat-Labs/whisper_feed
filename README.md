@@ -11,7 +11,7 @@ An RSS reader that tells you why it put an article where it did — and lets you
 disagree.
 
 [![Licence: GPL v3](https://img.shields.io/badge/licence-GPL--3.0-blue)](LICENSE)
-![Version 1.0.4](https://img.shields.io/badge/version-1.0.4-informational)
+![Version 1.0.5](https://img.shields.io/badge/version-1.0.5-informational)
 ![Android 8.0+](https://img.shields.io/badge/Android-8.0%2B-brightgreen)
 ![Tests](https://img.shields.io/badge/tests-1148%20passing-success)
 ![No trackers](https://img.shields.io/badge/trackers-none-success)
@@ -39,8 +39,8 @@ That is a bonus rather than the point — see
 
 ## Status
 
-**Version 1.0.4, released 12 October 2026.** On Google Play since
-15 October, on F-Droid since 16 October, and on GitHub.
+**Version 1.0.5, released 18 October 2026**, on Google Play, F-Droid and
+GitHub.
 
 The app has been through a full security, correctness and performance
 audit — see [`docs/AUDIT_2026-09.md`](docs/AUDIT_2026-09.md) — and is in
