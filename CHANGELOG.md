@@ -23,6 +23,12 @@ Unreleased
   the page gave the site's footer instead of the comic.
 - **A picture's credit leaves with the picture**, now also when the page
   sets the credit apart from it.
+- **Whole articles from sites that split them.** Ars Technica and Wired set
+  an article in several blocks with adverts between, and the reader kept
+  only the largest. Ars articles lost up to eight opening paragraphs; one
+  Wired review came through at a quarter of its length. The blocks are now
+  joined first. Ars's one-line subtitle no longer comes along, though its
+  feed carries it.
 - **No leftover labels.** Lines that are only "Advertisement", "Sign up to
   newsletter", "Related articles" and the like are taken out.
 

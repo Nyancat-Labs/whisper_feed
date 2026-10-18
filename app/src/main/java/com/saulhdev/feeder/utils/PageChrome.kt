@@ -68,6 +68,7 @@ import org.jsoup.nodes.Element
 fun stripPageChrome(document: Document) {
     document.select("aside").remove()
     imagesFromNoscript(document)
+    joinSplitArticle(document)
     figuresFromCredits(document)
 
     val body = document.body()
@@ -129,6 +130,36 @@ internal fun imagesFromNoscript(document: Document) {
         noscript.remove()
     }
 }
+
+/**
+ * Puts an article the page split around its adverts back into one piece.
+ *
+ * Ars Technica sets each article in several `div.post-content` blocks, two
+ * to eight of them, each in its own wrapper with an advert between. Readability
+ * takes the largest single block for the article, so every Ars article lost
+ * the rest: one opened on "…the company said" with the eight paragraphs
+ * saying which company gone. Blocks carrying the same article-body class,
+ * none inside another, are joined into the first, in page order.
+ */
+internal fun joinSplitArticle(document: Document) {
+    document.body().select("[class]")
+        .filter { ARTICLE_BODY_CLASS.containsMatchIn(it.className()) }
+        .groupBy { it.className() }
+        .values
+        .forEach { parts ->
+            val outermost = parts.filter { part -> part.parents().none { it in parts } }
+            if (outermost.size < 2) return@forEach
+            val first = outermost.first()
+            outermost.drop(1).forEach { part ->
+                part.childNodes().toList().forEach { first.appendChild(it) }
+                part.remove()
+            }
+        }
+}
+
+private val ARTICLE_BODY_CLASS = Regex(
+    """(?:^|\s)(?:post-content|post-body|article-body|article-content|article__body|entry-content|story-body)(?:\s|$)""",
+)
 
 private const val INLINE_TAGS =
     "span, a, em, strong, b, i, u, s, abbr, small, sup, sub, mark, cite, q, time, code, font"

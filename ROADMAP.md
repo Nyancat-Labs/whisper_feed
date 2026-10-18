@@ -3295,6 +3295,13 @@ a deliberate keep (404 Media's "Sign up for free access to this post", which
 says why a gated story stops), six are the smaller items under 6, and the
 rest are the check misreading an intact caption.
 
+Found by the owner on the Pixel 10 the same evening: **Ars Technica and
+Wired split each article around adverts**, and Readability kept only the
+largest block, so Ars articles opened partway through. The blocks are joined
+before extraction. Measured on the check's articles: 8 longer (Wired 1,948 to
+7,004 characters, Ars 2,066 to 3,904), none of their body text lost; Ars's
+kicker, standfirst and affiliate notice no longer come along.
+
 Also found while fixing: **Inverse's pictures inside the article** were only
 in `<noscript>`, which Readability removes; now unwrapped before extraction.
 

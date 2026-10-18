@@ -14,8 +14,13 @@ and Google Play builds on two other devices.
   stray credits, furniture labels, and noscript-only pictures. Each pushed
   separately with its tests; details in CHANGELOG.md under Unreleased.
 - Measured on the same 476 articles: 100 flags to 16, pictures 1512 to 1526.
-- Full suite: 1170 passing, 1 skipped (RealFeedReport, which needs the data).
-- The noscript and xkcd fixes act when an article is fetched, so articles
+- Full suite: 1173 passing, 1 skipped (RealFeedReport, which needs the data).
+- Split articles (Ars, Wired) found on the phone and fixed the same way.
+  Decided against a second purge of stored full text to apply it to articles
+  already fetched: with full text for every feed on, that is a week of pages
+  fetched again, and saved articles would lose their offline copy meanwhile.
+  They age out within the one-week sync window.
+- The noscript, split-article and xkcd fixes act when an article is fetched, so articles
   already stored keep their old text until they age out. The others act in
   the reader and mend stored articles as well.
 
