@@ -78,6 +78,62 @@ class RepeatedTitleTest {
     }
 
     @Test
+    fun `a kicker and a date above the headline go with it`() {
+        // TechCrunch, as Readability leaves it: loose text, then a date, then the title.
+        val out = strip(
+            "<div> In Brief <p>Posted:</p><p>2:31 PM PDT · October 17, 2026</p>" +
+                "<h1>Meta removes language that raised scraping concerns</h1>" +
+                "<p id=\"speakable-summary\">Meta recently updated its terms.</p></div>",
+            "Meta removes language that raised scraping concerns",
+        )
+        assertTrue("the headline is gone", !out.contains("<h1>"))
+        assertTrue("so is everything above it", !out.contains("In Brief") && !out.contains("Posted"))
+        assertTrue("the article is not", out.contains("Meta recently updated"))
+    }
+
+    @Test
+    fun `an affiliate notice above the headline goes with it`() {
+        // TechHive.
+        val out = strip(
+            "<p>When you purchase through links in our articles, we may earn a small commission. " +
+                "This doesn't affect our editorial independence.</p>" +
+                "<h1>Dell’s business laptop drops from \$1,099 to \$265</h1><p>Sponsored DealPost</p><p>Body.</p>",
+            "Dell's business laptop drops from \$1,099 to \$265",
+        )
+        assertTrue(!out.contains("<h1>") && !out.contains("commission"))
+        assertTrue(out.contains("Body."))
+    }
+
+    @Test
+    fun `a picture above the headline stays`() {
+        val out = strip(
+            "<p>France</p><figure><img src=\"https://example.com/a.jpg\"></figure>" +
+                "<h1>Macron vows full transparency</h1><p>Shops were looted.</p>",
+            "Macron vows full transparency",
+        )
+        assertTrue(!out.contains("<h1>") && !out.contains("France"))
+        assertTrue("the picture is not text to take away", out.contains("a.jpg"))
+    }
+
+    @Test
+    fun `a headline below the article's opening paragraph stays`() {
+        val intro = "Close to one billion meetings take place each day around the world. ".repeat(5)
+        val out = strip("<p>$intro</p><h1>Science says talk less</h1><p>More.</p>", "Science says talk less")
+        assertTrue("more than a kicker above it: the article had started", out.contains("<h1>"))
+        assertTrue(out.contains("Close to one billion"))
+    }
+
+    @Test
+    fun `an opening paragraph that is only the headline goes`() {
+        val title = "Clarence Seedorf calls out genocide in first Corinthians press conference"
+        val out = strip("<div><p>$title</p></div><p>In his first press conference as coach…</p>", title)
+        assertTrue(!out.contains("calls out genocide in first"))
+        assertTrue(out.contains("In his first press conference"))
+        // A paragraph that only starts like the headline is the article.
+        assertTrue(strip("<p>$title, he said.</p>", title).contains("he said"))
+    }
+
+    @Test
     fun `normalisation folds quotes dashes spaces and trailing punctuation`() {
         assertEquals(
             normalizedHeading("A Title — Here."),

@@ -182,22 +182,74 @@ fun LazyListScope.htmlFormattedText(
  * title twice, once in the reader's own type and again in the body's, set
  * differently and reading like a mistake because it is one.
  *
- * Only the *first* text-bearing block is considered, and only when it is a
- * heading. A later heading with the same words is a real section of the
- * article — a list piece whose first entry repeats the title, say — and
- * removing that would take away content rather than a duplicate.
+ * The first text-bearing block, when it is a heading, or a paragraph of
+ * exactly the headline's words. A later heading with
+ * the same words is a real section of the article — a list piece whose first
+ * entry repeats the title, say — and removing that would take away content
+ * rather than a duplicate.
+ *
+ * Or an `h1` a few lines down with only a little text above it. Checked
+ * against 129 real feeds, a dozen sources put something short over their
+ * headline: a kicker ("offbeat", "NewsFeed"), a date, "Advertisement", an
+ * affiliate notice. The headline then survived, and so did that line, which
+ * means nothing above the reader's own headline. Both go; a picture up there
+ * stays. Only an `h1`, the page's one title: a section is an `h2` or below.
  */
 internal fun stripRepeatedTitle(body: Element, articleTitle: String?) {
     val wanted = normalizedHeading(articleTitle.orEmpty())
     if (wanted.isEmpty()) return
-    val first = body.select("h1, h2, h3, h4, p, li, blockquote, pre, td")
-        .firstOrNull { it.text().isNotBlank() }
-        ?: return
-    if (first.tagName() !in HEADING_TAGS) return
-    val heading = normalizedHeading(first.text())
-    if (heading != wanted && heading != withoutSiteName(wanted) && withoutSiteName(heading) != wanted) return
-    first.remove()
+    val lines = body.select("h1, h2, h3, h4, p, li, blockquote, pre, td")
+        .filter { it.text().isNotBlank() }
+        .take(TITLE_LINES_LOOKED_AT)
+    val first = lines.firstOrNull() ?: return
+    // A plain paragraph only when it is the headline word for word: Al
+    // Jazeera's video pages caption the video with it.
+    if (first.tagName() in HEADING_TAGS && sameHeadline(first.text(), wanted) ||
+        first.tagName() == "p" && normalizedHeading(first.text()) == wanted
+    ) {
+        first.remove()
+        return
+    }
+    val heading = lines.drop(1).firstOrNull { it.tagName() == "h1" && sameHeadline(it.text(), wanted) } ?: return
+    val above = precedingNodes(heading, body)
+    if (above.sumOf { nodeText(it).length } > ABOVE_TITLE_CHARS) return
+    above.filter { it !is Element || (!it.`is`(MEDIA) && it.selectFirst(MEDIA) == null) }.forEach { it.remove() }
+    heading.remove()
 }
+
+private fun sameHeadline(text: String, wanted: String): Boolean {
+    val heading = normalizedHeading(text)
+    return heading == wanted || heading == withoutSiteName(wanted) || withoutSiteName(heading) == wanted
+}
+
+/** Everything before [element] in [root], in its own wrappers and theirs. */
+private fun precedingNodes(element: Element, root: Element): List<Node> {
+    val nodes = mutableListOf<Node>()
+    var at: Element = element
+    while (at != root) {
+        var sibling = at.previousSibling()
+        while (sibling != null) {
+            nodes += sibling
+            sibling = sibling.previousSibling()
+        }
+        at = at.parent() ?: break
+    }
+    return nodes
+}
+
+private fun nodeText(node: Node): String = when (node) {
+    is Element -> node.text().trim()
+    is TextNode -> node.text().trim()
+    else -> ""
+}
+
+/** How far down the text a repeated headline is looked for. */
+private const val TITLE_LINES_LOOKED_AT = 6
+
+/** As much text as a kicker, a date and an affiliate notice come to above a headline. */
+private const val ABOVE_TITLE_CHARS = 300
+
+private const val MEDIA = "img, picture, video, iframe, figure, svg"
 
 /**
  * Takes out the page's own byline and date lines from the top of the text.
