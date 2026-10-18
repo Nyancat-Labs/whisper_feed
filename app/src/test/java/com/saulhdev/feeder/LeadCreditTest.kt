@@ -126,4 +126,51 @@ class LeadCreditTest {
         assertTrue(text, text.contains("Delbert Harper/Getty Images"))
     }
 
+    @Test
+    fun `a credit set apart from the lifted picture goes too`() {
+        // Inverse: the picture's credit comes after the dek and the byline, not beside it.
+        val out = body(
+            """
+            <div><div><p>There is a creature alive today that has survived millions of years.</p>
+            <address>by <a href="/profile">Mark Hill</a></address></div>
+            <div><img src="https://imgix.bustle.com/shutterstock-589560a.jpg"></div>
+            <span>Splashdown/Michael Nolan/Shutterstock</span></div>
+            <p>${"Austin Abrams is having a challenging year, and the whale is only part of it. ".repeat(3)}</p>
+            """.trimIndent(),
+            card = "https://imgix.bustle.com/shutterstock-589560a.jpg?w=1200",
+        ).body.text()
+        assertFalse(out, out.contains("Shutterstock"))
+        assertTrue(out.contains("Mark Hill") && out.contains("Austin Abrams"))
+    }
+
+    @Test
+    fun `a Credit line above the article goes with the lifted picture`() {
+        // Lifehacker.
+        val out = body(
+            "<p><img src=\"https://lifehacker.com/lead.jpg\"></p>" +
+                "<p><span>Credit: Alexey Wraith/Shutterstock</span></p>" +
+                "<p>${"It will not surprise anyone that the settings are buried three menus deep. ".repeat(3)}</p>",
+        ).body.text()
+        assertFalse(out, out.contains("Credit:"))
+    }
+
+    @Test
+    fun `a credit in the article itself stays`() {
+        // Below the first full paragraph, a line ending "Reuters" is the article's business.
+        val story = "The minister spoke for an hour and answered questions from the press afterwards. ".repeat(3)
+        val out = body(
+            "<p><img src=\"https://example.com/lead.jpg\"></p><p>$story</p>" +
+                "<p><img src=\"https://example.com/second.jpg\"></p><p>Photo: Jane Doe/Reuters</p><p>$story</p>",
+        ).body.text()
+        assertTrue(out, out.contains("Photo: Jane Doe/Reuters"))
+    }
+
+    @Test
+    fun `a short line that only mentions an agency is not a credit`() {
+        val out = body(
+            "<p><img src=\"https://example.com/lead.jpg\"></p><p>Updated with comment from Reuters sources</p>" +
+                "<p>${"The minister spoke for an hour and answered questions afterwards. ".repeat(3)}</p>",
+        ).body.text()
+        assertTrue(out, out.contains("comment from Reuters sources"))
+    }
 }

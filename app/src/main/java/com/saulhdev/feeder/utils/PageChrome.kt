@@ -17,6 +17,7 @@
  */
 package com.saulhdev.feeder.utils
 
+import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 
@@ -66,6 +67,7 @@ import org.jsoup.nodes.Element
  */
 fun stripPageChrome(document: Document) {
     document.select("aside").remove()
+    imagesFromNoscript(document)
     figuresFromCredits(document)
 
     val body = document.body()
@@ -93,6 +95,39 @@ fun stripPageChrome(document: Document) {
     body.select(INLINE_TAGS)
         .filter { inline -> inline.parents().any { it.tagName() in TEXT_BLOCKS } }
         .forEach { it.removeAttr("class").removeAttr("id") }
+}
+
+/**
+ * Brings out pictures a page offers only inside `<noscript>`.
+ *
+ * Inverse draws every picture in its articles with a script and puts the
+ * real `<picture>` in a `<noscript>` beside it for browsers without one.
+ * Readability removes `noscript` blocks, so those articles came out with
+ * their captions and none of their pictures. Mozilla's Readability unwraps
+ * such images first; the port used here does not. A `noscript` holding a
+ * picture is replaced by its contents, unless its parent already has a
+ * working picture of its own, which is then the one to keep. A blank
+ * stand-in beside it goes.
+ */
+internal fun imagesFromNoscript(document: Document) {
+    document.body().select("noscript").forEach { noscript ->
+        val inner = Jsoup.parseBodyFragment(noscript.html(), document.location()).body()
+        if (inner.select("img").none { it.attr("src").isNotBlank() || it.attr("srcset").isNotBlank() }) return@forEach
+        val parent = noscript.parent() ?: return@forEach
+        val working = parent.select("img").any { img ->
+            img.parents().none { it.tagName() == "noscript" } && img.attr("src").let { it.startsWith("http") || it.startsWith("/") }
+        }
+        if (working) return@forEach
+        // The stand-in the script would have filled: blank, with nowhere to get a picture from.
+        parent.select("img")
+            .filter { img ->
+                img.attr("src").let { it.isBlank() || it.startsWith("data:") } &&
+                    img.attributes().none { it.key.startsWith("data-") && it.key.endsWith("src") }
+            }
+            .forEach { it.remove() }
+        inner.childNodes().toList().forEach { noscript.before(it) }
+        noscript.remove()
+    }
 }
 
 private const val INLINE_TAGS =

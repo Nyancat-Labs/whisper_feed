@@ -209,6 +209,8 @@ internal fun stripRepeatedTitle(body: Element, articleTitle: String?) {
         first.tagName() == "p" && normalizedHeading(first.text()) == wanted
     ) {
         first.remove()
+        // Al Jazeera has both: the video's caption, then the page's own h1.
+        stripRepeatedTitle(body, articleTitle)
         return
     }
     val heading = lines.drop(1).firstOrNull { it.tagName() == "h1" && sameHeadline(it.text(), wanted) } ?: return
@@ -553,10 +555,13 @@ fun readerBody(
         openingImage(body)?.let(::removePicture)
         dropCopiesOf(body, card)
         dropRepeatedImages(body)
+        dropStrayCredits(body)
         return ReaderBody(card, body)
     }
     dropRepeatedImages(body)
-    return ReaderBody(liftLeadImage(body), body)
+    val lead = liftLeadImage(body)
+    if (lead != null) dropStrayCredits(body)
+    return ReaderBody(lead, body)
 }
 
 /**
@@ -592,6 +597,41 @@ private fun isAddress(value: String): Boolean {
     val v = value.trim()
     return v.startsWith("https://") || v.startsWith("http://") || v.startsWith("//") || v.startsWith("/")
 }
+
+/**
+ * Takes out a picture credit left at the top once the opening picture has
+ * gone above the headline.
+ *
+ * [removePicture] takes a credit that sits beside its picture. Some pages
+ * set it apart: Inverse puts "Splashdown/Michael Nolan/Shutterstock" after
+ * the byline, Lifehacker "Credit: Alexey Wraith/Shutterstock" after a share
+ * button, and with the picture moved the line credits nothing. Only short
+ * lines shaped like a credit - "Credit:", "Photo:" and the like, or names
+ * ending in an agency - and only above the article's first full paragraph.
+ */
+internal fun dropStrayCredits(body: Element) {
+    var looked = 0
+    for (line in body.select("*").filter { isTextLine(it) }) {
+        if (looked++ >= CREDIT_LINES_LOOKED_AT) return
+        val text = line.text().trim()
+        if (text.length >= FULL_PARAGRAPH_CHARS) return
+        if (line.selectFirst("img, picture, figure, video") != null) continue
+        if (text.length <= LEFTOVER_CAPTION_CHARS && STRAY_CREDIT.containsMatchIn(text)) line.remove()
+    }
+}
+
+/** How far down the text a stray credit is looked for. */
+private const val CREDIT_LINES_LOOKED_AT = 8
+
+/** A line this long is the article itself, and the search stops there. */
+private const val FULL_PARAGRAPH_CHARS = 160
+
+private val STRAY_CREDIT = Regex(
+    """(?i)^(?:(?:image|photo|picture|photograph|header image|lead image)\s*)?credits?\s*:|""" +
+        """^(?:photo|image|picture|photograph)\s*:|^courtesy\b|""" +
+        """(?:shutterstock|getty images|alamy|reuters|afp|ap photo|epa|kobal|imagebroker|""" +
+        """pa images|pa wire|sportsfile|inpho|bloomberg|unsplash)\)?$""",
+)
 
 /** Takes out every picture in [body] that is [picture] at some other address or size. */
 internal fun dropCopiesOf(body: Element, picture: String) {

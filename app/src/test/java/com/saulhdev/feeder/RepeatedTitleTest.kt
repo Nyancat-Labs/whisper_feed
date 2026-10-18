@@ -129,6 +129,12 @@ class RepeatedTitleTest {
         val out = strip("<div><p>$title</p></div><p>In his first press conference as coach…</p>", title)
         assertTrue(!out.contains("calls out genocide in first"))
         assertTrue(out.contains("In his first press conference"))
+        // Al Jazeera's video pages: the caption, then a kicker and the h1 as well.
+        val both = strip(
+            "<div><p>$title</p></div><header><h2>NewsFeed</h2><h1>$title</h1></header><p>In his first press conference…</p>",
+            title,
+        )
+        assertTrue(both, !both.contains("calls out genocide") && !both.contains("NewsFeed"))
         // A paragraph that only starts like the headline is the article.
         assertTrue(strip("<p>$title, he said.</p>", title).contains("he said"))
     }
