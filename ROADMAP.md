@@ -77,12 +77,13 @@ layout; the four layouts are what the user chooses between. Both exist now.
 ## Next release: 1.0.6
 
 Agreed 19 October 2026. In CHANGELOG.md under Unreleased as each lands.
+The owner is using the preview on the Pixel 10 for a week before release.
 
 - [x] **Reader fixes from the real-feed check**: the headline once, lazily
   loaded and noscript-only pictures, xkcd, stray credits, furniture labels,
   articles split around adverts (Ars, Wired), srcset addresses with commas.
-  Confirmed on the Pixel 10 except Ars and Wired in full, which needs an
-  article fetched since the preview went on.
+  All confirmed on the Pixel 10, Ars and Wired in full included (19
+  October).
 - [x] **New-article count** (Jitka). "Updated 12m ago · 8 new": unread
   articles arrived since the reader last left the feed (the app going to
   the background, or the panel closing), in the tab on screen. Decided 19
@@ -116,8 +117,9 @@ Agreed 19 October 2026. In CHANGELOG.md under Unreleased as each lands.
   section menu next. Stopped there rather than chase it. Next: a rule for
   this page shape - the bullet list straight after the headline, taken as
   the story - or leave the bulletins to the browser.
-- [ ] **Link to an article's comments** (Jitka). Depends on what each feed
-  carries (`<comments>`, `slash:comments`); look at the owner's feeds first.
+- [ ] ~~**Link to an article's comments**~~ (Jitka). Moved after 1.0.6 by
+  decision, 19 October. Depends on what each feed carries (`<comments>`,
+  `slash:comments`); look at the owner's feeds first.
 - [x] **Search: by web address, and ranked.** Built 19 October: matched on
   the site's own name in an address ("arstechnica", "bbc"), not "www." or
   ".com", or "com" would rank every source first. Asked for 19 October 2026.
