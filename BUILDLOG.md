@@ -19,6 +19,8 @@ and Google Play builds on two other devices.
   split a srcset at every comma, and WordPress addresses carry commas
   (`?resize=640,480`). Now parsed as browsers do. In the check's data, 15
   articles across 6 sources had such addresses. 1176 tests passing.
+- Confirmed on the Pixel 10 (preview ee4f691), 19 October: SoraNews24's
+  pictures all load; TechCrunch's headline once, no "In Brief" above it.
 - Split articles (Ars, Wired) found on the phone and fixed the same way.
   Decided against a second purge of stored full text to apply it to articles
   already fetched: with full text for every feed on, that is a week of pages
