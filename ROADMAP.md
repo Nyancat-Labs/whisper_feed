@@ -117,6 +117,15 @@ The owner is using the preview on the Pixel 10 for a week before release.
   section menu next. Stopped there rather than chase it. Next: a rule for
   this page shape - the bullet list straight after the headline, taken as
   the story - or leave the bulletins to the browser.
+- [x] **Update notice for GitHub installs.** Built 19 October; confirmed on
+  the owner's Pixel the same day (diagnostics: "GitHub install: true,
+  checking: true, latest seen: v1.0.5"). The notification itself is first
+  seen for real when v1.0.6 is tagged and the preview hears of it.
+- [ ] **Neo Feed and HomeFeeder links out of About's header** (owner, 19
+  October). Move both chips down as rows under "Built on Neo Feed, and on
+  HomeFeeder before it", below the two Neo Feed authors, so HomeFeeder keeps
+  a link; the header keeps only our own four. Attribution itself is the
+  licence page and the source headers, so nothing is lost.
 - [ ] ~~**Link to an article's comments**~~ (Jitka). Moved after 1.0.6 by
   decision, 19 October. Depends on what each feed carries (`<comments>`,
   `slash:comments`); look at the owner's feeds first.
