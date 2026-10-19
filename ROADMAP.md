@@ -88,11 +88,18 @@ Agreed 19 October 2026. In CHANGELOG.md under Unreleased as each lands.
 - [ ] **Tap a picture to enlarge it** (Jitka).
 - [ ] **Link to an article's comments** (Jitka). Depends on what each feed
   carries (`<comments>`, `slash:comments`); look at the owner's feeds first.
-- [ ] **Search matches the article's web address.** "arstech" found nothing,
-  though the reader shows arstechnica.com under every Ars headline: search
-  looks at the headline, the source's name ("Ars Technica", with a space)
-  and the text. Match the link's host as well, so what the reader shows is
-  something search can find.
+- [ ] **Search: by web address, and ranked.** Asked for 19 October 2026.
+  - *Matches part of a word anywhere*, as now ("ars", "techn"), and also the
+    article's web address: "arstech" found nothing, though the reader shows
+    arstechnica.com under every Ars headline, because the source is named
+    "Ars Technica" with a space.
+  - *Ranked, not in feed order.* Searching "Wired": first the articles from
+    a source whose name or web address matches, then those whose headline
+    matches, then those whose summary does. Newest first within each group.
+    Today a search keeps the feed's own order, mixing sources as the feed
+    does, so an article that mentions Wired in passing can sit above one
+    from Wired itself.
+  - An article counts once, in the highest group it reaches.
 
 ---
 
