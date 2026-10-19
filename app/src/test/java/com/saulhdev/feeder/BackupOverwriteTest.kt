@@ -101,10 +101,11 @@ class BackupOverwriteTest {
     }
 
     @Test
-    fun `both backup files keep their previous copy`() {
+    fun `all three backup files keep their previous copy`() {
         val store = File("src/main/java/com/saulhdev/feeder/manager/backup/BackupStore.kt").readText()
-        assertEquals(2, Regex("makeRoomFor\\(DocumentBackupFolder\\(tree\\), ").findAll(store).count())
+        assertEquals(3, Regex("makeRoomFor\\(DocumentBackupFolder\\(tree\\), ").findAll(store).count())
         assertTrue(!store.contains("tree.findFile(FILE_NAME)?.delete()"))
         assertTrue(!store.contains("tree.findFile(SettingsBackup.FILE_NAME)?.delete()"))
+        assertTrue(!store.contains("tree.findFile(SavedArticlesBackup.FILE_NAME)?.delete()"))
     }
 }

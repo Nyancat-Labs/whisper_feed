@@ -317,8 +317,8 @@
     <string name="backup_stopped_title">Backups have stopped</string>
     <string name="backup_stopped_body">Whisper could not reach the folder you chose, so the daily backup stopped on %1$s. Choose a folder again to start it.</string>
     <string name="backup_off">Everything here is off. Nothing is leaving this phone.</string>
-    <string name="backup_on_device">Your subscriptions and settings are copied to the folder below once a day, unless the battery is low. It is on this phone, so nothing leaves it.</string>
-    <string name="backup_on_cloud">Your subscriptions and settings are copied to the folder below once a day, unless the battery is low. The two files are only a few kilobytes.</string>
+    <string name="backup_on_device">Your subscriptions, settings and saved articles are copied to the folder below once a day, unless the battery is low. It is on this phone, so nothing leaves it.</string>
+    <string name="backup_on_cloud">Your subscriptions, settings and saved articles are copied to the folder below once a day, unless the battery is low. The three files are small: text only, no pictures.</string>
     <string name="pref_platform_device">Include in phone-to-phone transfer</string>
     <string name="pref_platform_device_summary">When you set up a new phone next to this one. A direct copy \u2014 no server involved.</string>
     <string name="pref_platform_cloud">Include in Google cloud backup</string>
@@ -328,11 +328,18 @@
     <string name="backup_choose">Choose where backups go</string>
     <string name="backup_heading_where">Where backups go</string>
     <string name="backup_heading_restore">Restore from a backup</string>
-    <string name="backup_restore_what">Sources are added without removing anything you already have. Settings replace what is on this phone, which is why the two are asked separately.</string>
+    <string name="backup_restore_what">Sources and saved articles are added without removing anything you already have. Settings replace what is on this phone, which is why they are asked separately.</string>
     <string name="backup_change">Choose a different folder</string>
     <string name="backup_now">Back up now</string>
     <string name="backup_restore">Restore sources from a backup</string>
     <string name="backup_restore_settings">Restore your settings</string>
+    <string name="backup_restore_saved">Restore saved articles</string>
+    <plurals name="backup_saved_restored">
+        <item quantity="one">Restored %1$d saved article</item>
+        <item quantity="other">Restored %1$d saved articles</item>
+    </plurals>
+    <string name="backup_saved_restored_none">Every saved article in that file is already here</string>
+    <string name="backup_written_no_saved">Subscriptions and settings backed up. Your saved articles could not be written.</string>
     <plurals name="backup_settings_restored">
         <item quantity="one">Restored %1$d setting</item>
         <item quantity="other">Restored %1$d settings</item>
@@ -349,7 +356,7 @@
     <string name="backup_restored_none">Everything in that backup is already here</string>
     <string name="backup_lost">Whisper can no longer write to that folder. Choose it again.</string>
     <string name="backup_failed">That did not work</string>
-    <string name="backup_what">A backup is two files. Your sources and their categories go into an OPML file, which any other reader can open; your settings go into a JSON file beside it. Neither contains articles, and neither records what you have read.</string>
+    <string name="backup_what">A backup is three files. Your sources and their categories go into an OPML file, which any other reader can open; your settings and your saved articles go into two JSON files beside it. Saved articles are kept as the feed gave them, and their full text and pictures are fetched again after a restore. Nothing records what you have read.</string>
     <string name="pref_account">Account</string>
     <string name="pref_account_summary">Optional. Keep your subscriptions and read state in step across devices.</string>
     <string name="account_explanation">Whisper works completely without an account — everything stays on this phone. Connecting one keeps your subscriptions and what you have read in step with another device, through a service you choose or run yourself.</string>
@@ -700,6 +707,11 @@
 
     <!-- Restoring during onboarding -->
     <string name="backup_folder_restored">%1$s and %2$s restored</string>
+    <string name="backup_folder_restored_saved">%1$s, %2$s and %3$s restored</string>
+    <plurals name="backup_folder_saved">
+        <item quantity="one">%1$d saved article</item>
+        <item quantity="other">%1$d saved articles</item>
+    </plurals>
     <plurals name="backup_folder_sources">
         <item quantity="one">%1$d source</item>
         <item quantity="other">%1$d sources</item>
@@ -709,7 +721,7 @@
         <item quantity="other">%1$d settings</item>
     </plurals>
     <string name="backup_exists_title">This folder already has a backup</string>
-    <string name="backup_exists_body">It may be the one you made before reinstalling. Restore your feeds and settings from it, or replace it with this phone\'s. Replacing keeps the old copy beside the new one, named .previous.</string>
+    <string name="backup_exists_body">It may be the one you made before reinstalling. Restore your feeds, settings and saved articles from it, or replace it with this phone\'s. Replacing keeps the old copy beside the new one, named .previous.</string>
     <string name="backup_exists_restore">Restore</string>
     <string name="backup_exists_replace">Replace</string>
     <string name="backup_nothing_found">No backup was found in that folder</string>

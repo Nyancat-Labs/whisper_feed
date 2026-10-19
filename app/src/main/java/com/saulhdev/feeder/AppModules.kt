@@ -17,6 +17,8 @@
  */
 package com.saulhdev.feeder
 
+import com.saulhdev.feeder.manager.backup.RoomSavedStore
+import com.saulhdev.feeder.manager.backup.SavedArticlesBackup
 import android.widget.Toast
 import androidx.work.WorkManager
 import com.saulhdev.feeder.data.content.SyncAccount
@@ -113,7 +115,8 @@ val dataModule = module {
     singleOf(::FeedParser)
     singleOf(::FeedDiscovery)
     single { SyncAccount(androidContext()) }
-    single { BackupStore(androidContext(), get(), get()) }
+    single<SavedArticlesBackup.Store> { RoomSavedStore(get(), get()) }
+    single { BackupStore(androidContext(), get(), get(), get(), get()) }
     single { LocalRssService(androidContext(), get()) }
     single {
         RssServiceDispatcher(

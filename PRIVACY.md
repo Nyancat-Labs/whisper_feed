@@ -145,7 +145,7 @@ from publishers. This one came from you.
 
 ### 6. Your own backup destination
 
-If you turn on backups, the OPML and settings files are written to a folder
+If you turn on backups, the OPML, settings and saved-articles files are written to a folder
 **you** pick with Android's document picker — local storage, an SD card, or a
 cloud folder if that is what you choose. Whisper writes the file; where that
 folder actually lives is between you and whoever provides it.
@@ -223,8 +223,8 @@ how to verify for yourself.
 
 What you can do yourself:
 
-- **Export**: OPML for your subscriptions, a JSON file for your settings, both
-  from the Backup screen.
+- **Export**: OPML for your subscriptions, and JSON files for your settings
+  and your saved articles, all from the Backup screen.
 - **Delete**: uninstall the app, or clear its storage in Android settings.
 - **Selective deletion**: remove a source and its articles go with it; clear a
   source's articles and keep the source.

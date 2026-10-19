@@ -18,6 +18,8 @@
 
 package com.saulhdev.feeder.manager.models
 
+import com.saulhdev.feeder.manager.backup.BackupStore
+import com.saulhdev.feeder.manager.backup.SavedArticlesBackup
 import com.saulhdev.feeder.utils.SyncLog
 import android.content.ContentResolver
 import android.content.Context
@@ -28,14 +30,10 @@ import com.saulhdev.feeder.R
 import com.saulhdev.feeder.data.content.SAFFile
 import com.saulhdev.feeder.data.db.models.Feed
 import com.saulhdev.feeder.data.db.models.FeedItem
-import com.saulhdev.feeder.data.entity.BookmarksExportContainer
-import com.saulhdev.feeder.data.entity.toArticle
-import com.saulhdev.feeder.data.entity.toBookmarkedExport
 import com.saulhdev.feeder.manager.sync.requestFeedSync
 import com.saulhdev.feeder.utils.extensions.ToastMaker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
 import org.koin.java.KoinJavaComponent.inject
 import kotlin.system.measureTimeMillis
 import kotlin.time.Clock
@@ -109,18 +107,11 @@ suspend fun ContentResolver.exportBookmarks(
             Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
         )
 
-        val exportData = BookmarksExportContainer(
-            version = 1,
-            exportDate = Clock.System.now().toEpochMilliseconds(),
-            articles = bookmarkedItems.map { it.toBookmarkedExport() }
+        // The same file the daily backup writes; see SavedArticlesBackup.
+        val jsonString = SavedArticlesBackup.encode(
+            bookmarkedItems,
+            Clock.System.now().toEpochMilliseconds(),
         )
-
-        val json = Json {
-            prettyPrint = true
-            ignoreUnknownKeys = true
-        }
-
-        val jsonString = json.encodeToString(exportData)
         SAFFile.write(context, uri, jsonString)
         Log.d("BOOKMARKS", "Exported Bookmarks successfully")
     } catch (e: Throwable) {
@@ -147,40 +138,19 @@ suspend fun ContentResolver.importBookmarks(
             Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
         )
 
-        var successCount = 0
-        var failedCount = 0
         val jsonString = SAFFile(context, uri).read()
-            ?: return@withContext Pair(successCount, failedCount)
-        val bookmarksHandler = BookmarksToRoom()
-        val sourceHandler = SourceToRoom()
+            ?: return@withContext Pair(0, 0)
 
-        val json = Json {
-            prettyPrint = false
-            ignoreUnknownKeys = true
-        }
+        // Through the backup's own restore. This wrote each article by its
+        // id, so one already on this phone under another id - every article
+        // a sync had fetched since - was added a second time; and an article
+        // whose source was not subscribed was dropped.
+        val backup: BackupStore by inject(BackupStore::class.java)
+        val container = SavedArticlesBackup.decode(jsonString)
+        val restored = (backup.restoreSaved(uri) as? BackupStore.Result.SavedRestored)?.count ?: 0
 
-        val importData = json.decodeFromString<BookmarksExportContainer>(jsonString)
-
-        importData.articles.forEach { exportedArticle ->
-            try {
-                val feed = sourceHandler.getItem(exportedArticle.feedUrl)
-
-                if (feed != null) {
-                    val article = exportedArticle.toArticle(feed.id)
-
-                    bookmarksHandler.saveItem(article)
-                    successCount++
-                } else {
-                    // Feed doesn't exist (could optionally create it)
-                    failedCount++
-                }
-            } catch (e: Exception) {
-                failedCount++
-            }
-        }
-
-        Log.d("BOOKMARKS", "Imported $successCount Bookmarks successfully; failed on $failedCount")
-        Pair(successCount, failedCount)
+        Log.d("BOOKMARKS", "Imported $restored of ${container.articles.size} Bookmarks")
+        Pair(restored, container.articles.size - restored)
     } catch (e: Throwable) {
         Log.e("BOOKMARKS", "Failed to export Bookmarks", e)
         val toastMaker: ToastMaker by inject(ToastMaker::class.java)

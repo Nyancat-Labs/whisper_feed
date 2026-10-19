@@ -22,6 +22,10 @@ data class BookmarkedArticleExport(
     val pinned: Boolean = false,
     // Feed information for relation
     val feedUrl: String,
+    // The source's name, for a source that has to be made again to hold
+    // the article: one removed while it still had saved articles is not in
+    // the subscriptions file. Absent from files written before 1.0.6.
+    val feedTitle: String? = null,
 )
 
 @Serializable
@@ -47,6 +51,7 @@ fun FeedItem.toBookmarkedExport(): BookmarkedArticleExport {
         categories = article.categories,
         pinned = article.pinned,
         feedUrl = feed.url.toString(),
+        feedTitle = feed.title,
     )
 }
 

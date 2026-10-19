@@ -63,6 +63,7 @@ import com.saulhdev.feeder.ui.components.OutlinedActionButton
 import com.saulhdev.feeder.ui.components.SwitchPreference
 import com.saulhdev.feeder.ui.components.ViewWithActionBar
 import com.saulhdev.feeder.ui.icons.Phosphor
+import com.saulhdev.feeder.ui.icons.phosphor.Bookmarks
 import com.saulhdev.feeder.ui.icons.phosphor.CloudArrowDown
 import com.saulhdev.feeder.ui.icons.phosphor.CloudArrowUp
 import com.saulhdev.feeder.ui.icons.phosphor.Nut
@@ -147,6 +148,13 @@ fun BackupPage(
     ) { uri: Uri? ->
         if (uri == null) return@rememberLauncherForActivityResult
         scope.launch { report(store.restoreSettings(uri), context) { say(it) } }
+    }
+
+    val chooseSaved = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri: Uri? ->
+        if (uri == null) return@rememberLauncherForActivityResult
+        scope.launch { report(store.restoreSaved(uri), context) { say(it) } }
     }
 
     val chooseBackup = rememberLauncherForActivityResult(
@@ -379,6 +387,18 @@ fun BackupPage(
                 )
             }
 
+            item {
+                OutlinedActionButton(
+                    text = stringResource(R.string.backup_restore_saved),
+                    icon = Phosphor.Bookmarks,
+                    modifier = Modifier.fillMaxWidth(),
+                    positive = true,
+                    // Also reads a file from Sources → Export bookmarks,
+                    // which is the same format.
+                    onClick = { chooseSaved.launch(arrayOf("application/json", "*/*")) },
+                )
+            }
+
             // Android's own backup, asked separately from the folder above
             // because it is a different mechanism with a different answer.
             // Placed after it rather than before: the folder is the one this
@@ -421,7 +441,9 @@ private fun report(
             // not included — the paragraph above says two files, and the
             // confirmation said one.
             is BackupStore.Result.Written ->
-                if (result.settingsName != null) {
+                if (result.settingsName != null && !result.savedWritten) {
+                    context.getString(R.string.backup_written_no_saved)
+                } else if (result.settingsName != null) {
                     context.getString(R.string.backup_written, result.name, result.settingsName)
                 } else {
                     context.getString(R.string.backup_written_sources_only, result.name)
@@ -437,11 +459,29 @@ private fun report(
                     context.getString(R.string.backup_restored_none)
                 }
 
-            is BackupStore.Result.FolderRestored -> context.getString(
-                R.string.backup_folder_restored,
-                context.resources.getQuantityString(R.plurals.backup_folder_sources, result.feeds, result.feeds),
-                context.resources.getQuantityString(R.plurals.backup_folder_settings, result.settings, result.settings),
-            )
+            is BackupStore.Result.SavedRestored ->
+                if (result.count > 0) {
+                    context.resources.getQuantityString(R.plurals.backup_saved_restored, result.count, result.count)
+                } else {
+                    context.getString(R.string.backup_saved_restored_none)
+                }
+
+            // Saved articles named only when there were some, so a backup
+            // made before they were included reads as it always did.
+            is BackupStore.Result.FolderRestored -> if (result.saved > 0) {
+                context.getString(
+                    R.string.backup_folder_restored_saved,
+                    context.resources.getQuantityString(R.plurals.backup_folder_sources, result.feeds, result.feeds),
+                    context.resources.getQuantityString(R.plurals.backup_folder_settings, result.settings, result.settings),
+                    context.resources.getQuantityString(R.plurals.backup_folder_saved, result.saved, result.saved),
+                )
+            } else {
+                context.getString(
+                    R.string.backup_folder_restored,
+                    context.resources.getQuantityString(R.plurals.backup_folder_sources, result.feeds, result.feeds),
+                    context.resources.getQuantityString(R.plurals.backup_folder_settings, result.settings, result.settings),
+                )
+            }
 
             BackupStore.Result.NothingFound -> context.getString(R.string.backup_nothing_found)
             BackupStore.Result.NoDestination -> context.getString(R.string.backup_lost)

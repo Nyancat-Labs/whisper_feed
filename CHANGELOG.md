@@ -9,6 +9,21 @@ Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 Unreleased
 ----------
 
+- **Saved articles are in the backup.** The daily backup now writes a third
+  file, `whisper-saved.json`, beside the subscriptions and settings, and
+  restoring a folder puts your saved articles back. Moving between Play,
+  F-Droid and GitHub means uninstalling, and until now that lost every
+  Bookmark. Backup and Restore also has a "Restore saved articles" button,
+  which reads the same file as Sources → Export bookmarks.
+- **Switched-off sources are in the backup.** The daily backup only wrote
+  the sources that were switched on, so one switched off for a while was
+  missing from it. (They come back switched on: the subscriptions file is
+  OPML, which has no way to say "off".)
+- **Importing bookmarks no longer makes duplicates.** Sources → Import
+  bookmarks added a second copy of any article the phone already had, and
+  dropped articles whose source wasn't subscribed. It now marks the existing
+  one as saved, and keeps the others under a hidden source, as Whisper does
+  when you remove a source that still has saved articles.
 - **Update notice for GitHub installs.** If you installed Whisper from
   GitHub, About now has a switch: *Check GitHub for new versions*. Off
   until you turn it on. Once a day Whisper asks GitHub for the latest

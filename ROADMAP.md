@@ -319,7 +319,8 @@ items below can ride in it alongside what is already on main.
    2026, on main for 1.0.6.** (2) (*Telling a GitHub
    install that an update is out*). Small, and it only helps from the
    release that carries it.
-2. **Saved articles in the backup** (4) (*Saved articles in the backup*).
+2. ~~**Saved articles in the backup**~~ — **done 19 October 2026, on main for
+   1.0.6.** (4) (*Saved articles in the backup*).
    Small; moving between Play, F-Droid and GitHub means uninstalling, and
    Bookmarks are lost on the way.
 3. **Reading time and swipe to dismiss** (6), in one database change.
@@ -3520,7 +3521,21 @@ check them: same command, same feeds, fewer flags.
 The owner's OPML and settings backup are not in the repository: the settings
 carry a home location. A session that picks this up asks for them again.
 
-## Saved articles in the backup — noted 18 October 2026
+## Saved articles in the backup — done 19 October 2026
+
+**Built**: a third backup file, `whisper-saved.json`, in the format Sources →
+Export bookmarks already wrote (inherited from Neo Feed), so the two are
+interchangeable. Restore matches on source and guid, marking an article the
+phone already has rather than adding it twice; one from a removed source gets
+that source back as a hidden, removed row, as on the phone it came from.
+Full text and pictures are not in the file; they are fetched again after a
+restore. On the way: the daily backup was writing only switched-on sources,
+and the inherited bookmark import duplicated articles. Both fixed.
+
+Still open: OPML cannot say a source was switched off, so one comes back
+switched on after a restore. A Whisper-only attribute on the outline would
+carry it; small, if it matters to anyone.
+
 
 The backup holds subscriptions and settings, not saved articles. That matters
 most to someone moving between Play, F-Droid and GitHub, who has to uninstall

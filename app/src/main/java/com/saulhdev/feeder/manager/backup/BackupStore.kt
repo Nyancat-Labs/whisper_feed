@@ -25,7 +25,9 @@ import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.documentfile.provider.DocumentFile
+import com.saulhdev.feeder.data.repository.ArticleRepository
 import com.saulhdev.feeder.data.repository.SourcesRepository
+import kotlinx.coroutines.flow.first
 import com.saulhdev.feeder.manager.models.OPMLParser
 import com.saulhdev.feeder.manager.models.SourceToRoom
 import com.saulhdev.feeder.manager.models.writeOutputStream
@@ -59,6 +61,8 @@ class BackupStore(
     private val context: Context,
     private val sources: SourcesRepository,
     private val dataStore: DataStore<Preferences>,
+    private val articles: ArticleRepository,
+    private val savedStore: SavedArticlesBackup.Store,
 ) {
 
     /** What happened, in terms the settings screen can say out loud. */
@@ -76,10 +80,13 @@ class BackupStore(
             val name: String,
             val settingsName: String?,
             val at: Long,
+            /** False when the saved articles could not be written; see [backUp]. */
+            val savedWritten: Boolean = true,
         ) : Result
         data class Restored(val feeds: Int) : Result
         data class SettingsRestored(val count: Int) : Result
-        data class FolderRestored(val feeds: Int, val settings: Int) : Result
+        data class SavedRestored(val count: Int) : Result
+        data class FolderRestored(val feeds: Int, val settings: Int, val saved: Int = 0) : Result
         data object NothingFound : Result
         data object NoDestination : Result
         data class Failed(val cause: Throwable?) : Result
@@ -107,7 +114,10 @@ class BackupStore(
             val file = tree.createFile(MIME_TYPE, FILE_NAME)
                 ?: return@withContext Result.Failed(null)
 
-            val byTag = sources.getAllSources()
+            // Every subscription, switched off ones included. This asked for
+            // the enabled ones only, the question a sync asks, so a source
+            // switched off for a while was missing from every backup.
+            val byTag = sources.getAllSubscriptions()
                 .groupBy { it.tags.firstOrNull().orEmpty() }
 
             context.contentResolver.openOutputStream(file.uri)?.use { out ->
@@ -135,11 +145,27 @@ class BackupStore(
                 false
             }
 
+            // The third file, and caught on its own for the same reason.
+            val savedWritten = runCatching {
+                val saved = articles.getBookmarkedFeedItems().first()
+                makeRoomFor(DocumentBackupFolder(tree), SavedArticlesBackup.FILE_NAME)
+                val savedFile = tree.createFile("application/json", SavedArticlesBackup.FILE_NAME)
+                    ?: return@runCatching false
+                context.contentResolver.openOutputStream(savedFile.uri)?.use { out ->
+                    out.write(SavedArticlesBackup.encode(saved, System.currentTimeMillis()).toByteArray())
+                    true
+                } ?: false
+            }.getOrElse {
+                Log.e(TAG, "Saved articles backup failed", it)
+                false
+            }
+
             Log.i(TAG, "Wrote backup to ${file.uri}")
             Result.Written(
                 name = FILE_NAME,
                 settingsName = SettingsBackup.FILE_NAME.takeIf { settingsWritten },
                 at = System.currentTimeMillis(),
+                savedWritten = savedWritten,
             )
         } catch (t: Throwable) {
             Log.e(TAG, "Backup failed", t)
@@ -157,13 +183,13 @@ class BackupStore(
      */
     suspend fun restore(fileUri: Uri): Result = withContext(Dispatchers.IO) {
         try {
-            val before = sources.getAllSources().size
+            val before = sources.getAllSubscriptions().size
             val parser = OPMLParser(SourceToRoom())
             context.contentResolver.openInputStream(fileUri)?.use { stream ->
                 parser.parseInputStream(stream)
             } ?: return@withContext Result.Failed(null)
 
-            val after = sources.getAllSources().size
+            val after = sources.getAllSubscriptions().size
             requestFeedSync(origin = SyncLog.ORIGIN_RESTORE)
             Result.Restored(after - before)
         } catch (t: Throwable) {
@@ -194,6 +220,28 @@ class BackupStore(
     }
 
     /**
+     * Puts saved articles back from a saved-articles file, or from an
+     * export made with Sources → Export bookmarks, which is the same file.
+     *
+     * Additive, like the sources: nothing saved here is unsaved. Read after
+     * the sources, so the articles find the sources they belong to.
+     */
+    suspend fun restoreSaved(fileUri: Uri): Result = withContext(Dispatchers.IO) {
+        try {
+            val text = context.contentResolver.openInputStream(fileUri)
+                ?.bufferedReader()?.use { it.readText() }
+                ?: return@withContext Result.Failed(null)
+            val count = SavedArticlesBackup.restore(SavedArticlesBackup.decode(text), savedStore)
+            // Their full text and pictures, which the file leaves out.
+            if (count > 0) articles.onSaved?.invoke()
+            Result.SavedRestored(count)
+        } catch (t: Throwable) {
+            Log.e(TAG, "Saved articles restore failed", t)
+            Result.Failed(t)
+        }
+    }
+
+    /**
      * Restores everything a chosen folder holds, in one action.
      *
      * For the first run only, and the difference from the settings screen is
@@ -219,8 +267,11 @@ class BackupStore(
             // whatever name that reader chose, and it is the same file.
                 ?: tree.listFiles().firstOrNull { it.name?.endsWith(".opml") == true }
             val settings = tree.findFile(SettingsBackup.FILE_NAME)
+            val saved = tree.findFile(SavedArticlesBackup.FILE_NAME)
 
-            if (opml == null && settings == null) return@withContext Result.NothingFound
+            if (opml == null && settings == null && saved == null) {
+                return@withContext Result.NothingFound
+            }
 
             val feeds = opml?.let {
                 when (val result = restore(it.uri)) {
@@ -236,7 +287,15 @@ class BackupStore(
                 }
             } ?: 0
 
-            Result.FolderRestored(feeds, restored)
+            // After the sources, so each article finds the one it came from.
+            val savedCount = saved?.let {
+                when (val result = restoreSaved(it.uri)) {
+                    is Result.SavedRestored -> result.count
+                    else -> 0
+                }
+            } ?: 0
+
+            Result.FolderRestored(feeds, restored, savedCount)
         } catch (t: Throwable) {
             Log.e(TAG, "Folder restore failed", t)
             Result.Failed(t)
@@ -255,7 +314,8 @@ class BackupStore(
     suspend fun hasBackup(treeUri: Uri): Boolean = withContext(Dispatchers.IO) {
         runCatching {
             val tree = DocumentFile.fromTreeUri(context, treeUri) ?: return@runCatching false
-            tree.findFile(FILE_NAME) != null || tree.findFile(SettingsBackup.FILE_NAME) != null
+            tree.findFile(FILE_NAME) != null || tree.findFile(SettingsBackup.FILE_NAME) != null ||
+                tree.findFile(SavedArticlesBackup.FILE_NAME) != null
         }.getOrDefault(false)
     }
 

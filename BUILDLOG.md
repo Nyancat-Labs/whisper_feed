@@ -8,6 +8,29 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 19 October 2026 — Saved articles in the backup
+
+- Second in the order. On main, for 1.0.6.
+- Found Neo Feed's manual Export/Import bookmarks already in the Sources
+  menu, so the backup reuses its file format rather than inventing one:
+  `whisper-saved.json` beside the OPML and settings, kept with a
+  `.previous` copy like the other two.
+- Restore by folder (first run and "Restore" on an existing folder) now
+  reads all three files, sources first so articles find their source. New
+  "Restore saved articles" button on the Backup screen.
+- Two bugs found on the way:
+  - The daily backup wrote only switched-on sources (it asked the sync's
+    question, `getAllSources`). Now `getAllSubscriptions`.
+  - The inherited bookmark import wrote by uuid, so on a phone that had
+    synced the same article it made a duplicate, and it dropped articles
+    from unsubscribed sources. It now goes through the same restore.
+- 7 new tests (`SavedArticlesBackupTest`); `BackupOverwriteTest` now expects
+  three files kept with `.previous`. 1216 passing.
+- **To try:** save two or three articles, then Backup and Restore → Back up
+  now. The folder should hold `whisper-saved.json`. Unsave one, then
+  "Restore saved articles" and pick that file: it should say "Restored 1
+  saved article".
+
 ## 19 October 2026 — Update notice for GitHub installs
 
 - First item in the owner's new working order. On main, for 1.0.6.
