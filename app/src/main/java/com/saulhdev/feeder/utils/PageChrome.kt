@@ -69,6 +69,7 @@ fun stripPageChrome(document: Document) {
     document.select("aside").remove()
     imagesFromNoscript(document)
     joinSplitArticle(document)
+    keepOnlyTheArticle(document)
     figuresFromCredits(document)
 
     val body = document.body()
@@ -160,6 +161,71 @@ internal fun joinSplitArticle(document: Document) {
 private val ARTICLE_BODY_CLASS = Regex(
     """(?:^|\s)(?:post-content|post-body|article-body|article-content|article__body|entry-content|story-body)(?:\s|$)""",
 )
+
+/**
+ * Narrows the page to its article when it names one plainly: a single
+ * `<article>` holding the page's `<h1>` and a few paragraphs of story.
+ * Pop-ups (see namesItselfPopup) and "Skip to content" go first.
+ *
+ * The Independent's bulletins are a headline and five bullet points, too
+ * little text for Readability to tell from the page around it, so it took a
+ * wrapper of the whole page: a sign-in notice ("Thank you for registering"),
+ * "Skip to content", a membership pop-up and its "You're all set!", the
+ * headline again, and the notice once more at the end. The page had said
+ * where its article was all along. With one `<article>` and the headline
+ * inside it, everything outside goes before extraction. Two or more, or the
+ * headline elsewhere, and the page is left to Readability as before.
+ * Checked on 290 real pages: what went was a date line, a sign-in prompt,
+ * a "Published" stamp and a newsletter box; no article text.
+ */
+internal fun keepOnlyTheArticle(document: Document) {
+    val body = document.body()
+    // Pop-ups and notices first, wherever they are: a modal is never the
+    // article, nor is a hint. The Independent's bulletins carried both.
+    body.select("[class], [id]").filter { namesItselfPopup(it) && it.tagName() !in NEVER_STRIPPED }
+        .forEach { if (it.parent() != null) it.remove() }
+    // "Skip to content": a jump within the page for keyboards and screen
+    // readers, which in the reader is a link to nowhere.
+    body.select("a[href^=#]").filter { SKIP_LINK.matches(it.text().trim()) }.forEach { it.remove() }
+
+    val headlines = body.select("h1")
+    // The headline, and a story of a few full paragraphs under it. Narrowed
+    // to a <main> holding three words (a Cyberspace post), Readability took
+    // its longest line, "Log in to read the replies", for the article; left
+    // whole, it keeps the post as it always did.
+    fun holdsTheStory(e: Element) =
+        headlines.any { it.parents().contains(e) } &&
+            e.select("p, li").count { it.text().trim().length >= STORY_LINE_CHARS } >= MIN_STORY_LINES
+    // One <article> holding the headline. Not a <main> on the same terms:
+    // tried, and within The Independent's <main> Readability took a related
+    // story's link for the article and dropped the bulletin itself.
+    val region = body.select("article").singleOrNull()?.takeIf(::holdsTheStory) ?: return
+    body.children().toList().forEach { it.remove() }
+    body.appendChild(region)
+}
+
+/**
+ * Whether an element names itself a pop-up: "modal" or "popover" as a word in
+ * its class or id, or "hint" in its id. The Independent's "You're all set!"
+ * sits in `#mos-already-subscribed-modal`, its "Thank you for registering" in
+ * `#success-hint` and `#success-hint-header`, and "Removed from bookmarks" in
+ * `#popover-content-…`. "Hint" only in an id, the
+ * page's own name for a part of itself: a tutorial may well style a tip
+ * inside its article with a "hint" class. See namesItselfByline.
+ */
+internal fun namesItselfPopup(element: Element): Boolean =
+    (element.className() + " " + element.id()).lowercase().split(NON_WORD).any { it in POPUP_WORDS } ||
+        element.id().lowercase().split(NON_WORD).any { it == "hint" }
+
+private val POPUP_WORDS = setOf("modal", "popover")
+
+private val SKIP_LINK = Regex("""(?i)skip to (?:main )?(?:content|article|story|navigation)""")
+
+/** A paragraph or list item this long is the story's own text, not a label. */
+private const val STORY_LINE_CHARS = 80
+
+/** Fewer of those than this, and a region is a card, a teaser or a short post. */
+private const val MIN_STORY_LINES = 3
 
 private const val INLINE_TAGS =
     "span, a, em, strong, b, i, u, s, abbr, small, sup, sub, mark, cite, q, time, code, font"

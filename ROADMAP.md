@@ -96,6 +96,15 @@ Agreed 19 October 2026. In CHANGELOG.md under Unreleased as each lands.
   finger, a flick or an 80dp pull closes, less springs back, on Expressive's
   default spatial spring - the first piece of §19e's motion, written out
   until MaterialExpressiveTheme supplies it.
+- [ ] **The Independent's bulletins** (/bulletin/ pages, 20 of every 100
+  in its feed, and the most-stored source on the owner's phone). A headline
+  and five bullet points, too little for Readability to tell from the page,
+  and the feed carries no text for them. Pop-ups, sign-in notices and the
+  skip link now go (general rules, checked on 290 pages: only junk removed
+  elsewhere), but each removal moved Readability to other furniture - the
+  section menu next. Stopped there rather than chase it. Next: a rule for
+  this page shape - the bullet list straight after the headline, taken as
+  the story - or leave the bulletins to the browser.
 - [ ] **Link to an article's comments** (Jitka). Depends on what each feed
   carries (`<comments>`, `slash:comments`); look at the owner's feeds first.
 - [x] **Search: by web address, and ranked.** Built 19 October: matched on

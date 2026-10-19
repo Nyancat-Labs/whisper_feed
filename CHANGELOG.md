@@ -47,6 +47,9 @@ Unreleased
   Wired review came through at a quarter of its length. The blocks are now
   joined first. Ars's one-line subtitle no longer comes along, though its
   feed carries it.
+- **No pop-ups in the text.** Sign-in notices, "You're all set!" boxes,
+  bookmark pop-ups and "Skip to content" links that pages keep hidden no
+  longer come through into the article.
 - **No leftover labels.** Lines that are only "Advertisement", "Sign up to
   newsletter", "Related articles" and the like are taken out.
 
