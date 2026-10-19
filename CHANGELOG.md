@@ -14,6 +14,11 @@ Unreleased
   since you last left the feed, counting only the tab you are on. Sources
   kept out of All count in their own tab. Nothing extra when there is
   nothing new. Suggested by a reader.
+- **Tap a picture to see it full screen.** Pinch or double-tap to zoom,
+  swipe down to close, and Save it to Pictures or Share it. A picture that
+  was also a link opens the picture now; the link is a button underneath.
+  Saving is on Android 10 and later, where it needs no permission. Suggested
+  by a reader.
 - **Search puts the source first.** Searching "Wired" now lists Wired's own
   articles first, then headlines with the word in them, then summaries,
   newest first within each, rather than in feed order. A source can be found

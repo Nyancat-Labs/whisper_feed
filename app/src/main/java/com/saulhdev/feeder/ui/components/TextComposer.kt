@@ -87,6 +87,9 @@ class TextComposer(
     fun popComposableStyle(index: Int) =
         builder.popComposableStyle(index)
 
+    /** The link the text being composed sits in, if any: what a picture inside it points to. */
+    fun currentLink(): String? = findClosestLink()
+
     private fun findClosestLink(): String? {
         for (span in spanStack.reversed()) {
             if (span is SpanWithAnnotation && span.tag == "URL") {

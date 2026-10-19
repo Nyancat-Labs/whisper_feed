@@ -88,7 +88,10 @@ Agreed 19 October 2026. In CHANGELOG.md under Unreleased as each lands.
   the background, or the panel closing), in the tab on screen. Decided 19
   October: since last looked rather than per sync, and nothing shown at
   zero.
-- [ ] **Tap a picture to enlarge it** (Jitka).
+- [x] **Tap a picture to enlarge it** (Jitka). Full screen on black, zoom,
+  swipe down to close; Save (Pictures/Whisper, Android 10 and later, no
+  permission) and Share; a linked picture's link is a button there. The
+  opening picture too. Decoded at most twice the screen, 4096 pixels.
 - [ ] **Link to an article's comments** (Jitka). Depends on what each feed
   carries (`<comments>`, `slash:comments`); look at the owner's feeds first.
 - [x] **Search: by web address, and ranked.** Built 19 October: matched on

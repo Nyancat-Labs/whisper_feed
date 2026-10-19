@@ -127,6 +127,15 @@ class ImageSizingTest {
     }
 
     @Test
+    fun `the full-screen picture is bounded too`() {
+        val sites = callSites(read("ui/components/PictureViewer.kt"), "AsyncImage(")
+        assertTrue(sites.size == 1)
+        assertTrue("the viewer decodes whole", sites.single().contains(".size(bound)"))
+        assertTrue(read("ui/components/PictureViewer.kt").contains(".coerceAtMost(PictureFiles.FULL_SCREEN_MAX_PX)"))
+        assertTrue("saving and sharing decode whole", read("utils/PictureFiles.kt").contains(".size(FULL_SCREEN_MAX_PX)"))
+    }
+
+    @Test
     fun `no new image call sites have appeared unchecked`() {
         // The three tests above name their files. An image loaded somewhere
         // else is one nothing is watching, which is how this invariant would
@@ -138,6 +147,7 @@ class ImageSizingTest {
             "utils/HtmlToComposable.kt",
             "ui/pages/AboutPage.kt",
             "ui/pages/ArticlePage.kt",
+            "ui/components/PictureViewer.kt",
         )
         val found = File("src/main/java/com/saulhdev/feeder")
             .walkTopDown()

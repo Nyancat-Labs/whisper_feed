@@ -2,8 +2,9 @@
 <!--
   What Whisper is willing to hand to another app.
 
-  One directory, holding one kind of file: the diagnostics report written by
-  the "Report a problem" action. Nothing else in the app's storage is exposed —
+  Two directories, each holding one kind of file: the diagnostics report
+  written by the "Report a problem" action, and the one picture shared from
+  the reader's picture viewer. Nothing else in the app's storage is exposed —
   a provider scoped to the whole cache or files directory would also expose
   every cached article body and every downloaded image.
 -->
@@ -11,4 +12,7 @@
     <cache-path
         name="diagnostics"
         path="diagnostics/" />
+    <cache-path
+        name="shared_pictures"
+        path="shared_pictures/" />
 </paths>

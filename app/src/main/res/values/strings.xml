@@ -114,6 +114,14 @@
     <!-- The line under the feed's header saying how current it is. %1$s is a compact age: "12m", "3h". -->
     <string name="freshness_updated">Updated %1$s ago</string>
     <!-- The freshness line, then how many articles arrived since the reader last looked: "Updated 12m ago · 8 new". -->
+    <!-- The full-screen picture viewer in the reader. -->
+    <string name="picture_close">Close picture</string>
+    <string name="picture_save">Save</string>
+    <string name="picture_share">Share</string>
+    <string name="picture_open_link">Open link</string>
+    <string name="picture_saved">Saved to Pictures</string>
+    <string name="picture_not_saved">Couldn’t save the picture</string>
+    <string name="picture_not_loaded">The picture hasn’t loaded</string>
     <string name="freshness_with_new">%1$s · %2$d new</string>
     <string name="freshness_just_now">Updated just now</string>
     <string name="freshness_updating">Updating…</string>

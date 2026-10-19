@@ -1,6 +1,13 @@
 package com.saulhdev.feeder.ui.pages
 
 
+import com.saulhdev.feeder.ui.components.PictureViewer
+import com.saulhdev.feeder.ui.components.PictureRequest
+import com.saulhdev.feeder.ui.components.LocalPictureViewer
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.foundation.clickable
+import androidx.compose.runtime.CompositionLocalProvider
 import com.saulhdev.feeder.ui.overlay.LocalTimeFormat
 import androidx.core.net.toUri
 import com.saulhdev.feeder.utils.usableImageUrl
@@ -254,6 +261,12 @@ fun ArticlePage(
             }
         }
     ) { paddingValues ->
+      // The picture tapped, full screen. See PictureViewer.
+      var viewing by remember { mutableStateOf<PictureRequest?>(null) }
+      viewing?.let { request ->
+          PictureViewer(request, onOpenLink = context::launchView, onDismiss = { viewing = null })
+      }
+      CompositionLocalProvider(LocalPictureViewer provides { viewing = it }) {
       // The article's text at the reader's chosen size, and only the article:
       // the top bar above stays the app's own size. See readerTextScale.
       MaterialTheme(
@@ -320,7 +333,8 @@ fun ArticlePage(
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
                                     .bleed(CARD_MARGIN)
-                                    .aspectRatio(16f / 9f),
+                                    .aspectRatio(16f / 9f)
+                                    .clickable { viewing = PictureRequest(picture) },
                             )
                             Spacer(modifier = Modifier.height(16.dp))
                         }
@@ -402,6 +416,7 @@ fun ArticlePage(
                 }
             }
         }
+      }
       }
     }
 }

@@ -18,6 +18,8 @@
 
 package com.saulhdev.feeder.utils
 
+import com.saulhdev.feeder.ui.components.LocalPictureViewer
+import com.saulhdev.feeder.ui.components.PictureRequest
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.LinkAnnotation
@@ -1388,9 +1390,14 @@ private fun TextComposer.handleImage(
     if (imageCandidates.hasImage) {
         // Some sites are silly and insert formatting in alt text
         val alt = stripHtml(element.attr("alt"))
+        val link = currentLink()?.takeIf { it.isNotBlank() }
         appendImage(onLinkClick = onLinkClick) { onClick ->
             lazyListScope.item {
                 val dimens = LocalDimens.current
+                // A tap enlarges the picture; its link, if it sat in one, is a
+                // button on the viewer. Without a viewer, as before.
+                val viewer = LocalPictureViewer.current
+                val viewerContext = LocalContext.current
                 Column(
                     modifier = Modifier
                         .width(dimens.maxContentWidth)
@@ -1400,9 +1407,18 @@ private fun TextComposer.handleImage(
                             modifier = Modifier
                                 .clip(RectangleShape)
                                 .clickable(
-                                    enabled = onClick != null
+                                    enabled = viewer != null || onClick != null
                                 ) {
-                                    onClick?.invoke()
+                                    if (viewer != null) {
+                                        val largest = imageCandidates.largestUrl()
+                                        val kept = SavedImages.local(
+                                            viewerContext.filesDir,
+                                            listOf(largest) + imageCandidates.allUrls(),
+                                        )
+                                        viewer(PictureRequest(kept ?: largest, alt.ifBlank { null }, link))
+                                    } else {
+                                        onClick?.invoke()
+                                    }
                                 }
                                 .fillMaxWidth()
                             // This makes scrolling a pain, find a way to solve that
@@ -1901,6 +1917,18 @@ internal class ImageCandidates(
             .map { StringUtil.resolve(baseUrl, it) }
             .toList() + listOf(absSrc).filter { it.isNotBlank() }.map { StringUtil.resolve(baseUrl, it) })
             .distinct()
+
+    /**
+     * The largest size on offer, for showing the picture full screen: the
+     * srcset candidate with the widest "w" or highest "x", else the src.
+     */
+    fun largestUrl(): String {
+        val largest = srcSetCandidates(srcSet).maxByOrNull { (_, descriptor) ->
+            descriptor?.dropLast(1)?.toFloatOrNull()
+                ?.times(if (descriptor.endsWith("x", ignoreCase = true)) 1000f else 1f) ?: 0f
+        }?.first
+        return StringUtil.resolve(baseUrl, largest ?: absSrc).ifBlank { absSrc }
+    }
 
     /**
      * Might throw if hasImage returns false
