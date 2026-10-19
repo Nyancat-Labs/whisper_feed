@@ -3375,9 +3375,14 @@ Data, About); inside each, small section headings over rounded groups;
 choices as button rows (Off / Small / Large, Standard / Card); sliders for
 text size; a live preview card heading the Stories page; a coloured panel
 switch heading a page that is off until turned on ("Use AI summarization").
-Whisper's sections already line up (Appearance, Your feed, Reading,
-Fetching, Filters, Your data, Help), so this is the look rather than a
-reorganisation. First piece of the Expressive release.
+Whisper's sections already line up (Sources, Fetching, Your feed,
+Reading, Appearance, Your data, Help), but today they are all on one long
+page of 36 rows. The owner prefers Harmonic's way: the top level is only the
+category rows, each with a one-line description of what is inside, and each
+opens its own page. So this is a reorganisation as well as a look. The
+split does not need `material3` 1.5.0 and can come first; the rounded
+Expressive styling follows. The backup-stopped warning stays above the
+category rows, and a page for AI summaries slots in as one more row.
 
 ## AI summaries — decided 19 October 2026
 
