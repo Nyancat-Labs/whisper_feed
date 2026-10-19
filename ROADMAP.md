@@ -298,8 +298,35 @@ the way.
 
 ## Suggested order
 
-The numbers are labels, not a schedule — they stay put so they can be referred
-to. The working order set by the user is 1, 3, 4, 2, then the rest.
+**The working order now, agreed 19 October 2026.** It replaces the list "After
+the stores, set 7 October 2026" further down, which is kept for its reasons.
+Since then 1.0.5 shipped and readers have started writing in, so small items
+that protect real users move up.
+
+1. **Release 1.0.6**, after a week on the owner's Pixel 10.
+2. **Saying an update is out, to GitHub installs** (*Telling a GitHub install
+   that an update is out*). Small, and it only helps from the release that
+   carries it.
+3. **Auto-scroll** (*Auto-scroll*). The longest-waiting request; designed.
+4. **Saved articles in the backup** (*Saved articles in the backup*). Small;
+   moving between Play, F-Droid and GitHub means uninstalling, and Bookmarks
+   are lost on the way.
+5. **Comments link** (Jitka; see *Next release: 1.0.6*).
+6. **Reading time and swipe to dismiss**, in one database change.
+7. **The home-screen widget**, then **read aloud**.
+8. **The design-rules audit, then the Expressive overhaul** (§19e), with
+   Coil 3 (§19d) alongside: text size part B, Calm or Vivid, headline weight,
+   the motion scheme. Expressive waits for `material3` 1.5.0 stable; the
+   audit is research and can start sooner.
+9. **Translations**, once the features above have added their words.
+10. **Reading inside the launcher panel**. Lawnchair readers only.
+
+Throughout: run the real-feed check (`scripts/real-feed-check.py`) before
+each release, and take the reader leftovers it lists when they are cheap.
+
+The numbers below are labels, not a schedule — they stay put so they can be
+referred to. The working order first set by the user was 1, 3, 4, 2, then the
+rest.
 
 **§14 and §15 are done.** The backup that reduced the real risk — a
 subscription list built over years existing in exactly one place — is built,
@@ -323,7 +350,8 @@ remaining problems. See §8 for what each store needs and the order of work.
 account screen says what each sync did. That leaves §8 as the one large thing
 between the app and the people who would use it.
 
-**After the stores, set 7 October 2026.** 1.0.2 is in Play review and the
+**After the stores, set 7 October 2026** (superseded by the order at the
+top of this section, 19 October). 1.0.2 is in Play review and the
 F-Droid merge request is waiting for their testing. Then, in this order:
 
 1. **Release 1.0.3**, after a few more days of testing on the device.
