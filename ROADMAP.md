@@ -91,7 +91,9 @@ Agreed 19 October 2026. In CHANGELOG.md under Unreleased as each lands.
 - [ ] **Tap a picture to enlarge it** (Jitka).
 - [ ] **Link to an article's comments** (Jitka). Depends on what each feed
   carries (`<comments>`, `slash:comments`); look at the owner's feeds first.
-- [ ] **Search: by web address, and ranked.** Asked for 19 October 2026.
+- [x] **Search: by web address, and ranked.** Built 19 October: matched on
+  the site's own name in an address ("arstechnica", "bbc"), not "www." or
+  ".com", or "com" would rank every source first. Asked for 19 October 2026.
   - *Matches part of a word anywhere*, as now ("ars", "techn"), and also the
     article's web address: "arstech" found nothing, though the reader shows
     arstechnica.com under every Ars headline, because the source is named

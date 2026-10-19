@@ -570,6 +570,15 @@ class ArticleListViewModel(
             return filtered.sortedByDescending { it.timeMillis }
         }
 
+        // A search is ranked, not shown in feed order: what comes from the
+        // source looked for, then what has it in the headline, then in the
+        // summary, newest first within each. See searchRank.
+        if (terms != null) {
+            return filtered.sortedWith(
+                compareBy<FeedItem> { it.searchRank(terms) }.thenByDescending { it.timeMillis }
+            )
+        }
+
         val comparator = when (sfm.sort) {
             SORT_TITLE  -> compareBy(FeedItem::contentTitle)
             SORT_SOURCE -> compareBy(FeedItem::displayTitle)
@@ -611,15 +620,6 @@ class ArticleListViewModel(
  * enough that finished sources appear while a sync is still running.
  */
 /**
- * Whether an article answers a search.
- *
- * Headline, source and summary, in that order of likelihood. The full article
- * body is deliberately not searched: it lives in a file per article rather
- * than in the database, so covering it would mean reading every one of them
- * off disk on every keystroke, or building an index — neither of which is
- * worth it before the shorter fields prove too thin.
- */
-/**
  * Whether "Hide them" takes this article out of the feed.
  *
  * Pinned stays: pinning says "keep this in my feed". Saved used to stay too,
@@ -633,13 +633,67 @@ class ArticleListViewModel(
 internal fun hiddenAsRead(hideRead: Boolean, readAt: Long, pinned: Boolean): Boolean =
     hideRead && readAt != 0L && !pinned
 
-internal fun FeedItem.matchesSearch(query: String): Boolean {
+/**
+ * Whether an article answers a search: its source, headline or summary. See
+ * searchRank. The full article body is deliberately not searched: it lives in
+ * a file per article rather than in the database, so covering it would mean
+ * reading every one of them off disk on every keystroke, or building an
+ * index — neither of which is worth it before the shorter fields prove too
+ * thin.
+ */
+internal fun FeedItem.matchesSearch(query: String): Boolean =
+    query.isBlank() || searchRank(query) != SEARCH_NO_MATCH
+
+/**
+ * Where an article stands in a search: [SEARCH_SOURCE], [SEARCH_HEADLINE],
+ * [SEARCH_SUMMARY], or [SEARCH_NO_MATCH]. The first that matches; lower is
+ * shown first.
+ *
+ * Asked for on 19 October 2026: searching "Wired" should put Wired's own
+ * articles first, then headlines with the word, then summaries. The source
+ * is matched on its name and on its web address too: "arstech" found nothing
+ * while the reader showed arstechnica.com under every Ars headline, because
+ * the source is named "Ars Technica", with a space. Part of a word matches
+ * anywhere, as before.
+ */
+internal fun FeedItem.searchRank(query: String): Int {
     val q = query.trim()
-    if (q.isEmpty()) return true
-    return contentTitle.contains(q, ignoreCase = true) ||
-            feedTitle.contains(q, ignoreCase = true) ||
-            article.description.contains(q, ignoreCase = true)
+    if (q.isEmpty()) return SEARCH_NO_MATCH
+    val joined = q.replace(" ", "")
+    return when {
+        feedTitle.contains(q, ignoreCase = true) ||
+            siteName(link).contains(joined, ignoreCase = true) ||
+            siteName(feed.url.toString()).contains(joined, ignoreCase = true) -> SEARCH_SOURCE
+        contentTitle.contains(q, ignoreCase = true) -> SEARCH_HEADLINE
+        article.description.contains(q, ignoreCase = true) -> SEARCH_SUMMARY
+        else -> SEARCH_NO_MATCH
+    }
 }
+
+internal const val SEARCH_SOURCE = 0
+internal const val SEARCH_HEADLINE = 1
+internal const val SEARCH_SUMMARY = 2
+internal const val SEARCH_NO_MATCH = 3
+
+/**
+ * The site's own name in an address: "arstechnica" from
+ * https://feeds.arstechnica.com/…, "bbc" from bbc.co.uk. Without "www." or
+ * "feeds." in front or ".com" and ".co.uk" behind, which nearly every address
+ * shares: "com" would otherwise rank every source first, and typing "co" on
+ * the way to "covid" would too. Cut by hand rather than parsed, as this runs
+ * for every article on every keystroke.
+ */
+internal fun siteName(address: String): String {
+    val labels = address.substringAfter("://").substringBefore('/').substringBefore('?').substringBefore(':')
+        .lowercase().split('.').toMutableList()
+    while (labels.size > 1 && labels.first() in HOST_PREFIXES) labels.removeAt(0)
+    if (labels.size > 1) labels.removeAt(labels.lastIndex)
+    if (labels.size > 1 && labels.last() in SECOND_LEVEL) labels.removeAt(labels.lastIndex)
+    return labels.joinToString(".")
+}
+
+private val HOST_PREFIXES = setOf("www", "feeds", "feed", "rss", "m")
+private val SECOND_LEVEL = setOf("co", "com", "org", "net", "ac", "gov", "edu")
 
 private const val INVALIDATION_DEBOUNCE_MS = 300L
 
