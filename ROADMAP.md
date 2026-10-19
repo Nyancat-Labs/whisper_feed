@@ -298,32 +298,36 @@ the way.
 
 ## Suggested order
 
-**The working order now, agreed 19 October 2026.** It replaces the list "After
-the stores, set 7 October 2026" further down, which is kept for its reasons.
-Since then 1.0.5 shipped and readers have started writing in, so small items
-that protect real users move up.
+**The working order now, set by the owner on 19 October 2026.** It replaces
+the list "After the stores, set 7 October 2026" further down, which is kept
+for its reasons. The numbers in brackets are the ones this list had when the
+owner reordered it.
 
-1. **Release 1.0.6**, after a week on the owner's Pixel 10.
-2. **Saying an update is out, to GitHub installs** (*Telling a GitHub install
-   that an update is out*). Small, and it only helps from the release that
-   carries it.
-3. **Auto-scroll** (*Auto-scroll*). The longest-waiting request; designed.
-4. **Saved articles in the backup** (*Saved articles in the backup*). Small;
-   moving between Play, F-Droid and GitHub means uninstalling, and Bookmarks
-   are lost on the way.
-5. **Comments link** (Jitka; see *Next release: 1.0.6*).
-6. **Reading time and swipe to dismiss**, in one database change.
-7. **The home-screen widget**, then **read aloud**.
-8. **The design-rules audit, then the Expressive overhaul** (§19e), with
-   Coil 3 (§19d) alongside: text size part B, Calm or Vivid, headline weight,
-   the motion scheme. Expressive waits for `material3` 1.5.0 stable; the
-   audit is research and can start sooner. Settings first, in Harmonic's
-   shape (*From Harmonic*): the target, not only a reference.
-9. **AI summaries** (*AI summaries*, below): your own cloud service first,
-   then models downloaded to the phone. After the redesign so its settings
-   page is built in the new style once.
-10. **Translations**, once the features above have added their words.
-11. **Reading inside the launcher panel**. Lawnchair readers only.
+1.0.6 is not hurried: it goes out when there is enough in it, so the first
+items below can ride in it alongside what is already on main.
+
+1. **Saying an update is out, to GitHub installs** (2) (*Telling a GitHub
+   install that an update is out*). Small, and it only helps from the
+   release that carries it.
+2. **Saved articles in the backup** (4) (*Saved articles in the backup*).
+   Small; moving between Play, F-Droid and GitHub means uninstalling, and
+   Bookmarks are lost on the way.
+3. **Reading time and swipe to dismiss** (6), in one database change.
+4. **Comments link** (5) (Jitka; see *Next release: 1.0.6*).
+5. **Auto-scroll** (3) (*Auto-scroll*). The longest-waiting request;
+   designed.
+6. **The design-rules audit** (8), then **settings split into pages**, Harmonic's
+   way (*From Harmonic*), before the redesign, then **the Expressive
+   overhaul** (§19e) with Coil 3 (§19d): text size part B, Calm or Vivid,
+   headline weight, the motion scheme. Expressive waits for `material3`
+   1.5.0 stable.
+7. **AI summaries** (9) (*AI summaries*, below): your own cloud service first,
+   then models downloaded to the phone. After the redesign so its page is
+   built in the new style once.
+8. **The home-screen widget**, then **read aloud** (7).
+9. **Translations** (10), once the features above have added their words.
+10. **Reading inside the launcher panel** (11). Lawnchair readers only; not
+    in the owner's list, so last.
 
 Throughout: run the real-feed check (`scripts/real-feed-check.py`) before
 each release, and take the reader leftovers it lists when they are cheap.
