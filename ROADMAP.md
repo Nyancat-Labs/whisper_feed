@@ -317,9 +317,13 @@ that protect real users move up.
 8. **The design-rules audit, then the Expressive overhaul** (§19e), with
    Coil 3 (§19d) alongside: text size part B, Calm or Vivid, headline weight,
    the motion scheme. Expressive waits for `material3` 1.5.0 stable; the
-   audit is research and can start sooner.
-9. **Translations**, once the features above have added their words.
-10. **Reading inside the launcher panel**. Lawnchair readers only.
+   audit is research and can start sooner. Settings first, in Harmonic's
+   shape (*From Harmonic*): the target, not only a reference.
+9. **AI summaries** (*AI summaries*, below): your own cloud service first,
+   then models downloaded to the phone. After the redesign so its settings
+   page is built in the new style once.
+10. **Translations**, once the features above have added their words.
+11. **Reading inside the launcher panel**. Lawnchair readers only.
 
 Throughout: run the real-feed check (`scripts/real-feed-check.py`) before
 each release, and take the reader leftovers it lists when they are cheap.
@@ -3363,6 +3367,47 @@ styling. What to take, and when:
 
 Already ours, so not taken: settings in categories, an About page that opens
 with how to get in touch, and a picker for what the feed shows (the chips).
+
+**19 October 2026: Harmonic's settings are the target**, not only a source of
+ideas. Screenshots from the owner: a top level of a few rounded rows
+(Appearance, Stories, Web and links, Filters and tags, AI summarization,
+Data, About); inside each, small section headings over rounded groups;
+choices as button rows (Off / Small / Large, Standard / Card); sliders for
+text size; a live preview card heading the Stories page; a coloured panel
+switch heading a page that is off until turned on ("Use AI summarization").
+Whisper's sections already line up (Appearance, Your feed, Reading,
+Fetching, Filters, Your data, Help), so this is the look rather than a
+reorganisation. First piece of the Expressive release.
+
+## AI summaries — decided 19 October 2026
+
+A summary of the article, on request, from the reader. Seen in Harmonic.
+Two of its three routes, by decision:
+
+1. **Your own cloud service.** An OpenAI-compatible address (OpenRouter and
+   the like), your API key, a model name, the prompt, streamed replies. An
+   ordinary HTTP request; days, not weeks.
+2. ~~**Gemini Nano on the phone.**~~ Not doing: it comes through Google Play
+   services, which F-Droid will not take, so it would split the app into two
+   builds.
+3. **Open models downloaded to the phone** (Gemma, Qwen, Bonsai and the like,
+   as Harmonic lists). Private and in every build, but each model is 250 MB
+   to 3.6 GB, needs RAM, and the runtime (llama.cpp or LiteRT-LM) is native
+   code that F-Droid will build from source. The largest piece; after 1.
+
+To hold to when built:
+
+- **Off until turned on**, like the backups: the coloured panel switch at
+  the top of the page, and nothing sent anywhere before it. With 1, the
+  article goes to the service the reader named and nowhere else; the page
+  says so in those words.
+- **The API key stays on this phone**: kept with the Android Keystore, out
+  of the settings backup (SettingsBackup.NOT_PORTABLE) and out of
+  diagnostics reports.
+- **Models download only when chosen**, with their size shown first, over
+  Wi-Fi unless the reader says otherwise, and can be deleted.
+- **F-Droid**: check whether an optional, user-configured cloud service
+  draws the NonFreeNet anti-feature before release.
 
 ## Checking the reader against real feeds — first pass, 18 October 2026
 
