@@ -92,6 +92,10 @@ Agreed 19 October 2026. In CHANGELOG.md under Unreleased as each lands.
   swipe down to close; Save (Pictures/Whisper, Android 10 and later, no
   permission) and Share; a linked picture's link is a button there. The
   opening picture too. Decoded at most twice the screen, 4096 pixels.
+  Closing reworked the same day ("a little stiff"): the picture follows the
+  finger, a flick or an 80dp pull closes, less springs back, on Expressive's
+  default spatial spring - the first piece of §19e's motion, written out
+  until MaterialExpressiveTheme supplies it.
 - [ ] **Link to an article's comments** (Jitka). Depends on what each feed
   carries (`<comments>`, `slash:comments`); look at the owner's feeds first.
 - [x] **Search: by web address, and ranked.** Built 19 October: matched on

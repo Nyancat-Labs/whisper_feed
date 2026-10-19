@@ -14,8 +14,8 @@ Unreleased
   since you last left the feed, counting only the tab you are on. Sources
   kept out of All count in their own tab. Nothing extra when there is
   nothing new. Suggested by a reader.
-- **Tap a picture to see it full screen.** Pinch or double-tap to zoom,
-  swipe down to close, and Save it to Pictures or Share it. A picture that
+- **Tap a picture to see it full screen.** Pinch or double-tap to zoom;
+  pull it up or down and it follows your finger, flick or pull to close, and Save it to Pictures or Share it. A picture that
   was also a link opens the picture now; the link is a button underneath.
   Saving is on Android 10 and later, where it needs no permission. Suggested
   by a reader.

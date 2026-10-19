@@ -48,4 +48,13 @@ class PictureViewerTest {
         assertTrue(page.contains("CompositionLocalProvider(LocalPictureViewer provides { viewing = it })"))
         assertTrue("the opening picture too", page.contains(".clickable { viewing = PictureRequest(picture) }"))
     }
+
+    @Test
+    fun `closing follows the finger and springs, as Expressive moves`() {
+        val viewer = File("src/main/java/com/saulhdev/feeder/ui/components/PictureViewer.kt").readText()
+        assertTrue("Expressive's default spatial spring", viewer.contains("spring<Float>(dampingRatio = 0.8f, stiffness = 380f)"))
+        assertTrue("a flick closes as well as a long pull", viewer.contains("abs(fling) > flingPxPerSecond"))
+        assertTrue("less than that springs back", viewer.contains("pull.animateTo(0f, SPRING, initialVelocity = fling)"))
+        assertTrue("the background thins as it is pulled", viewer.contains("Color.Black.copy(alpha = 1f - pulled)"))
+    }
 }

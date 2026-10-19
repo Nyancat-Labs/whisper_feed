@@ -21,7 +21,12 @@ package com.saulhdev.feeder.ui.components
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.gestures.detectTransformGestures
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.calculatePan
+import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,7 +41,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -48,6 +52,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.positionChanged
+import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -68,6 +74,7 @@ import com.saulhdev.feeder.ui.icons.phosphor.ShareNetwork
 import com.saulhdev.feeder.ui.icons.phosphor.X
 import com.saulhdev.feeder.utils.PictureFiles
 import kotlinx.coroutines.launch
+import kotlin.math.abs
 
 /**
  * A picture to show full screen: what to load (an address, or the file kept
@@ -87,8 +94,11 @@ val LocalPictureViewer = staticCompositionLocalOf<((PictureRequest) -> Unit)?> {
  * A reader's picture, full screen on black. Asked for by a reader on 16
  * October 2026, with saving.
  *
- * Pinch to zoom, double-tap to zoom in or back out, drag when zoomed; at its
- * own size a swipe down or back closes it. Save, Share, and Open link when
+ * Pinch to zoom, double-tap to zoom in or back out, drag when zoomed. At its
+ * own size the picture follows a pull up or down, the black thinning as it
+ * goes; a long pull or a quick flick closes it, and anything less springs
+ * back. Back closes it too. "A little stiff" on the phone at first, with a
+ * fixed 120dp to drag and nothing moving until then. Save, Share, and Open link when
  * the picture was a link: tapping a linked picture used to follow the link,
  * which made the tap mean two things, so a tap always enlarges and the link
  * is a button here. Save only from Android 10, where it needs no permission;
@@ -99,9 +109,17 @@ fun PictureViewer(request: PictureRequest, onOpenLink: (String) -> Unit, onDismi
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val dismissAfterPx = with(LocalDensity.current) { 120.dp.toPx() }
-    var scale by remember { mutableFloatStateOf(1f) }
+    val scale = remember { Animatable(1f) }
     var offset by remember { mutableStateOf(Offset.Zero) }
+    // How far the picture has been pulled at its own size, towards closing.
+    val pull = remember { Animatable(0f) }
     var busy by remember { mutableStateOf(false) }
+    val screenHeightPx = with(LocalDensity.current) { LocalConfiguration.current.screenHeightDp.dp.toPx() }
+    val flingPxPerSecond = with(LocalDensity.current) { FLING_DP_PER_SECOND.dp.toPx() }
+    val closeAfterPx = with(LocalDensity.current) { CLOSE_AFTER_DP.dp.toPx() }
+    // The background fades and the picture eases smaller as it is pulled, so
+    // the article shows behind it: what letting go will do.
+    val pulled = (abs(pull.value) / (screenHeightPx / 2)).coerceIn(0f, 1f)
 
     Dialog(
         onDismissRequest = onDismiss,
@@ -110,24 +128,56 @@ fun PictureViewer(request: PictureRequest, onOpenLink: (String) -> Unit, onDismi
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Black)
+                .background(Color.Black.copy(alpha = 1f - pulled))
                 .pointerInput(Unit) {
-                    detectTapGestures(onDoubleTap = {
-                        if (scale > 1f) {
-                            scale = 1f
-                            offset = Offset.Zero
-                        } else {
-                            scale = DOUBLE_TAP_SCALE
+                    detectTapGestures(onDoubleTap = { at ->
+                        scope.launch {
+                            if (scale.value > 1f) {
+                                offset = Offset.Zero
+                                scale.animateTo(1f, SPRING)
+                            } else {
+                                // Towards the point tapped, as Photos does.
+                                offset = (Offset(size.width / 2f, size.height / 2f) - at) * (DOUBLE_TAP_SCALE - 1f)
+                                scale.animateTo(DOUBLE_TAP_SCALE, SPRING)
+                            }
                         }
                     })
                 }
                 .pointerInput(Unit) {
-                    detectTransformGestures { _, pan, zoom, _ ->
-                        scale = (scale * zoom).coerceIn(1f, MAX_SCALE)
-                        offset = if (scale > 1f) offset + pan
-                        // At its own size only downwards moves it, towards closing.
-                        else Offset(0f, (offset.y + pan.y).coerceAtLeast(0f))
-                        if (scale == 1f && offset.y > dismissAfterPx) onDismiss()
+                    awaitEachGesture {
+                        awaitFirstDown(requireUnconsumed = false)
+                        val velocity = VelocityTracker()
+                        var pulling = false
+                        do {
+                            val event = awaitPointerEvent()
+                            val zooming = event.changes.size > 1 || scale.value > 1f
+                            if (zooming) {
+                                pulling = false
+                                val next = (scale.value * event.calculateZoom()).coerceIn(1f, MAX_SCALE)
+                                scope.launch { scale.snapTo(next) }
+                                offset = if (next > 1f) offset + event.calculatePan() else Offset.Zero
+                            } else {
+                                pulling = true
+                                val change = event.changes.first()
+                                velocity.addPosition(change.uptimeMillis, change.position)
+                                val dy = event.calculatePan().y
+                                scope.launch { pull.snapTo(pull.value + dy) }
+                            }
+                            event.changes.forEach { if (it.positionChanged()) it.consume() }
+                        } while (event.changes.any { it.pressed })
+                        if (pulling) {
+                            val fling = velocity.calculateVelocity().y
+                            if (abs(pull.value) > closeAfterPx || abs(fling) > flingPxPerSecond) {
+                                // Off the way it was going, then gone.
+                                val away = if ((pull.value + fling / 10f) < 0f) -screenHeightPx else screenHeightPx
+                                scope.launch {
+                                    pull.animateTo(away, SPRING, initialVelocity = fling)
+                                    onDismiss()
+                                }
+                            } else {
+                                scope.launch { pull.animateTo(0f, SPRING, initialVelocity = fling) }
+                            }
+                        }
                     }
                 },
         ) {
@@ -152,10 +202,11 @@ fun PictureViewer(request: PictureRequest, onOpenLink: (String) -> Unit, onDismi
                 modifier = Modifier
                     .fillMaxSize()
                     .graphicsLayer {
-                        scaleX = scale
-                        scaleY = scale
+                        val shrink = 1f - PULL_SHRINK * pulled
+                        scaleX = scale.value * shrink
+                        scaleY = scale.value * shrink
                         translationX = offset.x
-                        translationY = offset.y
+                        translationY = offset.y + pull.value
                     },
             )
 
@@ -224,3 +275,20 @@ private fun ViewerAction(
 
 private const val MAX_SCALE = 5f
 private const val DOUBLE_TAP_SCALE = 2.5f
+
+/**
+ * Material 3 Expressive's default spatial spring (damping 0.8, stiffness
+ * 380): a little give, then settled. Written out until the app takes
+ * MaterialExpressiveTheme (roadmap §19e), when it becomes
+ * MaterialTheme.motionScheme.defaultSpatialSpec().
+ */
+private val SPRING = spring<Float>(dampingRatio = 0.8f, stiffness = 380f)
+
+/** A pull this far closes the picture, however slowly. */
+private const val CLOSE_AFTER_DP = 80
+
+/** A flick this fast closes it, however short. */
+private const val FLING_DP_PER_SECOND = 900
+
+/** How much smaller the picture is when pulled half the screen. */
+private const val PULL_SHRINK = 0.15f
