@@ -154,6 +154,7 @@ class OverlayView(val context: Context) :
 
     /** The source hidden most recently, so the feed can offer the way back. */
     private val hiddenSourceState = mutableStateOf<FeedItem?>(null)
+    private val dismissedState = mutableStateOf<FeedItem?>(null)
 
     /** Mirrored from the view model, which owns the query the feed is filtered by. */
     private val searchQuery = mutableStateOf("")
@@ -296,6 +297,9 @@ class OverlayView(val context: Context) :
         }
         syncScope.launch {
             viewModel.recentlyHidden.collect { hiddenSourceState.value = it }
+        }
+        syncScope.launch {
+            viewModel.recentlyDismissed.collect { dismissedState.value = it }
         }
         syncScope.launch {
             viewModel.searchQuery.collect { searchQuery.value = it }
@@ -547,6 +551,12 @@ class OverlayView(val context: Context) :
                         hiddenSource = hiddenSourceState.value,
                         onUndoHideSource = { viewModel.undoHideSource() },
                         onDismissHideSource = { viewModel.forgetHiddenSource() },
+                        onNotInterested = { viewModel.notInterested(it) },
+                        dismissed = dismissedState.value,
+                        onUndoNotInterested = { viewModel.undoNotInterested() },
+                        onForgetDismissed = { viewModel.forgetDismissed() },
+                        dismissedToday = viewModel.dismissedToday,
+                        onBringBack = { viewModel.bringBack(it) },
                         layout = layout,
                         isFilterSheetOpen = filterSheetOpen.value,
                         onFilterSheetOpenChange = { filterSheetOpen.value = it },

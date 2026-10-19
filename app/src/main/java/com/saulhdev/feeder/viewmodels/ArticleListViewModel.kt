@@ -18,6 +18,7 @@
 
 package com.saulhdev.feeder.viewmodels
 
+import kotlinx.coroutines.flow.flow
 import androidx.lifecycle.viewModelScope
 import com.saulhdev.feeder.data.content.FeedPreferences
 import com.saulhdev.feeder.data.db.models.FeedItem
@@ -514,6 +515,59 @@ class ArticleListViewModel(
         ioScope.launch { feedsRepo.setEnabled(listOf(feedId), enabled = true) }
     }
 
+    /** The article turned down most recently, for as long as Undo is offered. */
+    private val _recentlyDismissed = MutableStateFlow<FeedItem?>(null)
+    val recentlyDismissed: StateFlow<FeedItem?> = _recentlyDismissed.asStateFlow()
+
+    /**
+     * "Not interested": a swipe, or the menu. See `Article.hiddenAt`.
+     *
+     * Never for a saved or pinned article; the reader has already said they
+     * want those, and a stray swipe should not undo that. The card offers
+     * neither the swipe nor the entry for them, and this checks again.
+     *
+     * A small "Less like this": every third from one source in a week counts
+     * as one. A single dismissal says little about a source; ten say a lot.
+     */
+    fun notInterested(item: FeedItem) {
+        if (item.bookmarked || item.pinned) return
+        _recentlyDismissed.value = item
+        ioScope.launch {
+            val count = articleRepo.hideArticle(item.id, item.feed.id)
+            if (count > 0 && count % DISMISSALS_PER_LESS == 0) recordAffinity(item.sourceId, -1)
+        }
+    }
+
+    fun undoNotInterested() {
+        val item = _recentlyDismissed.value ?: return
+        _recentlyDismissed.value = null
+        bringBack(item)
+    }
+
+    fun forgetDismissed() {
+        _recentlyDismissed.value = null
+    }
+
+    /** Back into the feed, taking back the weighting it added if it added some. */
+    fun bringBack(item: FeedItem) {
+        ioScope.launch {
+            val count = articleRepo.unhideArticle(item.id, item.feed.id)
+            if (count > 0 && count % DISMISSALS_PER_LESS == 0) recordAffinity(item.sourceId, 1)
+        }
+    }
+
+    /** What was turned down today, for "Dismissed today", newest first. */
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+    val dismissedToday: Flow<List<FeedItem>> = flow { emit(startOfToday()) }
+        .flatMapLatest { articleRepo.hiddenSince(it) }
+
+    private fun startOfToday(): Long = java.util.Calendar.getInstance().apply {
+        set(java.util.Calendar.HOUR_OF_DAY, 0)
+        set(java.util.Calendar.MINUTE, 0)
+        set(java.util.Calendar.SECOND, 0)
+        set(java.util.Calendar.MILLISECOND, 0)
+    }.timeInMillis
+
     // HELPERS
 
 
@@ -769,3 +823,6 @@ internal fun spreadSources(articles: List<FeedItem>): List<FeedItem> {
     deferred.forEach(result::add)
     return result
 }
+
+/** Dismissals from one source in a week that add up to one "Less like this". */
+internal const val DISMISSALS_PER_LESS = 3

@@ -70,6 +70,7 @@ import com.saulhdev.feeder.utils.readerBody
 import com.saulhdev.feeder.utils.readerBodyText
 import com.saulhdev.feeder.utils.formatArticleTime
 import com.saulhdev.feeder.ui.overlay.ArticleMeta
+import com.saulhdev.feeder.ui.overlay.withReadingTime
 import coil.compose.AsyncImage
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.ui.layout.ContentScale
@@ -362,8 +363,12 @@ fun ArticlePage(
                             category = state?.source?.tags?.firstOrNull().orEmpty(),
                             source = feedTitle,
                             age = state?.article?.let {
-                                formatArticleTime(
-                                    context, it.primarySortTime.toEpochMilliseconds(), timeFormat,
+                                withReadingTime(
+                                    context,
+                                    formatArticleTime(
+                                        context, it.primarySortTime.toEpochMilliseconds(), timeFormat,
+                                    ),
+                                    it.readingMinutes,
                                 )
                             }.orEmpty(),
                             style = MaterialTheme.typography.labelMedium,

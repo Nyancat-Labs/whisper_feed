@@ -73,7 +73,10 @@ class CardReadabilityTest {
     fun `the lead headline sits below its picture, like every other card's`() {
         assertFalse("no headline laid over a picture", cards.contains("fun ArticleHeroCard("))
         assertFalse(cards.contains("drawTextShade"))
-        assertTrue(cards.contains("FeedCardShape.Hero    -> ArticleCard(\n            item, onClick, onBookmark, onShare, menu = menu, modifier = shapeModifier, coverage = coverage, lead = true,"))
+        assertTrue(
+            Regex("""FeedCardShape\.Hero\s+-> ArticleCard\(\s+item, onClick, onBookmark, onShare, menu = menu, modifier = shapeModifier, coverage = coverage, lead = true,""")
+                .containsMatchIn(cards)
+        )
         assertTrue(cards.contains("Modifier.fillMaxWidth().leadPicture(windowHeight)"))
         assertFalse("the lead's headline is the same size as the rest", cards.contains("if (lead) MaterialTheme.typography.titleLarge"))
         val card = cards.substring(cards.indexOf("fun ArticleCard("), cards.indexOf("fun ArticleCompactRow("))

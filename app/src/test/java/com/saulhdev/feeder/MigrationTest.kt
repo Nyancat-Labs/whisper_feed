@@ -168,6 +168,11 @@ class MigrationTest {
         else -> "seed-$column-$row"
     }
 
+    private fun SupportSQLiteDatabase.tableNames(): Set<String> =
+        query("SELECT name FROM sqlite_master WHERE type = 'table'").use { cursor ->
+            buildSet { while (cursor.moveToNext()) add(cursor.getString(0)) }
+        }
+
     private fun count(db: SupportSQLiteDatabase, table: String): Int =
         db.query("SELECT COUNT(*) FROM `$table`").use { it.moveToFirst(); it.getInt(0) }
 
@@ -211,9 +216,21 @@ class MigrationTest {
                         if (found != rows) failures += "from $from: $table has $found rows, expected $rows"
                     }
                     // A feed that existed before Show in All must stay in All.
-                    val hidden = db.query("SELECT COUNT(*) FROM Feeds WHERE showInAll != 1")
-                        .use { it.moveToFirst(); it.getInt(0) }
-                    if (hidden != 0) failures += "from $from: $hidden feeds left out of All"
+                    // Only asked of versions without the column: from 27 on,
+                    // the seed wrote its own value into it.
+                    if (from < 27) {
+                        val hidden = db.query("SELECT COUNT(*) FROM Feeds WHERE showInAll != 1")
+                            .use { it.moveToFirst(); it.getInt(0) }
+                        if (hidden != 0) failures += "from $from: $hidden feeds left out of All"
+                    }
+                    // Nothing was turned down before Not interested existed,
+                    // and no reading time had been counted.
+                    if (from < 28 && "Article" in db.tableNames()) {
+                        val touched = db.query(
+                            "SELECT COUNT(*) FROM Article WHERE hiddenAt != 0 OR readingMinutes != 0"
+                        ).use { it.moveToFirst(); it.getInt(0) }
+                        if (touched != 0) failures += "from $from: $touched articles hidden or timed"
+                    }
                 } finally {
                     room.close()
                 }

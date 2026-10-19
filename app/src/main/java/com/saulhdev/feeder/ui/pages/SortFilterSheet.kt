@@ -1,5 +1,11 @@
 package com.saulhdev.feeder.ui.pages
 
+import com.saulhdev.feeder.ui.icons.phosphor.EyeSlash
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.material3.TextButton
+import com.saulhdev.feeder.data.db.models.FeedItem
+import kotlinx.coroutines.flow.Flow
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -68,6 +74,9 @@ fun SortFilterSheet(
     // for a batch of reads yet, so it does not offer one.
     markReadCounts: (suspend (nowMs: Long) -> Map<MarkReadRange, Int>)? = null,
     onMarkRead: ((MarkReadRange, nowMs: Long) -> Unit)? = null,
+    /** Today's "Not interested", and the way back for each. Both or neither. */
+    dismissedToday: Flow<List<FeedItem>>? = null,
+    onBringBack: ((FeedItem) -> Unit)? = null,
     onDismiss: () -> Unit,
 ) {
     val nestedScrollConnection = rememberNestedScrollInteropConnection()
@@ -218,6 +227,10 @@ fun SortFilterSheet(
                 )
             }
 
+            if (dismissedToday != null && onBringBack != null) item {
+                DismissedTodayBlock(dismissedToday, onBringBack)
+            }
+
             if (markReadCounts != null && onMarkRead != null) item {
                 MarkReadBlock(
                     counts = markReadCounts,
@@ -279,6 +292,61 @@ fun SortFilterSheet(
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+/**
+ * What was turned down today, each with a way back.
+ *
+ * Here because this sheet is where a reader looks for something the feed no
+ * longer shows. Acts at once, like Mark as read below it: bringing one back
+ * is not a filter to stage until Apply. Today only, so it stays short; the
+ * articles themselves are kept until they age out like any other.
+ */
+@Composable
+private fun DismissedTodayBlock(
+    dismissed: Flow<List<FeedItem>>,
+    onBringBack: (FeedItem) -> Unit,
+) {
+    val items by dismissed.collectAsState(initial = emptyList())
+    ExpandableItemsBlock(
+        heading = stringResource(R.string.dismissed_today) +
+            if (items.isNotEmpty()) " \u00b7 ${items.size}" else "",
+        icon = Phosphor.EyeSlash,
+        preExpanded = false,
+    ) {
+        Text(
+            text = stringResource(
+                if (items.isEmpty()) R.string.dismissed_today_empty else R.string.dismissed_today_summary
+            ),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        items.forEach { item ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = item.contentTitle,
+                        style = MaterialTheme.typography.bodyMedium,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    Text(
+                        text = item.feedTitle,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+                TextButton(onClick = { onBringBack(item) }) {
+                    Text(stringResource(R.string.dismissed_bring_back))
                 }
             }
         }

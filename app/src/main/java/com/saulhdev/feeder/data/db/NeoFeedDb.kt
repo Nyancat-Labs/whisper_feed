@@ -52,7 +52,7 @@ const val ID_ALL: Long = -1L
         Suggestion::class,
         ReadingTally::class,
     ],
-    version = 27,
+    version = 28,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -233,6 +233,7 @@ abstract class NeoFeedDb : RoomDatabase() {
 }
 
 val allMigrations = arrayOf(
+    MIGRATION_27_28,
     MIGRATION_26_27,
     MIGRATION_25_26,
     MIGRATION_24_25,
@@ -256,6 +257,16 @@ val allMigrations = arrayOf(
     MIGRATION_12_13,
     MIGRATION_13_14,
 )
+
+@Suppress("ClassName")
+object MIGRATION_27_28 : Migration(27, 28) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Nothing has been turned down yet, and no reading time counted:
+        // it fills in as text is stored from here on.
+        db.execSQL("ALTER TABLE Article ADD COLUMN hiddenAt INTEGER NOT NULL DEFAULT 0")
+        db.execSQL("ALTER TABLE Article ADD COLUMN readingMinutes INTEGER NOT NULL DEFAULT 0")
+    }
+}
 
 @Suppress("ClassName")
 object MIGRATION_26_27 : Migration(26, 27) {

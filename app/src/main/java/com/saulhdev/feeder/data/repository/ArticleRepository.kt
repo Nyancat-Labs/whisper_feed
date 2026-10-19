@@ -261,6 +261,38 @@ class ArticleRepository(db: NeoFeedDb) {
         articlesDao.setDismissed(articleId, System.currentTimeMillis())
     }
 
+    /**
+     * "Not interested": out of the feed, and read.
+     *
+     * Read so it does not come back on an account's other devices, and so
+     * the unread count does not promise more than there is. Not tallied:
+     * turning something down is not reading it.
+     *
+     * Returns how many this source has had turned down in the last week,
+     * this one included, for the weighting; see ArticleListViewModel.
+     */
+    suspend fun hideArticle(articleId: String, feedId: Long): Int = withContext(jcc) {
+        val now = System.currentTimeMillis()
+        articlesDao.setHidden(articleId, now)
+        if (articlesDao.markRead(articleId, now) == 1) onReadChanged?.invoke(listOf(articleId), true)
+        articlesDao.countHiddenSince(feedId, now - WEEK_MS)
+    }
+
+    /**
+     * Back into the feed, from Undo or "Dismissed today". Left read: it was
+     * marked so when it went, and whether it was read is a separate question.
+     *
+     * Returns the week's count before it came back, as [hideArticle] does.
+     */
+    suspend fun unhideArticle(articleId: String, feedId: Long): Int = withContext(jcc) {
+        val count = articlesDao.countHiddenSince(feedId, System.currentTimeMillis() - WEEK_MS)
+        articlesDao.setHidden(articleId, 0L)
+        count
+    }
+
+    /** Turned down since [since]; see FeedArticleDao.hiddenSince. */
+    fun hiddenSince(since: Long): Flow<List<FeedItem>> = articlesDao.hiddenSince(since).flowOn(cc)
+
     /** Where a recent article from this feed actually lives; see the DAO. */
     suspend fun publisherLink(feedId: Long): String? = withContext(jcc) {
         articlesDao.latestArticleLink(feedId)
@@ -808,3 +840,6 @@ internal fun appliedReading(before: Long, requested: Long, cap: Long): Long {
     if (requested <= 0L) return 0L
     return (minOf(before + requested, cap) - before).coerceAtLeast(0L)
 }
+
+/** How far back dismissals count towards a source's weighting. */
+private const val WEEK_MS = 7L * 24 * 60 * 60 * 1000

@@ -122,6 +122,13 @@
     <string name="picture_saved">Saved to Pictures</string>
     <string name="picture_not_saved">Couldn’t save the picture</string>
     <string name="picture_not_loaded">The picture hasn’t loaded</string>
+    <string name="reading_minutes">%1$d min</string>
+    <string name="not_interested">Not interested</string>
+    <string name="not_interested_done">Removed from your feed</string>
+    <string name="dismissed_today">Dismissed today</string>
+    <string name="dismissed_today_summary">Articles you said you were not interested in today</string>
+    <string name="dismissed_today_empty">Nothing dismissed today</string>
+    <string name="dismissed_bring_back">Bring back</string>
     <string name="freshness_with_new">%1$s · %2$d new</string>
     <string name="freshness_just_now">Updated just now</string>
     <string name="freshness_updating">Updating…</string>

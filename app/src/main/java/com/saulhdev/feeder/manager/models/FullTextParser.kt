@@ -1,5 +1,8 @@
 package com.saulhdev.feeder.manager.models
 
+import com.saulhdev.feeder.utils.ReadingTime
+import com.saulhdev.feeder.data.db.dao.FeedArticleDao
+import org.koin.java.KoinJavaComponent
 import com.saulhdev.feeder.utils.stripPageChrome
 import android.content.Context
 import android.util.Log
@@ -439,6 +442,15 @@ suspend fun parseFullArticle(
         withContext(Dispatchers.IO) {
             blobFullOutputStream(feedItem.uuid, filesDir).bufferedWriter().use { writer ->
                 writer.write(article.contentWithUtf8Encoding)
+            }
+        }
+        // Counted now, while the text is in hand, so the feed never has to
+        // read a file to say "4 min". A failure here costs only the label.
+        runCatching {
+            val minutes = ReadingTime.fromPage(article.content.orEmpty())
+            if (minutes > 0) {
+                KoinJavaComponent.get<FeedArticleDao>(FeedArticleDao::class.java)
+                    .setReadingMinutes(feedItem.uuid, minutes)
             }
         }
         // Fetched after all, perhaps from the reader opening it: the record

@@ -223,6 +223,30 @@ interface FeedArticleDao {
     )
     suspend fun markOpened(id: String, at: Long): Int
 
+    /** "Not interested", or 0 to bring it back. See `Article.hiddenAt`. */
+    @Query("UPDATE Article SET hiddenAt = :at WHERE uuid = :id")
+    suspend fun setHidden(id: String, at: Long)
+
+    /** How many this source has had turned down since [since]. */
+    @Query("SELECT COUNT(*) FROM Article WHERE feedId = :feedId AND hiddenAt >= :since AND hiddenAt > 0")
+    suspend fun countHiddenSince(feedId: Long, since: Long): Int
+
+    /** What was turned down since [since], newest first, for "Dismissed today". */
+    @Transaction
+    @Query(
+        """
+    SELECT Article.* FROM Article
+    JOIN Feeds ON Article.feedId = Feeds.id
+    WHERE Article.hiddenAt >= :since AND Article.hiddenAt > 0
+    ORDER BY Article.hiddenAt DESC
+    """
+    )
+    fun hiddenSince(since: Long): Flow<List<FeedItem>>
+
+    /** Minutes to read, from a downloaded page. See `Article.readingMinutes`. */
+    @Query("UPDATE Article SET readingMinutes = :minutes WHERE uuid = :id")
+    suspend fun setReadingMinutes(id: String, minutes: Int)
+
     /** Retracts a breaking story's promotion. See `Article.dismissedAt`. */
     @Query("UPDATE Article SET dismissedAt = :at WHERE uuid = :id")
     suspend fun setDismissed(id: String, at: Long)
@@ -470,6 +494,7 @@ interface FeedArticleDao {
     SELECT Article.* FROM Article
     JOIN Feeds ON Article.feedId = Feeds.id
     WHERE Feeds.isEnabled = 1 AND (:everything OR Feeds.showInAll = 1)
+        AND Article.hiddenAt = 0
     ORDER BY Article.primarySortTime DESC
     LIMIT :limit
     """
@@ -505,6 +530,7 @@ interface FeedArticleDao {
     SELECT Article.* FROM Article
     JOIN Feeds ON Article.feedId = Feeds.id
     WHERE Feeds.isEnabled = 1 AND (:everything OR Feeds.showInAll = 1)
+        AND Article.hiddenAt = 0
     ORDER BY Article.primarySortTime DESC
     LIMIT :limit
     """
@@ -560,7 +586,7 @@ interface FeedArticleDao {
         """
     SELECT Article.* FROM Article
     JOIN Feeds ON Article.feedId = Feeds.id
-    WHERE Article.feedId IN (:feedIds) AND Feeds.isEnabled = 1
+    WHERE Article.feedId IN (:feedIds) AND Feeds.isEnabled = 1 AND Article.hiddenAt = 0
     ORDER BY Article.primarySortTime DESC
     LIMIT :limit
     """
@@ -573,7 +599,7 @@ interface FeedArticleDao {
         """
     SELECT Article.* FROM Article
     JOIN Feeds ON Article.feedId = Feeds.id
-    WHERE Article.feedId IN (:feedIds) AND Feeds.isEnabled = 1
+    WHERE Article.feedId IN (:feedIds) AND Feeds.isEnabled = 1 AND Article.hiddenAt = 0
     ORDER BY Article.primarySortTime DESC
     LIMIT :limit
     """

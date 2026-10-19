@@ -229,6 +229,20 @@ fun ArticleListPage(
         else viewModel.forgetHiddenSource()
     }
 
+    // "Not interested", offered back the same way. Short: the reader has just
+    // done it on purpose, and Dismissed today keeps it for the rest of the day.
+    val dismissed by viewModel.recentlyDismissed.collectAsState()
+    LaunchedEffect(dismissed) {
+        dismissed ?: return@LaunchedEffect
+        val result = snackbarHostState.showSnackbar(
+            message = context.getString(R.string.not_interested_done),
+            actionLabel = undoLabel,
+            duration = SnackbarDuration.Short,
+        )
+        if (result == SnackbarResult.ActionPerformed) viewModel.undoNotInterested()
+        else viewModel.forgetDismissed()
+    }
+
     // Articles marked read without the reader pressing anything — by scrolling
     // past them, or by marking the lot from Settings — are offered back. An
     // article they opened is not: they know they opened it.
@@ -395,6 +409,8 @@ fun ArticleListPage(
                                         if (count > 0) scope.launch { offerReadsBack(count) }
                                     }
                                 },
+                                dismissedToday = viewModel.dismissedToday,
+                                onBringBack = { viewModel.bringBack(it) },
                             ) {
                                 scope.launch {
                                     scaffoldState.bottomSheetState.partialExpand()
@@ -696,6 +712,7 @@ fun ArticleListPage(
                                             onLessLikeThis = { viewModel.recordAffinity(item.sourceId, -1) },
                                             onHideSource = { viewModel.hideSource(item) },
                                             onDismissStory = { viewModel.dismissStory(item.id) },
+                                            onNotInterested = { viewModel.notInterested(item) },
                                         )
                                     }
 

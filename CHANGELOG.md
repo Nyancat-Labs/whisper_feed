@@ -9,6 +9,21 @@ Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 Unreleased
 ----------
 
+- **Swipe a card right for "Not interested".** The article leaves the
+  feed and is marked read, with Undo for a few seconds. The swipe is heavy
+  on purpose: the card moves at half the speed of your finger and only goes
+  past half its width, or a third with a hard flick, so a thumb scrolling
+  the feed won't set it off. Right only, because in the Lawnchair panel a
+  leftward swipe takes you home. Also in each card's ⋮ menu, and as an
+  action for TalkBack. Not on saved or pinned articles.
+- **Dismissed today.** Anything you turned down today is listed in the
+  filter sheet, each with "Bring back".
+- **Every third dismissal from a source in a week counts as one "Less like
+  this"**, so one swipe says little and ten say a lot.
+- **Reading time.** "5h · 4 min" on cards and under the reader's headline,
+  counted from the downloaded page, or from the feed's own text when that
+  is the whole article. A feed teaser shows no time rather than a wrong one.
+- Database version 28 (two new columns on articles), migrated in place.
 - **Saved articles are in the backup.** The daily backup now writes a third
   file, `whisper-saved.json`, beside the subscriptions and settings, and
   restoring a folder puts your saved articles back. Moving between Play,

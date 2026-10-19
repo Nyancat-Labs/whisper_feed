@@ -85,6 +85,8 @@ fun ArticleOverflowMenu(
      */
     breaking: Boolean = false,
     onDismissStory: () -> Unit = {},
+    /** "Not interested"; null on saved and pinned cards, which never offer it. */
+    onNotInterested: (() -> Unit)? = null,
 ) {
     var expanded by remember { mutableStateOf(false) }
     var explain by remember { mutableStateOf(false) }
@@ -123,6 +125,14 @@ fun ArticleOverflowMenu(
             MenuEntry(R.string.less_like_this, Phosphor.Prohibit) {
                 expanded = false
                 onLessLikeThis()
+            }
+            // The swipe's twin, for anyone who would rather not swipe and
+            // for anyone who does not know the swipe is there.
+            if (onNotInterested != null) {
+                MenuEntry(R.string.not_interested, Phosphor.EyeSlash) {
+                    expanded = false
+                    onNotInterested()
+                }
             }
             MenuEntry(
                 if (pinned) R.string.unpin_article else R.string.pin_article,

@@ -178,6 +178,15 @@ fun FeedScaffold(
     onPin: (FeedItem, Boolean) -> Unit = { _, _ -> },
     /** Gives back a breaking story's promotion. See `Article.dismissedAt`. */
     onDismissStory: (FeedItem) -> Unit = {},
+    /** "Not interested", by swipe or menu; see NotInterestedSwipe. */
+    onNotInterested: ((FeedItem) -> Unit)? = null,
+    /** The article just turned down, while Undo is offered. */
+    dismissed: FeedItem? = null,
+    onUndoNotInterested: () -> Unit = {},
+    onForgetDismissed: () -> Unit = {},
+    /** For "Dismissed today" in the filter sheet; see SortFilterSheet. */
+    dismissedToday: kotlinx.coroutines.flow.Flow<List<FeedItem>>? = null,
+    onBringBack: ((FeedItem) -> Unit)? = null,
 ) {
     val listState = rememberLazyListState()
     val gridState = rememberLazyStaggeredGridState()
@@ -238,6 +247,18 @@ fun FeedScaffold(
         )
         if (result == SnackbarResult.ActionPerformed) onUndoHideSource()
         else onDismissHideSource()
+    }
+
+    // "Not interested", offered back as the app offers it.
+    LaunchedEffect(dismissed) {
+        dismissed ?: return@LaunchedEffect
+        val result = snackbarHostState.showSnackbar(
+            message = context.getString(R.string.not_interested_done),
+            actionLabel = undoLabel,
+            duration = SnackbarDuration.Short,
+        )
+        if (result == SnackbarResult.ActionPerformed) onUndoNotInterested()
+        else onForgetDismissed()
     }
 
     // Offered on this surface too, now that the panel is known to handle back
@@ -486,6 +507,7 @@ fun FeedScaffold(
                                     onLessLikeThis = { onLessLikeThis(item) },
                                     onHideSource = { onHideSource(item) },
                                     onDismissStory = { onDismissStory(item) },
+                                    onNotInterested = onNotInterested?.let { { it(item) } },
                                     layout = layout,
                                     emphasis = emphasis.getOrNull(index)
                                         ?: FeedEmphasis.Medium,
@@ -512,6 +534,7 @@ fun FeedScaffold(
                             onLessLikeThis = { onLessLikeThis(item) },
                             onHideSource = { onHideSource(item) },
                             onDismissStory = { onDismissStory(item) },
+                            onNotInterested = onNotInterested?.let { { it(item) } },
                             layout = layout,
                             emphasis = emphasis.getOrNull(index) ?: FeedEmphasis.Medium,
                             dimRead = dimRead,
@@ -604,7 +627,11 @@ fun FeedScaffold(
                             .clip(MaterialTheme.shapes.small)
                             .background(MaterialTheme.colorScheme.outlineVariant)
                     )
-                    SortFilterSheet(onDismiss = { onFilterSheetOpenChange(false) })
+                    SortFilterSheet(
+                        dismissedToday = dismissedToday,
+                        onBringBack = onBringBack,
+                        onDismiss = { onFilterSheetOpenChange(false) },
+                    )
                 }
             }
         }

@@ -111,7 +111,13 @@ fun FeedArticleItem(
     onPin: (Boolean) -> Unit = {},
     /** Gives back a breaking story's promotion. See `Article.dismissedAt`. */
     onDismissStory: () -> Unit = {},
+    /**
+     * "Not interested": the swipe and the menu entry. Null where a surface
+     * does not offer it. Never offered on a saved or pinned card.
+     */
+    onNotInterested: (() -> Unit)? = null,
 ) {
+    val notInterested = onNotInterested?.takeIf { !item.bookmarked && !item.pinned }
     val hasImage = !item.imageUrl.isNullOrBlank()
     // One place rather than five: every shape below takes this modifier, so a
     // read article fades whichever way the feed happens to be drawing it.
@@ -170,25 +176,28 @@ fun FeedArticleItem(
             // sources": only the promoted card has a promotion to return.
             breaking = coverage != null,
             onDismissStory = onDismissStory,
+            onNotInterested = notInterested,
         )
     }
-    when (feedCardShape(index, hasImage, layout, emphasis)) {
-        FeedCardShape.Hero    -> ArticleCard(
-            item, onClick, onBookmark, onShare, menu = menu, modifier = shapeModifier, coverage = coverage, lead = true,
-            showSummary = showSummaries,
-        )
-        FeedCardShape.Card    -> ArticleCard(
-            item, onClick, onBookmark, onShare, menu = menu, modifier = shapeModifier, coverage = coverage,
-            showSummary = showSummaries,
-        )
-        FeedCardShape.Compact -> ArticleCompactRow(item, onClick, onBookmark, menu = menu, modifier = shapeModifier)
-        FeedCardShape.Text    -> ArticleTextRow(item, onClick, onBookmark, menu = menu, modifier = shapeModifier)
-        FeedCardShape.Tile    -> ArticleMosaicTile(
-            item, onClick, onBookmark, menu = menu, modifier = shapeModifier,
-            size = emphasis,
-            coverage = coverage,
-            showSummary = showSummaries,
-        )
+    NotInterestedSwipe(onDismiss = notInterested) {
+        when (feedCardShape(index, hasImage, layout, emphasis)) {
+            FeedCardShape.Hero    -> ArticleCard(
+                item, onClick, onBookmark, onShare, menu = menu, modifier = shapeModifier, coverage = coverage, lead = true,
+                showSummary = showSummaries,
+            )
+            FeedCardShape.Card    -> ArticleCard(
+                item, onClick, onBookmark, onShare, menu = menu, modifier = shapeModifier, coverage = coverage,
+                showSummary = showSummaries,
+            )
+            FeedCardShape.Compact -> ArticleCompactRow(item, onClick, onBookmark, menu = menu, modifier = shapeModifier)
+            FeedCardShape.Text    -> ArticleTextRow(item, onClick, onBookmark, menu = menu, modifier = shapeModifier)
+            FeedCardShape.Tile    -> ArticleMosaicTile(
+                item, onClick, onBookmark, menu = menu, modifier = shapeModifier,
+                size = emphasis,
+                coverage = coverage,
+                showSummary = showSummaries,
+            )
+        }
     }
 }
 
@@ -326,7 +335,7 @@ fun ArticleCard(
                     source = item.feedTitle,
                     sourceId = item.sourceId,
                     articleId = item.id,
-                    age = item.relativeAge(context, LocalTimeFormat.current),
+                    age = withReadingTime(context, item.relativeAge(context, LocalTimeFormat.current), item.article.readingMinutes),
                     // A size down. It is a byline, not a heading, and at
                     // labelLarge it competed with the summary above it.
                     style = MaterialTheme.typography.labelMedium,
@@ -387,7 +396,7 @@ fun ArticleCompactRow(
                     source = item.feedTitle,
                     sourceId = item.sourceId,
                     articleId = item.id,
-                    age = item.relativeAge(context, LocalTimeFormat.current),
+                    age = withReadingTime(context, item.relativeAge(context, LocalTimeFormat.current), item.article.readingMinutes),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     iconUrl = item.feedIconUrl,
@@ -484,7 +493,7 @@ fun ArticleTextRow(
                     source = item.feedTitle,
                     sourceId = item.sourceId,
                     articleId = item.id,
-                    age = item.relativeAge(context, LocalTimeFormat.current),
+                    age = withReadingTime(context, item.relativeAge(context, LocalTimeFormat.current), item.article.readingMinutes),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     iconUrl = item.feedIconUrl,
@@ -645,7 +654,7 @@ fun ArticleMosaicTile(
                     source = item.feedTitle,
                     sourceId = item.sourceId,
                     articleId = item.id,
-                    age = item.relativeAge(context, LocalTimeFormat.current),
+                    age = withReadingTime(context, item.relativeAge(context, LocalTimeFormat.current), item.article.readingMinutes),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = metaModifier,
@@ -780,6 +789,14 @@ internal fun ArticleMeta(
         )
     }
 }
+
+/**
+ * The age with the reading time after it, "5h · 4 min", or the age alone
+ * when no time was counted. See `Article.readingMinutes`.
+ */
+internal fun withReadingTime(context: android.content.Context, age: String, minutes: Int): String =
+    if (minutes <= 0) age
+    else age + " · " + context.getString(com.saulhdev.feeder.R.string.reading_minutes, minutes)
 
 /**
  * The article's age, in the compact form the feed uses: "5h", "3d", "2w".

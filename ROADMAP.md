@@ -323,7 +323,9 @@ items below can ride in it alongside what is already on main.
    1.0.6.** (4) (*Saved articles in the backup*).
    Small; moving between Play, F-Droid and GitHub means uninstalling, and
    Bookmarks are lost on the way.
-3. **Reading time and swipe to dismiss** (6), in one database change.
+3. ~~**Reading time and swipe to dismiss**~~ — **built 19 October 2026, on
+   main for 1.0.6, awaiting the owner's test.** (6), in one database change
+   (version 28).
 4. **Comments link** (5) (Jitka; see *Next release: 1.0.6*).
 5. **Auto-scroll** (3) (*Auto-scroll*). The longest-waiting request;
    designed.
@@ -3051,7 +3053,21 @@ tap target is the mark and the name only, because that row sits directly under
 the headline and a wider one would take taps meant for the article. Whether
 that target is comfortable is a question only a device answers.
 
-## Swipe to dismiss — asked for, not yet built
+## Swipe to dismiss — built 19 October 2026
+
+**Built as below**, with the owner's two decisions: a "Dismissed today"
+list (in the filter sheet, each with Bring back), and a heavy swipe (half
+resistance; past half the card's width, or a third with a flick over
+1800 dp/s; a haptic tick at the point of no return). Right only. The small
+negative signal is every third dismissal from one source in a week counting
+as one "Less like this", so it shows under "Why is this here?" with the
+rest; bringing one back takes it back. Code: `NotInterestedSwipe`,
+`Article.hiddenAt`, `ArticleListViewModel.notInterested`.
+
+To watch on the phone: whether the Lawnchair panel lets a rightward drag
+through to the card at all (the panel catches sideways drags at window
+level, and only a device can say).
+
 
 Raised 7 October 2026: swipe a card away to say "not interested in this one".
 Discover has it, and on a feed of ten thousand unread articles the menu is two
@@ -3237,6 +3253,10 @@ Lawnchair, which is nearly everybody. Medium-sized: about two to four days.
   with a size limit; a lead image on the first row is the most worth having.
 
 ### Reading time
+
+**Built 19 October 2026**, as below: `ReadingTime`, `Article.readingMinutes`,
+counted on sync from the feed's text and after a page download from the
+page. 250 words and no "Continue reading" makes a feed's text whole.
 
 "4 min" on the card and under the reader's headline. Small: a day.
 

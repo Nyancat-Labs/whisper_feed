@@ -8,6 +8,31 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 19 October 2026 — Reading time and Not interested
+
+- Third in the order; one database change, version 27 → 28 (`hiddenAt`,
+  `readingMinutes` on Article). `MigrationTest` covers it, and its "stays in
+  All" check now only runs for versions before that column existed (the
+  seed was writing its own value into it from 27 on).
+- Reading time: counted on sync from the feed's text when it's whole, and
+  after a page download from the page. Shown after the age on all four
+  card shapes and in the reader.
+- Not interested: swipe right on any card (all three feeds share one card
+  composable, so one wrapper covers app list, grid and panel), or ⋮ → Not
+  interested, or the TalkBack action. Hidden, marked read, Undo snackbar.
+  Every third from a source in a week = one "Less like this".
+- Heavy swipe, per the owner: half resistance, half the width to commit
+  (a third with a hard flick), haptic at the commit point, springs back
+  otherwise. Only claims drags that start rightward and are twice as wide
+  as tall, so the list scroll and Lawnchair's leftward swipe home are left
+  alone.
+- Dismissed today: in the filter sheet, app and panel, with Bring back.
+- `CardReadabilityTest` read the card source to the exact indentation;
+  now a regex, same check. 6 new tests (`NotInterestedTest`). 1222 passing.
+- **To try:** swipe a card right slowly a little way and let go: it should
+  spring back. Swipe past halfway: a tick, and it goes, with Undo. Then
+  filter sheet → Dismissed today → Bring back. And the same in the panel.
+
 ## 19 October 2026 — Saved articles in the backup
 
 - Second in the order. On main, for 1.0.6.

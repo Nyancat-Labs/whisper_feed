@@ -30,6 +30,7 @@ import androidx.room.PrimaryKey
 import com.saulhdev.feeder.data.entity.Item
 import com.saulhdev.feeder.data.entity.JsonFeed
 import com.saulhdev.feeder.utils.HtmlToPlainTextConverter
+import com.saulhdev.feeder.utils.ReadingTime
 import com.saulhdev.feeder.utils.relativeLinkIntoAbsolute
 import com.saulhdev.feeder.utils.sloppyLinkToStrictURL
 import java.net.URI
@@ -201,6 +202,28 @@ data class Article constructor(
     val dismissedAt: Long = 0L,
 
     /**
+     * When the reader said "Not interested" in this article, or 0.
+     *
+     * Not [dismissedAt], which takes back a breaking story's promotion and
+     * leaves the article in the feed. This takes the article out of it: a
+     * swipe, or the menu entry. Kept rather than deleted, so "Dismissed
+     * today" can bring it back, and pruned with everything else.
+     */
+    @ColumnInfo(defaultValue = "0")
+    val hiddenAt: Long = 0L,
+
+    /**
+     * Minutes to read, counted once when the text is stored; 0 when unknown.
+     *
+     * From the downloaded page when there is one, otherwise from the feed's
+     * own text only when that is the whole article. A teaser would give "1
+     * min" for a long feature, and no estimate is better than a wrong one.
+     * See ReadingTime.
+     */
+    @ColumnInfo(defaultValue = "0")
+    val readingMinutes: Int = 0,
+
+    /**
      * What a Google Reader server calls this article, if one does.
      *
      * Null for every article on an account-less install, which is most of
@@ -289,6 +312,9 @@ data class Article constructor(
             pubDate = newPubDate,
             primarySortTime = newSortTime,
             feedId = feedId,
+            // A count from the downloaded page wins; the feed's own text
+            // only fills in where there is none yet.
+            readingMinutes = readingMinutes.takeIf { it > 0 } ?: ReadingTime.fromFeed(text),
         )
     }
 
