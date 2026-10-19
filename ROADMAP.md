@@ -3135,7 +3135,7 @@ The plan, when it is time:
 4. **A format check**: a translation that drops a `%1$s` or adds one fails the
    build instead of crashing a screen.
 
-## Telling a GitHub install that an update is out — third in the order
+## Telling a GitHub install that an update is out — first in the order
 
 Asked 11 October 2026. Play and F-Droid tell their users about a new version
 themselves; an APK installed from GitHub Releases (the Reddit post) hears
@@ -3157,7 +3157,7 @@ nothing, so it stays on the version it came with.
   Download") and one notification per version, opening the release page.
   Installing it itself would need `REQUEST_INSTALL_PACKAGES`, which Play
   restricts and F-Droid flags.
-- **Until then:** the README can point GitHub installs at Obtainium, which
+- **Until then:** the README points GitHub installs at Obtainium (badge added for 1.0.5), which
   watches GitHub releases for any app.
 
 About a day, most of it the installer check and its tests.
