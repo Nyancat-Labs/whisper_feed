@@ -3367,6 +3367,39 @@ the way. Worth adding to the backup file.
 
 ---
 
+## Checking against Android's own design rules — asked for 19 October 2026
+
+Research what Google currently asks of an Android app's design, and check
+Whisper against it, point by point, before the Expressive release (§19e)
+rather than after: the redesign should be built on what the audit finds, not
+have it bolted on later.
+
+Read from the sources themselves at the time, not from memory, since these
+move every Android release:
+
+- **Material 3 and Material 3 Expressive** (m3.material.io): components,
+  colour roles, type scale, shape, motion, and where Whisper's own choices
+  depart from them on purpose.
+- **Android's app quality guidelines** (developer.android.com/quality): the
+  core quality checklist, and the large-screen tiers that decide how Play
+  treats an app on tablets and foldables.
+- **Edge-to-edge and system bars**: enforced from Android 15; every screen,
+  dialog and the launcher panel.
+- **Predictive back**: the back gesture's preview animation on every screen,
+  and the article-to-home case already noted (tenth in the order).
+- **Accessibility**: 48dp touch targets, contrast in both themes and with
+  dynamic colour, TalkBack labels and order, font scaling up to 200%.
+- **Adaptive layouts**: window size classes on phones, foldables and
+  tablets, as the tablet screenshots began.
+- **Platform conventions**: themed (monochrome) app icon, per-app language,
+  notification channels and wording, the splash screen.
+
+The result is a list here: what Whisper already meets, what it misses, and
+which misses are worth fixing, each with the rule it comes from. Where a rule
+and the Calm design disagree, that is decided in the open, not by default.
+
+---
+
 ## Debt worth clearing
 
 - ~~**F-Droid shows the old screenshots**~~ — done on 16 October 2026:
