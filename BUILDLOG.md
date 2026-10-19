@@ -30,6 +30,8 @@ and Google Play builds on two other devices.
   now. The folder should hold `whisper-saved.json`. Unsave one, then
   "Restore saved articles" and pick that file: it should say "Restored 1
   saved article".
+- **Confirmed on the Pixel, same day:** backup wrote `whisper-saved.json`,
+  and restoring after unsaving one put it back.
 
 ## 19 October 2026 — Update notice for GitHub installs
 

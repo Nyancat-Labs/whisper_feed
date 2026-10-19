@@ -3523,7 +3523,8 @@ carry a home location. A session that picks this up asks for them again.
 
 ## Saved articles in the backup — done 19 October 2026
 
-**Built**: a third backup file, `whisper-saved.json`, in the format Sources →
+**Built, and confirmed on the owner's Pixel** (backup and restore both): a
+third backup file, `whisper-saved.json`, in the format Sources →
 Export bookmarks already wrote (inherited from Neo Feed), so the two are
 interchangeable. Restore matches on source and guid, marking an article the
 phone already has rather than adding it twice; one from a removed source gets
