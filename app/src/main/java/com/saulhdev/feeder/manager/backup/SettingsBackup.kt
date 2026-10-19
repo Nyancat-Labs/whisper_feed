@@ -86,6 +86,12 @@ object SettingsBackup {
         // When this phone's reader last looked at the feed; on another phone
         // it would count that phone's articles against this one's moment.
         "pref_feed_seen_at",
+        // Whether this copy asks GitHub about updates, and what it heard.
+        // A choice about this install: a restore onto another phone, or
+        // onto a Play or F-Droid copy, should not switch it on unasked.
+        "pref_update_check",
+        "pref_update_latest",
+        "pref_update_notified",
     )
 
     /**

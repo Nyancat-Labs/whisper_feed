@@ -11,8 +11,9 @@ Whisper is made by **Nyancat Labs**, a company registered in Ireland, which is
 the data controller for the purposes of the GDPR. Contact:
 [hej@nyancatlabs.com](mailto:hej@nyancatlabs.com).
 
-Last reviewed: September 2026, for Whisper 1.0.0. The most recent change was
-the addition of time-on-screen, described under "What stays on your phone".
+Last reviewed: October 2026, for Whisper 1.0.6. The most recent change was
+the optional update check for GitHub installs, described under "What leaves
+your phone" (section 8).
 
 ---
 
@@ -154,6 +155,19 @@ folder actually lives is between you and whoever provides it.
 Off by default, and asked separately for cloud backup and for phone-to-phone
 transfer, because those are different questions. Your saved credentials are
 excluded from both routes regardless of what you choose.
+
+### 8. GitHub, only if you turn on update checks
+
+Only copies installed from GitHub by hand see this switch, under About →
+Updates. Play and F-Droid tell you about updates themselves. It is off until
+you turn it on. While it is on, Whisper asks GitHub once a day for the
+newest release of Whisper: one request to `api.github.com`, with no id, no
+version and nothing about your reading. GitHub sees your IP address and
+that someone asked. When a newer version is out, Whisper says so and opens
+the release page if you tap. It never downloads or installs anything by
+itself.
+
+Turn the switch off and no request is ever made.
 
 ## What Whisper refuses to do
 

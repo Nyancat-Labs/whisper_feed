@@ -306,7 +306,8 @@ owner reordered it.
 1.0.6 is not hurried: it goes out when there is enough in it, so the first
 items below can ride in it alongside what is already on main.
 
-1. **Saying an update is out, to GitHub installs** (2) (*Telling a GitHub
+1. ~~**Saying an update is out, to GitHub installs**~~ — **done 19 October
+   2026, on main for 1.0.6.** (2) (*Telling a GitHub
    install that an update is out*). Small, and it only helps from the
    release that carries it.
 2. **Saved articles in the backup** (4) (*Saved articles in the backup*).
@@ -3135,7 +3136,14 @@ The plan, when it is time:
 4. **A format check**: a translation that drops a `%1$s` or adds one fails the
    build instead of crashing a screen.
 
-## Telling a GitHub install that an update is out — first in the order
+## Telling a GitHub install that an update is out — done 19 October 2026
+
+**Built as below**, in `UpdateCheck` (the decisions, tested) and
+`UpdateCheckWorker` (the request, schedule and notification). One addition:
+"GitHub install" also needs our signing key, so a hand-installed F-Droid or
+Play APK is never pointed at a file it can't update to. Obtainium, the
+F-Droid clients and other updaters are left out by installer name, since
+they already announce updates.
 
 Asked 11 October 2026. Play and F-Droid tell their users about a new version
 themselves; an APK installed from GitHub Releases (the Reddit post) hears

@@ -9,6 +9,13 @@ Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 Unreleased
 ----------
 
+- **Update notice for GitHub installs.** If you installed Whisper from
+  GitHub, About now has a switch: *Check GitHub for new versions*. Off
+  until you turn it on. Once a day Whisper asks GitHub for the latest
+  release, and when there's a newer one it says so in About and with one
+  notification, which opens the release page. It never downloads or
+  installs anything itself. Play and F-Droid copies don't see the switch,
+  because their stores already tell you.
 - **How many new articles there are.** The line under the categories now
   says "Updated 12m ago · 8 new": the unread articles that have arrived
   since you last left the feed, counting only the tab you are on. Sources

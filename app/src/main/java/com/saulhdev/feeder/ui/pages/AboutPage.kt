@@ -88,11 +88,20 @@ import com.saulhdev.feeder.ui.icons.phosphor.GithubLogo
 import com.saulhdev.feeder.ui.icons.phosphor.Megaphone
 import com.saulhdev.feeder.ui.icons.phosphor.TelegramLogo
 import com.saulhdev.feeder.utils.urlDecode
+import com.saulhdev.feeder.utils.UpdateCheck
+import com.saulhdev.feeder.manager.update.UpdateCheckWorker
+import com.saulhdev.feeder.data.content.FeedPreferences
+import com.saulhdev.feeder.ui.components.SwitchPreference
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import org.koin.compose.koinInject
 
 @OptIn(ExperimentalCoilApi::class)
 @Composable
 fun AboutPage() {
     val title = stringResource(id = R.string.title_about)
+    val context = LocalContext.current
+    val isGitHubInstall = remember { UpdateCheckWorker.isGitHubInstall(context) }
     ViewWithActionBar(
         title = title,
         largeTitle = true,
@@ -209,7 +218,6 @@ fun AboutPage() {
                 PreferenceGroupHeading(heading = stringResource(id = R.string.about_contact))
             }
             item {
-                val context = LocalContext.current
                 Card(
                     shape = MaterialTheme.shapes.large,
                     colors = CardDefaults.cardColors(
@@ -238,6 +246,16 @@ fun AboutPage() {
                             },
                         )
                     }
+                }
+            }
+            // Only for a copy installed from GitHub by hand. Play and F-Droid
+            // say when there is an update; see UpdateCheck.
+            if (isGitHubInstall) {
+                item {
+                    PreferenceGroupHeading(heading = stringResource(id = R.string.about_updates))
+                }
+                item {
+                    UpdateCheckRows()
                 }
             }
             item {
@@ -310,6 +328,51 @@ fun AboutPage() {
     }
 }
 
+
+/**
+ * The switch, and once GitHub has answered with something newer, a line
+ * saying so that opens the release page.
+ */
+@Composable
+private fun UpdateCheckRows(prefs: FeedPreferences = koinInject()) {
+    val context = LocalContext.current
+    val latest by prefs.latestRelease.get().collectAsState(initial = "")
+    val checking by prefs.checkForUpdates.get().collectAsState(initial = false)
+    Column(modifier = Modifier.padding(horizontal = 8.dp)) {
+        SwitchPreference(
+            pref = prefs.checkForUpdates,
+            index = 0,
+            groupSize = 1,
+            onCheckedChange = { on ->
+                UpdateCheckWorker.schedule(context, on)
+                if (on) UpdateCheckWorker.checkNow(context)
+            },
+        )
+        if (checking && UpdateCheck.isNewer(latest, BuildConfig.VERSION_NAME)) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Card(
+                shape = MaterialTheme.shapes.large,
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                ),
+                onClick = { context.launchView(UpdateCheck.releasePage(latest)) },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = stringResource(R.string.update_available, latest.removePrefix("v")),
+                        style = MaterialTheme.typography.titleSmall,
+                    )
+                    Text(
+                        text = stringResource(R.string.update_download),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+            }
+        }
+    }
+}
 
 /** Where to reach Nyancat Labs. The address is the one on nyancatlabs.com and in the Play listing. */
 internal const val CONTACT_EMAIL = "hej@nyancatlabs.com"

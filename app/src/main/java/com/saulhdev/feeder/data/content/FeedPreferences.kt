@@ -32,6 +32,7 @@ import androidx.datastore.preferences.preferencesDataStoreFile
 import com.saulhdev.feeder.R
 import com.saulhdev.feeder.data.entity.SORT_CHRONOLOGICAL
 import com.saulhdev.feeder.ui.icons.Phosphor
+import com.saulhdev.feeder.ui.icons.phosphor.GithubLogo
 import com.saulhdev.feeder.ui.icons.phosphor.ListDashes
 import com.saulhdev.feeder.ui.icons.phosphor.Prohibit
 import com.saulhdev.feeder.utils.getFeedLayouts
@@ -1089,6 +1090,39 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
      * on the freshness line. See newSinceSeen. Zero until the first time, so
      * a fresh install counts nothing rather than everything.
      */
+    /**
+     * Ask GitHub once a day whether a newer Whisper is out.
+     *
+     * Off until turned on, and only offered to a copy installed from GitHub
+     * by hand (see UpdateCheck): Play and F-Droid say so themselves. The one
+     * request names nothing about the reader, but GitHub sees the address it
+     * came from, which is why it is a choice and not a default.
+     */
+    var checkForUpdates = BooleanPref(
+        titleId = R.string.pref_update_check,
+        summaryId = R.string.pref_update_check_summary,
+        icon = Phosphor.GithubLogo,
+        key = UPDATE_CHECK,
+        dataStore = dataStore,
+        defaultValue = false,
+    )
+
+    /** The newest release tag GitHub reported, empty until it has been asked. */
+    var latestRelease = StringPref(
+        titleId = R.string.pref_update_check,
+        icon = Phosphor.GithubLogo,
+        key = UPDATE_LATEST,
+        dataStore = dataStore,
+    )
+
+    /** The release a notification was last raised for, so each is raised once. */
+    var notifiedRelease = StringPref(
+        titleId = R.string.pref_update_check,
+        icon = Phosphor.GithubLogo,
+        key = UPDATE_NOTIFIED,
+        dataStore = dataStore,
+    )
+
     var feedSeenAt = LongPref(
         key = FEED_SEEN_AT,
         dataStore = dataStore,
@@ -1288,6 +1322,9 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
         val HIDDEN_SOURCES = stringSetKey("pref_hidden_sources")
         val LEARNED_RESET_AT = longKey("pref_learned_reset_at")
         val FEED_SEEN_AT = longKey("pref_feed_seen_at")
+        val UPDATE_CHECK = booleanKey("pref_update_check")
+        val UPDATE_LATEST = stringKey("pref_update_latest")
+        val UPDATE_NOTIFIED = stringKey("pref_update_notified")
         val BACKUP_STOPPED_AT = longKey("pref_backup_stopped_at")
         val SOURCE_AFFINITY = stringSetKey("pref_source_affinity")
         val FILTER_TAGS = stringSetKey("filter_tags")

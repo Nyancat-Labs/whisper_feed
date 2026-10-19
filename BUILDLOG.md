@@ -8,6 +8,27 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 19 October 2026 — Update notice for GitHub installs
+
+- First item in the owner's new working order. On main, for 1.0.6.
+- A copy counts as a GitHub install when it is signed with our key and was
+  not installed by Play, F-Droid, Obtainium or another updater. The key
+  check matters: someone who sideloaded F-Droid's APK can't install ours
+  over it, so they're never pointed at it.
+- Off by default. The switch is under About → Updates, and that section
+  only appears on GitHub installs. Turning it on checks straight away, then
+  once a day on any network. One request to GitHub's "latest release" API,
+  with the user agent just "Whisper". Nothing installed: a card in About and
+  one notification per version, opening the release page.
+- PRIVACY.md has a new section 8 for it. The diagnostics report says
+  whether the copy counts as a GitHub install and the newest tag seen.
+- 10 new tests (`UpdateCheckTest`), including one that the key in the code
+  matches the one in `docs/HANDOVER.md`. 1209 passing, lint clean.
+- **To try on the Pixel:** the preview is signed with our key and sideloaded,
+  so it counts. Turn the switch on; About should say nothing new, since
+  1.0.5 is the latest release and the preview is 1.0.5. The card appears
+  once 1.0.6 is tagged.
+
 ## 18 October 2026 — Reader fixes from the real-feed check
 
 - Headline repeated under a kicker, lazily loaded pictures, xkcd's comic,

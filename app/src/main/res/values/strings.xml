@@ -171,6 +171,14 @@
     <string name="about_upstream">Neo Feed on GitHub</string>
     <string name="about_origin">HomeFeeder on GitHub</string>
     <string name="about_contact">Contact us</string>
+    <string name="about_updates">Updates</string>
+    <string name="pref_update_check">Check GitHub for new versions</string>
+    <string name="pref_update_check_summary">Once a day. Nothing about you is sent, but GitHub sees your IP address.</string>
+    <string name="update_available">Whisper %1$s is out</string>
+    <string name="update_download">Open the release page to download it</string>
+    <string name="update_notification_text">You have %1$s. Tap to open the release page.</string>
+    <string name="update_channel">New versions</string>
+    <string name="update_channel_description">When a newer Whisper is on GitHub. Only for copies installed from GitHub.</string>
     <string name="about_contact_summary">Questions, a feed that will not load, or something that looks wrong: write to us. Every message is read.</string>
     <string name="about_contact_email">Email</string>
     <string name="about_contact_website">Website</string>

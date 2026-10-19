@@ -17,6 +17,7 @@
  */
 package com.saulhdev.feeder.utils
 
+import com.saulhdev.feeder.manager.update.UpdateCheckWorker
 import com.saulhdev.feeder.manager.sync.greader.GoogleReaderState
 import com.saulhdev.feeder.manager.sync.greader.MissingKind
 import com.saulhdev.feeder.manager.sync.service.refusalCode
@@ -448,6 +449,7 @@ object Diagnostics : KoinComponent {
             appendLine("Last sync:    never")
         }
         appendLine("Problems:     " + SyncWatchdog.describe(context))
+        appendLine("Update check: " + updateCheckLine(context))
         appendLine("Account:      " + accountLine(context))
         if (get<SyncAccount>().isSignedIn) {
             runCatching { GoogleReaderState.notOnServer(context) }.getOrDefault(emptyList()).let { missing ->
@@ -463,6 +465,18 @@ object Diagnostics : KoinComponent {
             }
         }
     }
+
+    /**
+     * Whether this copy counts as a GitHub install, whether it asks GitHub
+     * about updates, and the newest tag it heard. No address and no id.
+     */
+    private fun updateCheckLine(context: Context): String = runCatching {
+        val prefs = get<FeedPreferences>()
+        val github = UpdateCheckWorker.isGitHubInstall(context)
+        val on = prefs.checkForUpdates.getValue()
+        val latest = prefs.latestRelease.getValue().ifBlank { "none yet" }
+        "GitHub install: $github, checking: $on, latest seen: $latest"
+    }.getOrElse { "unreadable (${it.javaClass.simpleName})" }
 
     /**
      * Whether an account is signed in, and where its sync stands. Counts and

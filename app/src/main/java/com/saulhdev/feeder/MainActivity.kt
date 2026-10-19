@@ -48,6 +48,7 @@ import com.saulhdev.feeder.data.content.FeedPreferences
 import com.saulhdev.feeder.utils.FrameWatch
 import com.saulhdev.feeder.manager.sync.FeedSyncer
 import com.saulhdev.feeder.manager.sync.SyncWatchdog
+import com.saulhdev.feeder.manager.update.UpdateCheckWorker
 import com.saulhdev.feeder.ui.navigation.NAV_BASE
 import com.saulhdev.feeder.ui.navigation.NavigationManager
 import androidx.compose.runtime.collectAsState
@@ -205,6 +206,13 @@ class MainActivity : ComponentActivity() {
         // apart from the schedule above because it must run when the
         // schedule cannot; see SyncWatchdog.
         SyncWatchdog.schedule(WorkManager.getInstance(applicationContext))
+        // Keeps the daily update check in step with its switch, which
+        // a restore or a reinstall can change behind the About page's back.
+        // Read off the main thread: before the settings cache is warm a peek
+        // gives the default, off, which would cancel a check that is on.
+        lifecycleScope.launch(Dispatchers.IO) {
+            UpdateCheckWorker.schedule(applicationContext, prefs.checkForUpdates.getValue())
+        }
         askForNotificationsOnce()
         handleDeepLink(intent)
     }
