@@ -45,7 +45,8 @@ import kotlinx.coroutines.delay
 import org.koin.compose.koinInject
 
 /**
- * "Updated 12m ago", under the chips in both feeds.
+ * "Updated 12m ago", under the chips in both feeds, with "· 8 new" when
+ * articles have arrived since the reader last looked. See newSinceSeen.
  *
  * A background sync is silent on purpose, so this is where somebody finds out
  * whether one happened. It says "Updating…" while any sync runs, and turns to
@@ -57,10 +58,11 @@ import org.koin.compose.koinInject
  * screen having to carry it through.
  */
 @Composable
-fun SyncFreshnessLine(modifier: Modifier = Modifier) = SyncFreshnessText(
+fun SyncFreshnessLine(modifier: Modifier = Modifier, newCount: Int = 0) = SyncFreshnessText(
     modifier = modifier
         .fillMaxWidth()
         .padding(horizontal = 16.dp, vertical = 4.dp),
+    newCount = newCount,
 )
 
 /**
@@ -68,7 +70,7 @@ fun SyncFreshnessLine(modifier: Modifier = Modifier) = SyncFreshnessText(
  * else: the app puts them at the right of the first day heading.
  */
 @Composable
-fun SyncFreshnessText(modifier: Modifier = Modifier, textAlign: TextAlign? = null) {
+fun SyncFreshnessText(modifier: Modifier = Modifier, textAlign: TextAlign? = null, newCount: Int = 0) {
     val sources: SourcesRepository = koinInject()
     val prefs: FeedPreferences = koinInject()
     val context = LocalContext.current
@@ -101,9 +103,9 @@ fun SyncFreshnessText(modifier: Modifier = Modifier, textAlign: TextAlign? = nul
             freshness.overdue ->
                 context.getString(R.string.freshness_overdue, freshness.age.format(context))
             freshness.age.unit == AgeUnit.NOW ->
-                context.getString(R.string.freshness_just_now)
+                withNew(context.getString(R.string.freshness_just_now), newCount, context)
             else ->
-                context.getString(R.string.freshness_updated, freshness.age.format(context))
+                withNew(context.getString(R.string.freshness_updated, freshness.age.format(context)), newCount, context)
         }
     }
     val late = freshness == SyncFreshness.NeverUpdated ||
@@ -118,3 +120,12 @@ fun SyncFreshnessText(modifier: Modifier = Modifier, textAlign: TextAlign? = nul
         modifier = modifier,
     )
 }
+
+/**
+ * "Updated 12m ago · 8 new", or the line as it was when nothing is new. Not
+ * on "Updating…", nor on an overdue line, whose hint to pull down is the
+ * thing to read.
+ */
+private fun withNew(updated: String, newCount: Int, context: android.content.Context): String =
+    if (newCount <= 0) updated
+    else context.getString(R.string.freshness_with_new, updated, newCount)

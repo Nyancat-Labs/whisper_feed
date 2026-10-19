@@ -114,7 +114,7 @@ class FreshnessBesideHeadingTest {
     @Test
     fun `the page draws it in exactly one of the two places`() {
         val src = File("src/main/java/com/saulhdev/feeder/ui/pages/ArticleListPage.kt").readText()
-        assertTrue(src.contains("if (!freshnessBesideHeading) SyncFreshnessLine()"))
+        assertTrue(src.contains("if (!freshnessBesideHeading) SyncFreshnessLine(newCount = newCount)"))
         assertTrue(src.contains("!showBookmarks && firstSegmentHasHeading(segments)"))
         // Both containers, grid and list, hand it to the first heading only.
         assertEquals(2, Regex("""trailing = firstHeadingTrailing\s*\.takeIf \{ segment\.from == 0 \}""").findAll(src).count())

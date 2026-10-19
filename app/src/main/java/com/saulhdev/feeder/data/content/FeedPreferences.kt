@@ -1083,6 +1083,18 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
         defaultValue = 0L,
     )
 
+    /**
+     * When the reader last left the feed: the app going to the background, or
+     * the launcher panel closing. Articles that arrived since are the "new"
+     * on the freshness line. See newSinceSeen. Zero until the first time, so
+     * a fresh install counts nothing rather than everything.
+     */
+    var feedSeenAt = LongPref(
+        key = FEED_SEEN_AT,
+        dataStore = dataStore,
+        defaultValue = 0L,
+    )
+
     var learnedResetAt = LongPref(
         key = LEARNED_RESET_AT,
         dataStore = dataStore,
@@ -1275,6 +1287,7 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
         val CATEGORY_ORDER = stringKey("pref_category_order")
         val HIDDEN_SOURCES = stringSetKey("pref_hidden_sources")
         val LEARNED_RESET_AT = longKey("pref_learned_reset_at")
+        val FEED_SEEN_AT = longKey("pref_feed_seen_at")
         val BACKUP_STOPPED_AT = longKey("pref_backup_stopped_at")
         val SOURCE_AFFINITY = stringSetKey("pref_source_affinity")
         val FILTER_TAGS = stringSetKey("filter_tags")

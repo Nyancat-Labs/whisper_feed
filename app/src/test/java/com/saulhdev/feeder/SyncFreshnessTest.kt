@@ -121,7 +121,7 @@ class SyncFreshnessTest {
                 when (src[end]) { '{' -> depth++; '}' -> depth-- }
                 end++
             } while (depth > 0)
-            assertTrue("$path header has no freshness line", src.substring(start, end).contains("SyncFreshnessLine()"))
+            assertTrue("$path header has no freshness line", src.substring(start, end).contains("SyncFreshnessLine("))
         }
     }
 
@@ -130,7 +130,7 @@ class SyncFreshnessTest {
         val src = File("src/main/java/com/saulhdev/feeder/ui/overlay/FeedScaffold.kt").readText()
         val search = src.indexOf("if (!isSearching) {\n                        CategoryChipRow")
         assertTrue(search > 0)
-        val block = src.substring(search, src.indexOf("SyncFreshnessLine()"))
+        val block = src.substring(search, src.indexOf("SyncFreshnessLine("))
         // Every brace the search check opens is closed before the line.
         assertEquals(block.count { it == '{' }, block.count { it == '}' })
     }

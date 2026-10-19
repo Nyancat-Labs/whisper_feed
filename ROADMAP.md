@@ -83,8 +83,11 @@ Agreed 19 October 2026. In CHANGELOG.md under Unreleased as each lands.
   articles split around adverts (Ars, Wired), srcset addresses with commas.
   Confirmed on the Pixel 10 except Ars and Wired in full, which needs an
   article fetched since the preview went on.
-- [ ] **New-article count** (Jitka). Sources kept out of All count only in
-  their own tab, per the Show in All note.
+- [x] **New-article count** (Jitka). "Updated 12m ago · 8 new": unread
+  articles arrived since the reader last left the feed (the app going to
+  the background, or the panel closing), in the tab on screen. Decided 19
+  October: since last looked rather than per sync, and nothing shown at
+  zero.
 - [ ] **Tap a picture to enlarge it** (Jitka).
 - [ ] **Link to an article's comments** (Jitka). Depends on what each feed
   carries (`<comments>`, `slash:comments`); look at the owner's feeds first.

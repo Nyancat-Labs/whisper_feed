@@ -102,6 +102,7 @@ import com.saulhdev.feeder.R
 import com.saulhdev.feeder.data.content.FeedPreferences
 import com.saulhdev.feeder.data.db.models.FeedItem
 import com.saulhdev.feeder.utils.extensions.koinNeoViewModel
+import com.saulhdev.feeder.utils.newSinceSeen
 import com.saulhdev.feeder.utils.extensions.launchView
 import com.saulhdev.feeder.manager.sync.SyncRestClient
 import com.saulhdev.feeder.ui.components.HeaderToggleAction
@@ -316,6 +317,11 @@ fun ArticleListPage(
     // Day headings, in date order only: sorted by title or by source, a
     // heading per day would be scattered through the list. See FeedDays.
     val sort by prefs.sortingFilter.get().collectAsState(initial = SORT_CHRONOLOGICAL)
+    // "· 8 new" on the freshness line: the feed only, not a search or Saved.
+    val seenAt by prefs.feedSeenAt.get().collectAsState(initial = 0L)
+    val newCount = remember(frame.articles, seenAt, searching, showBookmarks) {
+        if (searching || showBookmarks) 0 else newSinceSeen(frame.articles, seenAt)
+    }
     val dayBreaks = remember(frame.articles, sort, searching) {
         if (sort == SORT_CHRONOLOGICAL && !searching) feedDayBreaks(frame.articles) else emptyList()
     }
@@ -554,11 +560,11 @@ fun ArticleListPage(
                                     // feed opens on one; on its own line when
                                     // it does not (saved, searching, another
                                     // sort, pinned stories first, empty).
-                                    if (!freshnessBesideHeading) SyncFreshnessLine()
+                                    if (!freshnessBesideHeading) SyncFreshnessLine(newCount = newCount)
                                 }
                             }
                             val firstHeadingTrailing: @Composable (Modifier) -> Unit = {
-                                SyncFreshnessText(modifier = it, textAlign = TextAlign.End)
+                                SyncFreshnessText(modifier = it, textAlign = TextAlign.End, newCount = newCount)
                             }
 
                             when {

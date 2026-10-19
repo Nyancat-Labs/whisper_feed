@@ -83,6 +83,9 @@ object SettingsBackup {
         // asked at all.
         "pref_backup_stopped_at",
         "pref_notification_permission_asked",
+        // When this phone's reader last looked at the feed; on another phone
+        // it would count that phone's articles against this one's moment.
+        "pref_feed_seen_at",
     )
 
     /**

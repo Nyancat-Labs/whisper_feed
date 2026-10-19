@@ -219,6 +219,16 @@ class MainActivity : ComponentActivity() {
      * already settled — so this writes nothing in every case but the one it
      * is for.
      */
+    /**
+     * Leaving the app is leaving the feed: what arrives from now on is "new"
+     * next time. Opening an article in a browser counts as leaving too, which
+     * is right - the reader was looking. See newSinceSeen.
+     */
+    override fun onStop() {
+        super.onStop()
+        prefs.feedSeenAt.set(System.currentTimeMillis())
+    }
+
     override fun onResume() {
         super.onResume()
         BrowserReadTimer.settle()?.let { (id, millis) -> viewModel.addReading(id, millis) }

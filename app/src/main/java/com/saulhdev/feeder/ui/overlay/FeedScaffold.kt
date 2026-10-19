@@ -17,6 +17,10 @@
  */
 package com.saulhdev.feeder.ui.overlay
 
+import androidx.compose.runtime.collectAsState
+import org.koin.compose.koinInject
+import com.saulhdev.feeder.utils.newSinceSeen
+import com.saulhdev.feeder.data.content.FeedPreferences
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -363,8 +367,11 @@ fun FeedScaffold(
                         ActiveFilterBar()
                     }
                     // Outside the search check: how current the feed is does
-                    // not change with what is being looked for.
-                    SyncFreshnessLine()
+                    // not change with what is being looked for. The count of
+                    // new articles does, so it is left off a search.
+                    val prefs: FeedPreferences = koinInject()
+                    val seenAt by prefs.feedSeenAt.get().collectAsState(initial = 0L)
+                    SyncFreshnessLine(newCount = if (isSearching) 0 else newSinceSeen(articles, seenAt))
                 }
             }
 

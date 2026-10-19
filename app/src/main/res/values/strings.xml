@@ -113,6 +113,8 @@
     <string name="age_years">%1$dy</string>
     <!-- The line under the feed's header saying how current it is. %1$s is a compact age: "12m", "3h". -->
     <string name="freshness_updated">Updated %1$s ago</string>
+    <!-- The freshness line, then how many articles arrived since the reader last looked: "Updated 12m ago · 8 new". -->
+    <string name="freshness_with_new">%1$s · %2$d new</string>
     <string name="freshness_just_now">Updated just now</string>
     <string name="freshness_updating">Updating…</string>
     <string name="freshness_never">Not updated yet · pull down to update</string>

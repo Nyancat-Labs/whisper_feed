@@ -627,6 +627,11 @@ class OverlayView(val context: Context) :
         if (was == PanelState.CLOSED && panelVisible.value) {
             syncScope.launch { runCatching { clearStaleSyncNotice(context.applicationContext) } }
         }
+        // Closing the panel is the reader leaving the feed: what arrives from
+        // now on is "new" next time. See newSinceSeen.
+        if (was != PanelState.CLOSED && newState == PanelState.CLOSED) {
+            prefs.feedSeenAt.set(System.currentTimeMillis())
+        }
         // The other half of the read-on-scroll gate, under the same tag as
         // ReadOnScroll's own trace. If a launcher never calls this, that gate
         // is stuck shut and the tracker silently does nothing — which a

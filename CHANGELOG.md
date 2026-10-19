@@ -9,6 +9,11 @@ Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 Unreleased
 ----------
 
+- **How many new articles there are.** The line under the categories now
+  says "Updated 12m ago · 8 new": the unread articles that have arrived
+  since you last left the feed, counting only the tab you are on. Sources
+  kept out of All count in their own tab. Nothing extra when there is
+  nothing new. Suggested by a reader.
 - **The headline once, not twice.** Many sites put a short line above their
   own headline, such as a category, a date or "Advertisement", and the
   reader kept the page's copy of the headline under its own. It now finds
