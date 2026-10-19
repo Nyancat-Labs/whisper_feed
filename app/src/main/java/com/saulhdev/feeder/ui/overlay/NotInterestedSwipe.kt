@@ -35,6 +35,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -91,6 +93,11 @@ fun NotInterestedSwipe(
     val density = LocalDensity.current
     val flickPxPerS = with(density) { SwipeWeight.FLICK_DP_PER_S.dp.toPx() }
     val label = stringResource(R.string.not_interested)
+    // Read through this rather than used as the gesture's key. A sync
+    // refreshes the feed and hands every card a new lambda; keyed on it, the
+    // gesture was cancelled mid-drag and the card left where the finger had
+    // put it, half off the screen (owner's test, 19 October).
+    val dismiss by rememberUpdatedState(onDismiss)
 
     Box(
         modifier = modifier.semantics {
@@ -135,49 +142,56 @@ fun NotInterestedSwipe(
             modifier = Modifier
                 .graphicsLayer { translationX = offset.value }
                 .then(moving)
-                .pointerInput(onDismiss) {
-                    width[0] = size.width.toFloat().coerceAtLeast(1f)
+                .pointerInput(Unit) {
                     val slop = viewConfiguration.touchSlop
                     awaitEachGesture {
                         val down = awaitFirstDown(requireUnconsumed = false)
+                        width[0] = size.width.toFloat().coerceAtLeast(1f)
                         val tracker = VelocityTracker()
                         tracker.addPosition(down.uptimeMillis, down.position)
                         var total = Offset.Zero
                         var claimed = false
                         var crossed = false
-                        while (true) {
-                            val event = awaitPointerEvent()
-                            val change: PointerInputChange =
-                                event.changes.firstOrNull { it.id == down.id } ?: break
-                            if (!change.pressed) break
-                            val delta = change.positionChange()
-                            total += delta
-                            tracker.addPosition(change.uptimeMillis, change.position)
-                            if (!claimed) {
-                                if (change.isConsumed) return@awaitEachGesture
-                                if (abs(total.x) < slop && abs(total.y) < slop) continue
-                                // Decided once, at the slop: rightward and
-                                // clearly sideways, or not ours at all.
-                                if (!SwipeWeight.claims(total.x, total.y)) return@awaitEachGesture
-                                claimed = true
+                        try {
+                            while (true) {
+                                val event = awaitPointerEvent()
+                                val change: PointerInputChange =
+                                    event.changes.firstOrNull { it.id == down.id } ?: break
+                                if (!change.pressed) break
+                                val delta = change.positionChange()
+                                total += delta
+                                tracker.addPosition(change.uptimeMillis, change.position)
+                                if (!claimed) {
+                                    if (change.isConsumed) return@awaitEachGesture
+                                    if (abs(total.x) < slop && abs(total.y) < slop) continue
+                                    // Decided once, at the slop: rightward and
+                                    // clearly sideways, or not ours at all.
+                                    if (!SwipeWeight.claims(total.x, total.y)) return@awaitEachGesture
+                                    claimed = true
+                                }
+                                change.consume()
+                                val next = (offset.value + delta.x * SwipeWeight.RESISTANCE).coerceAtLeast(0f)
+                                scope.launch { offset.snapTo(next) }
+                                val past = next >= width[0] * SwipeWeight.DISTANCE
+                                if (past != crossed) {
+                                    crossed = past
+                                    // Felt as well as seen: past here, letting go
+                                    // dismisses it.
+                                    if (past) haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                                }
                             }
-                            change.consume()
-                            val next = (offset.value + delta.x * SwipeWeight.RESISTANCE).coerceAtLeast(0f)
-                            scope.launch { offset.snapTo(next) }
-                            val past = next >= width[0] * SwipeWeight.DISTANCE
-                            if (past != crossed) {
-                                crossed = past
-                                // Felt as well as seen: past here, letting go
-                                // dismisses it.
-                                if (past) haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                            }
+                        } catch (e: kotlinx.coroutines.CancellationException) {
+                            // Whatever stopped the gesture, the card never
+                            // stays where it was dropped.
+                            if (claimed) scope.launch { offset.animateTo(0f, SwipeWeight.BACK) }
+                            throw e
                         }
                         if (!claimed) return@awaitEachGesture
                         val velocity = tracker.calculateVelocity().x
                         if (SwipeWeight.dismisses(offset.value, width[0], velocity, flickPxPerS)) {
                             scope.launch {
                                 offset.animateTo(width[0], spring(dampingRatio = 1f, stiffness = 600f))
-                                onDismiss()
+                                dismiss?.invoke()
                             }
                         } else {
                             scope.launch { offset.animateTo(0f, SwipeWeight.BACK) }

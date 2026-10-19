@@ -80,6 +80,16 @@ class NotInterestedTest {
     }
 
     @Test
+    fun `a sync refreshing the feed does not cancel a swipe halfway`() {
+        // Keyed on the dismiss lambda, every refresh restarted the gesture
+        // and left the card stuck half off the screen.
+        val swipe = java.io.File("src/main/java/com/saulhdev/feeder/ui/overlay/NotInterestedSwipe.kt").readText()
+        assertTrue(swipe.contains(".pointerInput(Unit)"))
+        assertTrue(swipe.contains("rememberUpdatedState(onDismiss)"))
+        assertTrue("a cancelled gesture springs back", swipe.contains("catch (e: kotlinx.coroutines.CancellationException)"))
+    }
+
+    @Test
     fun `the swipe is heavy`() {
         val width = 1000f
         val flick = 4000f

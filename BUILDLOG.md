@@ -10,6 +10,13 @@ and Google Play builds on two other devices.
 
 ## 19 October 2026 — Reading time and Not interested
 
+- **Owner's first test, 22:59:** a card stuck a third of the way off
+  during a sync. The gesture was keyed on the dismiss lambda, which every
+  feed refresh replaces, so it was cancelled mid-drag. Now keyed on nothing,
+  reads the lambda through `rememberUpdatedState`, and springs back if
+  cancelled for any reason. Also: a swipe started at the screen's left edge
+  is Android's back gesture and leaves the app; nothing an app can claim.
+
 - Third in the order; one database change, version 27 → 28 (`hiddenAt`,
   `readingMinutes` on Article). `MigrationTest` covers it, and its "stays in
   All" check now only runs for versions before that column existed (the
