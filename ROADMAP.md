@@ -96,6 +96,12 @@ Agreed 19 October 2026. In CHANGELOG.md under Unreleased as each lands.
   finger, a flick or an 80dp pull closes, less springs back, on Expressive's
   default spatial spring - the first piece of §19e's motion, written out
   until MaterialExpressiveTheme supplies it.
+- [x] **Back from the empty end of the feed** (Jitka, 19 October). With read
+  articles hidden, returning to the app or pressing "Try again" at the end
+  left her on the empty end space. Now: when the app resumes or the panel
+  opens, or new articles arrive, and nothing but the end is on screen, the
+  feed goes to the top. Articles leaving as they are read never move it.
+- [ ] **Headline more prominent, perhaps bold** (Jitka, 19 October).
 - [ ] **The Independent's bulletins** (/bulletin/ pages, 20 of every 100
   in its feed, and the most-stored source on the owner's phone). A headline
   and five bullet points, too little for Readability to tell from the page,

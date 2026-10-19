@@ -190,6 +190,15 @@ fun FeedScaffold(
     // Matches the old scroll listener's threshold, which only offered the jump
     // back once a few articles had gone by.
     val isGrid = feedLayoutIsGrid(layout)
+    // From the empty end of the feed back to the new articles. See FeedEndReturn.
+    FeedEndReturn(
+        articles = articles,
+        visibleKeys = {
+            if (isGrid) gridState.layoutInfo.visibleItemsInfo.map { it.key }
+            else listState.layoutInfo.visibleItemsInfo.map { it.key }
+        },
+        scrollToTop = { if (isGrid) gridState.scrollToItem(0) else listState.scrollToItem(0) },
+    )
     val showScrollToTop by remember(isGrid) {
         derivedStateOf {
             if (isGrid) gridState.firstVisibleItemIndex > 5

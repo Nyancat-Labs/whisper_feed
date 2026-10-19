@@ -17,6 +17,12 @@
  */
 package com.saulhdev.feeder.ui.overlay
 
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.Lifecycle
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -161,6 +167,51 @@ fun rememberFeedEndSpace(viewportHeightPx: () -> Int): Dp? {
 fun LazyListScope.feedEnd(height: Dp?) {
     if (height == null) return
     item(key = FEED_END_KEY, contentType = FEED_END_KEY) { FeedEnd(height) }
+}
+
+/**
+ * Whether the screen shows the end of the feed and no article: everything
+ * above it read and hidden, or scrolled past. See FeedEndReturn.
+ */
+fun onlyTheEndShows(visibleKeys: List<Any>, articleIds: Set<String>): Boolean =
+    FEED_END_KEY in visibleKeys && visibleKeys.none { it in articleIds }
+
+/**
+ * Back to the top when the end of the feed is all there is to see and there
+ * is something new above it.
+ *
+ * A reader reported on 19 October 2026 that, having read to the end with
+ * read articles hidden, she came back to the app - or pressed "Try again" -
+ * and was still looking at the empty end, with the new articles out of sight
+ * above, and had to use the arrow to reach them. The end space keeps its
+ * place like any other position. So when the feed comes back into view, or
+ * articles arrive that were not in it before, and nothing but the end is on
+ * screen, it goes to the top. An article still on screen keeps the place
+ * where it is; and articles leaving the list as they are read never move
+ * it, or reading the last one would throw the reader upwards.
+ */
+@Composable
+fun FeedEndReturn(
+    articles: List<FeedItem>,
+    visibleKeys: () -> List<Any>,
+    scrollToTop: suspend () -> Unit,
+) {
+    val visible = LocalFeedVisible.current
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    val state by lifecycle.currentStateFlow.collectAsState()
+    val resumed = state.isAtLeast(Lifecycle.State.RESUMED)
+    val ids = remember(articles) { articles.mapTo(HashSet()) { it.id } }
+    var known by remember { mutableStateOf<Set<String>?>(null) }
+    // Coming back into view: the app resuming, or the panel opening.
+    LaunchedEffect(visible, resumed) {
+        if (visible && resumed && onlyTheEndShows(visibleKeys(), ids)) scrollToTop()
+    }
+    // Something new arrived.
+    LaunchedEffect(ids) {
+        val before = known
+        known = ids
+        if (before != null && ids.any { it !in before } && onlyTheEndShows(visibleKeys(), ids)) scrollToTop()
+    }
 }
 
 /** The grid's, across both lanes. */

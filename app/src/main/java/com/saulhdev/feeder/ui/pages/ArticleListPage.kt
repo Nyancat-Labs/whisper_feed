@@ -103,6 +103,7 @@ import com.saulhdev.feeder.data.content.FeedPreferences
 import com.saulhdev.feeder.data.db.models.FeedItem
 import com.saulhdev.feeder.utils.extensions.koinNeoViewModel
 import com.saulhdev.feeder.utils.newSinceSeen
+import com.saulhdev.feeder.ui.overlay.FeedEndReturn
 import com.saulhdev.feeder.utils.extensions.launchView
 import com.saulhdev.feeder.manager.sync.SyncRestClient
 import com.saulhdev.feeder.ui.components.HeaderToggleAction
@@ -322,6 +323,15 @@ fun ArticleListPage(
     val newCount = remember(frame.articles, seenAt, searching, showBookmarks) {
         if (searching || showBookmarks) 0 else newSinceSeen(frame.articles, seenAt)
     }
+    // From the empty end of the feed back to the new articles. See FeedEndReturn.
+    FeedEndReturn(
+        articles = frame.articles,
+        visibleKeys = {
+            if (isGridLayout) gridState.layoutInfo.visibleItemsInfo.map { it.key }
+            else listState.layoutInfo.visibleItemsInfo.map { it.key }
+        },
+        scrollToTop = { if (isGridLayout) gridState.scrollToItem(0) else listState.scrollToItem(0) },
+    )
     val dayBreaks = remember(frame.articles, sort, searching) {
         if (sort == SORT_CHRONOLOGICAL && !searching) feedDayBreaks(frame.articles) else emptyList()
     }

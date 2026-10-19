@@ -19,6 +19,11 @@ Unreleased
   was also a link opens the picture now; the link is a button underneath.
   Saving is on Android 10 and later, where it needs no permission. Suggested
   by a reader.
+- **Back to the new articles from the end of the feed.** With read articles
+  hidden, coming back to the app (or opening the panel) at the empty end of
+  the feed left you there, with the new articles out of sight above. It now
+  goes back to the top when the end is all that is on screen. Reported by a
+  reader.
 - **Search puts the source first.** Searching "Wired" now lists Wired's own
   articles first, then headlines with the word in them, then summaries,
   newest first within each, rather than in feed order. A source can be found
