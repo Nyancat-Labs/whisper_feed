@@ -463,7 +463,7 @@ internal fun openingImage(body: Element): Element? {
 internal fun liftLeadImage(body: Element): String? {
     val img = openingImage(body) ?: return null
     val src = srcOf(img).ifBlank {
-        img.attr("srcset").substringBefore(',').trim().substringBefore(' ')
+        firstSrcSetAddress(img)
     }
     val usable = usableImageUrl(src.trim()) ?: return null
     removePicture(img)
@@ -664,7 +664,7 @@ internal fun dropCopiesOf(body: Element, picture: String) {
     val wanted = imageIdentity(picture)
     if (wanted.isEmpty()) return
     body.select("img").forEach { img ->
-        val src = srcOf(img).ifBlank { img.attr("srcset").substringBefore(',').trim().substringBefore(' ') }
+        val src = srcOf(img).ifBlank { firstSrcSetAddress(img) }
         val identity = imageIdentity(src)
         if (identity.isNotEmpty() && (identity == wanted || sameAsset(identity, wanted))) {
             removePicture(img)
@@ -718,7 +718,7 @@ internal fun dropRepeatedImages(body: Element) {
         // avatar has only a srcset, and an image this cannot name cannot be
         // recognised as a repeat either.
         val src = srcOf(img).ifBlank {
-            img.attr("srcset").substringBefore(',').trim().substringBefore(' ')
+            firstSrcSetAddress(img)
         }
         if (src.isBlank()) return@forEach
         val identity = imageIdentity(src)
@@ -1896,9 +1896,8 @@ internal class ImageCandidates(
 
     /** Every address on offer, resolved: each srcset candidate, then the src. */
     fun allUrls(): List<String> =
-        (srcSet.splitToSequence(",")
-            .map { it.trim().split(SpaceRegex).first() }
-            .filter { it.isNotBlank() }
+        (srcSetCandidates(srcSet)
+            .map { it.first }
             .map { StringUtil.resolve(baseUrl, it) }
             .toList() + listOf(absSrc).filter { it.isNotBlank() }.map { StringUtil.resolve(baseUrl, it) })
             .distinct()
@@ -1907,9 +1906,8 @@ internal class ImageCandidates(
      * Might throw if hasImage returns false
      */
     fun getBestImageForMaxSize(maxWidth: Int, pixelDensity: Float): String {
-        val setCandidate = srcSet.splitToSequence(",")
-            .map { it.trim() }
-            .map { it.split(SpaceRegex).take(2).map { x -> x.trim() } }
+        val setCandidate = srcSetCandidates(srcSet)
+            .map { (url, descriptor) -> listOfNotNull(url, descriptor) }
             .fold(100f to "") { acc, candidate ->
                 val candidateSize = if (candidate.size == 1) {
                     // Assume it corresponds to 1x pixel density
@@ -1948,6 +1946,44 @@ internal class ImageCandidates(
 }
 
 private val SpaceRegex = Regex("\\s+")
+
+/**
+ * The candidates in a `srcset`: each address with its descriptor ("640w",
+ * "2x"), or none.
+ *
+ * Split as browsers split it, not on every comma. An address may hold commas
+ * of its own - WordPress sizes pictures with `?resize=640,480` - and it is the
+ * whitespace after the address that ends it. Splitting on commas made
+ * `…?resize=640` and `480` of one candidate, and when the reader chose the
+ * second it drew a picture called "480", which is nothing: SoraNews24's
+ * pictures came up as the placeholder.
+ */
+/** The first address a picture's `srcset` offers, or blank. */
+private fun firstSrcSetAddress(img: Element): String =
+    srcSetCandidates(img.attr("srcset")).firstOrNull()?.first.orEmpty()
+
+internal fun srcSetCandidates(srcSet: String): List<Pair<String, String?>> {
+    val candidates = mutableListOf<Pair<String, String?>>()
+    var at = 0
+    while (at < srcSet.length) {
+        while (at < srcSet.length && (srcSet[at].isWhitespace() || srcSet[at] == ',')) at++
+        if (at >= srcSet.length) break
+        val urlStart = at
+        while (at < srcSet.length && !srcSet[at].isWhitespace()) at++
+        var url = srcSet.substring(urlStart, at)
+        if (url.endsWith(',')) {
+            // An address with no descriptor, ended by the comma.
+            candidates += url.trimEnd(',') to null
+            continue
+        }
+        val descriptorStart = at
+        while (at < srcSet.length && srcSet[at] != ',') at++
+        val descriptor = srcSet.substring(descriptorStart, at).trim().ifEmpty { null }
+        candidates += url to descriptor?.split(SpaceRegex)?.first()
+        at++
+    }
+    return candidates.filter { it.first.isNotBlank() }
+}
 
 /**
  * Can't use JSoup's text() method because that strips invisible characters

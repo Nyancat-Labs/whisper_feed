@@ -16,6 +16,10 @@ Unreleased
 - **Pictures that load as you scroll now show.** On sites such as IEEE
   Spectrum and SoraNews24 the reader drew a blank where each picture should
   be. Articles already saved get their pictures back too.
+- **Pictures offered in several sizes load.** When a picture's address
+  held a comma, as WordPress sites write them (`?resize=640,480`), the
+  reader could pick a broken half of it and show the placeholder instead.
+  Seen on SoraNews24, Gear Patrol, New Scientist, 9to5Google and TechCrunch.
 - **Pictures kept for browsers without scripts come through.** Inverse's
   pictures inside its articles only exist in that form, and none of them
   survived into the reader.

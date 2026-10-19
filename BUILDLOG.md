@@ -15,6 +15,10 @@ and Google Play builds on two other devices.
   separately with its tests; details in CHANGELOG.md under Unreleased.
 - Measured on the same 476 articles: 100 flags to 16, pictures 1512 to 1526.
 - Full suite: 1173 passing, 1 skipped (RealFeedReport, which needs the data).
+- SoraNews24 pictures showed as the placeholder on the phone: the reader
+  split a srcset at every comma, and WordPress addresses carry commas
+  (`?resize=640,480`). Now parsed as browsers do. In the check's data, 15
+  articles across 6 sources had such addresses. 1176 tests passing.
 - Split articles (Ars, Wired) found on the phone and fixed the same way.
   Decided against a second purge of stored full text to apply it to articles
   already fetched: with full text for every feed on, that is a week of pages
