@@ -74,6 +74,28 @@ layout; the four layouts are what the user chooses between. Both exist now.
 
 ---
 
+## Next release: 1.0.6
+
+Agreed 19 October 2026. In CHANGELOG.md under Unreleased as each lands.
+
+- [x] **Reader fixes from the real-feed check**: the headline once, lazily
+  loaded and noscript-only pictures, xkcd, stray credits, furniture labels,
+  articles split around adverts (Ars, Wired), srcset addresses with commas.
+  Confirmed on the Pixel 10 except Ars and Wired in full, which needs an
+  article fetched since the preview went on.
+- [ ] **New-article count** (Jitka). Sources kept out of All count only in
+  their own tab, per the Show in All note.
+- [ ] **Tap a picture to enlarge it** (Jitka).
+- [ ] **Link to an article's comments** (Jitka). Depends on what each feed
+  carries (`<comments>`, `slash:comments`); look at the owner's feeds first.
+- [ ] **Search matches the article's web address.** "arstech" found nothing,
+  though the reader shows arstechnica.com under every Ars headline: search
+  looks at the headline, the source's name ("Ars Technica", with a space)
+  and the text. Match the link's host as well, so what the reader shows is
+  something search can find.
+
+---
+
 ## Reported bugs
 
 Found on device, so they take precedence over anything below when they are in
