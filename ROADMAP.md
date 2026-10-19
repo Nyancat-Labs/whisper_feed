@@ -3530,6 +3530,12 @@ have it bolted on later.
 Read from the sources themselves at the time, not from memory, since these
 move every Android release:
 
+Already spotted, to include (owner, 19 October 2026): **section widths
+differ on About.** The header card sits 12 dp from the screen edge, the
+Contact, Updates and Support cards 16 dp, and the people and Build info rows
+8 dp. Pick one gutter for every page and hold to it; the settings split is
+the natural moment.
+
 - **Material 3 and Material 3 Expressive** (m3.material.io): components,
   colour roles, type scale, shape, motion, and where Whisper's own choices
   depart from them on purpose.
