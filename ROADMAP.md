@@ -101,7 +101,12 @@ Agreed 19 October 2026. In CHANGELOG.md under Unreleased as each lands.
   left her on the empty end space. Now: when the app resumes or the panel
   opens, or new articles arrive, and nothing but the end is on screen, the
   feed goes to the top. Articles leaving as they are read never move it.
-- [ ] **Headline more prominent, perhaps bold** (Jitka, 19 October).
+- [ ] ~~**Headline more prominent, perhaps bold**~~ (Jitka, 19 October).
+  Not in 1.0.6, by decision: headlines are Medium in the feed and the reader
+  alike, and the feed's look was settled with care. Re-evaluate with the
+  Expressive overhaul (§19e), where type weights are decided together. Note
+  for then: Inter is bundled at Regular, Medium and Bold only, so "bolder"
+  is a full step unless SemiBold is added.
 - [ ] **The Independent's bulletins** (/bulletin/ pages, 20 of every 100
   in its feed, and the most-stored source on the owner's phone). A headline
   and five bullet points, too little for Readability to tell from the page,
