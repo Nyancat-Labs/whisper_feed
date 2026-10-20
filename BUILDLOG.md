@@ -16,6 +16,14 @@ and Google Play builds on two other devices.
   reads the lambda through `rememberUpdatedState`, and springs back if
   cancelled for any reason. Also: a swipe started at the screen's left edge
   is Android's back gesture and leaves the app; nothing an app can claim.
+- **Second test, 20 October 07:16:** still couldn't finish a swipe, and new
+  lines above and below every card. Both mine:
+  - Half resistance and a 50% threshold meant a full screen of finger
+    travel; from mid-card it was unreachable. Now the card follows the
+    finger and commits at 40% (25% with a flick). A test now checks the
+    commit point is reachable from mid-card.
+  - The reveal panel's fade was applied after its colour, so the colour was
+    always drawn and showed in the 3 dp gaps between cards. Fade first.
 
 - Third in the order; one database change, version 27 → 28 (`hiddenAt`,
   `readingMinutes` on Article). `MigrationTest` covers it, and its "stays in

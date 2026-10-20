@@ -3056,9 +3056,10 @@ that target is comfortable is a question only a device answers.
 ## Swipe to dismiss — built 19 October 2026
 
 **Built as below**, with the owner's two decisions: a "Dismissed today"
-list (in the filter sheet, each with Bring back), and a heavy swipe (half
-resistance; past half the card's width, or a third with a flick over
-1800 dp/s; a haptic tick at the point of no return). Right only. The small
+list (in the filter sheet, each with Bring back), and a heavy swipe (past
+40% of the card's width, or a quarter with a flick over 1800 dp/s; a haptic
+tick at the point of no return. A first version also halved the card's
+speed, which made it impossible to finish from mid-card). Right only. The small
 negative signal is every third dismissal from one source in a week counting
 as one "Less like this", so it shows under "Why is this here?" with the
 rest; bringing one back takes it back. Code: `NotInterestedSwipe`,

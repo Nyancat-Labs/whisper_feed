@@ -90,15 +90,18 @@ class NotInterestedTest {
     }
 
     @Test
-    fun `the swipe is heavy`() {
+    fun `the swipe is heavy, and can be finished from the middle of a card`() {
         val width = 1000f
         val flick = 4000f
         assertFalse("a third, slowly, springs back", SwipeWeight.dismisses(340f, width, 500f, flick))
         assertTrue("a third with a hard flick goes", SwipeWeight.dismisses(340f, width, 5000f, flick))
-        assertFalse("a quarter, however hard, springs back", SwipeWeight.dismisses(250f, width, 9000f, flick))
-        assertTrue("half, at any speed, goes", SwipeWeight.dismisses(500f, width, 0f, flick))
-        // And the finger has to travel twice that, at half resistance.
-        assertEquals(0.5f, SwipeWeight.RESISTANCE)
+        assertFalse("a fifth, however hard, springs back", SwipeWeight.dismisses(200f, width, 9000f, flick))
+        assertTrue("40%, at any speed, goes", SwipeWeight.dismisses(400f, width, 0f, flick))
+        // A swipe starts mid-card (the left edge is Android's back gesture),
+        // so the finger has half the width to travel. The commit point has
+        // to be inside that, or it can never be reached.
+        val reach = 0.5f * SwipeWeight.RESISTANCE
+        assertTrue(reach > SwipeWeight.DISTANCE)
     }
 
     @Test

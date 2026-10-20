@@ -63,11 +63,16 @@ import kotlin.math.abs
 /**
  * Swipe a card to the right to say "Not interested".
  *
- * **Heavy on purpose**, by the owner's request: the card moves at about half
- * the finger's speed, and it goes only past half its own width, or past a
- * third with a hard flick. Anything less springs back. A feed is scrolled with
- * a thumb all day, and a dismissal that happens by accident is worse than one
- * that takes deliberate effort.
+ * **Heavy on purpose**, by the owner's request: it goes only past 40% of the
+ * card's width, or a quarter with a hard flick, with a tick where it commits.
+ * Anything less springs back. A feed is scrolled with a thumb all day, and a
+ * dismissal that happens by accident is worse than one that takes effort.
+ *
+ * The weight is in the distance, not in drag. The first version also moved
+ * the card at half the finger's speed, which put the commit point a full
+ * screen's width of finger travel away: from the middle of the card, where
+ * a swipe has to start (the left edge is Android's back gesture), it could
+ * not be reached at all (owner's test, 20 October).
  *
  * **Rightward only.** In the Lawnchair panel a leftward swipe is how the reader
  * goes home, so this never claims a drag that starts leftward, or one that is
@@ -111,8 +116,12 @@ fun NotInterestedSwipe(
         Row(
             modifier = Modifier
                 .matchParentSize()
-                .background(MaterialTheme.colorScheme.secondaryContainer)
+                // Faded before it is painted. The other way round faded only
+                // what was drawn after the colour, so the colour itself sat
+                // there at full strength behind every card and showed in the
+                // gaps between them as lines (owner, 20 October).
                 .alpha((offset.value / (width[0] * SwipeWeight.DISTANCE)).coerceIn(0f, 1f))
+                .background(MaterialTheme.colorScheme.secondaryContainer)
                 .padding(horizontal = 24.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start,
@@ -206,14 +215,14 @@ fun NotInterestedSwipe(
 
 /** How hard the swipe is, apart from the gesture so it can be tested. */
 internal object SwipeWeight {
-    /** The card moves this much for each pixel the finger does. */
-    const val RESISTANCE = 0.5f
+    /** The card moves this much for each pixel the finger does. See above. */
+    const val RESISTANCE = 1f
 
     /** Share of the card's width past which letting go dismisses. */
-    const val DISTANCE = 0.5f
+    const val DISTANCE = 0.4f
 
     /** With a flick at least this fast, this share is enough. */
-    const val FLICK_DISTANCE = 0.33f
+    const val FLICK_DISTANCE = 0.25f
     const val FLICK_DP_PER_S = 1800f
 
     /** Sideways by at least this much more than up or down, to count as a swipe. */
