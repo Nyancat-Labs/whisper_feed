@@ -37,6 +37,11 @@ and Google Play builds on two other devices.
   everything still held (a week with the owner's settings), not only today.
   What Whisper learned shows "Not interested: N this week" per source. 2 new
   tests; 1226 passing.
+- **Confirmed on the Pixel, 20 October 16:22:** swipe dismisses, Undo is
+  solid and clear of the back-to-top button, "Dismissed · 3" lists all
+  three across two days, and What Whisper learned shows "Not interested: 2
+  this week" for TheJournal.ie. The owner is now using it for a few days to
+  decide whether it stays in 1.0.6.
 
 - Third in the order; one database change, version 27 → 28 (`hiddenAt`,
   `readingMinutes` on Article). `MigrationTest` covers it, and its "stays in
