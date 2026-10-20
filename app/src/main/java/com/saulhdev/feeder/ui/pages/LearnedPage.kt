@@ -17,6 +17,7 @@
  */
 package com.saulhdev.feeder.ui.pages
 
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -168,6 +169,14 @@ private fun LearnedRow(
                     ),
                     style = MaterialTheme.typography.bodySmall,
                 )
+                if (source.dismissed > 0) {
+                    Text(
+                        text = pluralStringResource(
+                            R.plurals.learned_dismissed, source.dismissed, source.dismissed,
+                        ),
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                }
                 Text(
                     // Rounded to two places and shown with its sign, because
                     // the sign is the part that matters: whether this source is

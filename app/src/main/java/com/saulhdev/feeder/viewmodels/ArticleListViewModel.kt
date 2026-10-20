@@ -18,7 +18,6 @@
 
 package com.saulhdev.feeder.viewmodels
 
-import kotlinx.coroutines.flow.flow
 import androidx.lifecycle.viewModelScope
 import com.saulhdev.feeder.data.content.FeedPreferences
 import com.saulhdev.feeder.data.db.models.FeedItem
@@ -556,17 +555,13 @@ class ArticleListViewModel(
         }
     }
 
-    /** What was turned down today, for "Dismissed today", newest first. */
-    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
-    val dismissedToday: Flow<List<FeedItem>> = flow { emit(startOfToday()) }
-        .flatMapLatest { articleRepo.hiddenSince(it) }
-
-    private fun startOfToday(): Long = java.util.Calendar.getInstance().apply {
-        set(java.util.Calendar.HOUR_OF_DAY, 0)
-        set(java.util.Calendar.MINUTE, 0)
-        set(java.util.Calendar.SECOND, 0)
-        set(java.util.Calendar.MILLISECOND, 0)
-    }.timeInMillis
+    /**
+     * Everything turned down that Whisper still holds, newest first, for the
+     * Dismissed list. It was today's only, which left anything from
+     * yesterday with no way back (owner, 20 October). The articles age out
+     * with the rest, so the list never grows past the sync range.
+     */
+    val dismissedToday: Flow<List<FeedItem>> = articleRepo.hiddenSince(1L)
 
     // HELPERS
 

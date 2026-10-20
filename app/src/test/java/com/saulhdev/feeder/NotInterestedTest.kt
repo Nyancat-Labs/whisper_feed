@@ -62,6 +62,27 @@ class NotInterestedTest {
     }
 
     @Test
+    fun `What Whisper learned counts each source's dismissals`() = runBlocking {
+        seed()
+        val dao = db.feedArticleDao()
+        dao.setHidden("a", 1_000L)
+        dao.setHidden("b", 2_000L)
+        val counts = dao.hiddenPerSource(500L).first().associate { it.feedId to it.reads }
+        assertEquals(mapOf(1L to 2), counts)
+        assertEquals("older than the week, not counted", emptyMap<Long, Int>(),
+            dao.hiddenPerSource(5_000L).first().associate { it.feedId to it.reads })
+    }
+
+    @Test
+    fun `the Dismissed list covers every dismissal still held, not only today's`() = runBlocking {
+        seed()
+        val dao = db.feedArticleDao()
+        dao.setHidden("a", 1_000L)
+        dao.setHidden("c", 9_000L)
+        assertEquals(listOf("c", "a"), dao.hiddenSince(1L).first().map { it.id })
+    }
+
+    @Test
     fun `brought back, it is in the feed again`() = runBlocking {
         seed()
         val dao = db.feedArticleDao()

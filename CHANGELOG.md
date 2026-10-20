@@ -16,8 +16,9 @@ Unreleased
   feed won't set it off. Right only, because in the Lawnchair panel a
   leftward swipe takes you home. Also in each card's ⋮ menu, and as an
   action for TalkBack. Not on saved or pinned articles.
-- **Dismissed today.** Anything you turned down today is listed in the
-  filter sheet, each with "Bring back".
+- **Dismissed.** Everything you've turned down that Whisper still holds is
+  listed in the filter sheet, newest first, each with "Bring back".
+  What Whisper learned shows each source's dismissals this week.
 - **Every third dismissal from a source in a week counts as one "Less like
   this"**, so one swipe says little and ten say a lot.
 - **Reading time.** "5h · 4 min" on cards and under the reader's headline,

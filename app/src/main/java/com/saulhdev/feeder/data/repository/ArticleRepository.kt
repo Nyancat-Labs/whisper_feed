@@ -290,6 +290,12 @@ class ArticleRepository(db: NeoFeedDb) {
         count
     }
 
+    /** Dismissals per source in the last week, by feed id. */
+    fun dismissedThisWeek(): Flow<Map<Long, Int>> =
+        articlesDao.hiddenPerSource(System.currentTimeMillis() - WEEK_MS)
+            .map { rows -> rows.associate { it.feedId to it.reads } }
+            .flowOn(cc)
+
     /** Turned down since [since]; see FeedArticleDao.hiddenSince. */
     fun hiddenSince(since: Long): Flow<List<FeedItem>> = articlesDao.hiddenSince(since).flowOn(cc)
 

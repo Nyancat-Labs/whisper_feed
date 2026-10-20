@@ -55,6 +55,12 @@ data class LearnedSource(
     val seen: Int,
     val nudge: Float,
     val hidden: Boolean,
+    /**
+     * Articles from it turned down in the last week. Every third counts as
+     * one "Less like this", already inside [affinity]; shown on its own so
+     * the reader can see where that came from.
+     */
+    val dismissed: Int = 0,
 )
 
 /**
@@ -92,7 +98,8 @@ class LearnedViewModel(
         prefs.learnedResetAt.get().flatMapLatest { resetAt ->
             articleRepo.engagementPerSource(habitWindowStart(resetAt))
         },
-    ) { feeds, affinityRaw, engagement ->
+        articleRepo.dismissedThisWeek(),
+    ) { feeds, affinityRaw, engagement, dismissed ->
         val affinity = parseAffinity(affinityRaw)
         val most = engagement.values.maxOfOrNull { it.score }?.takeIf { it > 0 }
         feeds.map { feed ->
@@ -116,6 +123,7 @@ class LearnedViewModel(
                 // so this reads the feed's own column rather than a set that
                 // said the same thing in a second place.
                 hidden = !feed.isEnabled,
+                dismissed = dismissed[id] ?: 0,
             )
         }.sortedWith(
             compareByDescending<LearnedSource> { it.nudge }.thenBy { it.title.lowercase() }

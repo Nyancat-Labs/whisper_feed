@@ -33,6 +33,10 @@ and Google Play builds on two other devices.
 - **Fourth round:** the back-to-top button sat over Undo; it now steps
   aside while an Undo message is showing (app and panel). Dismissed today
   rows spaced apart.
+- **Fifth round, owner's choice:** the list is now "Dismissed", covering
+  everything still held (a week with the owner's settings), not only today.
+  What Whisper learned shows "Not interested: N this week" per source. 2 new
+  tests; 1226 passing.
 
 - Third in the order; one database change, version 27 → 28 (`hiddenAt`,
   `readingMinutes` on Article). `MigrationTest` covers it, and its "stays in

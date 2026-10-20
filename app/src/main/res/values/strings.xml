@@ -125,9 +125,9 @@
     <string name="reading_minutes">%1$d min</string>
     <string name="not_interested">Not interested</string>
     <string name="not_interested_done">Removed from your feed</string>
-    <string name="dismissed_today">Dismissed today</string>
-    <string name="dismissed_today_summary">Articles you said you were not interested in today</string>
-    <string name="dismissed_today_empty">Nothing dismissed today</string>
+    <string name="dismissed_today">Dismissed</string>
+    <string name="dismissed_today_summary">Articles you said you were not interested in, newest first. Kept until they age out with the rest.</string>
+    <string name="dismissed_today_empty">Nothing dismissed</string>
     <string name="dismissed_bring_back">Bring back</string>
     <string name="freshness_with_new">%1$s · %2$d new</string>
     <string name="freshness_just_now">Updated just now</string>
@@ -424,6 +424,10 @@
     <string name="learned_explanation">Nothing here is guessed. These are counts of what you pressed, what reached your screen, and what you opened — and the effect each has on how prominently a source appears. An article you opened counts for a great deal more than one you scrolled past. None of it leaves your phone.</string>
     <string name="learned_detail">More/Less score %1$d · seen: %3$d, opened: %2$d</string>
     <string name="learned_nudge">Weight: %1$+.2f</string>
+    <plurals name="learned_dismissed">
+        <item quantity="one">Not interested: %1$d this week</item>
+        <item quantity="other">Not interested: %1$d this week (every 3 count as one Less)</item>
+    </plurals>
     <string name="learned_forget">Forget this source\'s score</string>
     <string name="learned_unhide">Show this source again</string>
     <string name="learned_reset_all">Forget everything</string>

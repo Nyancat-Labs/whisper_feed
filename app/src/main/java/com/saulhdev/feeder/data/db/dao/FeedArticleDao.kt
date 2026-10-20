@@ -231,7 +231,14 @@ interface FeedArticleDao {
     @Query("SELECT COUNT(*) FROM Article WHERE feedId = :feedId AND hiddenAt >= :since AND hiddenAt > 0")
     suspend fun countHiddenSince(feedId: Long, since: Long): Int
 
-    /** What was turned down since [since], newest first, for "Dismissed today". */
+    /** Dismissals per source since [since], for What Whisper learned. */
+    @Query(
+        "SELECT feedId, COUNT(*) AS reads FROM Article " +
+            "WHERE hiddenAt >= :since AND hiddenAt > 0 GROUP BY feedId"
+    )
+    fun hiddenPerSource(since: Long): Flow<List<SourceReadCount>>
+
+    /** What was turned down since [since], newest first, for the Dismissed list. */
     @Transaction
     @Query(
         """
