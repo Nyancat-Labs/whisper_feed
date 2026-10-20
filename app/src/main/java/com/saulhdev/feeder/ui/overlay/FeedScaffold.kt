@@ -17,6 +17,7 @@
  */
 package com.saulhdev.feeder.ui.overlay
 
+import com.saulhdev.feeder.ui.components.FeedSnackbarHost
 import androidx.compose.runtime.collectAsState
 import org.koin.compose.koinInject
 import com.saulhdev.feeder.utils.newSinceSeen
@@ -48,7 +49,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
@@ -566,8 +566,8 @@ fun FeedScaffold(
             }
         }
 
-        SnackbarHost(
-            hostState = snackbarHostState,
+        FeedSnackbarHost(
+            state = snackbarHostState,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = bottomInset + 16.dp),

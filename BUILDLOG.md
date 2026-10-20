@@ -24,6 +24,12 @@ and Google Play builds on two other devices.
     commit point is reachable from mid-card.
   - The reveal panel's fade was applied after its colour, so the colour was
     always drawn and showed in the 3 dp gaps between cards. Fade first.
+- **Third test, 07:31: the swipe works.** Two finishing touches asked for:
+  the dismissed card's space now closes (220 ms) before the feed is told,
+  instead of standing empty until it reloads; and the Undo messages in the
+  app and panel use `FeedSnackbarHost`, every colour named and a shadow.
+  Nothing in the code made them translucent; the screenshot most likely
+  caught the fade-in, but the shadow helps over photos either way.
 
 - Third in the order; one database change, version 27 → 28 (`hiddenAt`,
   `readingMinutes` on Article). `MigrationTest` covers it, and its "stays in

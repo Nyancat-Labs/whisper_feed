@@ -17,6 +17,10 @@
  */
 package com.saulhdev.feeder.ui.overlay
 
+import kotlin.math.roundToInt
+import androidx.compose.animation.core.tween
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
@@ -93,6 +97,9 @@ fun NotInterestedSwipe(
         return
     }
     val offset = remember { Animatable(0f) }
+    // 1 while the card is there, 0 once it has gone: the space closes behind
+    // it rather than standing empty until the feed reloads (owner, 20 October).
+    val height = remember { Animatable(1f) }
     val scope = rememberCoroutineScope()
     val haptics = LocalHapticFeedback.current
     val density = LocalDensity.current
@@ -105,7 +112,14 @@ fun NotInterestedSwipe(
     val dismiss by rememberUpdatedState(onDismiss)
 
     Box(
-        modifier = modifier.semantics {
+        modifier = modifier
+            .clipToBounds()
+            .layout { measurable, constraints ->
+                val placeable = measurable.measure(constraints)
+                val shown = (placeable.height * height.value).roundToInt()
+                layout(placeable.width, shown) { placeable.place(0, 0) }
+            }
+            .semantics {
             // TalkBack and switch users get the same action, by name.
             customActions = listOf(CustomAccessibilityAction(label) { onDismiss(); true })
         },
@@ -200,6 +214,7 @@ fun NotInterestedSwipe(
                         if (SwipeWeight.dismisses(offset.value, width[0], velocity, flickPxPerS)) {
                             scope.launch {
                                 offset.animateTo(width[0], spring(dampingRatio = 1f, stiffness = 600f))
+                                height.animateTo(0f, tween(SwipeWeight.CLOSE_MS))
                                 dismiss?.invoke()
                             }
                         } else {
@@ -227,6 +242,9 @@ internal object SwipeWeight {
 
     /** Sideways by at least this much more than up or down, to count as a swipe. */
     const val SIDEWAYS_RATIO = 2f
+
+    /** How long the space a dismissed card leaves takes to close. */
+    const val CLOSE_MS = 220
 
     /** Back into place, the Expressive spatial spring the picture viewer uses. */
     val BACK = spring<Float>(dampingRatio = 0.8f, stiffness = 380f)

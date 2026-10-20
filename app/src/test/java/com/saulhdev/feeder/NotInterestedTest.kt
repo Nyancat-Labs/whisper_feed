@@ -90,6 +90,17 @@ class NotInterestedTest {
     }
 
     @Test
+    fun `the space a dismissed card leaves closes, and the Undo message is solid`() {
+        val swipe = java.io.File("src/main/java/com/saulhdev/feeder/ui/overlay/NotInterestedSwipe.kt").readText()
+        assertTrue(swipe.contains("height.animateTo(0f, tween(SwipeWeight.CLOSE_MS))"))
+        // Closed before the feed is told, so nothing jumps when it reloads.
+        assertTrue(swipe.indexOf("height.animateTo(0f") < swipe.indexOf("dismiss?.invoke()"))
+        val app = java.io.File("src/main/java/com/saulhdev/feeder/ui/pages/ArticleListPage.kt").readText()
+        val panel = java.io.File("src/main/java/com/saulhdev/feeder/ui/overlay/FeedScaffold.kt").readText()
+        assertTrue(app.contains("FeedSnackbarHost(") && panel.contains("FeedSnackbarHost("))
+    }
+
+    @Test
     fun `the swipe is heavy, and can be finished from the middle of a card`() {
         val width = 1000f
         val flick = 4000f

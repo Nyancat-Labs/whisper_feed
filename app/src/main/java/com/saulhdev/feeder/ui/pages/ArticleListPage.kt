@@ -18,6 +18,7 @@
 
 package com.saulhdev.feeder.ui.pages
 
+import com.saulhdev.feeder.ui.components.FeedSnackbarHost
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -49,7 +50,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
@@ -422,7 +422,7 @@ fun ArticleListPage(
                     Scaffold(
                         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                         containerColor = Color.Transparent,
-                        snackbarHost = { SnackbarHost(snackbarHostState) },
+                        snackbarHost = { FeedSnackbarHost(snackbarHostState) },
                         topBar = {
                             if (focusedSource != null) SourceFilterBar(
                                 title = focusedFeed?.feedTitle.orEmpty(),
