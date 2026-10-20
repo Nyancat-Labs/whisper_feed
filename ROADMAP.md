@@ -129,6 +129,14 @@ The owner is using the preview on the Pixel 10 for a week before release.
 - [ ] ~~**Link to an article's comments**~~ (Jitka). Moved after 1.0.6 by
   decision, 19 October. Depends on what each feed carries (`<comments>`,
   `slash:comments`); look at the owner's feeds first.
+  **Checked 20 October** against the owner's 121 feeds (real-feed check
+  data): 24 carry a comments address on their items, 22 as RSS `<comments>`
+  (Ars Technica, 9to5Google, Android Authority, gHacks, Hackaday, Techdirt,
+  SoraNews24, TheJournal.ie and others) and 2 as Atom `rel="replies"`
+  (Android Developers Blog, Terence Eden). Most news sites (BBC, Guardian,
+  Independent, RTÉ, Irish Times) carry none. Rome reads both forms
+  (`SyndEntry.comments`, entry links). Needs one column, database 29. Shown
+  only where a feed gives one, so no setting.
 - [x] **Search: by web address, and ranked.** Built 19 October: matched on
   the site's own name in an address ("arstechnica", "bbc"), not "www." or
   ".com", or "com" would rank every source first. Asked for 19 October 2026.
