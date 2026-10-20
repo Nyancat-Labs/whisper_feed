@@ -637,7 +637,8 @@ fun FeedScaffold(
         }
 
         AnimatedVisibility(
-            visible = showScrollToTop,
+            // Out of the way while an Undo is offered; see ArticleListPage.
+            visible = showScrollToTop && snackbarHostState.currentSnackbarData == null,
             enter = fadeIn() + scaleIn(),
             exit = fadeOut() + scaleOut(),
             modifier = Modifier

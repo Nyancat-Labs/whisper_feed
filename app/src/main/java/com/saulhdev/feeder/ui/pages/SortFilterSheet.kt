@@ -327,7 +327,9 @@ private fun DismissedTodayBlock(
         )
         items.forEach { item ->
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                // Apart, so each title reads as its own (owner's screenshot,
+                // 20 October: two ran together).
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Column(modifier = Modifier.weight(1f)) {

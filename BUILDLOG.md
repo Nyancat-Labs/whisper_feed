@@ -30,6 +30,9 @@ and Google Play builds on two other devices.
   app and panel use `FeedSnackbarHost`, every colour named and a shadow.
   Nothing in the code made them translucent; the screenshot most likely
   caught the fade-in, but the shadow helps over photos either way.
+- **Fourth round:** the back-to-top button sat over Undo; it now steps
+  aside while an Undo message is showing (app and panel). Dismissed today
+  rows spaced apart.
 
 - Third in the order; one database change, version 27 → 28 (`hiddenAt`,
   `readingMinutes` on Article). `MigrationTest` covers it, and its "stays in

@@ -509,7 +509,9 @@ fun ArticleListPage(
                             // button that fades in at full size reads as having
                             // been there all along and missed.
                             AnimatedVisibility(
-                                visible = showFAB,
+                                // Out of the way while an Undo is offered: it
+                                // sat over the Undo button (owner, 20 October).
+                                visible = showFAB && snackbarHostState.currentSnackbarData == null,
                                 enter = fadeIn() + scaleIn(),
                                 exit = fadeOut() + scaleOut(),
                             ) {
