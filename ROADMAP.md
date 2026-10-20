@@ -126,8 +126,12 @@ The owner is using the preview on the Pixel 10 for a week before release.
   HomeFeeder before it", below the two Neo Feed authors, so HomeFeeder keeps
   a link; the header keeps only our own four. Attribution itself is the
   licence page and the source headers, so nothing is lost.
-- [ ] ~~**Link to an article's comments**~~ (Jitka). Moved after 1.0.6 by
-  decision, 19 October. Depends on what each feed carries (`<comments>`,
+- [x] **Link to an article's comments** (Jitka). Built 20 October, on main
+  for 1.0.6, at the owner's request after the check below: a button at the
+  end of the reader, named by the site, only when the feed gives one.
+  Database 29 (`Article.commentsLink`). Not offered to readers who open
+  articles in the browser, who never see the reader; add to the card's ⋮
+  menu if anyone asks. Earlier moved after 1.0.6 by decision, 19 October. Depends on what each feed carries (`<comments>`,
   `slash:comments`); look at the owner's feeds first.
   **Checked 20 October** against the owner's 121 feeds (real-feed check
   data): 24 carry a comments address on their items, 22 as RSS `<comments>`
@@ -334,7 +338,8 @@ items below can ride in it alongside what is already on main.
 3. ~~**Reading time and swipe to dismiss**~~ — **built 19 October 2026, on
    main for 1.0.6, awaiting the owner's test.** (6), in one database change
    (version 28).
-4. **Comments link** (5) (Jitka; see *Next release: 1.0.6*).
+4. ~~**Comments link**~~ — **built 20 October 2026, on main for 1.0.6.** (5)
+   (Jitka; see *Next release: 1.0.6*).
 5. **Auto-scroll** (3) (*Auto-scroll*). The longest-waiting request;
    designed.
 6. **The design-rules audit** (8), then **settings split into pages**, Harmonic's

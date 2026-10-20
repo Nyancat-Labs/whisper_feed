@@ -107,7 +107,8 @@ fun SyndEntry.asItem(baseUrl: URL, feedAuthor: Author? = null): Item {
             date_published = publishedRFC3339Date(),
             date_modified = modifiedRFC3339Date(),
             author = writer,
-            attachments = enclosures?.map { it.asAttachment(baseUrl = baseUrl) }
+            attachments = enclosures?.map { it.asAttachment(baseUrl = baseUrl) },
+            comments_url = commentsLink(baseUrl),
         )
     } catch (t: Throwable) {
         throw t
@@ -119,6 +120,24 @@ fun String.orIfBlank(block: () -> String): String =
         true -> block()
         false -> this
     }
+
+/**
+ * Where this entry is discussed, as a page to open, or null.
+ *
+ * RSS has `<comments>` (Hacker News, Ars Technica, most WordPress sites);
+ * Atom has a link with `rel="replies"`. A replies link that is itself a
+ * feed of comments is passed over: it is for a reader, not a person. Only
+ * a web address is kept, since it is opened as one.
+ */
+fun SyndEntry.commentsLink(feedBaseUrl: URL): String? {
+    val candidate = comments?.trim()?.takeIf { it.isNotEmpty() }
+        ?: links?.firstOrNull { link ->
+            link.rel == "replies" && (link.type.isNullOrBlank() || link.type == "text/html")
+        }?.href
+        ?: return null
+    return relativeLinkIntoAbsoluteOrNull(feedBaseUrl, candidate)
+        ?.takeIf { it.startsWith("https://") || it.startsWith("http://") }
+}
 
 /**
  * Returns an absolute link, or null

@@ -123,6 +123,7 @@
     <string name="picture_not_saved">Couldn’t save the picture</string>
     <string name="picture_not_loaded">The picture hasn’t loaded</string>
     <string name="reading_minutes">%1$d min</string>
+    <string name="reader_comments">Comments on %1$s</string>
     <string name="not_interested">Not interested</string>
     <string name="not_interested_done">Removed from your feed</string>
     <string name="dismissed_today">Dismissed</string>

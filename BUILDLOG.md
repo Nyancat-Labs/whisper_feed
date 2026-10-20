@@ -8,6 +8,23 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 20 October 2026 — Comments link
+
+- Fourth in the order, brought forward at the owner's request. Checked
+  first against the owner's 121 feeds: 24 carry a comments address, plus
+  Hacker News (its feed hadn't downloaded in the stored check; fetched
+  live). Reddit needs nothing: its links already go to the thread.
+- Read from RSS `<comments>` and Atom `rel="replies"` (web pages only, not
+  comment feeds), kept in `Article.commentsLink`, database 29. A later
+  fetch that leaves it out keeps what was stored.
+- Shown as "Comments on <site>" at the end of the reader, only when there
+  is one. New `ChatCircle` icon (Phosphor).
+- 5 new tests (`CommentsLinkTest`); `MigrationTest` covers 28 → 29 by
+  itself. 1231 passing, lint clean.
+- **To try:** open a Hacker News item in the reader and scroll to the end:
+  "Comments on news.ycombinator.com". Articles already stored get it at
+  their feed's next sync.
+
 ## 19 October 2026 — Reading time and Not interested
 
 - **Owner's first test, 22:59:** a card stuck a third of the way off

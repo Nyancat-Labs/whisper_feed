@@ -52,7 +52,7 @@ const val ID_ALL: Long = -1L
         Suggestion::class,
         ReadingTally::class,
     ],
-    version = 28,
+    version = 29,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -233,6 +233,7 @@ abstract class NeoFeedDb : RoomDatabase() {
 }
 
 val allMigrations = arrayOf(
+    MIGRATION_28_29,
     MIGRATION_27_28,
     MIGRATION_26_27,
     MIGRATION_25_26,
@@ -257,6 +258,14 @@ val allMigrations = arrayOf(
     MIGRATION_12_13,
     MIGRATION_13_14,
 )
+
+@Suppress("ClassName")
+object MIGRATION_28_29 : Migration(28, 29) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Filled in as each feed is next read; nothing to backfill from.
+        db.execSQL("ALTER TABLE Article ADD COLUMN commentsLink TEXT DEFAULT NULL")
+    }
+}
 
 @Suppress("ClassName")
 object MIGRATION_27_28 : Migration(27, 28) {

@@ -9,6 +9,11 @@ Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 Unreleased
 ----------
 
+- **Comments link** (Jitka). When a feed says where an article is
+  discussed, the reader ends with "Comments on news.ycombinator.com" (or
+  whichever site). Hacker News is the main beneficiary: its link is the
+  story, and the discussion was unreachable from Whisper until now. About
+  one feed in five carries one; the rest show nothing extra.
 - **Swipe a card right for "Not interested".** The article leaves the
   feed and is marked read, with Undo for a few seconds. The swipe is heavy
   on purpose: it only goes once dragged past 40% of its width, or a quarter
@@ -24,7 +29,7 @@ Unreleased
 - **Reading time.** "5h · 4 min" on cards and under the reader's headline,
   counted from the downloaded page, or from the feed's own text when that
   is the whole article. A feed teaser shows no time rather than a wrong one.
-- Database version 28 (two new columns on articles), migrated in place.
+- Database version 29 (three new columns on articles), migrated in place.
 - **Saved articles are in the backup.** The daily backup now writes a third
   file, `whisper-saved.json`, beside the subscriptions and settings, and
   restoring a folder puts your saved articles back. Moving between Play,

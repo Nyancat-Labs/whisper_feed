@@ -1,6 +1,8 @@
 package com.saulhdev.feeder.ui.pages
 
 
+import com.saulhdev.feeder.ui.components.OutlinedActionButton
+import com.saulhdev.feeder.ui.icons.phosphor.ChatCircle
 import com.saulhdev.feeder.ui.components.PictureViewer
 import com.saulhdev.feeder.ui.components.PictureRequest
 import com.saulhdev.feeder.ui.components.LocalPictureViewer
@@ -413,6 +415,23 @@ fun ArticlePage(
                             imagePlaceholder = placeholder,
                             onLinkClick = context::launchView,
                         )
+                        // Where the article is discussed, when its feed says.
+                        // At the end, where the reading stops and the wish to
+                        // see what others made of it starts. Named by its
+                        // site, so it is clear where the tap goes.
+                        state?.article?.commentsLink?.let { link ->
+                            item(key = "comments") {
+                                OutlinedActionButton(
+                                    text = stringResource(R.string.reader_comments, commentsSite(link)),
+                                    icon = Phosphor.ChatCircle,
+                                    positive = true,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 24.dp, bottom = 16.dp),
+                                    onClick = { context.launchView(link) },
+                                )
+                            }
+                        }
                     } else {
                         item {
                             NotFoundView()
@@ -425,6 +444,11 @@ fun ArticlePage(
       }
     }
 }
+
+/** "news.ycombinator.com" out of a comments address, for the button. */
+internal fun commentsSite(link: String): String =
+    runCatching { java.net.URI(link).host?.removePrefix("www.") }.getOrNull()
+        ?.takeIf { it.isNotBlank() } ?: link
 
 /** The reading column's widest, in ems of the body text: about 75 characters. */
 private const val READER_MEASURE_EM = 36f

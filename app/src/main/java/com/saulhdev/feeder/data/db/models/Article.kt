@@ -224,6 +224,16 @@ data class Article constructor(
     val readingMinutes: Int = 0,
 
     /**
+     * Where the article is discussed, when its feed says; null otherwise.
+     *
+     * For Hacker News this is the whole point of the item: the link is the
+     * story and the discussion lives here. Shown as a button at the end of
+     * the reader, and only when there is one. See SyndEntry.commentsLink.
+     */
+    @ColumnInfo(defaultValue = "NULL")
+    val commentsLink: String? = null,
+
+    /**
      * What a Google Reader server calls this article, if one does.
      *
      * Null for every article on an account-less install, which is most of
@@ -315,6 +325,7 @@ data class Article constructor(
             // A count from the downloaded page wins; the feed's own text
             // only fills in where there is none yet.
             readingMinutes = readingMinutes.takeIf { it > 0 } ?: ReadingTime.fromFeed(text),
+            commentsLink = entry.comments_url ?: commentsLink,
         )
     }
 

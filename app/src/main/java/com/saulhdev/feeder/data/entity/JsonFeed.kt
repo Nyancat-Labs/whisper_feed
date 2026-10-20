@@ -55,7 +55,12 @@ data class Item(
     val date_modified: String? = null,
     val author: Author? = null,
     val tags: List<String>? = null,
-    val attachments: List<Attachment>? = null
+    val attachments: List<Attachment>? = null,
+    /**
+     * Where the item is discussed, when the feed says: RSS `<comments>`, or
+     * an Atom link with `rel="replies"`. Not part of JSON Feed; Whisper's own.
+     */
+    val comments_url: String? = null,
 )
 
 data class Attachment(
