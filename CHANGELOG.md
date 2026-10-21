@@ -9,6 +9,8 @@ Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 Unreleased
 ----------
 
+- Material 3 1.5 (beta, the Expressive release) under the hood, on stable
+  Compose 1.12. Nothing should look different yet.
 - **Design audit fixes** (see docs/DESIGN_AUDIT.md). In landscape, pages and
   the launcher panel now keep clear of a side navigation bar and the camera
   cutout. The last rows of Settings and Sources clear the gesture bar.

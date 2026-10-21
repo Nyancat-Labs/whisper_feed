@@ -8,6 +8,21 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 21 October 2026 — Material 3 Expressive library, ahead of stable
+
+- Owner's plan: 1.0.6 = everything since 1.0.5 plus the settings split;
+  the full redesign as 1.1.0; roughly monthly releases.
+- Not waiting for Expressive to be stable: material3 1.5.0-beta02 needs only
+  stable Compose 1.12 (checked in its published module file), so only that
+  one library is beta. Compose BOM 2026.08.00 → 2026.09.00; material3 and
+  the navigation suite pinned to 1.5.0-beta02.
+- One break: `SeekBarPreference`'s slider (custom track) moved to the
+  `SliderState` form. `ListItem`'s old form now warns as deprecated; left for
+  the settings split, which rebuilds those rows.
+- 1237 passing, lint clean. Nothing should look different.
+- **To try:** a look round every screen, and the two sliders in Settings
+  (overlay transparency) still drag and save.
+
 ## 21 October 2026 — Design audit, and its small fixes
 
 - Auto-scroll parked by the owner. Design audit done (`docs/DESIGN_AUDIT.md`):

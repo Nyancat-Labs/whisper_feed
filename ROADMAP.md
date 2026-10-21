@@ -350,8 +350,11 @@ items below can ride in it alongside what is already on main.
 6. **The design-rules audit** (8), then **settings split into pages**, Harmonic's
    way (*From Harmonic*), before the redesign, then **the Expressive
    overhaul** (§19e) with Coil 3 (§19d): text size part B, Calm or Vivid,
-   headline weight, the motion scheme. Expressive waits for `material3`
-   1.5.0 stable.
+   headline weight, the motion scheme. **Re-planned 21 October:** Whisper is
+   on `material3` 1.5.0-beta02 now (not waiting for stable), the settings
+   split is built with Expressive's own pieces and ships in **1.0.6**; the
+   full redesign follows as **1.1.0**. Releases roughly monthly from here,
+   not promised publicly; urgent fixes as 1.0.6.1 and so on.
 7. **AI summaries** (9) (*AI summaries*, below): your own cloud service first,
    then models downloaded to the phone. After the redesign so its page is
    built in the new style once.

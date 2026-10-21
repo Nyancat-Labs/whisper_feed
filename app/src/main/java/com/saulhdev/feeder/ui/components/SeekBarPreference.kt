@@ -1,5 +1,6 @@
 package com.saulhdev.feeder.ui.components
 
+import androidx.compose.material3.SliderState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -67,10 +68,14 @@ fun SeekBarPreference(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth(),
             ) {
+                // Through a SliderState: Material 3 1.5 keeps the custom track
+                // only on the state-based slider.
+                val sliderState = remember(pref.steps, pref.minValue, pref.maxValue) {
+                    SliderState(currentValue, pref.steps, pref.minValue..pref.maxValue)
+                }
+                sliderState.value = currentValue
                 Slider(
-                    value = currentValue,
-                    valueRange = pref.minValue..pref.maxValue,
-                    steps = pref.steps,
+                    state = sliderState,
                     onValueChange = { currentValue = it },
                     onValueChangeFinished = {
                         // Was a blocking DataStore write on the main thread,

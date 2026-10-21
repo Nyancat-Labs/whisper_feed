@@ -120,8 +120,16 @@ reader), 8, and the unused library entries of 9. Item 4 needed no change
 ## With the Expressive redesign
 
 Material 3 Expressive is in **beta** (material3 1.5.0-beta01, 7 October
-2026); stable is still 1.4.0. The redesign waits for 1.5.0 stable, as
-planned. ([releases](https://developer.android.com/jetpack/androidx/releases/compose-material3))
+2026); stable is still 1.4.0.
+
+**Decided 21 October: not waiting.** The owner asked whether waiting was
+needed; it is not. 1.5.0-beta02 depends only on stable Compose 1.12, so the
+rest of the stack stays stable, and the Expressive APIs left experimental
+between April and July. Whisper moved to it the same day (BOM 2026.09.00,
+material3 pinned ahead of it). One source change: the slider with a custom
+track now needs a `SliderState`. `ListItem`'s old form is deprecated; the
+rows are rebuilt in the settings split. Back to the BOM's version when
+1.5.0 is stable. ([releases](https://developer.android.com/jetpack/androidx/releases/compose-material3))
 
 14. **`MaterialExpressiveTheme` and its motion scheme**, replacing the two
     hand-written springs (picture viewer, swipe) that copy its values.

@@ -4,7 +4,11 @@ appcompat = "1.8.0"
 browser = "1.10.0"
 materialkolor = "2.1.1"
 coil = "2.7.0"
-compose-bom = "2026.08.00"
+compose-bom = "2026.09.00"
+# Material 3 ahead of the BOM, for Expressive: 1.5.0 is in beta (features
+# fixed, bug fixes only) on top of stable Compose 1.12. The BOM still says
+# 1.4.0. Back to the BOM's when 1.5.0 is stable. See docs/DESIGN_AUDIT.md.
+material3 = "1.5.0-beta02"
 core-ktx = "1.19.0"
 core-splashscreen = "1.0.1"
 datastore-preferences = "1.2.1"
@@ -67,8 +71,8 @@ compose-animation = { group = "androidx.compose.animation", name = "animation" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
 compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
 compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout" }
-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
-compose-material3-navigationsuite = { module = "androidx.compose.material3:material3-adaptive-navigation-suite" }
+compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
+compose-material3-navigationsuite = { module = "androidx.compose.material3:material3-adaptive-navigation-suite", version.ref = "material3" }
 navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
 compose-ui = { group = "androidx.compose.ui", name = "ui" }
 compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
