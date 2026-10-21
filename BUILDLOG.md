@@ -26,6 +26,7 @@ and Google Play builds on two other devices.
 - **To try:** turn the phone sideways on Settings and About: nothing under
   the navigation bar or camera. Scroll Settings to the end: the last row
   clear of the gesture bar.
+- **Confirmed on the Pixel, 21 October:** "Looks good".
 
 ## 20 October 2026 — Comments link
 
