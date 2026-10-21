@@ -3639,6 +3639,16 @@ The result is a list here: what Whisper already meets, what it misses, and
 which misses are worth fixing, each with the rule it comes from. Where a rule
 and the Calm design disagree, that is decided in the open, not by default.
 
+**Done 21 October 2026: see `docs/DESIGN_AUDIT.md`.** In short: Whisper meets
+the enforced rules in principle (target 37, edge-to-edge on, predictive back
+opted in, themed icon, splash API, channels). Nine small misses to fix soon,
+the worst being side insets dropped in landscape, four unlabelled actions, a
+20dp tap target on cards, and the reader's back handler (which can close the
+app). Four go with the settings split (one margin, one dialog kind, Help,
+settings two-pane on tablets), four with Expressive (still beta: material3
+1.5.0-beta01). Three are the owner's call: read articles faded to 55% (text
+below Google's contrast), the second splash screen, per-app language.
+
 ---
 
 ## Debt worth clearing
