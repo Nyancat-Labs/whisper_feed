@@ -131,7 +131,9 @@ The owner is using the preview on the Pixel 10 for a week before release.
   end of the reader, named by the site, only when the feed gives one.
   Database 29 (`Article.commentsLink`). Not offered to readers who open
   articles in the browser, who never see the reader; add to the card's ⋮
-  menu if anyone asks. Earlier moved after 1.0.6 by decision, 19 October. Depends on what each feed carries (`<comments>`,
+  menu if anyone asks. Earlier moved after 1.0.6 by decision, 19 October.
+  A second link at the top, by the byline, was offered and declined for
+  now (owner, 21 October): end only, and see what readers say. Depends on what each feed carries (`<comments>`,
   `slash:comments`); look at the owner's feeds first.
   **Checked 20 October** against the owner's 121 feeds (real-feed check
   data): 24 carry a comments address on their items, 22 as RSS `<comments>`
