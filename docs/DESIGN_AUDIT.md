@@ -43,6 +43,10 @@ without it, but Play's rankings and badges lean on it.
 
 Candidates for 1.0.6 or the release after; none needs a design decision.
 
+**Status, 21 October:** fixed on main for 1.0.6: 1, 2, 3, 5, 7 (web view and
+reader), 8, and the unused library entries of 9. Item 4 needed no change
+(see it). Item 6 and the style flags of 9 deliberately left; see each.
+
 1. **Side insets are thrown away in landscape.** Most pages replace the
    Scaffold's padding with their own `start/end = 16dp`, so in landscape the
    navigation bar and a camera cutout can sit over content. The launcher
@@ -63,12 +67,19 @@ Candidates for 1.0.6 or the release after; none needs a design decision.
 4. **The source-name tap on cards is about 20dp tall**, under the 48dp
    minimum. It narrows the feed, so a small target here means mis-taps on
    the headline above it. `ArticleCard.kt:752`.
+   *On a closer look:* Compose itself widens a small target's touch area to
+   48dp where nothing nearer competes for the touch, so the target is
+   larger than it looks. Making it taller would add height to every card.
+   Left as it is, with a spoken label added; worth a check by hand.
 5. **Section headings in Settings are a fixed 48dp tall**, so a heading that
    wraps at large font sizes is cut off. Should be a minimum, not a height.
    `PreferenceGroup.kt:86`. Rule: font scaling to 200% (Android 14+).
 6. **Page titles are one line**, so at large font sizes "What Whisper has
    learned" ends in "…" (the owner's own screenshot shows it at normal
    size). `ViewWithActionBar.kt:104`.
+   *Left for the redesign:* the large title and the collapsed bar draw the
+   same text, so two lines would cut the collapsed one in half. Expressive's
+   flexible app bars handle long titles; moved there.
 7. **Three back handlers block the system's back animation**, and one is
    wrong (but harmless in practice; see the end of this item): the reader's own handler (`ArticlePage.kt:175`) makes a new,
    empty navigation controller, so its check is always "nothing to go back
@@ -83,7 +94,10 @@ Candidates for 1.0.6 or the release after; none needs a design decision.
 8. **The "Syncing" notification channel's description repeats its name**
    ("Sync status" / "Sync status"), so Android's notification settings say
    nothing about what it is for. `FeedSyncer.kt:341`.
-9. **Leftovers to clear**: the old translucent status/navigation flags in
+9. **Leftovers to clear** (the library entries are gone; the style flags are
+   left until they can be checked on an Android 8–14 phone, since the
+   launcher panel's window uses the same theme): the old translucent
+   status/navigation flags in
    `styles.xml:68` (contradict edge-to-edge), and the deprecated
    `accompanist-systemuicontroller` still listed in the version catalogue
    (`libs.versions.toml:88`), though nothing uses it.

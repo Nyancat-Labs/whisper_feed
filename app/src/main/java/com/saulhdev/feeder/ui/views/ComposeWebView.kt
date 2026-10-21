@@ -84,18 +84,20 @@ fun ComposeWebView(
     // no graph, whose current entry is therefore always null — so the else
     // branch never ran and the first press called activity.finish(), closing
     // the whole app from a page the reader had opened to read.
-    BackHandler {
-        val view = webView.value
-        if (view != null && view.canGoBack()) view.goBack()
-        else navController.popBackStack()
+    //
+    // Only while there is browser history to walk. Taking back every time
+    // stopped Android's back animation on this screen; with nothing to walk,
+    // back is left to the navigation, which pops the screen and animates it
+    // (design audit 7, 21 October).
+    var canGoBack by remember { mutableStateOf(false) }
+    BackHandler(enabled = canGoBack) {
+        webView.value?.takeIf { it.canGoBack() }?.goBack()
     }
 
-    if (!isBrowsable(pageUrl)) {
-        // Nothing to render and nothing to explain: an address this screen
-        // will not open is one it was not asked to open by us.
-        BackHandler(enabled = true) { navController.popBackStack() }
-        return
-    }
+    // Nothing to render and nothing to explain: an address this screen will
+    // not open is one it was not asked to open by us. Back is the
+    // navigation's, as above.
+    if (!isBrowsable(pageUrl)) return
 
     ViewWithActionBar(
         title = title.value,
@@ -162,8 +164,13 @@ fun ComposeWebView(
                                 return true
                             }
 
+                            override fun doUpdateVisitedHistory(view: WebView?, url: String?, isReload: Boolean) {
+                                canGoBack = view?.canGoBack() == true
+                            }
+
                             override fun onPageFinished(view: WebView?, url: String?) {
                                 isLoading = false
+                                canGoBack = view?.canGoBack() == true
                                 title.value = view?.title?.takeIf { it.isNotBlank() }
                                     ?: fallbackTitle
                                 subTitle.value = url?.toUri()?.host.orEmpty()

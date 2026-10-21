@@ -9,6 +9,15 @@ Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 Unreleased
 ----------
 
+- **Design audit fixes** (see docs/DESIGN_AUDIT.md). In landscape, pages and
+  the launcher panel now keep clear of a side navigation bar and the camera
+  cutout. The last rows of Settings and Sources clear the gesture bar.
+  TalkBack can now name the app's back-to-top button, "add tag", the
+  reader's picture, and a card's source name. Settings headings grow with
+  large fonts instead of being cut off. The built-in browser only takes
+  over back while it has pages to go back through, so Android's back
+  animation plays. The "Sync status" notification channel says what it is
+  for.
 - **Comments link** (Jitka). When a feed says where an article is
   discussed, the reader ends with "Comments on news.ycombinator.com" (or
   whichever site). Hacker News is the main beneficiary: its link is the

@@ -116,6 +116,8 @@
     <!-- The freshness line, then how many articles arrived since the reader last looked: "Updated 12m ago · 8 new". -->
     <!-- The full-screen picture viewer in the reader. -->
     <string name="picture_close">Close picture</string>
+    <string name="picture_enlarge">Enlarge picture</string>
+    <string name="focus_on_source">Show only this source</string>
     <string name="picture_save">Save</string>
     <string name="picture_share">Share</string>
     <string name="picture_open_link">Open link</string>
@@ -239,6 +241,7 @@
     <string name="pref_items_per_feed">Max items per feed</string>
     <string name="syncing">Syncing</string>
     <string name="sync_status">Sync status</string>
+    <string name="sync_status_channel_description">A silent notice while Whisper fetches your feeds in the background. Android asks for one while the work runs.</string>
     <string name="add_feed_category">File it under</string>
     <string name="add_rss">Add new RSS</string>
     <string name="failed_to_parse">Could not parse %1$s</string>

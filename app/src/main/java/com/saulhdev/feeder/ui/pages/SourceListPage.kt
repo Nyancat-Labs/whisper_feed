@@ -637,7 +637,10 @@ fun SourceListPage(
                         contentPadding = PaddingValues(
                             start = 8.dp,
                             end = 8.dp,
-                            top = paddingValues.calculateTopPadding()
+                            top = paddingValues.calculateTopPadding(),
+                            // Clear of the gesture bar and of the add button
+                            // over the list's end (design audit, 21 October).
+                            bottom = paddingValues.calculateBottomPadding() + 88.dp,
                         ),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {

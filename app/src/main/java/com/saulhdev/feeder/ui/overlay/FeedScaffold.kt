@@ -17,6 +17,7 @@
  */
 package com.saulhdev.feeder.ui.overlay
 
+import androidx.compose.foundation.layout.absolutePadding
 import com.saulhdev.feeder.ui.components.FeedSnackbarHost
 import androidx.compose.runtime.collectAsState
 import org.koin.compose.koinInject
@@ -136,6 +137,13 @@ fun FeedScaffold(
     glanceState: GlanceState,
     topInset: Dp,
     bottomInset: Dp,
+    /**
+     * The window's own side insets: a navigation bar or a camera cutout at
+     * the side, in landscape. Measured with the top and bottom ones and
+     * dropped until 21 October (design audit, item 1).
+     */
+    leftInset: Dp = 0.dp,
+    rightInset: Dp = 0.dp,
     onCategoriesChange: (Set<String>) -> Unit,
     onRefresh: () -> Unit,
     onArticleClick: (FeedItem) -> Unit,
@@ -269,6 +277,7 @@ fun FeedScaffold(
     Box(
         modifier = modifier
             .fillMaxSize()
+            .absolutePadding(left = leftInset, right = rightInset)
             .nestedScroll(scrollBehavior.nestedScrollConnection)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {

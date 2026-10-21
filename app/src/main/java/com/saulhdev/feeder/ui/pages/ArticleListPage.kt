@@ -526,7 +526,9 @@ fun ArticleListPage(
                                 ) {
                                     Icon(
                                         imageVector = Phosphor.CaretUp,
-                                        contentDescription = null,
+                                        // The panel's said this; the app's
+                                        // said nothing (design audit).
+                                        contentDescription = stringResource(R.string.back_to_top),
                                     )
                                 }
                             }

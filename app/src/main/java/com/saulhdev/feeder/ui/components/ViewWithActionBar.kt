@@ -18,6 +18,15 @@
 
 package com.saulhdev.feeder.ui.components
 
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.union
+import androidx.compose.foundation.layout.displayCutout
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -101,6 +110,10 @@ fun ViewWithActionBar(
                             style = if (largeTitle) MaterialTheme.typography.headlineMedium
                             else MaterialTheme.typography.titleMedium,
                             fontSize = if (largeTitle) TextUnit.Unspecified else titleSize,
+                            // One line. The large title and the collapsed bar
+                            // draw this same text, so two lines would cut the
+                            // collapsed one in half. Long titles wait for
+                            // Expressive's flexible app bars (design audit 6).
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -165,8 +178,29 @@ fun ViewWithActionBar(
         snackbarHost = snackbarHost,
         floatingActionButton = floatingActionButton,
         floatingActionButtonPosition = FabPosition.Center,
-        content = content,
-    )
+        // The bars and the camera cutout, named so the cutout is counted.
+        contentWindowInsets = WindowInsets.systemBars.union(WindowInsets.displayCutout),
+    ) { padding ->
+        // The sides applied here, once, for every page. Pages build their own
+        // padding from the top and bottom and add a 16dp margin at the sides,
+        // which threw the side insets away: in landscape the navigation bar
+        // and a cutout sat over the content (design audit, 21 October). The
+        // page is handed the top and bottom only, so nothing is counted twice.
+        val direction = LocalLayoutDirection.current
+        Box(
+            modifier = Modifier.padding(
+                start = padding.calculateStartPadding(direction),
+                end = padding.calculateEndPadding(direction),
+            ),
+        ) {
+            content(
+                PaddingValues(
+                    top = padding.calculateTopPadding(),
+                    bottom = padding.calculateBottomPadding(),
+                )
+            )
+        }
+    }
 }
 
 @Composable

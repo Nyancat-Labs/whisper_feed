@@ -5,7 +5,6 @@ browser = "1.10.0"
 materialkolor = "2.1.1"
 coil = "2.7.0"
 compose-bom = "2026.08.00"
-compose-accompanist = "0.36.0"
 core-ktx = "1.19.0"
 core-splashscreen = "1.0.1"
 datastore-preferences = "1.2.1"
@@ -84,8 +83,6 @@ robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "
 
 security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "security-crypto" }
 
-accompanist-webview = { group = "com.google.accompanist", name = "accompanist-webview", version.ref = "compose-accompanist" }
-accompanist-systemuicontroller = { group = "com.google.accompanist", name = "accompanist-systemuicontroller", version.ref = "compose-accompanist" }
 
 jsoup = { group = "org.jsoup", name = "jsoup", version.ref = "jsoup" }
 coil = { group = "io.coil-kt", name = "coil", version.ref = "coil" }

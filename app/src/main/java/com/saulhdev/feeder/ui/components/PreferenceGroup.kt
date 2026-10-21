@@ -18,6 +18,7 @@
 
 package com.saulhdev.feeder.ui.components
 
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -83,7 +84,9 @@ fun PreferenceGroupHeading(
     Column(
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
-            .height(48.dp)
+            // At least 48dp, never exactly: a heading that wraps at a large
+            // font size was cut off (design audit, 21 October).
+            .heightIn(min = 48.dp)
             // Aligned with the text of the rows it heads: the group's cards
             // start at the screen's 16dp margin and a ListItem insets its own
             // content by another 16, so the rows read from 32.

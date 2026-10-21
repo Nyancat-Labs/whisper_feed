@@ -418,7 +418,11 @@ fun SourceEditView(
                                     editState.value.copy(tag = next.joinToString(","))
                                 onNewTagChange("")
                                 onEdited()
-                            }) { Icon(Phosphor.Plus, null) }
+                            }) {
+                                // Named: it is the only thing saying what the
+                                // button does (design audit, 21 October).
+                                Icon(Phosphor.Plus, stringResource(R.string.sources_add_tag))
+                            }
                         }
                     },
                     keyboardOptions = KeyboardOptions(

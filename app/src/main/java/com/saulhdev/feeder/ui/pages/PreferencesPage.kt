@@ -18,6 +18,7 @@
 
 package com.saulhdev.feeder.ui.pages
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -199,6 +200,9 @@ fun PreferencesPage(
                     end = 16.dp,
                     top = paddingValues.calculateTopPadding(),
                 ),
+            // The last row clear of the gesture bar; it ended underneath it
+            // (design audit, 21 October).
+            contentPadding = PaddingValues(bottom = paddingValues.calculateBottomPadding() + 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             // Above everything, because it is the one thing on this screen

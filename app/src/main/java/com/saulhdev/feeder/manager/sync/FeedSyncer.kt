@@ -343,7 +343,9 @@ private fun createNotificationChannel(
     notificationManager: NotificationManagerCompat
 ) {
     val name = context.getString(R.string.sync_status)
-    val description = context.getString(R.string.sync_status)
+    // What it is for, not its name a second time: Android's notification
+    // settings showed "Sync status" under "Sync status" (design audit 8).
+    val description = context.getString(R.string.sync_status_channel_description)
 
     val channel =
         NotificationChannel(syncChannelId, name, NotificationManager.IMPORTANCE_LOW)

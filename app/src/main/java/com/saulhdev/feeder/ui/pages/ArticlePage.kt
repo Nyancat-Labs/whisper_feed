@@ -43,7 +43,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
 import com.saulhdev.feeder.R
 import com.saulhdev.feeder.data.db.models.authorName
 import com.saulhdev.feeder.ui.overlay.CARD_MARGIN
@@ -172,14 +171,14 @@ fun ArticlePage(
     }
     val feedTitle by remember(appName) { derivedStateOf { state?.source?.title ?: appName } }
 
-    val navController = rememberNavController()
-    BackHandler(onDismiss == null) {
-        if (navController.currentBackStackEntry?.destination?.route == null) {
-            activity?.finish()
-        } else {
-            navController.popBackStack()
-        }
-    }
+    // Opened on its own, from the launcher panel's link, back leaves the app
+    // and returns to the launcher the reader came from, not to Whisper's feed.
+    // This asked a navigation controller made here and attached to nothing,
+    // whose answer was therefore always "nothing to go back to", so it
+    // finished every time: the right result, reached by the wrong question
+    // (design audit 7). Said plainly now. Inside the feed's two panes
+    // [onDismiss] is set and the panes handle back.
+    BackHandler(onDismiss == null) { activity?.finish() }
 
     // From the configuration rather than from Locale.getDefault(), which
     // Compose cannot observe: change the phone's language and every date on
@@ -337,7 +336,11 @@ fun ArticlePage(
                                 modifier = Modifier
                                     .bleed(CARD_MARGIN)
                                     .aspectRatio(16f / 9f)
-                                    .clickable { viewing = PictureRequest(picture) },
+                                    // Said aloud, so TalkBack can tell the
+                                    // reader that tapping enlarges it.
+                                    .clickable(onClickLabel = stringResource(R.string.picture_enlarge)) {
+                                        viewing = PictureRequest(picture)
+                                    },
                             )
                             Spacer(modifier = Modifier.height(16.dp))
                         }

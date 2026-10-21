@@ -749,8 +749,14 @@ internal fun ArticleMeta(
         // beside them and the buttons beyond that; a target that swallowed
         // the whole row would take taps meant for the article, since this row
         // sits directly under the headline.
+        // Said aloud, since "double-tap to activate" on a source's name says
+        // nothing about narrowing the feed. Shorter than the 48dp minimum to
+        // look at, but Compose widens a small target's touch area to 48dp
+        // where nothing closer competes for the touch, so it is not made
+        // taller, which would add height to every card.
+        val focusLabel = stringResource(R.string.focus_on_source)
         val identity = if (focusSource != null && sourceId != null && articleId != null) {
-            Modifier.clickable { focusSource(sourceId, articleId) }
+            Modifier.clickable(onClickLabel = focusLabel) { focusSource(sourceId, articleId) }
         } else {
             Modifier
         }

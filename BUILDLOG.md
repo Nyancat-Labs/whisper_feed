@@ -8,6 +8,25 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 21 October 2026 — Design audit, and its small fixes
+
+- Auto-scroll parked by the owner. Design audit done (`docs/DESIGN_AUDIT.md`):
+  Google's pages read on the day, the code read against them.
+- The reader's back handler looked as if it could close the app; checked on
+  the Pixel: back from an article returns to the feed. Harmless, but wrong
+  in its own terms; now says what it does.
+- Fixed: side insets (once, in `ViewWithActionBar`, and in the panel),
+  bottom space on Settings and Sources, four spoken labels, heading height,
+  web view back, sync channel text, two unused library entries.
+- Not changed, on purpose: the card source-name target (Compose already
+  widens it to 48dp), one-line page titles (would break the collapsed bar;
+  for Expressive), the old translucent style flags (the panel shares the
+  theme; needs an older phone to check).
+- `DesignAuditFixesTest` (6) holds them. 1237 passing, lint clean.
+- **To try:** turn the phone sideways on Settings and About: nothing under
+  the navigation bar or camera. Scroll Settings to the end: the last row
+  clear of the gesture bar.
+
 ## 20 October 2026 — Comments link
 
 - Fourth in the order, brought forward at the owner's request. Checked

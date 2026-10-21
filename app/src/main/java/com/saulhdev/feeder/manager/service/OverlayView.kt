@@ -197,6 +197,8 @@ class OverlayView(val context: Context) :
      */
     private val topInsetPx = mutableIntStateOf(0)
     private val bottomInsetPx = mutableIntStateOf(0)
+    private val leftInsetPx = mutableIntStateOf(0)
+    private val rightInsetPx = mutableIntStateOf(0)
 
     private var pendingCloseOnResume = false
 
@@ -450,6 +452,10 @@ class OverlayView(val context: Context) :
         if (navBarBottom > 0) windowReportedBottom = true
         topInsetPx.intValue = if (windowReportedTop) statusBarTop else getStatusBarHeight()
         bottomInsetPx.intValue = if (windowReportedBottom) navBarBottom else getNavigationBarHeight()
+        // The sides, which were measured and then dropped: in landscape the
+        // navigation bar and a cutout sit there.
+        leftInsetPx.intValue = left
+        rightInsetPx.intValue = right
     }
 
     private fun initInsets() {
@@ -528,6 +534,10 @@ class OverlayView(val context: Context) :
                         glanceState = glanceState.value,
                         topInset = with(density) { topInsetPx.intValue.toDp() },
                         bottomInset = with(density) { bottomInsetPx.intValue.toDp() },
+                        // Left and right as the window has them, whatever the
+                        // language's direction.
+                        leftInset = with(density) { leftInsetPx.intValue.toDp() },
+                        rightInset = with(density) { rightInsetPx.intValue.toDp() },
                         // setValue blocks on the datastore write, so keep it off the
                         // main thread; the feed updates through the existing flow.
                         onCategoriesChange = { syncScope.launch { prefs.categoryFilter.setValue(it) } },

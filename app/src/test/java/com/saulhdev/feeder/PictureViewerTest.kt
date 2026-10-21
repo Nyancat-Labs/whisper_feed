@@ -46,7 +46,8 @@ class PictureViewerTest {
         assertTrue(reader.contains("viewer(PictureRequest(kept ?: largest, alt.ifBlank { null }, link))"))
         val page = File("src/main/java/com/saulhdev/feeder/ui/pages/ArticlePage.kt").readText()
         assertTrue(page.contains("CompositionLocalProvider(LocalPictureViewer provides { viewing = it })"))
-        assertTrue("the opening picture too", page.contains(".clickable { viewing = PictureRequest(picture) }"))
+        assertTrue("the opening picture too", page.contains("viewing = PictureRequest(picture)"))
+        assertTrue("and says so to TalkBack", page.contains(".clickable(onClickLabel = stringResource(R.string.picture_enlarge))"))
     }
 
     @Test
