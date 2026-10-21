@@ -3442,6 +3442,19 @@ split does not need `material3` 1.5.0 and can come first; the rounded
 Expressive styling follows. The backup-stopped warning stays above the
 category rows, and a page for AI summaries slots in as one more row.
 
+**Help, tidied in the same split** (owner, 21 October: "a lot of
+diagnostics buttons"). Today Help is seven rows, three of them about
+diagnostics, and three share the same ⓘ icon. Proposed:
+
+- Help keeps the reader's rows: Show the tour again, Launcher page, About.
+  Each its own icon.
+- One row, "Report a problem", opens a small page of its own: send a
+  report by email; save the report to Downloads; the "Detailed logs" switch
+  under them, with its "leave off unless asked" line. Most people only ever
+  need the first.
+- "Send a test sync notice" stays where it is today, preview builds only,
+  and moves onto that page with the rest.
+
 ## AI summaries — decided 19 October 2026
 
 A summary of the article, on request, from the reader. Seen in Harmonic.
