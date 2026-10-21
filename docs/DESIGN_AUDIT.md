@@ -69,15 +69,17 @@ Candidates for 1.0.6 or the release after; none needs a design decision.
 6. **Page titles are one line**, so at large font sizes "What Whisper has
    learned" ends in "…" (the owner's own screenshot shows it at normal
    size). `ViewWithActionBar.kt:104`.
-7. **Three back handlers block the system's back animation**, and one is a
-   bug: the reader's own handler (`ArticlePage.kt:175`) makes a new,
+7. **Three back handlers block the system's back animation**, and one is
+   wrong (but harmless in practice; see the end of this item): the reader's own handler (`ArticlePage.kt:175`) makes a new,
    empty navigation controller, so its check is always "nothing to go back
    to" and it closes the app. Also the web view (`ComposeWebView.kt:87`) and
    onboarding (`OnboardingPage.kt:138`) take back unconditionally. Rule:
    predictive back, on by default for apps targeting 36+ on Android 16.
    ([predictive back](https://developer.android.com/guide/navigation/custom-back/predictive-back-gesture))
-   The reader case needs checking on the phone: when it is reached from the
-   feed, the feed's own navigation may answer first.
+   **Checked on the owner's Pixel, 21 October:** from the feed, back returns
+   to the feed as it should; the feed's own navigation answers first. So no
+   reader is losing their place. What remains is that the handler is wrong
+   in its own terms and stops Android's back animation; fix with the rest.
 8. **The "Syncing" notification channel's description repeats its name**
    ("Sync status" / "Sync status"), so Android's notification settings say
    nothing about what it is for. `FeedSyncer.kt:341`.
