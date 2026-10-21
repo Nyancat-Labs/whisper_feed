@@ -24,6 +24,10 @@ and Google Play builds on two other devices.
 - **To try:** open a Hacker News item in the reader and scroll to the end:
   "Comments on news.ycombinator.com". Articles already stored get it at
   their feed's next sync.
+- **Confirmed on the Pixel, 21 October 16:24:** "Comments on
+  news.ycombinator.com" at the end of a Hacker News article. The "Comments"
+  seen at the top first was HN's own feed text, replaced by the full
+  article as designed.
 
 ## 19 October 2026 — Reading time and Not interested
 
