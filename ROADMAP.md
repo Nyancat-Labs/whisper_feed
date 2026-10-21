@@ -342,8 +342,11 @@ items below can ride in it alongside what is already on main.
    (version 28).
 4. ~~**Comments link**~~ — **built 20 October 2026, on main for 1.0.6.** (5)
    (Jitka; see *Next release: 1.0.6*).
-5. **Auto-scroll** (3) (*Auto-scroll*). The longest-waiting request;
-   designed.
+5. ~~**Auto-scroll**~~ — **parked 21 October 2026** by the owner, whose
+   idea it was: it does not fit how Whisper is used (phone, launcher panel,
+   by thumb), nobody else has asked, and it has to be fenced off from the
+   learning that the rest of the app is about. Design kept under
+   *Auto-scroll*, to pick up if anyone asks.
 6. **The design-rules audit** (8), then **settings split into pages**, Harmonic's
    way (*From Harmonic*), before the redesign, then **the Expressive
    overhaul** (§19e) with Coil 3 (§19d): text size part B, Calm or Vivid,
@@ -3214,7 +3217,10 @@ nothing, so it stays on the version it came with.
 
 About a day, most of it the installer check and its tests.
 
-## Auto-scroll — asked for 8 October 2026, next after 1.0.3
+## Auto-scroll — asked for 8 October 2026; parked 21 October 2026
+
+**Parked** by the owner (see the working order). Everything below is kept as
+designed, so it can be built as it stands if it is ever wanted.
 
 The feed scrolls itself, slowly enough to read the headlines, to the end; then
 a full refresh, back to the top, and round again. A news ticker for a phone on
