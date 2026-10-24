@@ -18,6 +18,8 @@
 
 package com.saulhdev.feeder.ui.navigation
 
+import com.saulhdev.feeder.ui.pages.SettingsSectionPage
+import com.saulhdev.feeder.ui.pages.SettingsSection
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
@@ -115,6 +117,10 @@ fun NavigationManager(
             composable<NavRoute.Settings>(
                 deepLinks = listOf(navDeepLink { uriPattern = "$NAV_BASE${Routes.SETTINGS}" })
             ) { PreferencesPage() }
+            composable<NavRoute.SettingsSection> {
+                val args = it.toRoute<NavRoute.SettingsSection>()
+                SettingsSectionPage(SettingsSection.of(args.name))
+            }
             composable<NavRoute.GlanceLocation> { GlanceLocationPage() }
             composable<NavRoute.Sources> { SourceListPage() }
             composable<NavRoute.About> { AboutPage() }
@@ -158,6 +164,14 @@ fun NavigationManager(
     }
 }
 
+/**
+ * The names of Settings pages, as text, for a route made where the enum
+ * cannot be reached from (the preferences are built below the UI layer).
+ */
+object SettingsSectionName {
+    const val DIAGNOSTICS = "DIAGNOSTICS"
+}
+
 object Routes {
     const val MAIN = "main"
     const val SETTINGS = "settings"
@@ -181,6 +195,10 @@ sealed class NavItem(
 open class NavRoute {
     @Serializable
     data object Settings : NavRoute()
+
+    /** One page of Settings, by SettingsSection name. */
+    @Serializable
+    data class SettingsSection(val name: String = "") : NavRoute()
 
     @Serializable
     data object Sources : NavRoute()

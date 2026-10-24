@@ -110,7 +110,9 @@ class SyncConstraintsTest {
 
     @Test
     fun `it is offered beside the switch it belongs with`() {
-        val fetching = page.substringAfter("val fetchingPrefs = listOf(").substringBefore(")")
+        // On the Fetching page since Settings was split into pages.
+        val fetching = source("ui/pages/SettingsSection.kt")
+            .substringAfter("SettingsSection.FETCHING -> listOf(").substringBefore(")")
         assertTrue(fetching.contains("prefs.syncOnlyOnWifi"))
         assertTrue("and in the same group", fetching.contains("prefs.syncOnlyWhenCharging"))
     }

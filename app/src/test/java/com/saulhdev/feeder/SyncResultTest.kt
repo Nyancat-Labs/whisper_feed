@@ -135,9 +135,9 @@ class SyncResultTest {
         assertTrue(hint.contains("if (wifiOnly || !restrictsBackground(status)) return"))
         assertTrue(hint.contains("Settings.ACTION_IGNORE_BACKGROUND_DATA_RESTRICTIONS_SETTINGS"))
         assertTrue("read again on return from Android's settings", hint.contains("LifecycleResumeEffect"))
-        val page = source("ui/pages/PreferencesPage.kt")
-        val fetching = page.substring(page.indexOf("item(key = R.string.pref_cat_fetching)"))
-            .substringBefore("item(key = R.string.pref_cat_feed)")
+        // The Fetching page, since Settings was split into pages.
+        val page = source("ui/pages/SettingsSection.kt")
+        val fetching = page.substring(page.indexOf("if (section == SettingsSection.FETCHING) {\n                    // Under the switches"))
         assertTrue(fetching.contains("BackgroundDataHint("))
         assertTrue(fetching.contains("wifiOnly = syncWifiOnly"))
     }

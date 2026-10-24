@@ -8,6 +8,22 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 24 October 2026 — Settings split, stage 1
+
+- Owner's layout, Harmonic's shape: Appearance, Your feed, Reading, Sources,
+  Fetching, Your data, Help, and About as its own row. Report a problem in
+  Help opens a page with the three diagnostics rows.
+- `SettingsSection` (one enum: title, summary, icon, and which settings each
+  page holds) and `SettingsSectionPage`; `NavRoute.SettingsSection(name)`.
+  Same preferences, same order within each page; only where they live
+  changed. Tour and Launcher page got their own icons (Help had three ⓘ).
+- Six tests that read the old page now read the new one; `SettingsSplitTest`
+  checks every old setting is on exactly one page. 1240 passing, lint clean.
+- Stage 2 next: flexible title bars, button rows for short choices, the
+  sample card on Appearance, one margin, the new `ListItem` form.
+- **To try:** Settings → each row, check nothing is missing, and Help →
+  Report a problem.
+
 ## 24 October 2026 — Lawnchair accepted Whisper
 
 - LawnchairLauncher/lawnchair#7399 approved by MrSluffy and merged into

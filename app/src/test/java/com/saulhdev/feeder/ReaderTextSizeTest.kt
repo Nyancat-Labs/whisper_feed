@@ -67,7 +67,7 @@ class ReaderTextSizeTest {
         val content = page.indexOf(") { paddingValues ->")
         val scaled = page.indexOf("typography = MaterialTheme.typography.scaled(readerTextScale(textSize))")
         assertTrue("scaled inside the scaffold's content, below the top bar", scaled > content && content > 0)
-        val settings = File("src/main/java/com/saulhdev/feeder/ui/pages/PreferencesPage.kt").readText()
-        assertTrue(settings.contains("prefs.readerTextSize,"))
+        val settings = File("src/main/java/com/saulhdev/feeder/ui/pages/SettingsSection.kt").readText()
+        assertTrue(settings.substringAfter("SettingsSection.READING -> listOf(").contains("prefs.readerTextSize,"))
     }
 }

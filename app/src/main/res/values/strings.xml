@@ -509,6 +509,15 @@
     <string name="action_save">Save</string>
 
     <string name="pref_cat_fetching">Fetching</string>
+    <string name="settings_appearance_summary">Layout, theme, font and colours</string>
+    <string name="settings_feed_summary">What shows, what is left out, and what Whisper has learned</string>
+    <string name="settings_reading_summary">How articles open, text size and read articles</string>
+    <string name="settings_sources">Sources</string>
+    <string name="settings_sources_summary">Your sources, the feed library and importing</string>
+    <string name="settings_fetching_summary">How often, how far back, Wi-Fi and full text</string>
+    <string name="settings_data_summary">Sync account and backups</string>
+    <string name="settings_help_summary">The tour, the launcher page and reporting a problem</string>
+    <string name="settings_diagnostics_summary">Send a report, save one to Downloads, or turn on detailed logs</string>
     <string name="pref_cat_feed">Your feed</string>
     <string name="pref_cat_reading">Reading</string>
     <string name="pref_cat_data">Your data</string>

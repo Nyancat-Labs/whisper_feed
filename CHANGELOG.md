@@ -9,6 +9,11 @@ Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 Unreleased
 ----------
 
+- **Settings, rearranged.** One long page became a short list, Appearance,
+  Your feed, Reading, Sources, Fetching, Your data, Help and About, each
+  saying what is inside and opening a page of its own. The three
+  diagnostics rows moved behind one "Report a problem" row in Help.
+  Every setting is where its name says it is; none was removed.
 - Material 3 1.5 (beta, the Expressive release) under the hood, on stable
   Compose 1.12. Nothing should look different yet.
 - **Design audit fixes** (see docs/DESIGN_AUDIT.md). In landscape, pages and

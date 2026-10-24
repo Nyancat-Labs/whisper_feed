@@ -3453,6 +3453,9 @@ split does not need `material3` 1.5.0 and can come first; the rounded
 Expressive styling follows. The backup-stopped warning stays above the
 category rows, and a page for AI summaries slots in as one more row.
 
+**Stage 1 built 24 October 2026** (`SettingsSection.kt`): the eight rows
+below, About as its own row by the owner's choice. Stage 2 is the look.
+
 **Help, tidied in the same split** (owner, 21 October: "a lot of
 diagnostics buttons"). Today Help is seven rows, three of them about
 diagnostics, and three share the same ⓘ icon. Proposed:

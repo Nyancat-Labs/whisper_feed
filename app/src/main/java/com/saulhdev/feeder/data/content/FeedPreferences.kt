@@ -17,6 +17,8 @@
  */
 package com.saulhdev.feeder.data.content
 
+import com.saulhdev.feeder.ui.navigation.SettingsSectionName
+import com.saulhdev.feeder.ui.icons.phosphor.Play
 import android.content.Context
 import android.widget.Toast
 import androidx.datastore.core.DataStore
@@ -654,7 +656,8 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
     var launcherSetup = StringPref(
         titleId = R.string.pref_launcher,
         summaryId = R.string.pref_launcher_summary,
-        icon = Phosphor.Info,
+        // Its own mark: Help had three rows behind the same ⓘ.
+        icon = Phosphor.BracketsSquare,
         key = LAUNCHER_SETUP,
         dataStore = dataStore,
         route = NavRoute.Launcher
@@ -664,7 +667,7 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
     var showTour = StringPref(
         titleId = R.string.pref_show_tour,
         summaryId = R.string.pref_show_tour_summary,
-        icon = Phosphor.Info,
+        icon = Phosphor.Play,
         key = SHOW_TOUR,
         dataStore = dataStore,
         onClick = {
@@ -872,6 +875,16 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
      * abandoned. The subject line carries the version and the device so a
      * report is identifiable before it is opened.
      */
+    /** The row in Help that opens the diagnostics; see SettingsSection.DIAGNOSTICS. */
+    var reportProblemPage = StringPref(
+        titleId = R.string.report_problem,
+        summaryId = R.string.settings_diagnostics_summary,
+        icon = Phosphor.Megaphone,
+        key = REPORT_PROBLEM_PAGE,
+        dataStore = dataStore,
+        route = NavRoute.SettingsSection(SettingsSectionName.DIAGNOSTICS),
+    )
+
     var reportProblem = StringPref(
         titleId = R.string.report_problem,
         summaryId = R.string.report_problem_summary,
@@ -1256,6 +1269,7 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
         val CATEGORY_FILTER = stringSetKey("pref_category_filter")
         val EXPORT_DIAGNOSTICS = stringKey("pref_export_diagnostics")
         val REPORT_PROBLEM = stringKey("pref_report_problem")
+        val REPORT_PROBLEM_PAGE = stringKey("pref_report_problem_page")
 
         /** Open the tapped article in Whisper's own reader, using cached content. */
         const val OPEN_MODE_READER = "reader"

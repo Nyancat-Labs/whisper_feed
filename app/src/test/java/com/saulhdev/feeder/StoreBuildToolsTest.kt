@@ -43,7 +43,7 @@ class StoreBuildToolsTest {
 
     @Test
     fun `the test notice is listed only in a build with developer tools`() {
-        val page = File("src/main/java/com/saulhdev/feeder/ui/pages/PreferencesPage.kt").readText()
+        val page = File("src/main/java/com/saulhdev/feeder/ui/pages/SettingsSection.kt").readText()
         assertTrue(page.contains("prefs.testSyncNotice.takeIf { debugging && BuildConfig.DEV_TOOLS }"))
     }
 

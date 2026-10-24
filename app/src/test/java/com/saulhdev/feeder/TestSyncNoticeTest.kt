@@ -51,7 +51,8 @@ class TestSyncNoticeTest {
 
     @Test
     fun `the button shows only while debugging is on, and only in a test build`() {
-        val page = File("src/main/java/com/saulhdev/feeder/ui/pages/PreferencesPage.kt").readText()
+        // On the Report a problem page since Settings was split into pages.
+        val page = File("src/main/java/com/saulhdev/feeder/ui/pages/SettingsSection.kt").readText()
         assertTrue(page.contains("prefs.testSyncNotice.takeIf { debugging && BuildConfig.DEV_TOOLS }"))
         val strings = File("src/main/res/values/strings.xml").readText()
         assertTrue(strings.contains("<string name=\"sync_stuck_test_title\">Test: %1\$s</string>"))
