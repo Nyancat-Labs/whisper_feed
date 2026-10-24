@@ -285,9 +285,11 @@ never sign a release.
 
 ### Getting Lawnchair to use it
 
-Lawnchair only accepts feed providers on a hardcoded package whitelist, and
-`com.nyancatlabs.whisper` is not on it yet. For a local build, unlock Lawnchair's
-debug menu and turn the check off:
+Lawnchair only accepts feed providers on a hardcoded package whitelist.
+Whisper's addition was merged into Lawnchair's `16-dev` branch on 24 October
+2026 ([#7399](https://github.com/LawnchairLauncher/lawnchair/pull/7399)), so
+Lawnchair releases built after that need nothing more. On earlier versions,
+unlock Lawnchair's debug menu and turn the check off:
 
 1. Open the App Drawer, tap the search field, type `/lawnchairdebug`
 2. Open Lawnchair Settings — a build icon appears in the overflow — and go to

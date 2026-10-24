@@ -80,6 +80,7 @@ Whisper has been in daily use on Lawnchair through the debug toggle. I have not 
 - [x] Pull request opened, 18 October 2026:
       [LawnchairLauncher/lawnchair#7399](https://github.com/LawnchairLauncher/lawnchair/pull/7399),
       from `defsix:patch-1`, commit 0f13ea3
-- [ ] Merged
+- [x] Approved by MrSluffy and merged into `16-dev`, 24 October 2026
 - [ ] In a Lawnchair release (then: README and the in-app Lawnchair note can
-      drop the "Ignore feed whitelist" step)
+      drop the "Ignore feed whitelist" step). Until then the step stays:
+      Lawnchair releases people have installed still carry the old list.

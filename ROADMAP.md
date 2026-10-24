@@ -3605,6 +3605,14 @@ the way. Worth adding to the backup file.
 
 ---
 
+## Lawnchair's whitelist — merged 24 October 2026
+
+Whisper's line was merged into Lawnchair's `16-dev` (#7399). **When a
+Lawnchair release carries it:** reword the Launcher page's "Ignore feed
+whitelist" step (`launcher_step_whitelist`) to apply only to older Lawnchair
+versions, or check the installed Lawnchair's version and skip the step on
+new ones. Watch Lawnchair's releases; nothing to do before then.
+
 ## Checking against Android's own design rules — asked for 19 October 2026
 
 Research what Google currently asks of an Android app's design, and check

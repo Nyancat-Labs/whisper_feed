@@ -8,6 +8,15 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 24 October 2026 — Lawnchair accepted Whisper
+
+- LawnchairLauncher/lawnchair#7399 approved by MrSluffy and merged into
+  `16-dev`. Whisper will be on Lawnchair's feed-provider list in the next
+  Lawnchair release built from it, with no debug-menu step.
+- README updated. The in-app Launcher page keeps the "Ignore feed whitelist"
+  step until a Lawnchair release carries the change; most people's
+  installed Lawnchair still has the old list.
+
 ## 21 October 2026 — Material 3 Expressive library, ahead of stable
 
 - Owner's plan: 1.0.6 = everything since 1.0.5 plus the settings split;
