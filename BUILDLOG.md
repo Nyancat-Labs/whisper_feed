@@ -8,6 +8,25 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 25 October 2026 — Settings order; finding a feed by name
+
+- Owner's notes on stage 1: Settings in a more logical order; a Sources
+  search for a feed you don't have ends in an empty screen, and + forgets
+  what was typed.
+- Order checked against Android's settings guidelines and Material ("most
+  frequently used at the top"): Appearance, Sources, Your feed, Reading,
+  Fetching, Your data, Help, About. Fetching moved down: set once.
+- Name search (`FeedNameSearch`): the built-in library by name, then up to
+  six guessed addresses, the phone's country first (network, then SIM, then
+  language setting), each checked as a typed address is. No search service,
+  so nothing leaves for a third party; PRIVACY.md says so. Feedly-style
+  search left as a possible opt-in later.
+- Sources: "No source called …" with "Find … to add"; + carries the text.
+  The Add screen takes a name or an address, and a passed-in query searches
+  at once. "Could not parse" became "No feed found for".
+- 5 new tests (`FeedNameSearchTest`). 1245 passing, lint clean.
+- **To try:** Sources → search "the potato" → Find it to add.
+
 ## 24 October 2026 — Settings split, stage 1
 
 - Owner's layout, Harmonic's shape: Appearance, Your feed, Reading, Sources,
