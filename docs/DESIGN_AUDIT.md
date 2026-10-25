@@ -150,10 +150,14 @@ rows are rebuilt in the settings split. Back to the BOM's version when
   wants read articles quieter. Options: keep as is (it is deliberate);
   fade only the picture and keep text at a readable 70%; or fade nothing
   and mark read another way. Owner's call.
+  **Decided 25 October:** fade the picture to about half, text to 80%
+  (75% asked for; 80% is the nearest that passes in the light theme).
 - **Two splash screens.** Android's own, then Whisper's animated one on a
   cold launch. Google says to migrate custom splashes to the system one.
   The animated one is part of the brand; it could stay as long as it is
   short. Owner's call.
+  **Decided 25 October:** keep it, short: its minimum went from 700ms to
+  300ms, and it leaves as soon as the feed is ready.
 - **Per-app language** (choose Whisper's language apart from the phone's):
   nothing to offer until translations exist (later in the order). Add the
   locale list with the first translation.

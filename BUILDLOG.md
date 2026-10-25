@@ -8,6 +8,34 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 25 October 2026 — Owner's review of the 21 October preview
+
+- Reviewed side by side on two phones. Nine items; all built today.
+- About: `DocumentPages.kt` replaces the two WebView pages. The build copies
+  CHANGELOG.md and LICENSE into the assets (`copyDocsToAssets`, registered
+  through `androidComponents` as a generated assets directory), so there is
+  no second copy to keep. The old `changelog.htm`, `license.htm` and both
+  stylesheets are deleted, and with them the last JavaScript in the app.
+  The licence page's "Author: Saul Henriquez" and Neo Feed source link
+  were the fork's leftovers; the GPL asks for our source.
+- Feed: the empty state resets the top app bar's offset (app and panel).
+  The app's snackbar moved out of the Scaffold slot, which stacks it above
+  the FAB, into a Box over the feed.
+- Backup: `BackupStore.Part`, `restoreFolder(uri, parts)`,
+  `exportSources(uri)`; the page regrouped, three restore buttons to one
+  dialog. `BackupStore`'s file-name constants are public now.
+- Icons: seven Phosphor regular icons added (Folder, Archive, Lifebuoy, Rss,
+  Newspaper, ArrowsClockwise, UploadSimple), from @phosphor-icons/core 2.1.1.
+- Read fade: `READ_ALPHA` 0.80 on the card, `PICTURE_FADE` 0.62 on its
+  pictures through `LocalPictureFade`. 0.75 fails 4.5:1 for light-theme
+  summaries (4.16); `ReadFadeTest` checks light, dark and black.
+- Splash `MINIMUM_MS` 700 → 300.
+- 3 new test files (`DocumentsTest`, `ReadFadeTest`, `ReviewFixesTest`).
+  1259 passing, lint clean.
+- **To try:** About → Licence and Changelog; Backup and Restore → Choose
+  what to restore; a read card in the light theme; an empty category after
+  scrolling down; Not interested → Undo.
+
 ## 25 October 2026 — Settings order; finding a feed by name
 
 - Owner's notes on stage 1: Settings in a more logical order; a Sources

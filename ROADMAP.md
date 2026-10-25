@@ -143,6 +143,31 @@ The owner is using the preview on the Pixel 10 for a week before release.
   Independent, RTÉ, Irish Times) carry none. Rome reads both forms
   (`SyndEntry.comments`, entry links). Needs one column, database 29. Shown
   only where a feed gives one, so no setting.
+- [x] **Owner's review of the 21 October preview** (25 October, side by
+  side on two phones). Fixed the same day:
+  - The top bar stayed hidden over an empty category (nothing to scroll to
+    bring it back), app and panel. The empty state now resets it.
+  - The app's Undo dropped a line as the back-to-top button stepped aside;
+    it now sits over the feed, as the panel's always did (owner checked the
+    panel: it never dropped).
+  - The licence page named Neo Feed's author and Neo Feed's source; the GPL
+    asks for Whisper's. The changelog stopped at 1.0.0. Both were WebView
+    pages with their own grey-and-orange stylesheet. Now ordinary screens,
+    drawn from CHANGELOG.md and LICENSE, copied in by the build, so they
+    cannot fall behind. Test builds also show "Coming in the next release".
+  - Backup and Restore grouped by job (owner's choice over by data type):
+    Automatic backup, Restore (one button, tick sources, saved articles,
+    settings, then choose the folder), Other apps (OPML in and out), and
+    Android's own backup with half the words. Folder icon, not a paint
+    roller.
+  - Settings icons: RSS, newspaper, sync arrows, archive box (a cloud said
+    the data left the phone), lifebuoy for Help (owner's pick).
+  - Read articles: text 80%, picture about half (owner asked 75%: the light
+    theme's summaries fail contrast there, 4.2:1; 80% gives 4.7:1).
+    `ReadFadeTest` holds it.
+  - Splash minimum 700ms → 300ms (owner chose "keep it, short").
+  - Decided, not built: no hidden developer menu (Detailed logs are under
+    Help → Report a problem); Settings' collapsing title waits for stage 2.
 - [x] **Search: by web address, and ranked.** Built 19 October: matched on
   the site's own name in an address ("arstechnica", "bbc"), not "www." or
   ".com", or "com" would rank every source first. Asked for 19 October 2026.
@@ -3455,6 +3480,14 @@ category rows, and a page for AI summaries slots in as one more row.
 
 **Stage 1 built 24 October 2026** (`SettingsSection.kt`): the eight rows
 below, About as its own row by the owner's choice. Stage 2 is the look.
+
+**Into stage 2, from the 25 October review:** the Expressive loading
+indicator for pull-to-refresh (the current one blends in); ripples and
+motion from `MaterialExpressiveTheme`; the flexible app bar, which also
+stops Settings' title collapsing when everything fits; skeleton cards while
+the feed is empty and the first sync runs, and new articles sliding in after
+a sync (seen in Harmonic; only those two cases, since Whisper's feed is read
+from the phone and a skeleton would only flash).
 
 **Help, tidied in the same split** (owner, 21 October: "a lot of
 diagnostics buttons"). Today Help is seven rows, three of them about

@@ -9,6 +9,25 @@ Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 Unreleased
 ----------
 
+- **Licence and changelog, in the app's own look.** Both were web pages in
+  grey and orange whatever your theme. The licence page also named Neo
+  Feed's author and source; it now gives Whisper's, with Neo Feed and
+  HomeFeeder credited as the projects it grew from. The changelog had
+  stopped at 1.0.0 and now shows every release.
+- **Backup and Restore, tidied.** Grouped by what you are doing: automatic
+  backup, restoring (one button: tick sources, saved articles and settings,
+  then choose the folder), moving to or from another reader, and Android's
+  own backup.
+- **Read articles stay readable.** They faded to 55%, text and all. Now the
+  picture fades to about half and the text to 80%, which still meets
+  Android's contrast guidance.
+- **New Settings icons** that say what each page is: an RSS symbol for
+  Sources, a lifebuoy for Help, a box for Your data (it stays on your
+  phone; a cloud suggested otherwise).
+- **Faster start.** The Whisper logo stayed up for at least 0.7 seconds on
+  every launch; now 0.3.
+- The top bar comes back when you switch to an empty category, and the Undo
+  message no longer jumps down a line.
 - **Add a source by name.** Type "the potato" instead of an address and
   Whisper looks in its built-in library and tries the addresses the name most
   likely has (thepotato.ie, thepotato.com…), your country's first. No search
