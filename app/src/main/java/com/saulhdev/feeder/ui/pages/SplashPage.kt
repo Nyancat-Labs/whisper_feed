@@ -51,8 +51,15 @@ import com.saulhdev.feeder.R
 import com.saulhdev.feeder.ui.theme.WhisperCobalt
 import kotlinx.coroutines.delay
 
-/** How long the branded screen stays up even if the app is ready sooner. */
-private const val MINIMUM_MS = 700L
+/**
+ * How long the branded screen stays up even if the app is ready sooner.
+ *
+ * Was 700ms: on a phone whose feed is ready in a tenth of a second, every
+ * launch waited most of a second for the logo. Google asks for the system
+ * splash alone; the owner kept this one for the brand, but short (25
+ * October). Long enough not to flash, no longer.
+ */
+internal const val MINIMUM_MS = 300L
 
 /** And the longest it will wait for content that may never arrive. */
 private const val MAXIMUM_MS = 2_500L

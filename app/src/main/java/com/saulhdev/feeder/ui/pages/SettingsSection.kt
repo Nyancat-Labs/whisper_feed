@@ -49,11 +49,11 @@ import com.saulhdev.feeder.ui.components.dialog.StringSelectionPrefDialogUI
 import com.saulhdev.feeder.ui.icons.Phosphor
 import com.saulhdev.feeder.ui.icons.phosphor.BookOpenUser
 import com.saulhdev.feeder.ui.icons.phosphor.Bug
-import com.saulhdev.feeder.ui.icons.phosphor.CloudArrowDown
-import com.saulhdev.feeder.ui.icons.phosphor.CloudArrowUp
-import com.saulhdev.feeder.ui.icons.phosphor.Hash
-import com.saulhdev.feeder.ui.icons.phosphor.ListDashes
-import com.saulhdev.feeder.ui.icons.phosphor.Megaphone
+import com.saulhdev.feeder.ui.icons.phosphor.ArrowsClockwise
+import com.saulhdev.feeder.ui.icons.phosphor.Archive
+import com.saulhdev.feeder.ui.icons.phosphor.Rss
+import com.saulhdev.feeder.ui.icons.phosphor.Newspaper
+import com.saulhdev.feeder.ui.icons.phosphor.Lifebuoy
 import com.saulhdev.feeder.ui.icons.phosphor.PaintRoller
 import org.koin.compose.koinInject
 
@@ -74,12 +74,12 @@ enum class SettingsSection(
     // both ask, Appearance leading by convention; the set-once pages lower
     // (owner, 25 October 2026).
     APPEARANCE(R.string.pref_cat_overlay, R.string.settings_appearance_summary, Phosphor.PaintRoller),
-    SOURCES(R.string.settings_sources, R.string.settings_sources_summary, Phosphor.Hash),
-    FEED(R.string.pref_cat_feed, R.string.settings_feed_summary, Phosphor.ListDashes),
+    SOURCES(R.string.settings_sources, R.string.settings_sources_summary, Phosphor.Rss),
+    FEED(R.string.pref_cat_feed, R.string.settings_feed_summary, Phosphor.Newspaper),
     READING(R.string.pref_cat_reading, R.string.settings_reading_summary, Phosphor.BookOpenUser),
-    FETCHING(R.string.pref_cat_fetching, R.string.settings_fetching_summary, Phosphor.CloudArrowDown),
-    DATA(R.string.pref_cat_data, R.string.settings_data_summary, Phosphor.CloudArrowUp),
-    HELP(R.string.pref_cat_help, R.string.settings_help_summary, Phosphor.Megaphone),
+    FETCHING(R.string.pref_cat_fetching, R.string.settings_fetching_summary, Phosphor.ArrowsClockwise),
+    DATA(R.string.pref_cat_data, R.string.settings_data_summary, Phosphor.Archive),
+    HELP(R.string.pref_cat_help, R.string.settings_help_summary, Phosphor.Lifebuoy),
     DIAGNOSTICS(R.string.report_problem, R.string.settings_diagnostics_summary, Phosphor.Bug);
 
     companion object {

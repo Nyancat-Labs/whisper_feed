@@ -64,6 +64,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import androidx.compose.runtime.CompositionLocalProvider
 import com.saulhdev.feeder.R
 import com.saulhdev.feeder.data.db.models.FeedItem
 import com.saulhdev.feeder.ui.components.SaveButton
@@ -149,8 +150,9 @@ fun FeedArticleItem(
     } else {
         Modifier
     }
+    val cardFaded = isCardFaded(faded, pinned = item.pinned)
     val shapeModifier =
-        if (isCardFaded(faded, pinned = item.pinned)) {
+        if (cardFaded) {
             modifier.then(panel).alpha(READ_ALPHA)
         } else {
             modifier.then(panel)
@@ -180,6 +182,7 @@ fun FeedArticleItem(
         )
     }
     NotInterestedSwipe(onDismiss = notInterested) {
+        CompositionLocalProvider(LocalPictureFade provides if (cardFaded) PICTURE_FADE else 1f) {
         when (feedCardShape(index, hasImage, layout, emphasis)) {
             FeedCardShape.Hero    -> ArticleCard(
                 item, onClick, onBookmark, onShare, menu = menu, modifier = shapeModifier, coverage = coverage, lead = true,
@@ -197,6 +200,7 @@ fun FeedArticleItem(
                 coverage = coverage,
                 showSummary = showSummaries,
             )
+        }
         }
     }
 }
@@ -266,6 +270,7 @@ fun ArticleCard(
         // the full width reads as the article itself, which is what it is.
         if (!image.isNullOrBlank()) {
             AsyncImage(
+                alpha = LocalPictureFade.current,
                 model = image,
                 contentDescription = null,
                 placeholder = painterResource(articlePlaceholder()),
@@ -407,6 +412,7 @@ fun ArticleCompactRow(
             if (!image.isNullOrBlank()) {
                 Spacer(Modifier.width(12.dp))
                 AsyncImage(
+                    alpha = LocalPictureFade.current,
                     model = image,
                     contentDescription = null,
                     placeholder = painterResource(articlePlaceholder()),
@@ -566,6 +572,7 @@ fun ArticleMosaicTile(
             // Over the image they cost nothing: the space is already spent.
             Box(modifier = Modifier.fillMaxWidth()) {
                 AsyncImage(
+                    alpha = LocalPictureFade.current,
                     model = image,
                     contentDescription = null,
                     onError = { imageFailed = true },
@@ -847,8 +854,23 @@ val CARD_MARGIN = 16.dp
  */
 val CARD_PANEL_GAP = 3.dp
 
-/** How far a read article fades, when the reader has asked for that. */
-private const val READ_ALPHA = 0.55f
+/**
+ * How far a read article fades, when the reader has asked for that.
+ *
+ * The whole card went to 55%, its text with it, which took the headline
+ * below the 4.5:1 contrast Android asks for small text. Now the text keeps
+ * 80% and the picture fades further, to about half (owner, 25 October:
+ * text-heavy cards with small pictures would not show a picture-only fade).
+ * The owner suggested 75%; the light theme's summaries came out at 4.2:1
+ * there, and 80% is the nearest that passes. See ReadFadeTest.
+ */
+internal const val READ_ALPHA = 0.80f
+
+/** The picture's own fade inside a faded card: 0.80 × 0.62 ≈ half. */
+internal const val PICTURE_FADE = 0.62f
+
+/** Read by every picture in a card; 1 unless the card is faded. */
+val LocalPictureFade = compositionLocalOf { 1f }
 
 /**
  * The mark on an article the reader is following.
