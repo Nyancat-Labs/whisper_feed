@@ -23,16 +23,16 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.unit.dp
 
 /**
  * The feed's Undo messages, solid and lifted off the page.
  *
  * They sit over the feed, which is mostly photographs, and over a busy one
  * the message was hard to read (owner, 20 October). Every colour is named
- * rather than left to the default, and a shadow sets the edge against a
- * picture of the same lightness.
+ * rather than left to the default. The Snackbar's own elevation gives the
+ * shadow: an extra one here was drawn round the 12dp margin Snackbar adds
+ * inside its modifier, a square-cornered box under the message (owner,
+ * 25 October).
  */
 @Composable
 fun FeedSnackbarHost(state: SnackbarHostState, modifier: Modifier = Modifier) {
@@ -45,7 +45,6 @@ fun FeedSnackbarHost(state: SnackbarHostState, modifier: Modifier = Modifier) {
             contentColor = MaterialTheme.colorScheme.inverseOnSurface,
             actionColor = MaterialTheme.colorScheme.inversePrimary,
             dismissActionContentColor = MaterialTheme.colorScheme.inverseOnSurface,
-            modifier = Modifier.shadow(8.dp, shape),
         )
     }
 }

@@ -8,7 +8,7 @@ import org.junit.Test
 import java.io.File
 
 /**
- * Settings in Harmonic's shape (owner, 24 October 2026): a short top list,
+ * Settings as a short top list (owner, 24 October 2026),
  * each row a page. Nothing was to be lost on the way.
  */
 class SettingsSplitTest {

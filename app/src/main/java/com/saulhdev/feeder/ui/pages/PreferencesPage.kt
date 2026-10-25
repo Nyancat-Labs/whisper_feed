@@ -56,7 +56,7 @@ fun PreferencesPage(
     val backupStoppedAt by prefs.backupStoppedAt.get().collectAsState(initial = 0L)
     val title = stringResource(id = R.string.title_settings)
 
-    // Harmonic's shape, by the owner's choice (24 October 2026): a short list
+    // The owner's layout (24 October 2026): a short list
     // of what Settings holds, each row saying what is inside it, each opening
     // a page of its own. It was one page of thirty-six rows. The rows, and the
     // settings on each page, are in SettingsSection.
@@ -123,7 +123,7 @@ fun PreferencesPage(
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                     }
-                    // Its own row, as in Harmonic: the credits, licences and
+                    // Its own row: the credits, licences and
                     // ways to get in touch are a page's worth on their own.
                     ActionPreference(pref = prefs.about, index = sections.size, groupSize = rows)
                 }

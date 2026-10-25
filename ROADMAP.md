@@ -372,8 +372,8 @@ items below can ride in it alongside what is already on main.
    by thumb), nobody else has asked, and it has to be fenced off from the
    learning that the rest of the app is about. Design kept under
    *Auto-scroll*, to pick up if anyone asks.
-6. **The design-rules audit** (8), then **settings split into pages**, Harmonic's
-   way (*From Harmonic*), before the redesign, then **the Expressive
+6. **The design-rules audit** (8), then **settings split into pages**
+   (*Settings and styling ideas*), before the redesign, then **the Expressive
    overhaul** (§19e) with Coil 3 (§19d): text size part B, Calm or Vivid,
    headline weight, the motion scheme. **Re-planned 21 October:** Whisper is
    on `material3` 1.5.0-beta02 now (not waiting for stable), the settings
@@ -3434,17 +3434,16 @@ layout problem above and covers the case people actually complain about.
 
 **Decided, 18 October 2026.** The smallest version above goes in 1.0.5:
 article body only, Small / Default / Large / Larger, in the reader. The full
-version comes in a later release, shaped by Harmonic (see *From Harmonic*,
+version comes in a later release (see *Settings and styling ideas*,
 below): a sample card pinned at the top of the Feed settings that changes as
 each setting does, with two sliders under it, one for feed text and one for
 article text. The sample card is what makes the feed slider safe to offer: a
 headline cut short by a larger size shows there, before the reader leaves
 Settings.
 
-## From Harmonic, 18 October 2026
+## Settings and styling ideas, 18 October 2026
 
-Harmonic, the open-source Hacker News reader, as a reference for settings and
-styling. What to take, and when:
+Ideas for settings and styling, from looking at how other readers do it. What to take, and when:
 
 - **The sample card and two text sizes**, as above. Release after 1.0.5.
 - **Choices as button rows rather than dialogs** (Off / Small / Large), for
@@ -3455,15 +3454,15 @@ styling. What to take, and when:
   colour pass per image, so with Coil 3. Expressive release.
 - **Grouped, rounded settings and large bold titles**, Expressive's own shape.
   Waits for `material3` 1.5.0 stable. Expressive release.
-- **A choice of look on first launch** (Harmonic's "Expressive / Simple"),
+- **A choice of look on first launch** (an "Expressive / Simple" choice),
   as Calm or Vivid in the onboarding. Only once there is a vivid look to
   offer, so after the tinted cards. Expressive release.
 
 Already ours, so not taken: settings in categories, an About page that opens
 with how to get in touch, and a picker for what the feed shows (the chips).
 
-**19 October 2026: Harmonic's settings are the target**, not only a source of
-ideas. Screenshots from the owner: a top level of a few rounded rows
+**19 October 2026: the settings layout is decided.** The owner's
+reference: a top level of a few rounded rows
 (Appearance, Stories, Web and links, Filters and tags, AI summarization,
 Data, About); inside each, small section headings over rounded groups;
 choices as button rows (Off / Small / Large, Standard / Card); sliders for
@@ -3471,7 +3470,7 @@ text size; a live preview card heading the Stories page; a coloured panel
 switch heading a page that is off until turned on ("Use AI summarization").
 Whisper's sections already line up (Sources, Fetching, Your feed,
 Reading, Appearance, Your data, Help), but today they are all on one long
-page of 36 rows. The owner prefers Harmonic's way: the top level is only the
+page of 36 rows. The owner prefers this: the top level is only the
 category rows, each with a one-line description of what is inside, and each
 opens its own page. So this is a reorganisation as well as a look. The
 split does not need `material3` 1.5.0 and can come first; the rounded
@@ -3486,7 +3485,7 @@ indicator for pull-to-refresh (the current one blends in); ripples and
 motion from `MaterialExpressiveTheme`; the flexible app bar, which also
 stops Settings' title collapsing when everything fits; skeleton cards while
 the feed is empty and the first sync runs, and new articles sliding in after
-a sync (seen in Harmonic; only those two cases, since Whisper's feed is read
+a sync (only those two cases, since Whisper's feed is read
 from the phone and a skeleton would only flash).
 
 **Help, tidied in the same split** (owner, 21 October: "a lot of
@@ -3504,7 +3503,7 @@ diagnostics, and three share the same ⓘ icon. Proposed:
 
 ## AI summaries — decided 19 October 2026
 
-A summary of the article, on request, from the reader. Seen in Harmonic.
+A summary of the article, on request, from the reader.
 Two of its three routes, by decision:
 
 1. **Your own cloud service.** An OpenAI-compatible address (OpenRouter and
@@ -3513,8 +3512,8 @@ Two of its three routes, by decision:
 2. ~~**Gemini Nano on the phone.**~~ Not doing: it comes through Google Play
    services, which F-Droid will not take, so it would split the app into two
    builds.
-3. **Open models downloaded to the phone** (Gemma, Qwen, Bonsai and the like,
-   as Harmonic lists). Private and in every build, but each model is 250 MB
+3. **Open models downloaded to the phone** (Gemma, Qwen, Bonsai and the
+   like). Private and in every build, but each model is 250 MB
    to 3.6 GB, needs RAM, and the runtime (llama.cpp or LiteRT-LM) is native
    code that F-Droid will build from source. The largest piece; after 1.
 

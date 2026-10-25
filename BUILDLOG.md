@@ -57,7 +57,7 @@ and Google Play builds on two other devices.
 
 ## 24 October 2026 — Settings split, stage 1
 
-- Owner's layout, Harmonic's shape: Appearance, Your feed, Reading, Sources,
+- Owner's layout: Appearance, Your feed, Reading, Sources,
   Fetching, Your data, Help, and About as its own row. Report a problem in
   Help opens a page with the three diagnostics rows.
 - `SettingsSection` (one enum: title, summary, icon, and which settings each

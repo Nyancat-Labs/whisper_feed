@@ -61,7 +61,7 @@ import org.koin.compose.koinInject
  * The pages Settings opens onto, in the order the top list shows them.
  *
  * Settings was one page of thirty-six rows under seven headings. The owner
- * preferred Harmonic's shape: a short top list, each row saying what is
+ * preferred a short top list, each row saying what is
  * inside it, each opening its own page (decided 24 October 2026, About as a
  * row of its own). [DIAGNOSTICS] is not in the top list; Help opens it.
  */
