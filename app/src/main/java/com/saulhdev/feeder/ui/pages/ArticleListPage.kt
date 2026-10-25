@@ -82,6 +82,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -422,7 +423,6 @@ fun ArticleListPage(
                     Scaffold(
                         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                         containerColor = Color.Transparent,
-                        snackbarHost = { FeedSnackbarHost(snackbarHostState) },
                         topBar = {
                             if (focusedSource != null) SourceFilterBar(
                                 title = focusedFeed?.feedTitle.orEmpty(),
@@ -534,11 +534,12 @@ fun ArticleListPage(
                             }
                         }
                     ) { paddingValues ->
-                        Column(
+                        Box(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(paddingValues)
                         ) {
+                        Column(modifier = Modifier.fillMaxSize()) {
                             // Same strip as the launcher surface, reading the same
                             // preference, so a category chosen in one is reflected
                             // in the other.
@@ -727,6 +728,9 @@ fun ArticleListPage(
                                     ) {
                                         SearchEmptyState(searchQuery)
                                     } else if (frame.articles.isEmpty()) {
+                                        // An empty page cannot scroll, so a bar scrolled away over
+                                        // the last one could never come back (owner, 25 October).
+                                        LaunchedEffect(Unit) { scrollBehavior.state.heightOffset = 0f }
                                         // Nothing to scroll, so the header has
                                         // nowhere to scroll away to.
                                         header()
@@ -882,6 +886,17 @@ fun ArticleListPage(
                                     }
                                 }
                             }
+                        }
+                        // Over the feed rather than in the Scaffold's slot. The slot sits
+                        // above the back-to-top button, which steps aside for an Undo, so
+                        // the message dropped a line as the button left (owner, 25 October).
+                        // The panel has always placed it this way.
+                        FeedSnackbarHost(
+                            state = snackbarHostState,
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .padding(16.dp),
+                        )
                         }
                     }
                 }

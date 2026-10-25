@@ -449,6 +449,9 @@ fun FeedScaffold(
                 if (isSearching && searchQuery.isNotBlank() && frame.articles.isEmpty()) {
                     SearchEmptyState(searchQuery)
                 } else if (frame.articles.isEmpty()) {
+                    // An empty page cannot scroll, so a bar scrolled away over
+                    // the last one could never come back (owner, 25 October).
+                    LaunchedEffect(Unit) { scrollBehavior.state.heightOffset = 0f }
                     // Nothing to scroll, so the header has nowhere to scroll
                     // away to and is drawn plainly.
                     header()
