@@ -19,6 +19,7 @@ package com.saulhdev.feeder.ui.overlay
 
 import com.saulhdev.feeder.utils.LAYOUT_CARDS
 import com.saulhdev.feeder.utils.LAYOUT_LIST
+import com.saulhdev.feeder.utils.LAYOUT_LIST_PICTURES
 import com.saulhdev.feeder.utils.LAYOUT_MAGAZINE
 import com.saulhdev.feeder.utils.LAYOUT_MOSAIC
 
@@ -76,7 +77,7 @@ fun feedCardShape(
     layout: String = LAYOUT_CARDS,
     emphasis: FeedEmphasis = FeedEmphasis.Medium,
 ): FeedCardShape = when (layout) {
-    LAYOUT_LIST -> FeedCardShape.Text
+    LAYOUT_LIST, LAYOUT_LIST_PICTURES -> FeedCardShape.Text
 
     // Tile even without an image: the tile already omits it, and a full-width
     // text row dropped into a half-width grid cell reads as a broken tile

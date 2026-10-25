@@ -22,6 +22,7 @@
     <string name="layout_cards">Cards</string>
     <string name="layout_magazine">Magazine</string>
     <string name="layout_list">List</string>
+    <string name="layout_list_pictures">List with pictures</string>
     <string name="layout_mosaic">Mosaic</string>
     <string name="source_pin">Pin to the top</string>
     <string name="source_unpin">Unpin from the top</string>
@@ -262,8 +263,6 @@
     <string name="remove_title">Remove source</string>
     <string name="remove_desc">Remove %s from feed sources\?</string>
     <string name="theme_auto_system">Follow system</string>
-    <string name="pref_list_pictures">Small pictures in List</string>
-    <string name="pref_list_pictures_summary">A small picture beside each headline in the List layout. Off, List downloads no pictures at all.</string>
     <string name="pref_show_summaries">Show summaries</string>
     <string name="pref_show_summaries_summary">The text under each headline. Turn off to keep just the picture and headline.</string>
     <string name="pref_time_format">Article times</string>

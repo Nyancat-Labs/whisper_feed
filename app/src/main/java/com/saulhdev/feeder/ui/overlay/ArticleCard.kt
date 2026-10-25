@@ -72,6 +72,7 @@ import com.saulhdev.feeder.ui.icons.Phosphor
 import com.saulhdev.feeder.ui.icons.phosphor.Asterisk
 import com.saulhdev.feeder.ui.icons.phosphor.Megaphone
 import com.saulhdev.feeder.utils.LAYOUT_CARDS
+import com.saulhdev.feeder.utils.LAYOUT_LIST_PICTURES
 import com.saulhdev.feeder.utils.LAYOUT_MAGAZINE
 import com.saulhdev.feeder.utils.shortSourceName
 import com.saulhdev.feeder.utils.TIME_RELATIVE
@@ -193,7 +194,10 @@ fun FeedArticleItem(
                 showSummary = showSummaries,
             )
             FeedCardShape.Compact -> ArticleCompactRow(item, onClick, onBookmark, menu = menu, modifier = shapeModifier)
-            FeedCardShape.Text    -> ArticleTextRow(item, onClick, onBookmark, menu = menu, modifier = shapeModifier)
+            FeedCardShape.Text    -> ArticleTextRow(
+                item, onClick, onBookmark, menu = menu, modifier = shapeModifier,
+                picture = layout == LAYOUT_LIST_PICTURES,
+            )
             FeedCardShape.Tile    -> ArticleMosaicTile(
                 item, onClick, onBookmark, menu = menu, modifier = shapeModifier,
                 size = emphasis,
@@ -454,10 +458,10 @@ fun ArticleCompactRow(
 /**
  * The List layout's row: headline, source, nothing else.
  *
- * No thumbnail unless the reader asks for one: images are what make a feed
- * slow to get through, and this is the shape for getting through a backlog.
- * With Settings → Small pictures in List on, a 56dp picture sits at the
- * right; off, nothing is downloaded at all.
+ * No thumbnail in List: images are what make a feed slow to get through, and
+ * this is the shape for getting through a backlog. "List with pictures", a
+ * layout of its own, adds a 56dp picture at the right ([picture]); in List
+ * nothing is downloaded at all.
  */
 @Composable
 fun ArticleTextRow(
@@ -466,6 +470,7 @@ fun ArticleTextRow(
     onBookmark: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     menu: @Composable (Color?) -> Unit = {},
+    picture: Boolean = false,
 ) {
     val context = LocalContext.current
     // Cards merge their texts for a screen reader, so the headline is
@@ -507,7 +512,7 @@ fun ArticleTextRow(
                 )
             }
             val image = item.imageUrl
-            if (rememberListPictures() && !image.isNullOrBlank()) {
+            if (picture && !image.isNullOrBlank()) {
                 Spacer(Modifier.width(12.dp))
                 AsyncImage(
                     alpha = LocalPictureFade.current,

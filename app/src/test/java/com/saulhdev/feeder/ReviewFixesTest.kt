@@ -1,6 +1,7 @@
 package com.saulhdev.feeder
 
 import com.saulhdev.feeder.ui.pages.MINIMUM_MS
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -86,12 +87,17 @@ class ReviewFixesTest {
     }
 
     @Test
-    fun `List shows pictures only when asked, small, and downloads nothing otherwise`() {
+    fun `List with pictures is a layout of its own, and plain List downloads nothing`() {
         val card = read("ui/overlay/ArticleCard.kt")
         val row = card.substringAfter("fun ArticleTextRow(").substringBefore("fun ArticleMosaicTile(")
-        assertTrue(row.contains("if (rememberListPictures() && !image.isNullOrBlank())"))
+        assertTrue(row.contains("picture: Boolean = false,"))
+        assertTrue(row.contains("if (picture && !image.isNullOrBlank())"))
         assertTrue(row.contains(".size(LIST_PICTURE_SIZE)"))
-        val prefs = read("data/content/FeedPreferences.kt")
-        assertTrue(prefs.substringAfter("val listPictures = BooleanPref(").substringBefore(")\n").contains("defaultValue = false"))
+        assertTrue(card.contains("picture = layout == LAYOUT_LIST_PICTURES,"))
+        assertFalse("no separate switch", read("data/content/FeedPreferences.kt").contains("listPictures"))
+        assertEquals(
+            com.saulhdev.feeder.ui.overlay.FeedCardShape.Text,
+            com.saulhdev.feeder.ui.overlay.feedCardShape(0, true, com.saulhdev.feeder.utils.LAYOUT_LIST_PICTURES),
+        )
     }
 }

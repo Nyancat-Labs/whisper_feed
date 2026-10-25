@@ -862,14 +862,6 @@ fun rememberShowSummaries(): Boolean {
     return setting
 }
 
-/** Whether List rows show a small picture. See `FeedPreferences.listPictures`. */
-@Composable
-fun rememberListPictures(): Boolean {
-    val prefs: FeedPreferences = koinInject()
-    val setting by prefs.listPictures.asState()
-    return setting
-}
-
 /**
  * One line of the answer to "why is this the size it is".
  *

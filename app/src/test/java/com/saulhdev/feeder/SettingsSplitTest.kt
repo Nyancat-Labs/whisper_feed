@@ -32,7 +32,7 @@ class SettingsSplitTest {
             "fullTextForAllFeeds", "fullTextOnMobile", "breakingNews", "dimSkipped", "removeDuplicates",
             "blockedWords", "glanceEnabled", "glancePlaceName", "learned", "statistics", "articleOpenMode",
             "readerTextSize", "readVisibility", "markReadOnScroll", "volumeKeyScroll", "feedLayout",
-            "showSummaries", "listPictures", "timeFormat", "overlayTheme", "pureBlack", "appFont", "dynamicColor",
+            "showSummaries", "timeFormat", "overlayTheme", "pureBlack", "appFont", "dynamicColor",
             "overlayTransparency", "sources", "feedLibrary", "importBookmarks", "account", "backupFolder",
             "showTour", "launcherSetup", "reportProblem", "exportDiagnostics", "debugging", "testSyncNotice",
         )

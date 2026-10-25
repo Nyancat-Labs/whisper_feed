@@ -99,7 +99,6 @@ fun settingsRows(prefs: FeedPreferences, section: SettingsSection, debugging: Bo
         SettingsSection.APPEARANCE -> listOf(
             prefs.feedLayout,
             prefs.showSummaries,
-            prefs.listPictures,
             prefs.timeFormat,
             prefs.overlayTheme,
             prefs.pureBlack,

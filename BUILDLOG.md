@@ -15,9 +15,10 @@ and Google Play builds on two other devices.
   expected Medium and failed on main for one commit (ca25e77a). Fixed in
   the next commit. Run the full suite before every push to main, trial or
   not.
-- `listPictures` (Appearance, off by default): a 56dp picture at the right
-  of List's rows, `LIST_PICTURE_SIZE`. Off loads nothing. Phosphor Image
-  icon added.
+- List with pictures: first built as a switch (`listPictures`), then, at
+  the owner's word ("keep it simple"), a fifth Feed layout instead,
+  `LAYOUT_LIST_PICTURES`. The switch is gone. Same row as List plus a 56dp
+  picture at the right (`LIST_PICTURE_SIZE`); plain List loads nothing.
 - 1263 passing, lint clean.
 
 ## 25 October 2026 — Support: Ko-fi renamed, GitHub Sponsors submitted

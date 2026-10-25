@@ -65,6 +65,9 @@ fun getFonts(context: Context): Map<String, String> {
 const val LAYOUT_CARDS = "cards"
 const val LAYOUT_MAGAZINE = "magazine"
 const val LAYOUT_LIST = "list"
+
+/** List with a small picture beside each headline (owner, 25 October 2026). */
+const val LAYOUT_LIST_PICTURES = "list_pictures"
 const val LAYOUT_MOSAIC = "mosaic"
 
 /** What happens to an article once it has been read. See getReadVisibility. */
@@ -102,6 +105,7 @@ fun getFeedLayouts(context: Context): Map<String, String> {
         LAYOUT_CARDS to context.resources.getString(R.string.layout_cards),
         LAYOUT_MAGAZINE to context.resources.getString(R.string.layout_magazine),
         LAYOUT_LIST to context.resources.getString(R.string.layout_list),
+        LAYOUT_LIST_PICTURES to context.resources.getString(R.string.layout_list_pictures),
         LAYOUT_MOSAIC to context.resources.getString(R.string.layout_mosaic),
     )
 }

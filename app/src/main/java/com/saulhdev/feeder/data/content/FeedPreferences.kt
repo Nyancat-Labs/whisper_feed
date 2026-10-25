@@ -58,7 +58,6 @@ import com.saulhdev.feeder.utils.getReadVisibility
 import com.saulhdev.feeder.ui.icons.phosphor.EyeSlash
 import com.saulhdev.feeder.ui.icons.phosphor.FunnelSimple
 import com.saulhdev.feeder.ui.icons.phosphor.Article
-import com.saulhdev.feeder.ui.icons.phosphor.Image
 import com.saulhdev.feeder.ui.icons.phosphor.Folder
 import com.saulhdev.feeder.ui.icons.phosphor.UserCircle
 import com.saulhdev.feeder.ui.icons.phosphor.Stack
@@ -213,22 +212,6 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
         key = SHOW_SUMMARIES,
         dataStore = dataStore,
         defaultValue = true
-    )
-
-    /**
-     * Small pictures beside List's headlines (owner, 25 October 2026).
-     *
-     * Off by default, so List stays what it was built as: the shape for
-     * getting through a backlog, with nothing to download. On, each row gets
-     * a 56dp picture at the right, small enough that the rows hardly grow.
-     */
-    val listPictures = BooleanPref(
-        titleId = R.string.pref_list_pictures,
-        summaryId = R.string.pref_list_pictures_summary,
-        icon = Phosphor.Image,
-        key = LIST_PICTURES,
-        dataStore = dataStore,
-        defaultValue = false
     )
 
     /**
@@ -1334,7 +1317,6 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
         val BREAKING_NEWS = booleanKey("pref_breaking_news")
         val DIM_SKIPPED = booleanKey("pref_dim_skipped")
         val SHOW_SUMMARIES = booleanKey("pref_show_summaries")
-        val LIST_PICTURES = booleanKey("pref_list_pictures")
         val TIME_FORMAT = stringKey("pref_time_format")
         val READER_TEXT_SIZE = stringKey("pref_reader_text_size")
 
