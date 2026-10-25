@@ -28,6 +28,13 @@ Unreleased
   every launch; now 0.3.
 - The top bar comes back when you switch to an empty category, and the Undo
   message no longer jumps down a line.
+- **Fixed a crash** closing the filter sheet with the back gesture.
+- **Buttons say what kind they are.** Reset and Dismiss are quiet;
+  Delete, Sign out and Forget are red. They were all the same pink.
+- **More icons that fit**: a map pin for the glance row's place, a speaker
+  for volume-key scrolling, a person for the sync account, and others that
+  were sharing a clock or a # with their neighbours. The feed's filter
+  button became sliders, since it now sorts, filters and holds Dismissed.
 - **Add a source by name.** Type "the potato" instead of an address and
   Whisper looks in its built-in library and tries the addresses the name most
   likely has (thepotato.ie, thepotato.com…), your country's first. No search

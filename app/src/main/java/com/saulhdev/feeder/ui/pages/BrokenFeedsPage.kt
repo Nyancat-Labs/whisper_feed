@@ -208,6 +208,7 @@ private fun BrokenRow(
                     OutlinedActionButton(
                         text = stringResource(R.string.broken_forget),
                         positive = false,
+                        destructive = true,
                         modifier = Modifier.fillMaxWidth(),
                         onClick = onForget,
                     )
@@ -232,6 +233,7 @@ private fun BrokenRow(
                 text = stringResource(R.string.broken_delete),
                 icon = Phosphor.TrashSimple,
                 positive = false,
+                destructive = true,
                 modifier = Modifier.fillMaxWidth(),
                 onClick = onDelete,
             )

@@ -176,6 +176,7 @@ fun AccountPage(
                         icon = Phosphor.Power,
                         modifier = Modifier.fillMaxWidth(),
                         positive = false,
+                        destructive = true,
                         onClick = viewModel::signOut,
                     )
                 }

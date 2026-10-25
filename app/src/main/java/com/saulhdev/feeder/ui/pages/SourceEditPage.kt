@@ -165,6 +165,7 @@ fun SourceEditPage(
                         text = stringResource(id = R.string.action_delete),
                         icon = Phosphor.TrashSimple,
                         positive = false,
+                        destructive = true,
                     ) {
                         showDialog.value = true
                     }

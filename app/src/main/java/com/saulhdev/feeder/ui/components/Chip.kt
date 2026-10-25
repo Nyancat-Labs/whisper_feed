@@ -153,11 +153,11 @@ fun ActionChip(
         shape = MaterialTheme.shapes.extraLarge,
         colors = AssistChipDefaults.assistChipColors(
             containerColor = if (positive) MaterialTheme.colorScheme.primaryContainer
-            else MaterialTheme.colorScheme.tertiaryContainer,
+            else MaterialTheme.colorScheme.secondaryContainer,
             labelColor = if (positive) MaterialTheme.colorScheme.onPrimaryContainer
-            else MaterialTheme.colorScheme.onTertiaryContainer,
+            else MaterialTheme.colorScheme.onSecondaryContainer,
             leadingIconContentColor = if (positive) MaterialTheme.colorScheme.onPrimaryContainer
-            else MaterialTheme.colorScheme.onTertiaryContainer,
+            else MaterialTheme.colorScheme.onSecondaryContainer,
         ),
         border = null,
         onClick = onClick

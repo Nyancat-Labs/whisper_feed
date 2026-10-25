@@ -20,12 +20,20 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
+/*
+ * Three tones, as Material has them: positive in the accent colour, neutral
+ * (Reset, Dismiss) quieter, destructive (Delete, Sign out, Forget) in the
+ * error colour. "Not positive" used to mean the tertiary colour, a pink that
+ * said nothing about what the button did (owner, 25 October).
+ */
+
 @Composable
 fun ActionButton(
     modifier: Modifier = Modifier,
     text: String,
-    // TODO add neutral using ENUM
     positive: Boolean = true,
+    /** Removes or forgets something: drawn in the error colour. */
+    destructive: Boolean = false,
     icon: ImageVector? = null,
     enabled: Boolean = true,
     onClick: () -> Unit,
@@ -34,12 +42,14 @@ fun ActionButton(
         modifier = modifier,
         colors = ButtonDefaults.filledTonalButtonColors(
             contentColor = when {
+                destructive -> MaterialTheme.colorScheme.onErrorContainer
                 positive -> MaterialTheme.colorScheme.onPrimaryContainer
-                else     -> MaterialTheme.colorScheme.onTertiaryContainer
+                else     -> MaterialTheme.colorScheme.onSecondaryContainer
             },
             containerColor = when {
+                destructive -> MaterialTheme.colorScheme.errorContainer
                 positive -> MaterialTheme.colorScheme.primaryContainer
-                else     -> MaterialTheme.colorScheme.tertiaryContainer
+                else     -> MaterialTheme.colorScheme.secondaryContainer
             }
         ),
         enabled = enabled,
@@ -59,8 +69,9 @@ fun ActionButton(
 fun OutlinedActionButton(
     modifier: Modifier = Modifier,
     text: String,
-    // TODO add neutral using ENUM
     positive: Boolean = true,
+    /** Removes or forgets something: drawn in the error colour. */
+    destructive: Boolean = false,
     icon: ImageVector? = null,
     enabled: Boolean = true,
     onClick: () -> Unit,
@@ -69,15 +80,16 @@ fun OutlinedActionButton(
         modifier = modifier,
         colors = ButtonDefaults.outlinedButtonColors(
             contentColor = when {
-                positive -> MaterialTheme.colorScheme.primary
-                else     -> MaterialTheme.colorScheme.tertiary
+                destructive -> MaterialTheme.colorScheme.error
+                else     -> MaterialTheme.colorScheme.primary
             },
         ),
         border = BorderStroke(
             width = 1.dp,
             color = when {
+                destructive -> MaterialTheme.colorScheme.error
                 positive -> MaterialTheme.colorScheme.primary
-                else     -> MaterialTheme.colorScheme.tertiary
+                else     -> MaterialTheme.colorScheme.outline
             },
         ),
         enabled = enabled,

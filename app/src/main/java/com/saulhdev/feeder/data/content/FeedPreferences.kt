@@ -48,9 +48,7 @@ import com.saulhdev.feeder.ui.icons.phosphor.BookBookmark
 import com.saulhdev.feeder.ui.icons.phosphor.BracketsSquare
 import com.saulhdev.feeder.ui.icons.phosphor.Browser
 import com.saulhdev.feeder.ui.icons.phosphor.Bug
-import com.saulhdev.feeder.ui.icons.phosphor.CaretDown
 import com.saulhdev.feeder.ui.icons.phosphor.CaretUp
-import com.saulhdev.feeder.ui.icons.phosphor.Circle
 import com.saulhdev.feeder.ui.icons.phosphor.Clock
 import com.saulhdev.feeder.ui.icons.phosphor.ArrowCounterClockwise
 import com.saulhdev.feeder.ui.icons.phosphor.CloudArrowDown
@@ -59,6 +57,16 @@ import com.saulhdev.feeder.utils.READ_KEEP
 import com.saulhdev.feeder.utils.getReadVisibility
 import com.saulhdev.feeder.ui.icons.phosphor.EyeSlash
 import com.saulhdev.feeder.ui.icons.phosphor.FunnelSimple
+import com.saulhdev.feeder.ui.icons.phosphor.Folder
+import com.saulhdev.feeder.ui.icons.phosphor.UserCircle
+import com.saulhdev.feeder.ui.icons.phosphor.Stack
+import com.saulhdev.feeder.ui.icons.phosphor.SpeakerHigh
+import com.saulhdev.feeder.ui.icons.phosphor.ListChecks
+import com.saulhdev.feeder.ui.icons.phosphor.MapPin
+import com.saulhdev.feeder.ui.icons.phosphor.CloudSun
+import com.saulhdev.feeder.ui.icons.phosphor.CircleHalf
+import com.saulhdev.feeder.ui.icons.phosphor.TextAa
+import com.saulhdev.feeder.ui.icons.phosphor.Moon
 import com.saulhdev.feeder.ui.icons.phosphor.BookOpenUser
 import com.saulhdev.feeder.ui.icons.phosphor.Graph
 import com.saulhdev.feeder.ui.icons.phosphor.Hash
@@ -144,7 +152,7 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
     val pureBlack = BooleanPref(
         titleId = R.string.pref_pure_black,
         summaryId = R.string.pref_pure_black_summary,
-        icon = Phosphor.Circle,
+        icon = Phosphor.Moon,
         key = PURE_BLACK,
         dataStore = dataStore,
         defaultValue = false
@@ -173,7 +181,7 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
      */
     var appFont = StringSelectionPref(
         titleId = R.string.pref_app_font,
-        icon = Phosphor.BracketsSquare,
+        icon = Phosphor.TextAa,
         key = APP_FONT,
         dataStore = dataStore,
         defaultValue = "inter",
@@ -251,7 +259,7 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
     val glanceEnabled = BooleanPref(
         titleId = R.string.pref_glance_row,
         summaryId = R.string.pref_glance_row_summary,
-        icon = Phosphor.Clock,
+        icon = Phosphor.CloudSun,
         key = GLANCE_ENABLED,
         dataStore = dataStore,
         defaultValue = false
@@ -260,7 +268,7 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
     /** Display name of the chosen place, empty until one is picked. */
     val glancePlaceName = StringPref(
         titleId = R.string.pref_glance_place,
-        icon = Phosphor.Clock,
+        icon = Phosphor.MapPin,
         key = GLANCE_PLACE_NAME,
         dataStore = dataStore,
         defaultValue = "",
@@ -278,7 +286,7 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
 
     var overlayTransparency = FloatPref(
         titleId = R.string.pref_transparency,
-        icon = Phosphor.SubtractSquare,
+        icon = Phosphor.CircleHalf,
         key = OVERLAY_OPACITY,
         dataStore = dataStore,
         defaultValue = 1f,
@@ -429,7 +437,7 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
     var backupFolder = StringPref(
         titleId = R.string.pref_backup,
         summaryId = R.string.pref_backup_summary,
-        icon = Phosphor.CloudArrowUp,
+        icon = Phosphor.Folder,
         key = BACKUP_FOLDER,
         dataStore = dataStore,
         route = NavRoute.Backup
@@ -484,7 +492,7 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
     var account = StringPref(
         titleId = R.string.pref_account,
         summaryId = R.string.pref_account_summary,
-        icon = Phosphor.CloudArrowUp,
+        icon = Phosphor.UserCircle,
         key = ACCOUNT,
         dataStore = dataStore,
         route = NavRoute.Account
@@ -687,7 +695,7 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
     var markReadOnScroll = FloatPref(
         titleId = R.string.pref_mark_read_on_scroll,
         summaryId = R.string.pref_mark_read_on_scroll_summary,
-        icon = Phosphor.Clock,
+        icon = Phosphor.ListChecks,
         key = MARK_READ_ON_SCROLL,
         dataStore = dataStore,
         defaultValue = 0f,
@@ -737,7 +745,7 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
     var volumeKeyScroll = BooleanPref(
         titleId = R.string.pref_volume_key_scroll,
         summaryId = R.string.pref_volume_key_scroll_summary,
-        icon = Phosphor.CaretDown,
+        icon = Phosphor.SpeakerHigh,
         key = VOLUME_KEY_SCROLL,
         dataStore = dataStore,
         defaultValue = false
@@ -818,7 +826,7 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
 
     var itemsPerFeed = StringSelectionPref(
         titleId = R.string.pref_items_per_feed,
-        icon = Phosphor.Hash,
+        icon = Phosphor.Stack,
         key = ITEMS_PER_FEED,
         dataStore = dataStore,
         defaultValue = "25",
@@ -828,7 +836,7 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
     var blockedWords = StringSetPref(
         titleId = R.string.pref_blocked_words,
         summaryId = R.string.pref_blocked_words_summary,
-        icon = Phosphor.Hash,
+        icon = Phosphor.Prohibit,
         key = BLOCKED_WORDS,
         dataStore = dataStore,
         defaultValue = emptySet(),

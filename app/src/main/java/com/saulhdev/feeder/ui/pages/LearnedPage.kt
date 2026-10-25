@@ -115,6 +115,7 @@ fun LearnedPage(
                     text = stringResource(R.string.learned_reset_all),
                     icon = Phosphor.ArrowCounterClockwise,
                     positive = false,
+                    destructive = true,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 16.dp),

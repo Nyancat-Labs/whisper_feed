@@ -115,8 +115,8 @@ import com.saulhdev.feeder.ui.components.PullToRefreshLazyColumn
 import com.saulhdev.feeder.ui.icons.Phosphor
 import com.saulhdev.feeder.ui.icons.phosphor.ArrowCounterClockwise
 import com.saulhdev.feeder.ui.icons.phosphor.CaretUp
-import com.saulhdev.feeder.ui.icons.phosphor.Filter
-import com.saulhdev.feeder.ui.icons.phosphor.Filtered
+import com.saulhdev.feeder.ui.icons.phosphor.SlidersHorizontalFill
+import com.saulhdev.feeder.ui.icons.phosphor.SlidersHorizontal
 import com.saulhdev.feeder.ui.icons.phosphor.GearSix
 import com.saulhdev.feeder.ui.icons.phosphor.Graph
 import com.saulhdev.feeder.ui.icons.phosphor.Power
@@ -473,8 +473,8 @@ fun ArticleListPage(
 
                                     Box(modifier = Modifier.tourTarget(TourTarget.Filter)) {
                                     HeaderToggleAction(
-                                        icon = if (state.isFilterModified) Phosphor.Filtered
-                                        else Phosphor.Filter,
+                                        icon = if (state.isFilterModified) Phosphor.SlidersHorizontalFill
+                                        else Phosphor.SlidersHorizontal,
                                         // "Filters", not "Sorting order": the
                                         // active state tracks whether the feed
                                         // is being narrowed, so that is what

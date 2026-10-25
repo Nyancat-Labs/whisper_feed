@@ -61,4 +61,27 @@ class ReviewFixesTest {
         assertTrue(page.contains("initialValue = SheetValue.Hidden"))
         assertFalse(page.contains("partialExpand()"))
     }
+
+    @Test
+    fun `buttons come in three tones, and none is the theme's pink`() {
+        val buttons = read("ui/components/Button.kt")
+        assertFalse(buttons.contains("colorScheme.tertiary"))
+        assertTrue(buttons.contains("destructive -> MaterialTheme.colorScheme.error"))
+        // Remove, forget and sign out say so in red.
+        listOf("SourceEditPage", "LearnedPage", "AccountPage", "BrokenFeedsPage").forEach {
+            assertTrue(it, read("ui/pages/$it.kt").contains("destructive = true"))
+        }
+        assertFalse("Reset is not destructive", read("ui/pages/SortFilterSheet.kt").contains("destructive = true"))
+    }
+
+    @Test
+    fun `no two settings on a page share a vague icon`() {
+        val prefs = read("data/content/FeedPreferences.kt")
+        fun iconOf(name: String) = Regex("va[lr] $name *=.*?icon = Phosphor\\.(\\w+)", RegexOption.DOT_MATCHES_ALL)
+            .find(prefs)!!.groupValues[1]
+        assertTrue(listOf("glanceEnabled", "glancePlaceName", "markReadOnScroll").map(::iconOf).none { it == "Clock" })
+        assertTrue(iconOf("account") != iconOf("backupFolder"))
+        assertTrue(iconOf("overlayTransparency") != iconOf("showSummaries"))
+        assertTrue(iconOf("blockedWords") != "Hash" && iconOf("itemsPerFeed") != "Hash")
+    }
 }

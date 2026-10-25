@@ -8,6 +8,27 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 25 October 2026 — A crash, button tones, the rest of the icons
+
+- Crash on the Pixel (Android 17): back over the feed while the filter
+  sheet settled. `AnchoredDraggableState was not initialized correctly`:
+  with `sheetPeekHeight = 0.dp` Material 3 1.5 builds only Hidden and
+  Expanded anchors, but `rememberBottomSheetScaffoldState()` starts at
+  PartiallyExpanded and the back handler asked for it again. Now starts
+  Hidden (`skipHiddenState = false`) and closes with `hide()`. A
+  regression from the 21 October library switch.
+- Buttons: `positive = false` meant tertiary, the theme's pink. Now
+  neutral (outline border, secondary container) and a new `destructive`
+  (error colour) on Delete source, Reset all learned, Sign out, Forget and
+  Delete broken feed. Reset and Dismiss stay neutral.
+- Icons from the owner's pass: Moon (pure black), TextAa (font), CircleHalf
+  (transparency), Prohibit (blocked words), CloudSun and MapPin (glance),
+  ListChecks (mark read on scroll), SpeakerHigh (volume keys), Stack (items
+  per source), UserCircle (account), Folder (backup); the feed's filter
+  button SlidersHorizontal, filled while active. Copyleft kept on the
+  licence row: it is the right mark for the GPL.
+- 1262 passing, lint clean.
+
 ## 25 October 2026 — Owner's review of the 21 October preview
 
 - Reviewed side by side on two phones. Nine items; all built today.

@@ -103,8 +103,8 @@ import com.saulhdev.feeder.ui.pages.SortFilterSheet
 import com.saulhdev.feeder.ui.components.FeedSearchBar
 import com.saulhdev.feeder.ui.components.SourceFilterBar
 import com.saulhdev.feeder.ui.icons.phosphor.GearSix
-import com.saulhdev.feeder.ui.icons.phosphor.Filter
-import com.saulhdev.feeder.ui.icons.phosphor.Filtered
+import com.saulhdev.feeder.ui.icons.phosphor.SlidersHorizontalFill
+import com.saulhdev.feeder.ui.icons.phosphor.SlidersHorizontal
 import com.saulhdev.feeder.ui.icons.phosphor.MagnifyingGlass
 import com.saulhdev.feeder.ui.components.FeedEmptyReason
 import com.saulhdev.feeder.ui.components.FeedEmptyState
@@ -329,7 +329,7 @@ fun FeedScaffold(
                     // says nothing; the filled one says the list you are
                     // looking at is not the whole list.
                     HeaderToggleAction(
-                        icon = if (isFilterActive) Phosphor.Filtered else Phosphor.Filter,
+                        icon = if (isFilterActive) Phosphor.SlidersHorizontalFill else Phosphor.SlidersHorizontal,
                         description = stringResource(R.string.pref_cat_filters),
                         active = isFilterActive,
                         onClick = { onFilterSheetOpenChange(true) },
