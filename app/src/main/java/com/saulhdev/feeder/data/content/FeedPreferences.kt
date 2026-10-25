@@ -57,6 +57,7 @@ import com.saulhdev.feeder.utils.READ_KEEP
 import com.saulhdev.feeder.utils.getReadVisibility
 import com.saulhdev.feeder.ui.icons.phosphor.EyeSlash
 import com.saulhdev.feeder.ui.icons.phosphor.FunnelSimple
+import com.saulhdev.feeder.ui.icons.phosphor.Article
 import com.saulhdev.feeder.ui.icons.phosphor.Folder
 import com.saulhdev.feeder.ui.icons.phosphor.UserCircle
 import com.saulhdev.feeder.ui.icons.phosphor.Stack
@@ -76,7 +77,6 @@ import com.saulhdev.feeder.ui.icons.phosphor.Sparkle
 import com.saulhdev.feeder.ui.icons.phosphor.Plus
 import com.saulhdev.feeder.ui.icons.phosphor.Megaphone
 import com.saulhdev.feeder.ui.icons.phosphor.PaintRoller
-import com.saulhdev.feeder.ui.icons.phosphor.SubtractSquare
 import com.saulhdev.feeder.ui.icons.phosphor.Swatches
 import com.saulhdev.feeder.ui.icons.phosphor.Power
 import com.saulhdev.feeder.ui.icons.phosphor.WifiHigh
@@ -208,7 +208,7 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
     val showSummaries = BooleanPref(
         titleId = R.string.pref_show_summaries,
         summaryId = R.string.pref_show_summaries_summary,
-        icon = Phosphor.SubtractSquare,
+        icon = Phosphor.Article,
         key = SHOW_SUMMARIES,
         dataStore = dataStore,
         defaultValue = true
