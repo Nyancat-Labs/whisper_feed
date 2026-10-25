@@ -303,8 +303,37 @@ android {
     }
 }
 
+/**
+ * CHANGELOG.md and LICENSE, copied into the app's assets at build time.
+ *
+ * About's changelog and licence used to be hand-kept HTML copies. The
+ * changelog copy stopped at 1.0.0 and the licence page still named Neo
+ * Feed's author and source, because nobody remembers a second copy. Now
+ * the repository's own files are the only ones.
+ */
+abstract class CopyDocsTask : DefaultTask() {
+    @get:InputFiles
+    abstract val docs: ConfigurableFileCollection
+
+    @get:OutputDirectory
+    abstract val outputDir: DirectoryProperty
+
+    @TaskAction
+    fun copy() {
+        val out = outputDir.get().asFile
+        out.deleteRecursively()
+        out.mkdirs()
+        docs.files.forEach { it.copyTo(File(out, it.name), overwrite = true) }
+    }
+}
+
+val copyDocs = tasks.register<CopyDocsTask>("copyDocsToAssets") {
+    docs.from(rootProject.file("CHANGELOG.md"), rootProject.file("LICENSE"))
+}
+
 androidComponents {
     onVariants { variant ->
+        variant.sources.assets?.addGeneratedSourceDirectory(copyDocs, CopyDocsTask::outputDir)
         variant.outputs.forEach { output ->
             val versionName = output.versionName.get()
             output.outputFileName.set("Whisper_${versionName}_${variant.name}.apk")

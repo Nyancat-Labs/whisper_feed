@@ -20,16 +20,10 @@
 package com.saulhdev.feeder.ui.pages
 
 
-import android.annotation.SuppressLint
 import androidx.core.graphics.createBitmap
 import androidx.compose.ui.platform.LocalResources
 import android.content.ActivityNotFoundException
 import android.graphics.Canvas
-import android.util.Base64
-import android.view.ViewGroup
-import android.webkit.WebResourceRequest
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -40,7 +34,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -55,15 +48,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.res.ResourcesCompat
 import coil.annotation.ExperimentalCoilApi
 import com.saulhdev.feeder.BuildConfig
@@ -87,7 +77,6 @@ import com.saulhdev.feeder.ui.icons.phosphor.BracketsSquare
 import com.saulhdev.feeder.ui.icons.phosphor.GithubLogo
 import com.saulhdev.feeder.ui.icons.phosphor.Megaphone
 import com.saulhdev.feeder.ui.icons.phosphor.TelegramLogo
-import com.saulhdev.feeder.utils.urlDecode
 import com.saulhdev.feeder.utils.UpdateCheck
 import com.saulhdev.feeder.manager.update.UpdateCheckWorker
 import com.saulhdev.feeder.data.content.FeedPreferences
@@ -509,129 +498,3 @@ private val contributors = listOf(
         webpage = "https://github.com/machiav3lli"
     )
 )
-
-@Composable
-fun LicensePage() {
-    ViewWithActionBar(
-        title = stringResource(R.string.about_licenses),
-    ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .padding(
-                    start = 16.dp,
-                    end = 16.dp,
-                    top = 32.dp,
-                    bottom = paddingValues.calculateBottomPadding()
-                )
-        ) {
-            item {
-                PreferencesWebView(url = "file:///android_asset/license.htm")
-
-            }
-        }
-    }
-}
-
-@Composable
-fun ChangelogPage() {
-    ViewWithActionBar(
-        title = stringResource(R.string.about_changelog),
-    ) {
-        PreferencesWebView(url = "file:///android_asset/changelog.htm")
-        Spacer(modifier = Modifier.requiredHeight(50.dp))
-    }
-}
-
-/**
- * The bundled changelog and licence pages.
- *
- * Only ever pointed at `file:///android_asset`, and it stays that way: an
- * asset page cannot be pointed somewhere else by anything the reader does,
- * and a link inside one goes to the system browser rather than opening a
- * remote page inside a WebView that trusts its own assets.
- *
- * JavaScript is on only to inject the stylesheet into that asset page, and
- * off again once it has run.
- */
-@SuppressLint("SetJavaScriptEnabled")
-@Composable
-fun PreferencesWebView(url: String) {
-    val context = LocalContext.current
-    // The stylesheet used to be light.css whatever the phone was set to, so
-    // the changelog opened as a white sheet in the middle of a dark app.
-    val cssFile = if (isSystemInDarkTheme()) "dark.css" else "light.css"
-    val loaded = remember { mutableStateOf<String?>(null) }
-
-    AndroidView(
-        factory = { ctx ->
-            WebView(ctx).apply {
-                layoutParams = ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT
-                )
-                settings.allowFileAccess = false
-                settings.allowContentAccess = false
-
-                webViewClient = object : WebViewClient() {
-                    override fun onPageFinished(view: WebView, finishedUrl: String) {
-                        if (finishedUrl.startsWith("file:///android_asset")) {
-                            runCatching {
-                                val encoded = Base64.encodeToString(
-                                    ctx.assets.open(cssFile).use { it.readBytes() },
-                                    Base64.NO_WRAP,
-                                )
-                                // JavaScript is turned on for the injection
-                                // and left on until the page reports it has
-                                // run. It used to be switched off on the very
-                                // next line, while loadUrl was still queued,
-                                // so whether the stylesheet applied at all
-                                // came down to a race.
-                                settings.javaScriptEnabled = true
-                                evaluateJavascript(
-                                    """
-                                    (function() {
-                                      var head = document.getElementsByTagName('head')[0];
-                                      var style = document.createElement('style');
-                                      style.type = 'text/css';
-                                      style.innerHTML = window.atob('$encoded');
-                                      head.appendChild(style);
-                                    })()
-                                    """.trimIndent()
-                                ) { settings.javaScriptEnabled = false }
-                            }
-                        }
-                        super.onPageFinished(view, finishedUrl)
-                    }
-
-                    override fun shouldOverrideUrlLoading(
-                        view: WebView,
-                        request: WebResourceRequest
-                    ): Boolean {
-                        // The request's own address, not the one this screen
-                        // was opened with. Testing the outer `url` meant every
-                        // link on the page led back to the page itself, or
-                        // opened the changelog in a browser.
-                        val target = request.url.toString()
-                        if (target.startsWith("file:///android_asset")) return false
-                        runCatching { context.launchView(target) }
-                        return true
-                    }
-                }
-            }
-        },
-        // Reloaded only when the screen is pointed at a different page. It
-        // used to call loadUrl on every recomposition, throwing away the
-        // scroll position and re-running the stylesheet injection each time.
-        update = { webView ->
-            val target = url.urlDecode()
-            if (loaded.value != target) {
-                loaded.value = target
-                webView.loadUrl(target)
-            }
-        },
-        onRelease = { webView ->
-            webView.stopLoading()
-            webView.destroy()
-        },
-    )
-}

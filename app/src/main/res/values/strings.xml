@@ -170,9 +170,13 @@
     <string name="about_developer2" translatable="false">Antonios Hazim</string>
     <string name="about_build_information">Build info</string>
     <string name="author_role">Neo Feed author</string>
-    <string name="about_licenses">License</string>
+    <string name="about_licenses">Licence</string>
     <string name="back_to_top">Back to Top</string>
     <string name="about_changelog">Changelog</string>
+    <string name="changelog_unreleased">Coming in the next release</string>
+    <string name="licence_copyright">Copyright © 2026 Whisper contributors</string>
+    <string name="licence_fork">Whisper is a fork of **Neo Feed** (© 2022–2025 Neo Feed Team), which is itself a fork of **HomeFeeder** by iTaysonLab. All three are licensed under the GNU General Public License, version 3 or later, below.</string>
+    <string name="licence_source">Whisper\'s source code is at [%1$s](%1$s).</string>
     <string name="about_source_code">Source code</string>
     <string name="about_privacy">Privacy</string>
     <string name="about_disclaimer">Disclaimer</string>
