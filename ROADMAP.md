@@ -121,7 +121,8 @@ The owner is using the preview on the Pixel 10 for a week before release.
   the owner's Pixel the same day (diagnostics: "GitHub install: true,
   checking: true, latest seen: v1.0.5"). The notification itself is first
   seen for real when v1.0.6 is tagged and the preview hears of it.
-- [ ] **Neo Feed and HomeFeeder links out of About's header** (owner, 19
+- [x] **Neo Feed and HomeFeeder links out of About's header** (built 25
+  October) (owner, 19
   October). Move both chips down as rows under "Built on Neo Feed, and on
   HomeFeeder before it", below the two Neo Feed authors, so HomeFeeder keeps
   a link; the header keeps only our own four. Attribution itself is the

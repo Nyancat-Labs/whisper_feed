@@ -29,6 +29,9 @@ Unreleased
 - The top bar comes back when you switch to an empty category, and the Undo
   message no longer jumps down a line.
 - **Fixed a crash** closing the filter sheet with the back gesture.
+- **About leads with Whisper.** The links at the top are Whisper's own;
+  Neo Feed and HomeFeeder are rows under "Built on Neo Feed, and on
+  HomeFeeder before it", beside the people who made them.
 - **Buttons say what kind they are.** Reset and Dismiss are quiet;
   Delete, Sign out and Forget are red. They were all the same pink.
 - **More icons that fit**: a map pin for the glance row's place, a speaker

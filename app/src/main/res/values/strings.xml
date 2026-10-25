@@ -184,6 +184,8 @@
     <string name="about_website">nyancatlabs.com</string>
     <string name="about_upstream">Neo Feed on GitHub</string>
     <string name="about_origin">HomeFeeder on GitHub</string>
+    <string name="about_upstream_role">The project Whisper grew from</string>
+    <string name="about_origin_role">Where Neo Feed began, by iTaysonLab</string>
     <string name="about_contact">Contact us</string>
     <string name="about_updates">Updates</string>
     <string name="pref_update_check">Check GitHub for new versions</string>

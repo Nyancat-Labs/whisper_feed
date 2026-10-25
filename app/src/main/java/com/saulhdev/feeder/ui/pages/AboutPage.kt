@@ -291,14 +291,14 @@ fun AboutPage() {
             item {
                 PreferenceGroupHeading(heading = stringResource(id = R.string.about_team))
             }
-            itemsIndexed(contributors) { i, it ->
+            itemsIndexed(contributors + projects) { i, it ->
                 ContributorRow(
                     nameId = it.name,
                     roleId = it.descriptionRes,
                     photo = it.photo,
                     url = it.webpage,
                     index = i,
-                    groupSize = contributors.size
+                    groupSize = contributors.size + projects.size
                 )
             }
             item {
@@ -431,19 +431,6 @@ private val links = listOf(
         labelResId = R.string.about_website,
         url = "https://nyancatlabs.com"
     ),
-    Link(
-        icon = Phosphor.GithubLogo,
-        labelResId = R.string.about_upstream,
-        url = "https://github.com/NeoApplications/Neo-Feed"
-    ),
-    // The root of the line, and not a footnote: HomeFeeder's SDK package is
-    // still named in this app's ProGuard rules, and Lawnchair's feed whitelist
-    // still carries its package.
-    Link(
-        icon = Phosphor.GithubLogo,
-        labelResId = R.string.about_origin,
-        url = "https://github.com/iTaysonLab/HomeFeeder"
-    ),
 )
 
 /**
@@ -481,6 +468,29 @@ private val whisperTeam = listOf(
         // network. From docs/brand/nyancat_labs.
         photo = R.drawable.nyancat_labs_symbol,
         webpage = "https://nyancatlabs.com"
+    ),
+)
+
+/**
+ * Neo Feed and HomeFeeder themselves, under their authors rather than among
+ * Whisper's own links at the top (owner, 19 October): the header is for this
+ * app, and the projects it grew from are credited where their people are.
+ * HomeFeeder keeps its row because it is the root of the line: its SDK
+ * package is still named in this app's ProGuard rules, and Lawnchair's feed
+ * whitelist still carries its package.
+ */
+private val projects = listOf(
+    TeamMember(
+        name = R.string.about_upstream,
+        descriptionRes = R.string.about_upstream_role,
+        photo = "https://github.com/NeoApplications.png",
+        webpage = "https://github.com/NeoApplications/Neo-Feed"
+    ),
+    TeamMember(
+        name = R.string.about_origin,
+        descriptionRes = R.string.about_origin_role,
+        photo = "https://github.com/iTaysonLab.png",
+        webpage = "https://github.com/iTaysonLab/HomeFeeder"
     ),
 )
 
