@@ -165,7 +165,7 @@ class DesignPassTest {
         assertTrue(state.contains("FeedEmptyReason.Syncing -> null"))
 
         val app = source("ui/pages/ArticleListPage.kt")
-        assertTrue(app.contains("navController.navigate(NavRoute.SourceAdd)"))
+        assertTrue(app.contains("navController.navigate(NavRoute.SourceAdd())"))
         assertTrue(app.contains("onRetry = { scope.launch { syncClient.syncAllFeeds() } }"))
         assertTrue(source("ui/overlay/FeedScaffold.kt").contains("onRetry = onRefresh,"))
 

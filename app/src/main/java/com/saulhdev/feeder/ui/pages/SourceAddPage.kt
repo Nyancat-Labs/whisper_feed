@@ -18,6 +18,10 @@
 
 package com.saulhdev.feeder.ui.pages
 
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
+import com.saulhdev.feeder.data.FeedLibrary
+import com.saulhdev.feeder.utils.FeedNameSearch
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -93,7 +97,10 @@ import java.net.URL
 fun SourceAddPage(
     searchFeedViewModel: SearchFeedViewModel = koinNeoViewModel(),
     sourcesViewModel: SourceListViewModel = koinNeoViewModel(),
+    /** A name or address to look for at once, from the Sources search. */
+    query: String = "",
 ) {
+    val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val navController = LocalNavController.current
     val title = stringResource(id = R.string.add_rss)
@@ -128,7 +135,36 @@ fun SourceAddPage(
         var errors by rememberSaveable {
             mutableStateOf(listOf<SearchResult>())
         }
-        var feedUrl by remember { mutableStateOf("") }
+        var feedUrl by remember { mutableStateOf(query) }
+
+        // An address is searched as one; anything else as a name, through the
+        // built-in library and the addresses the name most likely has. See
+        // FeedNameSearch: no search service is asked.
+        val search: (String) -> Unit = { text ->
+            results = emptyList()
+            errors = emptyList()
+            currentlySearching = true
+            coroutineScope.launch {
+                val found = if (FeedNameSearch.looksLikeAddress(text)) {
+                    searchFeedViewModel.searchForFeeds(sloppyLinkToStrictURLNoThrows(text.trim()))
+                } else {
+                    searchFeedViewModel.searchByName(
+                        name = text,
+                        country = phoneCountry(context),
+                        library = FeedLibrary.allFeeds(context).map { it.second },
+                    )
+                }
+                found
+                    .onCompletion { currentlySearching = false }
+                    .collect {
+                        if (it.isError) errors = errors + it else results = results + it
+                    }
+            }
+        }
+        // Arrived with something to look for: look for it.
+        LaunchedEffect(query) {
+            if (query.isNotBlank() && results.isEmpty()) search(query)
+        }
 
         Column(
             modifier = Modifier.padding(
@@ -142,24 +178,7 @@ fun SourceAddPage(
                 onUrlChanged = {
                     feedUrl = it
                 },
-                onSearch = { url ->
-                    results = emptyList()
-                    errors = emptyList()
-                    currentlySearching = true
-                    coroutineScope.launch {
-                        searchFeedViewModel.searchForFeeds(url)
-                            .onCompletion {
-                                currentlySearching = false
-                            }
-                            .collect {
-                                if (it.isError) {
-                                    errors = errors + it
-                                } else {
-                                    results = results + it
-                                }
-                            }
-                    }
-                },
+                onSearch = search,
                 results = StableHolder(results),
                 errors = if (currentlySearching) StableHolder(emptyList()) else StableHolder(errors),
                 currentlySearching = currentlySearching,
@@ -188,7 +207,7 @@ fun SourceAddPage(
 fun AddFeedView(
     feedUrl: String = "",
     onUrlChanged: (String) -> Unit,
-    onSearch: (URL) -> Unit,
+    onSearch: (String) -> Unit,
     results: StableHolder<List<SearchResult>>,
     errors: StableHolder<List<SearchResult>>,
     currentlySearching: Boolean,
@@ -239,18 +258,19 @@ fun AddFeedView(
 fun SearchFeedUI(
     feedUrl: String,
     onUrlChanged: (String) -> Unit,
-    onSearch: (URL) -> Unit,
+    onSearch: (String) -> Unit,
     focusManager: FocusManager,
     keyboardController: SoftwareKeyboardController?
 ) {
+    // A name is as good as an address now; only an address can be wrong.
     val isNotValidUrl by remember(feedUrl) {
         derivedStateOf {
-            feedUrl.isNotEmpty() && isNotValidUrl(feedUrl)
+            FeedNameSearch.looksLikeAddress(feedUrl) && isNotValidUrl(feedUrl)
         }
     }
     val isValidUrl by remember(feedUrl) {
         derivedStateOf {
-            isValidUrl(feedUrl)
+            feedUrl.isNotBlank() && !isNotValidUrl
         }
     }
     OutlinedTextField(
@@ -259,8 +279,8 @@ fun SearchFeedUI(
         modifier = Modifier
             .fillMaxWidth()
             .interceptKey(Key.Enter) {
-                if (isValidUrl(feedUrl)) {
-                    onSearch(sloppyLinkToStrictURLNoThrows(feedUrl))
+                if (isValidUrl) {
+                    onSearch(feedUrl)
                     keyboardController?.hide()
                 }
             }
@@ -277,13 +297,15 @@ fun SearchFeedUI(
         keyboardOptions = KeyboardOptions.Default.copy(
             capitalization = KeyboardCapitalization.None,
             autoCorrectEnabled = false,
-            keyboardType = KeyboardType.Uri,
+            // Text, not Uri: a name has spaces, and the address keyboard on
+            // many phones has no space bar.
+            keyboardType = KeyboardType.Text,
             imeAction = ImeAction.Search
         ),
         keyboardActions = KeyboardActions(
             onSearch = {
                 if (isValidUrl) {
-                    onSearch(sloppyLinkToStrictURLNoThrows(feedUrl))
+                    onSearch(feedUrl)
                     keyboardController?.hide()
                 }
             }
@@ -296,7 +318,7 @@ fun SearchFeedUI(
         enabled = isValidUrl,
         onClick = {
             if (isValidUrl) {
-                onSearch(sloppyLinkToStrictURLNoThrows(feedUrl))
+                onSearch(feedUrl)
                 focusManager.clearFocus()
             }
         }
@@ -568,6 +590,21 @@ private fun isValidUrl(url: String): Boolean {
 }
 
 private fun isNotValidUrl(url: String) = !isValidUrl(url)
+
+/**
+ * The phone's country, for which domain a name is tried on first: the
+ * network's, then the SIM's, then the language setting's. An Irish reader
+ * whose phone is set to English (UK) is still in Ireland.
+ */
+private fun phoneCountry(context: android.content.Context): String {
+    val telephony = context.getSystemService(android.content.Context.TELEPHONY_SERVICE)
+        as? android.telephony.TelephonyManager
+    return listOfNotNull(
+        runCatching { telephony?.networkCountryIso }.getOrNull(),
+        runCatching { telephony?.simCountryIso }.getOrNull(),
+        context.resources.configuration.locales[0].country,
+    ).firstOrNull { it.isNotBlank() }.orEmpty()
+}
 
 @Preview
 @Composable

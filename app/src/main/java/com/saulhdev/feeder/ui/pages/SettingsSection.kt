@@ -70,10 +70,13 @@ enum class SettingsSection(
     @StringRes val summary: Int,
     val icon: ImageVector,
 ) {
+    // Most often used first, as Android's and Material's settings guidance
+    // both ask, Appearance leading by convention; the set-once pages lower
+    // (owner, 25 October 2026).
     APPEARANCE(R.string.pref_cat_overlay, R.string.settings_appearance_summary, Phosphor.PaintRoller),
+    SOURCES(R.string.settings_sources, R.string.settings_sources_summary, Phosphor.Hash),
     FEED(R.string.pref_cat_feed, R.string.settings_feed_summary, Phosphor.ListDashes),
     READING(R.string.pref_cat_reading, R.string.settings_reading_summary, Phosphor.BookOpenUser),
-    SOURCES(R.string.settings_sources, R.string.settings_sources_summary, Phosphor.Hash),
     FETCHING(R.string.pref_cat_fetching, R.string.settings_fetching_summary, Phosphor.CloudArrowDown),
     DATA(R.string.pref_cat_data, R.string.settings_data_summary, Phosphor.CloudArrowUp),
     HELP(R.string.pref_cat_help, R.string.settings_help_summary, Phosphor.Megaphone),

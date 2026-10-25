@@ -9,6 +9,11 @@ Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 Unreleased
 ----------
 
+- **Add a source by name.** Type "the potato" instead of an address and
+  Whisper looks in its built-in library and tries the addresses the name most
+  likely has (thepotato.ie, thepotato.com…), your country's first. No search
+  service is asked. Searching your sources for one you don't have now offers
+  "Find it to add", and the + button carries what you typed.
 - **Settings, rearranged.** One long page became a short list, Appearance,
   Your feed, Reading, Sources, Fetching, Your data, Help and About, each
   saying what is inside and opening a page of its own. The three

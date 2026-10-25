@@ -19,7 +19,7 @@ class SettingsSplitTest {
     @Test
     fun `the top list is the seven pages in the agreed order, then About`() {
         assertEquals(
-            listOf("APPEARANCE", "FEED", "READING", "SOURCES", "FETCHING", "DATA", "HELP"),
+            listOf("APPEARANCE", "SOURCES", "FEED", "READING", "FETCHING", "DATA", "HELP"),
             SettingsSection.topLevel.map { it.name },
         )
         assertTrue(top.contains("ActionPreference(pref = prefs.about"))

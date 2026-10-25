@@ -18,6 +18,8 @@
 
 package com.saulhdev.feeder.ui.pages
 
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.material3.Button
 import androidx.compose.runtime.key
 import android.os.SystemClock
 import com.saulhdev.feeder.utils.CategoryOrder
@@ -416,8 +418,11 @@ fun SourceListPage(
                             // which is why it read as something other than a
                             // button to add a source.
                             FloatingActionButton(
+                                // Carries what was typed in the search, so a
+                                // source not found here is looked for there
+                                // rather than typed again (owner, 25 October).
                                 onClick = {
-                                    navController.navigate(NavRoute.SourceAdd)
+                                    navController.navigate(NavRoute.SourceAdd(query.trim()))
                                 },
                                 modifier = Modifier.padding(16.dp),
                                 shape = MaterialTheme.shapes.large,
@@ -777,6 +782,19 @@ fun SourceListPage(
                             }
                             item { Spacer(modifier = Modifier.height(64.dp)) }
                             return@LazyColumn
+                        }
+
+                        // A search that finds nothing here: offer to find it
+                        // to add, rather than an empty screen (owner, 25
+                        // October). The Add screen takes a name as well as
+                        // an address; see FeedNameSearch.
+                        if (query.isNotBlank() && state.enabledSources.isEmpty() && state.disabledSources.isEmpty()) {
+                            item(key = "not-found") {
+                                NoSourceFound(
+                                    query = query.trim(),
+                                    onFind = { navController.navigate(NavRoute.SourceAdd(query.trim())) },
+                                )
+                            }
                         }
 
                         // A heading over nothing was tolerable when the list
@@ -1252,4 +1270,25 @@ private fun TagPickerDialog(
             TextButton(onClick = onDismiss) { Text(stringResource(android.R.string.cancel)) }
         },
     )
+}
+
+/** "No source called …", and the way to go and find it. */
+@Composable
+private fun NoSourceFound(query: String, onFind: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Text(
+            text = stringResource(R.string.sources_none_called, query),
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center,
+        )
+        Button(onClick = onFind) {
+            Text(stringResource(R.string.sources_find_to_add, query))
+        }
+    }
 }

@@ -244,12 +244,14 @@
     <string name="sync_status_channel_description">A silent notice while Whisper fetches your feeds in the background. Android asks for one while the work runs.</string>
     <string name="add_feed_category">File it under</string>
     <string name="add_rss">Add new RSS</string>
-    <string name="failed_to_parse">Could not parse %1$s</string>
+    <string name="failed_to_parse">No feed found for %1$s</string>
     <string name="edit_rss">Edit Feed Item</string>
     <string name="add_input_hint" translatable="false">URL</string>
     <string name="title">Title</string>
     <string name="source_tags">Categories</string>
-    <string name="add_feed_search_hint">Feed URL</string>
+    <string name="add_feed_search_hint">Web address or name</string>
+    <string name="sources_none_called">No source called “%1$s”</string>
+    <string name="sources_find_to_add">Find “%1$s” to add</string>
     <string name="go_back">Go back</string>
     <string name="remove_title">Remove source</string>
     <string name="remove_desc">Remove %s from feed sources\?</string>

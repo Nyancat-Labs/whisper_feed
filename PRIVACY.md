@@ -96,6 +96,13 @@ address, the time, and a `User-Agent` header identifying the app and version.
 These are servers **you** added. We are not in the middle of that request and
 never see it.
 
+**Looking for a source by name.** When you add a source by typing a name
+rather than an address ("the potato"), Whisper does not ask any search
+service. It tries the few addresses that name most likely has, your country's
+domain first (`thepotato.ie`, `thepotato.com` and so on), and each of those
+sites sees one request, as it would if you had typed its address. The
+built-in feed library is searched on the phone.
+
 ### 2. Article pages, if you turn on full-text fetching
 
 Off by default, per-feed or globally. When on, Whisper fetches the article's own

@@ -126,7 +126,9 @@ fun NavigationManager(
             composable<NavRoute.About> { AboutPage() }
             composable<NavRoute.License> { LicensePage() }
             composable<NavRoute.Changelog> { ChangelogPage() }
-            composable<NavRoute.SourceAdd> { SourceAddPage() }
+            composable<NavRoute.SourceAdd> {
+                SourceAddPage(query = it.toRoute<NavRoute.SourceAdd>().query)
+            }
             composable<NavRoute.Categories> { CategoryListPage() }
             composable<NavRoute.Learned> { LearnedPage() }
             composable<NavRoute.Account> { AccountPage() }
@@ -210,7 +212,8 @@ open class NavRoute {
     data object About : NavRoute()
 
     @Serializable
-    data object SourceAdd : NavRoute()
+    /** [query]: a name or address to look for straight away, or nothing. */
+    data class SourceAdd(val query: String = "") : NavRoute()
 
     @Serializable
     data object Categories : NavRoute()

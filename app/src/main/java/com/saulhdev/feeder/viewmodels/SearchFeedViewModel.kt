@@ -18,6 +18,8 @@
 
 package com.saulhdev.feeder.viewmodels
 
+import com.saulhdev.feeder.utils.FeedNameSearch
+import com.saulhdev.feeder.data.LibraryFeed
 import android.os.Parcelable
 import android.util.Log
 import androidx.compose.runtime.Immutable
@@ -119,7 +121,51 @@ class SearchFeedViewModel(
         )
     }.flowOn(Dispatchers.IO)
 
+    /**
+     * Feeds for a name rather than an address; see FeedNameSearch.
+     *
+     * The built-in library first, searched on the phone, then each address
+     * the name most likely has, checked as a typed one is. Results arrive as
+     * found. One failure at the end if nothing turned up, named for what was
+     * typed rather than for the guesses the reader never saw.
+     */
+    fun searchByName(
+        name: String,
+        country: String,
+        library: List<LibraryFeed>,
+    ): Flow<SearchResult> = flow {
+        val seen = mutableSetOf<String>()
+        library.filter { FeedNameSearch.matches(name, it.title, it.url) }
+            .take(LIBRARY_MATCHES)
+            .forEach { feed ->
+                val url = runCatching { sloppyLinkToStrictURL(feed.url) }.getOrNull() ?: return@forEach
+                if (!seen.add(normalizeFeedUrl(url))) return@forEach
+                emit(
+                    SearchResult(
+                        title = feed.title,
+                        url = feed.url,
+                        description = feed.category,
+                        isError = false,
+                        alreadyAdded = sourcesRepo.findSourceByUrl(url) != null,
+                    )
+                )
+            }
+        for (host in FeedNameSearch.candidateHosts(name, country)) {
+            val url = runCatching { URL("https://$host") }.getOrNull() ?: continue
+            searchForFeeds(url).collect { result ->
+                if (result.isError) return@collect
+                val found = runCatching { sloppyLinkToStrictURL(result.url) }.getOrNull() ?: return@collect
+                if (seen.add(normalizeFeedUrl(found))) emit(result)
+            }
+        }
+        if (seen.isEmpty()) {
+            emit(SearchResult(FAILED_TO_PARSE_PLACEHOLDER, name.trim(), "", isError = true))
+        }
+    }.flowOn(Dispatchers.IO)
+
     companion object {
+        /** Library entries shown for one name, at most. */
+        const val LIBRARY_MATCHES = 10
         const val FAILED_TO_PARSE_PLACEHOLDER = "failed_to_parse"
         private const val TAG = "SearchFeedViewModel"
     }
