@@ -47,9 +47,7 @@ One scale, Material's, used by kind of element rather than chosen per screen:
 - Read articles: text 80%, picture about half (decided 25 October).
 
 ### Type
-- Unchanged sizes. Owner's call, from 19 October: whether headlines get
-  heavier. Inter ships Regular, Medium and Bold; SemiBold would need adding
-  if "a bit heavier" is the answer.
+- Unchanged sizes. Headlines SemiBold (§8.1).
 
 ## 2. Loading and progress (1.1.0)
 
@@ -71,8 +69,7 @@ Google's rule: nothing under 200ms, the **loading indicator** from 200ms to
   icon buttons (sizes and shapes from the spec). The filter button is already
   sliders, filled while narrowing (25 October).
 - **Card menu (⋮):** the Expressive menu: rounder (16dp), darker container,
-  the article's source as its header, grouped: *More / Less like this / Not
-  interested* — *Pin / Hide source* — *Share / Why is this here?* Not
+  the article's source as its header, grouped as decided in §8.3. Not
   interested already has its own icon (thumbs-down, 25 October).
 - **Category chips:** unchanged in shape; selection animates with the
   scheme's spring.
@@ -85,7 +82,7 @@ Google's rule: nothing under 200ms, the **loading indicator** from 200ms to
 
 ## 4. Filter sheet (1.1.0)
 
-- Sort order as a **connected button group** rather than a list.
+- Sort order as **connected button groups** with plain labels (§8.4).
 - Predictive back: the sheet shrinks with the gesture rather than vanishing
   at the end.
 - Reset (neutral) and Apply (filled) as a button pair, unchanged in meaning.
@@ -128,15 +125,30 @@ Google's rule: nothing under 200ms, the **loading indicator** from 200ms to
   highlight takes the large shape.
 - **Keyboard and tablets:** focus order, Esc closes, hover states (Tier 2).
 
-## 8. Owner's calls before building
+## 8. Owner's calls (decided 25 October 2026)
 
-1. **Headline weight:** keep Medium, or a step heavier? (Needs SemiBold
-   added if so.)
-2. **Calm or Vivid** on first launch (tinted cards from each picture), or
-   Calm only? Proposal: Calm only for 1.1.0; Vivid later, if at all.
-3. **Card menu groups** as listed in §3: right order?
-4. **Sort order as buttons** in the filter sheet (§4): fine, or keep the
-   list?
+1. **Headline weight: SemiBold**, Expressive's emphasized style. Inter
+   SemiBold to be bundled (about 0.3MB). A comparison build first, checked
+   side by side on two phones before it is final.
+2. **Calm and Expressive, as a preset** in 1.1.0. One step in onboarding:
+   two buttons over a sample card that changes as you choose. Not a
+   separate look but a starting point for ordinary settings, all in
+   Appearance afterwards:
+   - *Calm* (the default): no tint, today's look.
+   - *Expressive*: cards tinted lightly from their picture or the site's
+     icon (Android's Palette library, worked out once per picture and
+     cached), the emphasized headline, livelier card shapes.
+   - Appearance gets a tint switch and a strength slider; subtle even at
+     full strength.
+3. **Card menu, grouped by Material's rule:**
+   - Share · Pin to the top
+   - More like this · Less like this · Why is this here?
+   - Not interested · Hide source
+   with the source's name as the header.
+4. **Sort order as connected button groups:** Sort by (Chronological ·
+   Title · Source), then the direction labelled for what you will see:
+   *Newest first · Oldest first* for dates, *A–Z · Z–A* for names. Not
+   "Ascending / Descending".
 
 ## 9. Order of work
 

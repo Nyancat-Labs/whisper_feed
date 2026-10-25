@@ -3490,6 +3490,12 @@ refresh indicator at its standard 48dp). The menus move to the Expressive
 menu (rounder, the article's source as a header), as Android's own apps
 now have it.
 
+**Owner's calls on the brief, 25 October:** SemiBold headlines (after a
+comparison build); a Calm / Expressive preset in onboarding for 1.1.0; the
+card menu grouped Share·Pin / More·Less·Why / Not interested·Hide source;
+sort order as button groups labelled "Newest first" and "A–Z". All in
+`docs/EXPRESSIVE.md` §8.
+
 **Into stage 2, from the 25 October review:** the Expressive loading
 indicator for pull-to-refresh (the current one blends in); ripples and
 motion from `MaterialExpressiveTheme`; the flexible app bar, which also
