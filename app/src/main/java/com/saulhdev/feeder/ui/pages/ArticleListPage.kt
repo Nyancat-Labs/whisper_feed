@@ -72,6 +72,7 @@ import androidx.compose.material3.adaptive.layout.PaneAdaptedValue
 import androidx.compose.material3.adaptive.navigation.NavigableListDetailPaneScaffold
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -189,7 +190,16 @@ fun ArticleListPage(
     val navController = LocalNavController.current
     val scope = rememberCoroutineScope()
     LaunchedEffect(Unit) { glanceHolder.refreshIfStale() }
-    val scaffoldState = rememberBottomSheetScaffoldState()
+    // Starts, and closes, hidden. With no peek height, Material 3 1.5 gives
+    // the sheet no "partly open" position, but the default state still began
+    // there and closing still asked for it: the app crashed on a back gesture
+    // over the feed (owner's Pixel, 25 October).
+    val scaffoldState = rememberBottomSheetScaffoldState(
+        bottomSheetState = rememberStandardBottomSheetState(
+            initialValue = SheetValue.Hidden,
+            skipHiddenState = false,
+        )
+    )
     val paneNavigator = rememberListDetailPaneScaffoldNavigator<Any>()
     val articleId = remember { mutableStateOf("") }
 
@@ -366,7 +376,7 @@ fun ArticleListPage(
 
     BackHandler(scaffoldState.bottomSheetState.currentValue == SheetValue.Expanded) {
         scope.launch {
-            scaffoldState.bottomSheetState.partialExpand()
+            scaffoldState.bottomSheetState.hide()
         }
     }
 
@@ -414,7 +424,7 @@ fun ArticleListPage(
                                 onBringBack = { viewModel.bringBack(it) },
                             ) {
                                 scope.launch {
-                                    scaffoldState.bottomSheetState.partialExpand()
+                                    scaffoldState.bottomSheetState.hide()
                                 }
                             }
                         } else Spacer(modifier = Modifier.height(8.dp))

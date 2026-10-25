@@ -51,4 +51,14 @@ class ReviewFixesTest {
     fun `the splash is short`() {
         assertTrue(MINIMUM_MS <= 300L)
     }
+
+    @Test
+    fun `the filter sheet never asks for a position it does not have`() {
+        // Peek height 0: Material 3 1.5 builds only Hidden and Expanded, and
+        // a back gesture crashed asking for PartiallyExpanded.
+        val page = read("ui/pages/ArticleListPage.kt")
+        assertTrue(page.contains("sheetPeekHeight = 0.dp"))
+        assertTrue(page.contains("initialValue = SheetValue.Hidden"))
+        assertFalse(page.contains("partialExpand()"))
+    }
 }
