@@ -20,7 +20,7 @@ disagree.
 <a href="https://f-droid.org/packages/com.nyancatlabs.whisper/"><img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" alt="Get it on F-Droid" height="80"></a>
 <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/Nyancat-Labs/whisper_feed"><img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium" height="80"></a>
 
-<a href="https://ko-fi.com/defsix"><img src="https://storage.ko-fi.com/cdn/kofi2.png?v=3" alt="Support Whisper on Ko-fi" height="36"></a>
+<a href="https://ko-fi.com/nyancatlabs"><img src="https://storage.ko-fi.com/cdn/kofi2.png?v=3" alt="Support Whisper on Ko-fi" height="36"></a>
 
 </div>
 
@@ -366,5 +366,5 @@ credits.
 ## Support
 
 Whisper is free, carries no adverts and collects nothing, and that is not going
-to change. If it has earned it, there is [Ko-fi](https://ko-fi.com/defsix) —
+to change. If it has earned it, there is [Ko-fi](https://ko-fi.com/nyancatlabs) —
 nothing in the app is withheld from anyone who ignores it.

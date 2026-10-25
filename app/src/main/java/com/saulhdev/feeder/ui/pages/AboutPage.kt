@@ -451,7 +451,7 @@ private val links = listOf(
  * Ko-fi rather than GitHub Sponsors: it needed no enrolment queue, and it
  * takes nothing from a one-off tip.
  */
-private const val SUPPORT_URL = "https://ko-fi.com/defsix"
+private const val SUPPORT_URL = "https://ko-fi.com/nyancatlabs"
 
 /**
  * Whisper's author.
