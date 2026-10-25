@@ -29,6 +29,8 @@ Unreleased
 - The top bar comes back when you switch to an empty category, and the Undo
   message no longer jumps down a line.
 - **Fixed a crash** closing the filter sheet with the back gesture.
+- **Headlines a step bolder** (SemiBold), in the feed and the reader, so
+  they stand apart from the summary under them. Suggested by a reader.
 - The Ko-fi link goes to ko-fi.com/nyancatlabs, the page's new name.
 - **About leads with Whisper.** The links at the top are Whisper's own;
   Neo Feed and HomeFeeder are rows under "Built on Neo Feed, and on
