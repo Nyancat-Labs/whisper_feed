@@ -54,6 +54,14 @@ import com.saulhdev.feeder.ui.icons.phosphor.ArrowCounterClockwise
 import com.saulhdev.feeder.ui.icons.phosphor.CloudArrowDown
 import com.saulhdev.feeder.ui.icons.phosphor.CloudArrowUp
 import com.saulhdev.feeder.utils.READ_KEEP
+import com.saulhdev.feeder.utils.READ_HIDE
+import com.saulhdev.feeder.utils.READ_DIM
+import com.saulhdev.feeder.utils.READER_TEXT_LARGER
+import com.saulhdev.feeder.utils.READER_TEXT_LARGE
+import com.saulhdev.feeder.utils.READER_TEXT_SMALL
+import com.saulhdev.feeder.utils.TIME_BOTH
+import com.saulhdev.feeder.utils.TIME_CLOCK
+import com.saulhdev.feeder.utils.THEME_LIGHT
 import com.saulhdev.feeder.utils.getReadVisibility
 import com.saulhdev.feeder.ui.icons.phosphor.EyeSlash
 import com.saulhdev.feeder.ui.icons.phosphor.FunnelSimple
@@ -137,7 +145,8 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
         key = OVERLAY_THEME,
         dataStore = dataStore,
         defaultValue = "auto_system",
-        entries = getThemes(context)
+        entries = getThemes(context),
+        buttons = mapOf(THEME_FOLLOW_SYSTEM to R.string.choice_theme_system, THEME_LIGHT to R.string.choice_theme_light, THEME_DARK to R.string.choice_theme_dark),
     )
 
     /**
@@ -185,7 +194,8 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
         key = APP_FONT,
         dataStore = dataStore,
         defaultValue = "inter",
-        entries = getFonts(context)
+        entries = getFonts(context),
+        buttons = mapOf("inter" to R.string.choice_font_inter, "system" to R.string.choice_font_system),
     )
 
     var feedLayout = StringSelectionPref(
@@ -227,6 +237,7 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
         dataStore = dataStore,
         defaultValue = TIME_RELATIVE,
         entries = getTimeFormats(context),
+        buttons = mapOf(TIME_RELATIVE to R.string.choice_time_relative, TIME_CLOCK to R.string.choice_time_clock, TIME_BOTH to R.string.choice_time_both),
     )
 
     /**
@@ -245,6 +256,12 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
         dataStore = dataStore,
         defaultValue = READER_TEXT_DEFAULT,
         entries = getReaderTextSizes(context),
+        buttons = mapOf(
+            READER_TEXT_SMALL to R.string.reader_text_small,
+            READER_TEXT_DEFAULT to R.string.reader_text_default,
+            READER_TEXT_LARGE to R.string.reader_text_large,
+            READER_TEXT_LARGER to R.string.reader_text_larger,
+        ),
     )
 
     /* Glance row */
@@ -314,7 +331,8 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
         entries = mapOf(
             OPEN_MODE_READER to context.getString(R.string.article_open_reader),
             OPEN_MODE_BROWSER to context.getString(R.string.article_open_browser),
-        )
+        ),
+        buttons = mapOf(OPEN_MODE_READER to R.string.choice_open_reader, OPEN_MODE_BROWSER to R.string.choice_open_browser),
     )
 
     /**
@@ -727,7 +745,8 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
         key = READ_VISIBILITY,
         dataStore = dataStore,
         defaultValue = READ_KEEP,
-        entries = getReadVisibility(context)
+        entries = getReadVisibility(context),
+        buttons = mapOf(READ_KEEP to R.string.choice_read_keep, READ_DIM to R.string.choice_read_fade, READ_HIDE to R.string.choice_read_hide),
     )
 
     /**

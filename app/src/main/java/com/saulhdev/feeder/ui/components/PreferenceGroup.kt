@@ -18,6 +18,7 @@
 
 package com.saulhdev.feeder.ui.components
 
+import com.saulhdev.feeder.ui.theme.SEGMENT_GAP
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -71,7 +72,7 @@ fun PreferenceGroup(
     ) {
         prefs.forEachIndexed { i, it ->
             PreferenceBuilder(it, onPrefDialog, i, size)
-            if (i < size - 1) Spacer(modifier = Modifier.height(4.dp))
+            if (i < size - 1) Spacer(modifier = Modifier.height(SEGMENT_GAP))
         }
     }
 }

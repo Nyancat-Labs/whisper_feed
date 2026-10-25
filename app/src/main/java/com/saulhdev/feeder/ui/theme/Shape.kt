@@ -1,6 +1,7 @@
 package com.saulhdev.feeder.ui.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.runtime.Composable
@@ -36,12 +37,19 @@ val WhisperShapes = Shapes(
 
 @Composable
 fun groupItemShape(index: Int, lastIndex: Int) = RoundedCornerShape(
-    topStart = if (index == 0) MaterialTheme.shapes.large.topStart
-    else MaterialTheme.shapes.extraSmall.topStart,
-    topEnd = if (index == 0) MaterialTheme.shapes.large.topEnd
-    else MaterialTheme.shapes.extraSmall.topEnd,
-    bottomStart = if (index == lastIndex) MaterialTheme.shapes.large.bottomStart
-    else MaterialTheme.shapes.extraSmall.bottomStart,
-    bottomEnd = if (index == lastIndex) MaterialTheme.shapes.large.bottomEnd
-    else MaterialTheme.shapes.extraSmall.bottomEnd
+    topStart = if (index == 0) MaterialTheme.shapes.large.topStart else SEGMENT_INNER,
+    topEnd = if (index == 0) MaterialTheme.shapes.large.topEnd else SEGMENT_INNER,
+    bottomStart = if (index == lastIndex) MaterialTheme.shapes.large.bottomStart else SEGMENT_INNER,
+    bottomEnd = if (index == lastIndex) MaterialTheme.shapes.large.bottomEnd else SEGMENT_INNER,
 )
+
+/**
+ * Expressive's segmented list (stage 2, 25 October): rounded outside, nearly
+ * square between rows, and a hairline of background between them, so a group
+ * reads as one block. With 8dp inside and a 4dp gap, every row read as a
+ * card of its own (owner's screenshot of Appearance).
+ */
+val SEGMENT_INNER = CornerSize(4.dp)
+
+/** The gap between rows of one group. See [SEGMENT_INNER]. */
+val SEGMENT_GAP = 2.dp

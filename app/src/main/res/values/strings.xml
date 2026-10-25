@@ -22,6 +22,19 @@
     <string name="layout_cards">Cards</string>
     <string name="layout_magazine">Magazine</string>
     <string name="layout_list">List</string>
+    <string name="choice_theme_system">System</string>
+    <string name="choice_theme_light">Light</string>
+    <string name="choice_theme_dark">Dark</string>
+    <string name="choice_font_inter" translatable="false">Inter</string>
+    <string name="choice_font_system">System</string>
+    <string name="choice_time_relative">2h</string>
+    <string name="choice_time_clock">14:32</string>
+    <string name="choice_time_both">Both</string>
+    <string name="choice_open_reader">Reader</string>
+    <string name="choice_open_browser">Browser</string>
+    <string name="choice_read_keep">Keep</string>
+    <string name="choice_read_fade">Fade</string>
+    <string name="choice_read_hide">Hide</string>
     <string name="layout_list_pictures">List with pictures</string>
     <string name="layout_mosaic">Mosaic</string>
     <string name="source_pin">Pin to the top</string>

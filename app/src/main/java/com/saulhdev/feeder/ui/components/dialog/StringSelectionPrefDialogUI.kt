@@ -18,6 +18,8 @@
 
 package com.saulhdev.feeder.ui.components.dialog
 
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.material3.AlertDialog
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -53,6 +55,14 @@ import com.saulhdev.feeder.data.content.StringSelectionPref
 import com.saulhdev.feeder.utils.extensions.blockShadow
 import kotlinx.coroutines.launch
 
+/**
+ * A choice from a list too long for a row of buttons.
+ *
+ * Material's own AlertDialog (stage 2, 25 October): the app had two dialog
+ * systems, this one hand-built on a bare Dialog with its own card, and
+ * Material's everywhere else. One system now, so every dialog has the same
+ * shape, colours, width and button placement.
+ */
 @Composable
 fun StringSelectionPrefDialogUI(
     pref: StringSelectionPref,
@@ -61,25 +71,11 @@ fun StringSelectionPrefDialogUI(
     var selected by remember { mutableStateOf(pref.peekOrDefault()) }
     val entryPairs = pref.entries.toList()
 
-    val scope = rememberCoroutineScope()
-
-    Card(
-        shape = MaterialTheme.shapes.extraLarge,
-        modifier = Modifier.padding(8.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)
-    ) {
-        Column(
-            modifier = Modifier.padding(vertical = 16.dp, horizontal = 8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Text(text = stringResource(pref.titleId), style = MaterialTheme.typography.titleLarge)
-            LazyColumn(
-                modifier = Modifier
-                    .padding(top = 16.dp, bottom = 8.dp)
-                    .weight(1f, false)
-                    .blockShadow(),
-            ) {
+    AlertDialog(
+        onDismissRequest = { openDialogCustom.value = false },
+        title = { Text(text = stringResource(pref.titleId)) },
+        text = {
+            LazyColumn(modifier = Modifier.selectableGroup()) {
                 items(items = entryPairs, key = { it.first }) {
                     SingleSelectionListItem(
                         text = it.second,
@@ -89,32 +85,21 @@ fun StringSelectionPrefDialogUI(
                     }
                 }
             }
-
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
-                horizontalArrangement = Arrangement.End
-            ) {
-                DialogNegativeButton(
-                    onClick = { openDialogCustom.value = false }
-                )
-                DialogPositiveButton(
-                    modifier = Modifier.padding(start = 16.dp),
-                    onClick = {
-                        // Both on this thread and in this order, because
-                        // the previous version raced itself: closing the
-                        // dialog removes the composable, which cancels the
-                        // scope this launched in, so the write that came after
-                        // it could simply never happen. set() writes on a
-                        // scope that outlives the dialog.
-                        pref.set(selected)
-                        openDialogCustom.value = false
-                    }
-                )
-            }
-        }
-    }
+        },
+        confirmButton = {
+            DialogPositiveButton(
+                onClick = {
+                    // set() writes on a scope that outlives the dialog, so
+                    // closing it straight after cannot cancel the write.
+                    pref.set(selected)
+                    openDialogCustom.value = false
+                }
+            )
+        },
+        dismissButton = {
+            DialogNegativeButton(onClick = { openDialogCustom.value = false })
+        },
+    )
 }
 
 @Composable

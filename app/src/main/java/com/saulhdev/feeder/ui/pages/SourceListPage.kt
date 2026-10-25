@@ -640,8 +640,8 @@ fun SourceListPage(
                         modifier = Modifier
                             .fillMaxSize(),
                         contentPadding = PaddingValues(
-                            start = 8.dp,
-                            end = 8.dp,
+                            start = 16.dp,
+                            end = 16.dp,
                             top = paddingValues.calculateTopPadding(),
                             // Clear of the gesture bar and of the add button
                             // over the list's end (design audit, 21 October).

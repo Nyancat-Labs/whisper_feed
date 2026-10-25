@@ -101,17 +101,17 @@ Google's rule: nothing under 200ms, the **loading indicator** from 200ms to
 - The comments button: unchanged, at the end.
 - Top bar: **flexible app bar** that collapses as you read.
 
-## 6. Settings (stage 2: the parts marked 1.0.6 go first)
+## 6. Settings (stage 2: the parts marked 1.0.6 go first; ✅ built 25 October)
 
-- **Flexible app bars** (large title that collapses). This also stops the
+- ✅ **Flexible app bars** (large title that collapses). This also stops the
   top page's title collapsing when everything already fits. *1.0.6*
-- **Segmented groups:** each page's rows in rounded groups, outer corners
+- ✅ **Segmented groups:** each page's rows in rounded groups, outer corners
   large, inner corners small. *1.0.6*
-- **One 16dp margin** on every page (Sources, Add source and the filter sheet
+- ✅ **One 16dp margin** on every page (Sources, Add source and the filter sheet
   are 8 today; About 12). *1.0.6*
-- **Short choices as connected button groups,** not dialogs: Feed layout,
+- ✅ **Short choices as connected button groups,** not dialogs: Feed layout,
   Article times, Article text size, Theme. *1.0.6*
-- **One dialog system:** Material's `AlertDialog` everywhere; the hand-made
+- ✅ **One dialog system:** Material's `AlertDialog` everywhere; the hand-made
   `BaseDialog` goes. *1.0.6*
 - **Master switch** heading pages that are off until turned on: a large
   pill switch (Backup, Account; AI summaries when it exists). *1.1.0*

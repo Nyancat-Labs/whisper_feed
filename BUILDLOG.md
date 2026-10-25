@@ -8,6 +8,25 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 25 October 2026 — Stage 2, Settings (for 1.0.6)
+
+- `ViewWithActionBar` large titles: `LargeFlexibleTopAppBar` (Expressive),
+  with the subtitle in its own slot. Smaller expanded height than
+  `LargeTopAppBar`, which should also stop the top Settings page scrolling
+  when it fits: to be checked on the Pixel.
+- Segmented list: `groupItemShape` inner corners 4dp (`SEGMENT_INNER`, was
+  the theme's 8dp extraSmall) and a 2dp gap (`SEGMENT_GAP`, was 4dp).
+- Margins: About (8 plus some cards' own 8, now 16 for all), Sources (8 →
+  16), the filter sheet (8 → 16). Add source was already 16 in effect.
+- `StringSelectionPref.buttons`: short labels by value. Set, the row draws
+  a connected button group (`ChoiceButtons`: `ToggleButton` with
+  `ButtonGroupDefaults.connected*ButtonShapes`, radio semantics) instead of
+  opening a dialog. On Theme, Font, Article times, Article text size, Open
+  articles in, Read articles. Feed layout (five) keeps the dialog.
+- One dialog system: the choice dialog is Material's `AlertDialog`;
+  `BaseDialog` deleted.
+- `SettingsStage2Test`. 1268 passing, lint clean.
+
 ## 25 October 2026 — SemiBold headlines; pictures in List
 
 - SemiBold approved by the owner after a side-by-side trial and pushed.

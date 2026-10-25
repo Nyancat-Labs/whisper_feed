@@ -114,7 +114,7 @@ fun SortFilterSheet(
         contentColor = MaterialTheme.colorScheme.onBackground,
         bottomBar = {
             Column(
-                modifier = Modifier.padding(horizontal = 8.dp)
+                modifier = Modifier.padding(horizontal = 16.dp)
             ) {
                 HorizontalDivider(thickness = 2.dp)
                 Row(
@@ -179,7 +179,7 @@ fun SortFilterSheet(
                 .nestedScroll(nestedScrollConnection)
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(8.dp)
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
         ) {
             item {
                 ExpandableItemsBlock(

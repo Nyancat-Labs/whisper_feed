@@ -18,6 +18,7 @@
 
 package com.saulhdev.feeder.ui.pages
 
+import com.saulhdev.feeder.ui.theme.SEGMENT_GAP
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.imePadding
@@ -345,7 +346,7 @@ fun SourceEditView(
                 index = 0,
                 groupSize = 3
             )
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(SEGMENT_GAP))
             ComposeSwitchView(
                 titleId = R.string.source_enabled,
                 summaryId = R.string.source_enabled_summary,
@@ -357,7 +358,7 @@ fun SourceEditView(
                 index = 1,
                 groupSize = 3
             )
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(SEGMENT_GAP))
             // Off with no category, the source would only turn up in search,
             // so the line under the switch says so while that is the case.
             val uncategorised = editState.value.tag.split(",").none { it.isNotBlank() }

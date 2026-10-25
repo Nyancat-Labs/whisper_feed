@@ -20,6 +20,7 @@
 package com.saulhdev.feeder.ui.pages
 
 
+import com.saulhdev.feeder.ui.theme.SEGMENT_GAP
 import androidx.core.graphics.createBitmap
 import androidx.compose.ui.platform.LocalResources
 import android.content.ActivityNotFoundException
@@ -99,8 +100,11 @@ fun AboutPage() {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-            contentPadding = PaddingValues(8.dp),
+            verticalArrangement = Arrangement.spacedBy(SEGMENT_GAP),
+            // 16 at the sides, as on every page (stage 2). It was 8 here, with
+            // some cards adding their own 8 and others not, which is the
+            // uneven width the owner saw on 19 October.
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
         ) {
             item {
                 Column(
@@ -187,7 +191,7 @@ fun AboutPage() {
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(start = 8.dp, end = 8.dp, bottom = 12.dp),
+                            .padding(bottom = 12.dp),
                     ) {
                         links.forEach { link ->
                             LinkItem(
@@ -213,8 +217,7 @@ fun AboutPage() {
                         containerColor = MaterialTheme.colorScheme.surfaceContainer,
                     ),
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp),
+                        .fillMaxWidth(),
                 ) {
                     Text(
                         text = stringResource(R.string.about_contact_summary),
@@ -270,8 +273,7 @@ fun AboutPage() {
                         containerColor = MaterialTheme.colorScheme.surfaceContainer,
                     ),
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp),
+                        .fillMaxWidth(),
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
@@ -327,7 +329,7 @@ private fun UpdateCheckRows(prefs: FeedPreferences = koinInject()) {
     val context = LocalContext.current
     val latest by prefs.latestRelease.get().collectAsState(initial = "")
     val checking by prefs.checkForUpdates.get().collectAsState(initial = false)
-    Column(modifier = Modifier.padding(horizontal = 8.dp)) {
+    Column {
         SwitchPreference(
             pref = prefs.checkForUpdates,
             index = 0,

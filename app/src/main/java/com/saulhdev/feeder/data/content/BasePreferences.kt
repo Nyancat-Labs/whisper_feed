@@ -54,7 +54,13 @@ class StringSelectionPref(
     val key: Preferences.Key<String>,
     val dataStore: DataStore<Preferences>,
     val defaultValue: String = "",
-    val entries: Map<String, String>
+    val entries: Map<String, String>,
+    /**
+     * Short labels, by value, when the choice is drawn as a row of buttons
+     * rather than a dialog (Expressive's connected button group, stage 2).
+     * Null keeps the dialog: for long lists, or labels that need a sentence.
+     */
+    val buttons: Map<String, Int>? = null,
 ) : PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue)
 
 class StringSetPref(

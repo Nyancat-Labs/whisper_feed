@@ -17,6 +17,7 @@
  */
 package com.saulhdev.feeder.ui.pages
 
+import com.saulhdev.feeder.ui.theme.SEGMENT_GAP
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -44,7 +45,6 @@ import com.saulhdev.feeder.ui.components.BackgroundDataHint
 import com.saulhdev.feeder.ui.components.PreferenceBuilder
 import com.saulhdev.feeder.ui.components.PreferenceGroup
 import com.saulhdev.feeder.ui.components.ViewWithActionBar
-import com.saulhdev.feeder.ui.components.dialog.BaseDialog
 import com.saulhdev.feeder.ui.components.dialog.StringSelectionPrefDialogUI
 import com.saulhdev.feeder.ui.icons.Phosphor
 import com.saulhdev.feeder.ui.icons.phosphor.BookOpenUser
@@ -195,7 +195,7 @@ fun SettingsSectionPage(section: SettingsSection, prefs: FeedPreferences = koinI
                 PreferenceGroup {
                     rows.forEachIndexed { i, pref ->
                         PreferenceBuilder(pref, onPrefDialog, i, rows.size)
-                        if (i < rows.size - 1) Spacer(modifier = Modifier.height(4.dp))
+                        if (i < rows.size - 1) Spacer(modifier = Modifier.height(SEGMENT_GAP))
                     }
                 }
                 if (section == SettingsSection.FETCHING) {
@@ -207,13 +207,11 @@ fun SettingsSectionPage(section: SettingsSection, prefs: FeedPreferences = koinI
         }
 
         if (openDialog.value) {
-            BaseDialog(openDialogCustom = openDialog) {
-                when (dialogPref) {
-                    is StringSelectionPref -> StringSelectionPrefDialogUI(
-                        pref = dialogPref as StringSelectionPref,
-                        openDialogCustom = openDialog,
-                    )
-                }
+            when (dialogPref) {
+                is StringSelectionPref -> StringSelectionPrefDialogUI(
+                    pref = dialogPref as StringSelectionPref,
+                    openDialogCustom = openDialog,
+                )
             }
         }
     }

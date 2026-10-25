@@ -18,6 +18,7 @@
 
 package com.saulhdev.feeder.ui.pages
 
+import com.saulhdev.feeder.ui.theme.SEGMENT_GAP
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.Composable
 import com.saulhdev.feeder.ui.components.ActionPreference
@@ -121,7 +122,7 @@ fun PreferencesPage(
                             startWidget = { PreferenceIcon(icon = section.icon, contentDescription = null) },
                             onClick = { navController.navigate(NavRoute.SettingsSection(section.name)) },
                         )
-                        Spacer(modifier = Modifier.height(4.dp))
+                        Spacer(modifier = Modifier.height(SEGMENT_GAP))
                     }
                     // Its own row: the credits, licences and
                     // ways to get in touch are a page's worth on their own.

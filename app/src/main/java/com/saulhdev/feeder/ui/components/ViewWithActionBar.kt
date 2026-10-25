@@ -40,7 +40,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.LargeFlexibleTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarDefaults.enterAlwaysScrollBehavior
@@ -60,7 +61,7 @@ import com.saulhdev.feeder.R
 import com.saulhdev.feeder.ui.icons.Phosphor
 import com.saulhdev.feeder.ui.icons.phosphor.ArrowLeft
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ViewWithActionBar(
     title: String,
@@ -151,8 +152,21 @@ fun ViewWithActionBar(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             if (largeTitle) {
-                LargeTopAppBar(
-                    title = { titleContent() },
+                // Expressive's flexible app bar (stage 2, 25 October): its own
+                // type scale and heights, a real subtitle slot, and a smaller
+                // expanded height than LargeTopAppBar, so a page that fits on
+                // the screen no longer scrolls just to collapse its title.
+                LargeFlexibleTopAppBar(
+                    title = {
+                        Text(
+                            text = title,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    },
+                    subtitle = if (subTitle.isNotEmpty()) {
+                        { Text(text = subTitle, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+                    } else null,
                     navigationIcon = { navContent() },
                     actions = actions,
                     colors = TopAppBarDefaults.topAppBarColors(

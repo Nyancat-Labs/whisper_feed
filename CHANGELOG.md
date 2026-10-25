@@ -9,6 +9,12 @@ Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 Unreleased
 ----------
 
+- **Settings, the Expressive look (first part).** Page titles use the new
+  flexible app bar. Each group of settings reads as one rounded block.
+  Every page has the same margins. Short choices are buttons you can see
+  and tap directly (Theme, Font, Article times, Article text size, Open
+  articles in, Read articles), instead of a pop-up; longer lists keep the
+  pop-up, now in the same style as every other dialog.
 - **Licence and changelog, in the app's own look.** Both were web pages in
   grey and orange whatever your theme. The licence page also named Neo
   Feed's author and source; it now gives Whisper's, with Neo Feed and
