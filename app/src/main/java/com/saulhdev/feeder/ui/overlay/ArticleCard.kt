@@ -310,7 +310,7 @@ fun ArticleCard(
                 // Medium rather than bold: at a headline's size the weight
                 // closed the letters up, and a two-line title read as a block.
                 // The size and the summary below still set it apart.
-                fontWeight = FontWeight.Medium,
+                fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.padding(
                     top = if (coverage != null || item.pinned) 6.dp else 0.dp
@@ -390,7 +390,7 @@ fun ArticleCompactRow(
                 Text(
                     text = item.contentTitle,
                     style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Medium,
+                    fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 3,
                     overflow = TextOverflow.Ellipsis,
@@ -488,7 +488,7 @@ fun ArticleTextRow(
                 Text(
                     text = item.contentTitle,
                     style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Medium,
+                    fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
@@ -632,7 +632,7 @@ fun ArticleMosaicTile(
                 text = item.contentTitle,
                 style = if (large) MaterialTheme.typography.titleMedium
                 else MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Medium,
+                fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = when (size) {
                     FeedEmphasis.Small  -> 2

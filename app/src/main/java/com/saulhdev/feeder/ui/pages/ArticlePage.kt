@@ -352,7 +352,7 @@ fun ArticlePage(
                                 text = title,
                                 style = MaterialTheme.typography.headlineMedium,
                                 // Medium, as the cards' headlines are.
-                                fontWeight = FontWeight.Medium,
+                                fontWeight = FontWeight.SemiBold,
                                 modifier = Modifier
                                     .fillMaxWidth()
                             )
