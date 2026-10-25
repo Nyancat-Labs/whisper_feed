@@ -8,6 +8,18 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 25 October 2026 — SemiBold headlines; pictures in List
+
+- SemiBold approved by the owner after a side-by-side trial and pushed.
+  It went to main before the full suite ran: two source tests still
+  expected Medium and failed on main for one commit (ca25e77a). Fixed in
+  the next commit. Run the full suite before every push to main, trial or
+  not.
+- `listPictures` (Appearance, off by default): a 56dp picture at the right
+  of List's rows, `LIST_PICTURE_SIZE`. Off loads nothing. Phosphor Image
+  icon added.
+- 1263 passing, lint clean.
+
 ## 25 October 2026 — Support: Ko-fi renamed, GitHub Sponsors submitted
 
 - Ko-fi is ko-fi.com/nyancatlabs now (was defsix): README, FUNDING.yml and

@@ -84,11 +84,11 @@ class CardReadabilityTest {
     }
 
     @Test
-    fun `headlines are medium weight in every shape`() {
+    fun `headlines are semibold in every shape`() {
         val titles = Regex("""text = item\.contentTitle,(?:\n[^\n]*){1,12}?\n\s*fontWeight = FontWeight\.(\w+)""")
             .findAll(cards).map { it.groupValues[1] }.toList()
         assertEquals("card, compact row, text row and tile", 4, titles.size)
-        assertEquals(listOf("Medium"), titles.distinct())
+        assertEquals("SemiBold since 25 October (owner)", listOf("SemiBold"), titles.distinct())
     }
 
     @Test

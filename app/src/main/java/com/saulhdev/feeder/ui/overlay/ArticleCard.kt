@@ -454,9 +454,10 @@ fun ArticleCompactRow(
 /**
  * The List layout's row: headline, source, nothing else.
  *
- * No thumbnail at any width — that is the point of the layout rather than a
- * limitation of it. Images are what make a feed slow to get through, and this
- * is the shape for getting through a backlog.
+ * No thumbnail unless the reader asks for one: images are what make a feed
+ * slow to get through, and this is the shape for getting through a backlog.
+ * With Settings → Small pictures in List on, a 56dp picture sits at the
+ * right; off, nothing is downloaded at all.
  */
 @Composable
 fun ArticleTextRow(
@@ -503,6 +504,21 @@ fun ArticleTextRow(
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     iconUrl = item.feedIconUrl,
+                )
+            }
+            val image = item.imageUrl
+            if (rememberListPictures() && !image.isNullOrBlank()) {
+                Spacer(Modifier.width(12.dp))
+                AsyncImage(
+                    alpha = LocalPictureFade.current,
+                    model = image,
+                    contentDescription = null,
+                    placeholder = painterResource(articlePlaceholder()),
+                    error = painterResource(articlePlaceholder()),
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(LIST_PICTURE_SIZE)
+                        .clip(MaterialTheme.shapes.medium),
                 )
             }
             CardActions {
@@ -853,6 +869,9 @@ val CARD_MARGIN = 16.dp
  * does most of the separating, and the strip only has to show it is there.
  */
 val CARD_PANEL_GAP = 3.dp
+
+/** List's picture, when it has one: small enough that rows hardly grow. */
+val LIST_PICTURE_SIZE = 56.dp
 
 /**
  * How far a read article fades, when the reader has asked for that.

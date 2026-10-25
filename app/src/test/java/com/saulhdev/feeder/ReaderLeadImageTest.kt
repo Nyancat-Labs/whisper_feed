@@ -114,7 +114,7 @@ class ReaderLeadImageTest {
         val byline = page.indexOf("ArticleMeta(")
         assertTrue(picture in 1 until headline && headline < byline)
         assertTrue(page.contains(".bleed(CARD_MARGIN)"))
-        assertTrue(page.contains("fontWeight = FontWeight.Medium,"))
+        assertTrue(page.contains("fontWeight = FontWeight.SemiBold,"))
         // Either side of the line break, whatever the indentation.
         assertTrue("the date line is quiet", Regex("""style = MaterialTheme\.typography\.bodySmall,\s+color = MaterialTheme\.colorScheme\.onSurfaceVariant,""").containsMatchIn(page))
         assertTrue("the body is read once, for both", Regex("""readerBodyText\(\s+article = article,""").containsMatchIn(page))

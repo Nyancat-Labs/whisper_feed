@@ -61,7 +61,7 @@ class ImageSizingTest {
         // would be a second, less precise copy of the same number.
         val source = read("ui/overlay/ArticleCard.kt")
         val sites = callSites(source, "AsyncImage(")
-        assertTrue("ArticleCard's images moved", sites.size == 3)
+        assertTrue("ArticleCard's images moved", sites.size == 4)
 
         var from = 0
         sites.forEachIndexed { index, site ->

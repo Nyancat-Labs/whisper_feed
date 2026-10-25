@@ -84,4 +84,14 @@ class ReviewFixesTest {
         assertTrue(iconOf("overlayTransparency") != iconOf("showSummaries"))
         assertTrue(iconOf("blockedWords") != "Hash" && iconOf("itemsPerFeed") != "Hash")
     }
+
+    @Test
+    fun `List shows pictures only when asked, small, and downloads nothing otherwise`() {
+        val card = read("ui/overlay/ArticleCard.kt")
+        val row = card.substringAfter("fun ArticleTextRow(").substringBefore("fun ArticleMosaicTile(")
+        assertTrue(row.contains("if (rememberListPictures() && !image.isNullOrBlank())"))
+        assertTrue(row.contains(".size(LIST_PICTURE_SIZE)"))
+        val prefs = read("data/content/FeedPreferences.kt")
+        assertTrue(prefs.substringAfter("val listPictures = BooleanPref(").substringBefore(")\n").contains("defaultValue = false"))
+    }
 }

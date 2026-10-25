@@ -31,6 +31,10 @@ Unreleased
 - **Fixed a crash** closing the filter sheet with the back gesture.
 - **Headlines a step bolder** (SemiBold), in the feed and the reader, so
   they stand apart from the summary under them. Suggested by a reader.
+- **Small pictures in List, if you want them.** Settings → Appearance →
+  Small pictures in List puts a small picture beside each headline. Off by
+  default: List stays the fast, picture-free way through a backlog, and
+  downloads no pictures at all unless you turn it on.
 - The Ko-fi link goes to ko-fi.com/nyancatlabs, the page's new name.
 - **About leads with Whisper.** The links at the top are Whisper's own;
   Neo Feed and HomeFeeder are rows under "Built on Neo Feed, and on
