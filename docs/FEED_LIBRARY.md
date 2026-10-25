@@ -266,3 +266,22 @@ carried were each replaced with a feed on the same subject that passed the
 usual check (https after redirects, a real feed with items, a post within 45
 days), so every pack keeps its size. A test fails if a Reddit feed is added
 back.
+
+## Publisher requests
+
+How a publisher asking to be included is answered (first case: Joho no
+Todai, 25 October 2026, who asked that Whisper show only name, headline,
+date, description and link, with no full text, images or derived features).
+
+- **Said plainly:** the library is a list of addresses inside the app; each
+  reader's phone fetches the feed itself. Nothing is ingested, stored,
+  redistributed, used for training or licensed.
+- **Offered:** the publisher's own feed decides what Whisper shows from it.
+  A feed with no body or images shows none.
+- **Not offered:** guarantees beyond the feed. Full text, text size and any
+  on-device feature are the reader's to turn on, and Whisper keeps no
+  per-publisher rules (owner's principle: general rules only).
+- **Terms:** free, no account, no link back; removed in the next release on
+  request. Copies already installed keep the entry until they update, and
+  readers keep subscriptions they made.
+- Added only once the feed address exists and is checked like every other.
