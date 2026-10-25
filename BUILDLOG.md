@@ -8,6 +8,22 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 25 October 2026 — Support: Ko-fi renamed, GitHub Sponsors submitted
+
+- Ko-fi is ko-fi.com/nyancatlabs now (was defsix): README, FUNDING.yml and
+  About updated. 1.0.5 as released still links the old name until 1.0.6.
+- GitHub Sponsors set up by the owner on the Nyancat-Labs organisation:
+  Stripe connected, profile written (logo for light and dark mode), tiers
+  $2, $5 and $10 monthly, $5 one-time, custom amounts on. No rewards on any
+  tier, as decided. Submitted 25 October; pending GitHub's review.
+- **When approved:** `github: Nyancat-Labs` in FUNDING.yml, Sponsors in the
+  README's Support section, a second link on About's Support card. Not
+  before: the sponsors page does not exist until it is published.
+- The README has the Ko-fi button under the store badges. About's header
+  keeps Whisper's own links; Neo Feed and HomeFeeder are rows under "Built
+  on…". Not interested has a thumbs-down. `docs/EXPRESSIVE.md`, the
+  design brief, waits on four owner's calls.
+
 ## 25 October 2026 — A crash, button tones, the rest of the icons
 
 - Crash on the Pixel (Android 17): back over the feed while the filter
