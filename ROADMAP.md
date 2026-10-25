@@ -3490,6 +3490,10 @@ refresh indicator at its standard 48dp). The menus move to the Expressive
 menu (rounder, the article's source as a header), as Android's own apps
 now have it.
 
+**Reminder for the end of the overhaul (owner, 25 October):** refresh the
+store artwork (Play screenshots and feature graphic, fastlane images for
+F-Droid and IzzyOnDroid, README) from the finished look.
+
 **Owner's calls on the brief, 25 October:** SemiBold headlines (after a
 comparison build); a Calm / Expressive preset in onboarding for 1.1.0; the
 card menu grouped Share·Pin / More·Less·Why / Not interested·Hide source;

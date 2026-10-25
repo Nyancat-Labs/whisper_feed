@@ -162,6 +162,10 @@ Google's rule: nothing under 200ms, the **loading indicator** from 200ms to
 2. 1.1.0: foundations (§1), loading (§2), then screen by screen: feed, filter
    sheet, reader, settings' remaining items, the rest.
 3. Each step: a preview build, checked on the owner's Pixel before the next.
+4. **When the overhaul is complete (owner, 25 October): update the store
+   artwork.** New screenshots and feature graphic for Google Play, the
+   F-Droid/IzzyOnDroid metadata (`fastlane/metadata/android/en-US/images`)
+   and the README, all from the finished 1.1.0 look. Remind the owner then.
 
 ## Sources
 
