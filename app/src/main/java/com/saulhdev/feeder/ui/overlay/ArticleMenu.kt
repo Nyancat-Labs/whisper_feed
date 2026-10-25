@@ -47,6 +47,7 @@ import com.saulhdev.feeder.ui.icons.Phosphor
 import com.saulhdev.feeder.ui.icons.phosphor.DotsThreeVertical
 import com.saulhdev.feeder.ui.icons.phosphor.Asterisk
 import com.saulhdev.feeder.ui.icons.phosphor.EyeSlash
+import com.saulhdev.feeder.ui.icons.phosphor.ThumbsDown
 import com.saulhdev.feeder.ui.icons.phosphor.Info
 import com.saulhdev.feeder.ui.icons.phosphor.Prohibit
 import com.saulhdev.feeder.ui.icons.phosphor.ShareNetwork
@@ -129,7 +130,7 @@ fun ArticleOverflowMenu(
             // The swipe's twin, for anyone who would rather not swipe and
             // for anyone who does not know the swipe is there.
             if (onNotInterested != null) {
-                MenuEntry(R.string.not_interested, Phosphor.EyeSlash) {
+                MenuEntry(R.string.not_interested, Phosphor.ThumbsDown) {
                     expanded = false
                     onNotInterested()
                 }

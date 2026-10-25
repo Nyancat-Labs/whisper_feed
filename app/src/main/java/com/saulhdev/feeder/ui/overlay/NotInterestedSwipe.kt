@@ -60,7 +60,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.saulhdev.feeder.R
 import com.saulhdev.feeder.ui.icons.Phosphor
-import com.saulhdev.feeder.ui.icons.phosphor.EyeSlash
+import com.saulhdev.feeder.ui.icons.phosphor.ThumbsDown
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 
@@ -141,7 +141,7 @@ fun NotInterestedSwipe(
             horizontalArrangement = Arrangement.Start,
         ) {
             Icon(
-                imageVector = Phosphor.EyeSlash,
+                imageVector = Phosphor.ThumbsDown,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSecondaryContainer,
                 modifier = Modifier.size(22.dp),

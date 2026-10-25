@@ -1,6 +1,6 @@
 package com.saulhdev.feeder.ui.pages
 
-import com.saulhdev.feeder.ui.icons.phosphor.EyeSlash
+import com.saulhdev.feeder.ui.icons.phosphor.ThumbsDown
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.material3.TextButton
@@ -315,7 +315,7 @@ private fun DismissedTodayBlock(
     ExpandableItemsBlock(
         heading = stringResource(R.string.dismissed_today) +
             if (items.isNotEmpty()) " \u00b7 ${items.size}" else "",
-        icon = Phosphor.EyeSlash,
+        icon = Phosphor.ThumbsDown,
         preExpanded = false,
     ) {
         Text(
