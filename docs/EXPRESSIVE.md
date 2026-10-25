@@ -78,6 +78,10 @@ Google's rule: nothing under 200ms, the **loading indicator** from 200ms to
 - **Swipe for Not interested:** unchanged behaviour; its spring from the
   scheme.
 - **Undo message:** the standard snackbar, now fixed in place (25 October).
+- **Save and ⋮ on List rows:** they take two 48dp touch targets, which
+  narrows List's headlines, most of all in List with pictures. Re-evaluate
+  once the Expressive icon-button sizes are in (owner, 25 October). If still
+  cramped: move Save into the ⋮ menu in the two List layouts only.
 - **Panel (Lawnchair):** the same, through the same components.
 
 ## 4. Filter sheet (1.1.0)
@@ -90,6 +94,8 @@ Google's rule: nothing under 200ms, the **loading indicator** from 200ms to
 
 ## 5. Reader (1.1.0)
 
+- Feed layout now has five choices (List with pictures added 25 October):
+  as buttons, likely a vertical group rather than one row.
 - Text size (Small / Default / Large / Larger) moves from a dialog to a
   connected button group in Settings → Reading.
 - The comments button: unchanged, at the end.
