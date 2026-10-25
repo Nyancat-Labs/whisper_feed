@@ -18,6 +18,17 @@
 package com.saulhdev.feeder.ui.pages
 
 import android.net.Uri
+import com.saulhdev.feeder.ui.icons.phosphor.UploadSimple
+import com.saulhdev.feeder.ui.icons.phosphor.DownloadSimple
+import com.saulhdev.feeder.ui.icons.phosphor.ArrowCounterClockwise
+import com.saulhdev.feeder.ui.icons.phosphor.Archive
+import com.saulhdev.feeder.ui.icons.phosphor.Folder
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.Role
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.material3.Checkbox
+import androidx.annotation.StringRes
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -63,11 +74,6 @@ import com.saulhdev.feeder.ui.components.OutlinedActionButton
 import com.saulhdev.feeder.ui.components.SwitchPreference
 import com.saulhdev.feeder.ui.components.ViewWithActionBar
 import com.saulhdev.feeder.ui.icons.Phosphor
-import com.saulhdev.feeder.ui.icons.phosphor.Bookmarks
-import com.saulhdev.feeder.ui.icons.phosphor.CloudArrowDown
-import com.saulhdev.feeder.ui.icons.phosphor.CloudArrowUp
-import com.saulhdev.feeder.ui.icons.phosphor.Nut
-import com.saulhdev.feeder.ui.icons.phosphor.PaintRoller
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -143,26 +149,51 @@ fun BackupPage(
         }
     }
 
-    val chooseSettings = rememberLauncherForActivityResult(
-        ActivityResultContracts.OpenDocument()
-    ) { uri: Uri? ->
-        if (uri == null) return@rememberLauncherForActivityResult
-        scope.launch { report(store.restoreSettings(uri), context) { say(it) } }
+    // Restore: what to bring back is ticked first, then the folder is
+    // chosen. It was three buttons, one per file, each opening a file
+    // picker; people come here with a situation (a new phone), not a file
+    // type (owner, 25 October).
+    var restoring by remember { mutableStateOf(false) }
+    var restoreParts by remember {
+        mutableStateOf(setOf(BackupStore.Part.SOURCES, BackupStore.Part.SAVED))
     }
 
-    val chooseSaved = rememberLauncherForActivityResult(
-        ActivityResultContracts.OpenDocument()
+    val chooseRestoreFolder = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocumentTree()
     ) { uri: Uri? ->
         if (uri == null) return@rememberLauncherForActivityResult
-        scope.launch { report(store.restoreSaved(uri), context) { say(it) } }
+        val parts = restoreParts
+        scope.launch { report(store.restoreFolder(uri, parts), context) { say(it) } }
     }
 
-    val chooseBackup = rememberLauncherForActivityResult(
+    // Any OPML, not only one Whisper wrote: somebody arriving from another
+    // reader has an export of their own, and it is the same format.
+    val importSources = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocument()
     ) { uri: Uri? ->
         if (uri == null) return@rememberLauncherForActivityResult
         scope.launch { report(store.restore(uri), context) { say(it) } }
     }
+
+    val exportSources = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument(BackupStore.MIME_TYPE)
+    ) { uri: Uri? ->
+        if (uri == null) return@rememberLauncherForActivityResult
+        scope.launch { report(store.exportSources(uri), context) { say(it) } }
+    }
+
+    if (restoring) {
+        RestoreDialog(
+            parts = restoreParts,
+            onPartsChange = { restoreParts = it },
+            onDismiss = { restoring = false },
+            onConfirm = {
+                restoring = false
+                chooseRestoreFolder.launch(null)
+            },
+        )
+    }
+
 
     existing?.let { uri ->
         AlertDialog(
@@ -285,6 +316,8 @@ fun BackupPage(
                 }
             }
 
+            item { SectionHeading(R.string.backup_heading_where) }
+
             item {
                 Text(
                     text = when {
@@ -307,19 +340,11 @@ fun BackupPage(
             }
 
             item {
-                Text(
-                    text = stringResource(R.string.backup_heading_where),
-                    style = MaterialTheme.typography.titleSmall,
-                    modifier = Modifier.padding(top = 16.dp),
-                )
-            }
-
-            item {
                 ActionButton(
                     text = stringResource(
                         if (folder.isEmpty()) R.string.backup_choose else R.string.backup_change
                     ),
-                    icon = Phosphor.PaintRoller,
+                    icon = Phosphor.Folder,
                     modifier = Modifier.fillMaxWidth(),
                     positive = true,
                     onClick = { chooseFolder.launch(null) },
@@ -330,7 +355,7 @@ fun BackupPage(
                 item {
                     OutlinedActionButton(
                         text = stringResource(R.string.backup_now),
-                        icon = Phosphor.CloudArrowUp,
+                        icon = Phosphor.Archive,
                         modifier = Modifier.fillMaxWidth(),
                         positive = true,
                         onClick = {
@@ -344,58 +369,38 @@ fun BackupPage(
                 }
             }
 
-            item {
-                Text(
-                    text = stringResource(R.string.backup_heading_restore),
-                    style = MaterialTheme.typography.titleSmall,
-                    modifier = Modifier.padding(top = 24.dp),
-                )
-            }
-
-            item {
-                Text(
-                    text = stringResource(R.string.backup_restore_what),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-
+            item { SectionHeading(R.string.backup_heading_restore) }
+            item { SectionText(R.string.backup_restore_what) }
             item {
                 OutlinedActionButton(
-                    text = stringResource(R.string.backup_restore_settings),
-                    icon = Phosphor.Nut,
+                    text = stringResource(R.string.backup_restore_button),
+                    icon = Phosphor.ArrowCounterClockwise,
                     modifier = Modifier.fillMaxWidth(),
                     positive = true,
-                    // Chosen separately from the feeds on purpose: adding
-                    // somebody's subscriptions to a new phone is additive and
-                    // safe, and overwriting every setting on a phone already
-                    // arranged the way they like it is not.
-                    onClick = { chooseSettings.launch(arrayOf("application/json", "*/*")) },
+                    onClick = { restoring = true },
                 )
             }
 
+            // Not a backup at all: the same OPML file, to or from another
+            // reader. Kept apart so the restore above stays about this app.
+            item { SectionHeading(R.string.backup_heading_other_apps) }
+            item { SectionText(R.string.backup_other_apps_body) }
             item {
                 OutlinedActionButton(
-                    text = stringResource(R.string.backup_restore),
-                    icon = Phosphor.CloudArrowDown,
+                    text = stringResource(R.string.backup_import_other),
+                    icon = Phosphor.DownloadSimple,
                     modifier = Modifier.fillMaxWidth(),
                     positive = true,
-                    // Any OPML, not only one Whisper wrote: somebody arriving
-                    // from another reader has an export of their own, and this
-                    // is the same file.
-                    onClick = { chooseBackup.launch(arrayOf("*/*")) },
+                    onClick = { importSources.launch(arrayOf("*/*")) },
                 )
             }
-
             item {
                 OutlinedActionButton(
-                    text = stringResource(R.string.backup_restore_saved),
-                    icon = Phosphor.Bookmarks,
+                    text = stringResource(R.string.backup_export_other),
+                    icon = Phosphor.UploadSimple,
                     modifier = Modifier.fillMaxWidth(),
                     positive = true,
-                    // Also reads a file from Sources → Export bookmarks,
-                    // which is the same format.
-                    onClick = { chooseSaved.launch(arrayOf("application/json", "*/*")) },
+                    onClick = { exportSources.launch(BackupStore.FILE_NAME) },
                 )
             }
 
@@ -403,20 +408,8 @@ fun BackupPage(
             // because it is a different mechanism with a different answer.
             // Placed after it rather than before: the folder is the one this
             // app controls end to end, and is what most people should use.
-            item {
-                Text(
-                    text = stringResource(R.string.backup_platform_heading),
-                    style = MaterialTheme.typography.titleSmall,
-                    modifier = Modifier.padding(top = 24.dp),
-                )
-            }
-            item {
-                Text(
-                    text = stringResource(R.string.backup_platform_body),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
+            item { SectionHeading(R.string.backup_platform_heading) }
+            item { SectionText(R.string.backup_platform_body) }
             item {
                 SwitchPreference(pref = prefs.platformBackupDevice, index = 1, groupSize = 2)
             }
@@ -426,6 +419,83 @@ fun BackupPage(
 
         }
     }
+}
+
+@Composable
+private fun SectionHeading(@StringRes text: Int) {
+    Text(
+        text = stringResource(text),
+        style = MaterialTheme.typography.titleSmall,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier
+            .padding(top = 24.dp)
+            .semantics { heading() },
+    )
+}
+
+@Composable
+private fun SectionText(@StringRes text: Int) {
+    Text(
+        text = stringResource(text),
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+}
+
+/** What to bring back, ticked before the folder is chosen. */
+@Composable
+private fun RestoreDialog(
+    parts: Set<BackupStore.Part>,
+    onPartsChange: (Set<BackupStore.Part>) -> Unit,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.backup_restore_title)) },
+        text = {
+            Column {
+                listOf(
+                    Triple(BackupStore.Part.SOURCES, R.string.backup_part_sources, null),
+                    Triple(BackupStore.Part.SAVED, R.string.backup_part_saved, null),
+                    // Unticked to begin with: the other two add, this one
+                    // replaces how the phone is set up.
+                    Triple(BackupStore.Part.SETTINGS, R.string.backup_part_settings, R.string.backup_part_settings_note),
+                ).forEach { (part, label, note) ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .toggleable(
+                                value = part in parts,
+                                role = Role.Checkbox,
+                                onValueChange = { on -> onPartsChange(if (on) parts + part else parts - part) },
+                            )
+                            .padding(vertical = 8.dp),
+                    ) {
+                        Checkbox(checked = part in parts, onCheckedChange = null)
+                        Spacer(Modifier.width(12.dp))
+                        Column {
+                            Text(stringResource(label), style = MaterialTheme.typography.bodyLarge)
+                            if (note != null) Text(
+                                stringResource(note),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirm, enabled = parts.isNotEmpty()) {
+                Text(stringResource(R.string.backup_restore_choose))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(android.R.string.cancel)) }
+        },
+    )
 }
 
 /** Turns an outcome into the one sentence the screen shows. */
@@ -466,22 +536,31 @@ private fun report(
                     context.getString(R.string.backup_saved_restored_none)
                 }
 
-            // Saved articles named only when there were some, so a backup
-            // made before they were included reads as it always did.
-            is BackupStore.Result.FolderRestored -> if (result.saved > 0) {
-                context.getString(
-                    R.string.backup_folder_restored_saved,
-                    context.resources.getQuantityString(R.plurals.backup_folder_sources, result.feeds, result.feeds),
-                    context.resources.getQuantityString(R.plurals.backup_folder_settings, result.settings, result.settings),
-                    context.resources.getQuantityString(R.plurals.backup_folder_saved, result.saved, result.saved),
-                )
-            } else {
-                context.getString(
-                    R.string.backup_folder_restored,
-                    context.resources.getQuantityString(R.plurals.backup_folder_sources, result.feeds, result.feeds),
-                    context.resources.getQuantityString(R.plurals.backup_folder_settings, result.settings, result.settings),
-                )
+            // Only what was asked for, and saved articles only when there
+            // were some, so a backup made before they were included reads as
+            // it always did.
+            is BackupStore.Result.FolderRestored -> {
+                val res = context.resources
+                val said = buildList {
+                    if (BackupStore.Part.SOURCES in result.parts) {
+                        add(res.getQuantityString(R.plurals.backup_folder_sources, result.feeds, result.feeds))
+                    }
+                    if (BackupStore.Part.SETTINGS in result.parts) {
+                        add(res.getQuantityString(R.plurals.backup_folder_settings, result.settings, result.settings))
+                    }
+                    if (BackupStore.Part.SAVED in result.parts && (result.saved > 0 || result.parts.size == 1)) {
+                        add(res.getQuantityString(R.plurals.backup_folder_saved, result.saved, result.saved))
+                    }
+                }
+                when (said.size) {
+                    1 -> context.getString(R.string.backup_folder_restored_one, said[0])
+                    2 -> context.getString(R.string.backup_folder_restored, said[0], said[1])
+                    else -> context.getString(R.string.backup_folder_restored_saved, said[0], said[1], said[2])
+                }
             }
+
+            is BackupStore.Result.Exported ->
+                context.resources.getQuantityString(R.plurals.backup_exported, result.feeds, result.feeds)
 
             BackupStore.Result.NothingFound -> context.getString(R.string.backup_nothing_found)
             BackupStore.Result.NoDestination -> context.getString(R.string.backup_lost)

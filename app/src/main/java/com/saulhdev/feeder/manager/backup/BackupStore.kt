@@ -65,6 +65,9 @@ class BackupStore(
     private val savedStore: SavedArticlesBackup.Store,
 ) {
 
+    /** The three files a backup is, restored together or apart. */
+    enum class Part { SOURCES, SAVED, SETTINGS }
+
     /** What happened, in terms the settings screen can say out loud. */
     sealed interface Result {
         /**
@@ -86,7 +89,14 @@ class BackupStore(
         data class Restored(val feeds: Int) : Result
         data class SettingsRestored(val count: Int) : Result
         data class SavedRestored(val count: Int) : Result
-        data class FolderRestored(val feeds: Int, val settings: Int, val saved: Int = 0) : Result
+        data class FolderRestored(
+            val feeds: Int,
+            val settings: Int,
+            val saved: Int = 0,
+            /** What the reader asked for; the rest was left alone. */
+            val parts: Set<Part> = Part.entries.toSet(),
+        ) : Result
+        data class Exported(val feeds: Int) : Result
         data object NothingFound : Result
         data object NoDestination : Result
         data class Failed(val cause: Throwable?) : Result
@@ -256,18 +266,21 @@ class BackupStore(
      * their backups live, and asking again on the settings screen later would
      * be asking a question already answered.
      */
-    suspend fun restoreFolder(treeUri: Uri): Result = withContext(Dispatchers.IO) {
+    suspend fun restoreFolder(
+        treeUri: Uri,
+        parts: Set<Part> = Part.entries.toSet(),
+    ): Result = withContext(Dispatchers.IO) {
         try {
             val tree = DocumentFile.fromTreeUri(context, treeUri)
                 ?: return@withContext Result.NoDestination
 
-            val opml = tree.findFile(FILE_NAME)
+            val opml = if (Part.SOURCES !in parts) null else tree.findFile(FILE_NAME)
             // Any OPML in the folder, not only one this app wrote. Somebody
             // arriving from another reader has an export of their own under
             // whatever name that reader chose, and it is the same file.
                 ?: tree.listFiles().firstOrNull { it.name?.endsWith(".opml") == true }
-            val settings = tree.findFile(SettingsBackup.FILE_NAME)
-            val saved = tree.findFile(SavedArticlesBackup.FILE_NAME)
+            val settings = if (Part.SETTINGS !in parts) null else tree.findFile(SettingsBackup.FILE_NAME)
+            val saved = if (Part.SAVED !in parts) null else tree.findFile(SavedArticlesBackup.FILE_NAME)
 
             if (opml == null && settings == null && saved == null) {
                 return@withContext Result.NothingFound
@@ -295,9 +308,27 @@ class BackupStore(
                 }
             } ?: 0
 
-            Result.FolderRestored(feeds, restored, savedCount)
+            Result.FolderRestored(feeds, restored, savedCount, parts)
         } catch (t: Throwable) {
             Log.e(TAG, "Folder restore failed", t)
+            Result.Failed(t)
+        }
+    }
+
+    /**
+     * The sources alone, as one OPML file, for another reader. The same file
+     * the backup writes, put wherever the reader picks rather than in the
+     * backup folder.
+     */
+    suspend fun exportSources(fileUri: Uri): Result = withContext(Dispatchers.IO) {
+        try {
+            val all = sources.getAllSubscriptions()
+            context.contentResolver.openOutputStream(fileUri, "wt")?.use { out ->
+                writeOutputStream(out, all.groupBy { it.tags.firstOrNull().orEmpty() })
+            } ?: return@withContext Result.Failed(null)
+            Result.Exported(all.size)
+        } catch (t: Throwable) {
+            Log.e(TAG, "Export failed", t)
             Result.Failed(t)
         }
     }
@@ -335,8 +366,8 @@ class BackupStore(
         }.getOrDefault(false)
     }
 
-    private companion object {
-        const val TAG = "Backup"
+    companion object {
+        private const val TAG = "Backup"
         const val FILE_NAME = "whisper-subscriptions.opml"
         const val MIME_TYPE = "text/x-opml"
     }

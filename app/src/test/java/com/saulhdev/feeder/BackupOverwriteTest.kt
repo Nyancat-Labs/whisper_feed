@@ -91,7 +91,7 @@ class BackupOverwriteTest {
     fun `choosing a folder with a backup in it asks before writing`() {
         val page = File("src/main/java/com/saulhdev/feeder/ui/pages/BackupPage.kt").readText()
         val chooser = page.substringAfter("val chooseFolder = rememberLauncherForActivityResult(")
-            .substringBefore("val chooseSettings")
+            .substringBefore("val chooseRestoreFolder")
         assertTrue(chooser, chooser.contains("store.hasBackup(uri)"))
         assertTrue(chooser, chooser.indexOf("store.hasBackup(uri)") < chooser.indexOf("useFolder(uri)"))
         assertTrue("the chooser itself writes nothing", !chooser.contains("store.backUp("))
