@@ -3481,6 +3481,15 @@ category rows, and a page for AI summaries slots in as one more row.
 **Stage 1 built 24 October 2026** (`SettingsSection.kt`): the eight rows
 below, About as its own row by the owner's choice. Stage 2 is the look.
 
+**Direction, decided 25 October 2026:** Material 3 Expressive as Google
+specifies it, as closely as possible: its components, shape scale, motion
+scheme and colour roles, rather than hand-built equivalents. Ideas from
+other readers only where the spec leaves the choice open (a preview card on
+Appearance, a master switch on pages that are off until turned on, the
+refresh indicator at its standard 48dp). The menus move to the Expressive
+menu (rounder, the article's source as a header), as Android's own apps
+now have it.
+
 **Into stage 2, from the 25 October review:** the Expressive loading
 indicator for pull-to-refresh (the current one blends in); ripples and
 motion from `MaterialExpressiveTheme`; the flexible app bar, which also
