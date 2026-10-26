@@ -273,6 +273,7 @@ fun ArticlePage(
       // the top bar above stays the app's own size. See readerTextScale.
       MaterialTheme(
           colorScheme = MaterialTheme.colorScheme,
+          motionScheme = MaterialTheme.motionScheme,
           shapes = MaterialTheme.shapes,
           typography = MaterialTheme.typography.scaled(readerTextScale(textSize)),
       ) {

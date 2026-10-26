@@ -3500,6 +3500,11 @@ card menu grouped Share·Pin / More·Less·Why / Not interested·Hide source;
 sort order as button groups labelled "Newest first" and "A–Z". All in
 `docs/EXPRESSIVE.md` §8.
 
+**`MaterialExpressiveTheme` built 26 October 2026**: app, overlay and the
+reader's nested theme, expressive motion scheme. Still to come in stage 2:
+the loading indicator, skeletons and slide-in, the card menu and sort
+buttons.
+
 **Into stage 2, from the 25 October review:** the Expressive loading
 indicator for pull-to-refresh (the current one blends in); ripples and
 motion from `MaterialExpressiveTheme`; the flexible app bar, which also

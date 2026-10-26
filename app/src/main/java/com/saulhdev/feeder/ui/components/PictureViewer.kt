@@ -22,7 +22,6 @@ import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.calculatePan
@@ -37,6 +36,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -113,6 +113,9 @@ fun PictureViewer(request: PictureRequest, onOpenLink: (String) -> Unit, onDismi
     var offset by remember { mutableStateOf(Offset.Zero) }
     // How far the picture has been pulled at its own size, towards closing.
     val pull = remember { Animatable(0f) }
+    // Expressive's default spatial spring (damping 0.8, stiffness 380): a
+    // little give, then settled.
+    val spring = MaterialTheme.motionScheme.defaultSpatialSpec<Float>()
     var busy by remember { mutableStateOf(false) }
     val screenHeightPx = with(LocalDensity.current) { LocalConfiguration.current.screenHeightDp.dp.toPx() }
     val flingPxPerSecond = with(LocalDensity.current) { FLING_DP_PER_SECOND.dp.toPx() }
@@ -134,11 +137,11 @@ fun PictureViewer(request: PictureRequest, onOpenLink: (String) -> Unit, onDismi
                         scope.launch {
                             if (scale.value > 1f) {
                                 offset = Offset.Zero
-                                scale.animateTo(1f, SPRING)
+                                scale.animateTo(1f, spring)
                             } else {
                                 // Towards the point tapped, as Photos does.
                                 offset = (Offset(size.width / 2f, size.height / 2f) - at) * (DOUBLE_TAP_SCALE - 1f)
-                                scale.animateTo(DOUBLE_TAP_SCALE, SPRING)
+                                scale.animateTo(DOUBLE_TAP_SCALE, spring)
                             }
                         }
                     })
@@ -171,11 +174,11 @@ fun PictureViewer(request: PictureRequest, onOpenLink: (String) -> Unit, onDismi
                                 // Off the way it was going, then gone.
                                 val away = if ((pull.value + fling / 10f) < 0f) -screenHeightPx else screenHeightPx
                                 scope.launch {
-                                    pull.animateTo(away, SPRING, initialVelocity = fling)
+                                    pull.animateTo(away, spring, initialVelocity = fling)
                                     onDismiss()
                                 }
                             } else {
-                                scope.launch { pull.animateTo(0f, SPRING, initialVelocity = fling) }
+                                scope.launch { pull.animateTo(0f, spring, initialVelocity = fling) }
                             }
                         }
                     }
@@ -276,13 +279,6 @@ private fun ViewerAction(
 private const val MAX_SCALE = 5f
 private const val DOUBLE_TAP_SCALE = 2.5f
 
-/**
- * Material 3 Expressive's default spatial spring (damping 0.8, stiffness
- * 380): a little give, then settled. Written out until the app takes
- * MaterialExpressiveTheme (roadmap §19e), when it becomes
- * MaterialTheme.motionScheme.defaultSpatialSpec().
- */
-private val SPRING = spring<Float>(dampingRatio = 0.8f, stiffness = 380f)
 
 /** A pull this far closes the picture, however slowly. */
 private const val CLOSE_AFTER_DP = 80

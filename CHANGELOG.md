@@ -9,6 +9,10 @@ Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 Unreleased
 ----------
 
+- **Expressive motion throughout.** The whole app, and the launcher page,
+  now use Material 3 Expressive's theme: movement settles with a little
+  spring, and buttons, ripples and progress indicators take Expressive's
+  defaults.
 - **Settings, the Expressive look (first part).** Page titles use the new
   flexible app bar. Each group of settings reads as one rounded block.
   Every page has the same margins. Short choices are buttons you can see

@@ -8,6 +8,24 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 26 October 2026 — MaterialExpressiveTheme (for 1.0.6)
+
+- `AppTheme` and the overlay's `setFeedContent` are `MaterialExpressiveTheme`
+  now, both with `WhisperMotion` (`MotionScheme.expressive()`, in
+  `Theme.kt`). Colours, type and `WhisperShapes` passed as before.
+- The reader nests a `MaterialTheme` for text size. It now passes
+  `motionScheme = MaterialTheme.motionScheme` explicitly, so the article
+  never falls back to the standard scheme.
+- `PictureViewer`'s hand-written spring (0.8, 380) is now
+  `MaterialTheme.motionScheme.defaultSpatialSpec()`, which is the same
+  spring, as its comment said it would become.
+- `ExpressiveThemeTest`; `PictureViewerTest` follows. 1270 passing, 1
+  skipped (RealFeedReport), lint no errors. Three older lint warnings in
+  `PictureViewer` (`Configuration.screenHeightDp`) are untouched.
+- **To check on the Pixel:** buttons, switches and progress indicators
+  across the app and the launcher panel, and the card geometry in the
+  panel, which was tuned by eye. No screenshot tests cover these.
+
 ## 25 October 2026 — Stage 2, Settings (for 1.0.6)
 
 - `ViewWithActionBar` large titles: `LargeFlexibleTopAppBar` (Expressive),

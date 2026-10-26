@@ -43,7 +43,8 @@ import com.saulhdev.feeder.utils.FrameWatch
 import com.saulhdev.feeder.utils.extensions.launchView
 import com.saulhdev.feeder.utils.LAYOUT_CARDS
 import com.saulhdev.feeder.utils.extensions.safeShareIntent
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.MaterialExpressiveTheme
 import com.saulhdev.feeder.manager.glance.GlanceState
 import com.saulhdev.feeder.manager.glance.GlanceStateHolder
 import com.saulhdev.feeder.ui.theme.CardTheme
@@ -51,6 +52,7 @@ import com.saulhdev.feeder.ui.theme.OverlayTheme
 import com.saulhdev.feeder.ui.theme.fontFamilyFor
 import com.saulhdev.feeder.ui.theme.typographyFor
 import com.saulhdev.feeder.ui.theme.OverlayThemeHolder
+import com.saulhdev.feeder.ui.theme.WhisperMotion
 import com.saulhdev.feeder.ui.theme.WhisperShapes
 import com.saulhdev.feeder.utils.extensions.safeStartActivity
 import com.saulhdev.feeder.utils.extensions.setCustomTheme
@@ -502,10 +504,12 @@ class OverlayView(val context: Context) :
         }
     }
 
+    @OptIn(ExperimentalMaterial3ExpressiveApi::class)
     private fun ComposeView.setFeedContent() {
         setContent {
-            MaterialTheme(
+            MaterialExpressiveTheme(
                 colorScheme = overlayScheme.value,
+                motionScheme = WhisperMotion,
                 typography = typographyFor(fontFamilyFor(overlayFont.value)),
                 shapes = WhisperShapes,
             ) {
