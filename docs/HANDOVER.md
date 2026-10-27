@@ -42,6 +42,12 @@ Neo Feed).
   `build` to the commit and, if useful, `fixNote`), and `done` when the
   owner taps Works. Still wrong sends it back to `fix` with a note.
   Test-checklist rows are `kind: "check"`.
+  **Every preview sent to the owner gets build tests** (owner, 27 October):
+  `kind: "test"`, doc id `t<seq>-<nn>`, with `seq` (one more than the last
+  build's), `build`, `n` (the order to do them in), `area` naming the build,
+  `title`, `detail` starting "You should see:", `issues` (the issue numbers
+  it proves) and `status` (`open`, `pass`, `problem`, `untested`). The page
+  closes an issue in `preview` once every test naming it passes.
 
 ## Release signing
 
