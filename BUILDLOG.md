@@ -8,6 +8,16 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 27 October 2026 — Review sheet for preview testing
+
+- Testing 272fae7 and 2e413f0 on the Pixel gave 55 issues, too many to
+  track in chat. They live in a review sheet now (link and fields in
+  `docs/HANDOVER.md`): the owner picks Fix, Later or Drop, answers
+  questions there, and confirms each fix once it reaches a preview.
+- Checklist for the two builds: everything passed except the old refresh
+  indicator (issue 47) and Settings' title collapsing when the page fits
+  (issue 53). TalkBack not tested.
+
 ## 26 October 2026 — MaterialExpressiveTheme (for 1.0.6)
 
 - `AppTheme` and the overlay's `setFeedContent` are `MaterialExpressiveTheme`

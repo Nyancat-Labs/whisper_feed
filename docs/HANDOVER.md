@@ -32,6 +32,16 @@ Neo Feed).
 - **Writing:** release notes and replies should sound human, with little bold.
 - **Tags:** pushing tags is refused (403). The owner creates tags in GitHub's
   release page, targeting main.
+- **The review sheet** (from 27 October 2026):
+  https://claude.ai/artifact/ErrU1RDxYbTrd6nU2rowRk holds every issue found
+  while testing previews, and the owner's decisions. Read it with the
+  ArtifactData tool (collection `items`) before starting fixes; add new
+  issues there rather than starting another list. Each issue has a `status`:
+  `open` (owner to decide), `fix`, `later`, `drop`, `merged` (see
+  `mergedInto`), then `preview` once a fix is in a preview build (set
+  `build` to the commit and, if useful, `fixNote`), and `done` when the
+  owner taps Works. Still wrong sends it back to `fix` with a note.
+  Test-checklist rows are `kind: "check"`.
 
 ## Release signing
 
