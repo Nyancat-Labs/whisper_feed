@@ -108,6 +108,8 @@ The owner is using the preview on the Pixel 10 for a week before release.
   Expressive overhaul (§19e), where type weights are decided together. Note
   for then: Inter is bundled at Regular, Medium and Bold only, so "bolder"
   is a full step unless SemiBold is added.
+- [ ] **When released: tell the user who asked for translations.** The
+  owner emails him (27 October, hej@ inbox), who may also check the French.
 - [ ] **The Independent's bulletins** (/bulletin/ pages, 20 of every 100
   in its feed, and the most-stored source on the owner's phone). A headline
   and five bullet points, too little for Readability to tell from the page,

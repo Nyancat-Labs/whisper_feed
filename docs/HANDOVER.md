@@ -81,6 +81,10 @@ Store text and screenshots are in `fastlane/metadata/android/en-US/`.
 
 Release when the owner says so; there's no rush.
 
+**After releasing the translations:** remind the owner to email the user
+in France who asked for them (his email of 27 October is in the hej@
+inbox). He offered to check the French.
+
 - A stale "Syncing" notification is taken down (`clearStaleSyncNotice`).
 - Tour highlight boxes stay inside the screen.
 - Settings → Show summaries (off keeps picture and headline).
