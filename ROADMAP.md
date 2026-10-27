@@ -3203,8 +3203,8 @@ change to English text updates all seven in the same commit, which is what
 removes the old reason to wait. Safeguards: a glossary per language so terms
 stay fixed; build checks for placeholders and plural forms; a check that
 flags labels much longer than the English; a "Report a translation
-mistake" link in About. Built after review batch 1 is tested, before
-batch 2. The plan below is kept for the record.
+mistake" link in About. Built after the review batches (styling and
+visual fixes) are done, as the last piece of 1.0.6 (owner, 27 October). The plan below is kept for the record.
 
 Until 1.0.3 the app carried 28 languages from Neo Feed, none above 13% of
 its 564 strings. They are removed, and the build is English only
