@@ -64,7 +64,9 @@ fun ContributorRow(
                 contentDescription = stringResource(id = nameId),
                 modifier = Modifier
                     .clip(CircleShape)
-                    .size(30.dp)
+                    // The size of every other row's icon, so the names start
+                    // where every other row's text does (review 36).
+                    .size(40.dp)
                     .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.12F))
             )
         }

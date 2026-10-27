@@ -130,7 +130,7 @@ fun GlanceLocationPage(
                             }
                         },
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainer
+                            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest
                         ),
                         modifier = Modifier
                             .fillMaxWidth()

@@ -42,7 +42,7 @@ fun LinkItem(
     AssistChip(
         modifier = modifier,
         border = null,
-        shape = MaterialTheme.shapes.medium,
+        shape = MaterialTheme.shapes.small,
         colors = AssistChipDefaults.assistChipColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainer,
         ),

@@ -107,10 +107,11 @@ fun AboutPage() {
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
         ) {
             item {
+                // Full width, like the cards under it; 4dp of padding here
+                // set it in from them (review 31).
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(4.dp)
                         .background(
                             MaterialTheme.colorScheme.surfaceContainerHighest,
                             MaterialTheme.shapes.extraLarge
@@ -186,12 +187,14 @@ fun AboutPage() {
                     // Wrapped, not scrolled sideways: in a row that ran off
                     // the screen only the first three links were ever seen,
                     // and the website was the fourth.
+                    // Centred, inside the card's own margin; they sat hard
+                    // against its left edge (review 30).
                     FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(bottom = 12.dp),
+                            .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
                     ) {
                         links.forEach { link ->
                             LinkItem(
@@ -208,13 +211,15 @@ fun AboutPage() {
             // the app with an email address, and turned 1.0.2 down for want
             // of one: the website link was there, the address was not.
             item {
-                PreferenceGroupHeading(heading = stringResource(id = R.string.about_contact))
+                PreferenceGroupHeading(heading = stringResource(id = R.string.about_contact), insideMargin = true)
             }
             item {
                 Card(
                     shape = MaterialTheme.shapes.large,
+                    // The container every list group uses; these two were a
+                    // lighter tint than the rows beside them (review 37).
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
                     ),
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -244,14 +249,14 @@ fun AboutPage() {
             // say when there is an update; see UpdateCheck.
             if (isGitHubInstall) {
                 item {
-                    PreferenceGroupHeading(heading = stringResource(id = R.string.about_updates))
+                    PreferenceGroupHeading(heading = stringResource(id = R.string.about_updates), insideMargin = true)
                 }
                 item {
                     UpdateCheckRows()
                 }
             }
             item {
-                PreferenceGroupHeading(heading = stringResource(id = R.string.about_whisper_team))
+                PreferenceGroupHeading(heading = stringResource(id = R.string.about_whisper_team), insideMargin = true)
             }
             itemsIndexed(whisperTeam) { i, it ->
                 ContributorRow(
@@ -264,13 +269,15 @@ fun AboutPage() {
                 )
             }
             item {
-                PreferenceGroupHeading(heading = stringResource(id = R.string.about_support))
+                PreferenceGroupHeading(heading = stringResource(id = R.string.about_support), insideMargin = true)
             }
             item {
                 Card(
                     shape = MaterialTheme.shapes.large,
+                    // The container every list group uses; these two were a
+                    // lighter tint than the rows beside them (review 37).
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
                     ),
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -291,7 +298,7 @@ fun AboutPage() {
                 }
             }
             item {
-                PreferenceGroupHeading(heading = stringResource(id = R.string.about_team))
+                PreferenceGroupHeading(heading = stringResource(id = R.string.about_team), insideMargin = true)
             }
             itemsIndexed(contributors + projects) { i, it ->
                 ContributorRow(
@@ -304,7 +311,7 @@ fun AboutPage() {
                 )
             }
             item {
-                PreferenceGroupHeading(heading = stringResource(id = R.string.about_build_information))
+                PreferenceGroupHeading(heading = stringResource(id = R.string.about_build_information), insideMargin = true)
             }
             itemsIndexed(listOf(PageItem.AboutLicense, PageItem.AboutChangelog)) { i, it ->
                 PagePreference(

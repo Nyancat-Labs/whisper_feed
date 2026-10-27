@@ -25,8 +25,12 @@ import androidx.compose.ui.unit.dp
 val WhisperShapes = Shapes(
     /** Interior corners of a grouped list — barely rounded, so the group reads as one block. */
     extraSmall = RoundedCornerShape(8.dp),
-    /** Small inline elements. */
-    small = RoundedCornerShape(12.dp),
+    /**
+     * Small inline elements, and Material's chips. 8, Expressive's own value:
+     * at 12 a link chip read as a pill beside the round-ended buttons and
+     * category chips, one more shape in a row of them (review 15).
+     */
+    small = RoundedCornerShape(8.dp),
     /** Thumbnails and icon tiles. */
     medium = RoundedCornerShape(16.dp),
     /** Cards, chips and images — the shape seen most. */

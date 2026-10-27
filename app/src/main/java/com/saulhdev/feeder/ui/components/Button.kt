@@ -38,25 +38,30 @@ fun ActionButton(
     enabled: Boolean = true,
     onClick: () -> Unit,
 ) {
+    // The main action is filled primary, as Expressive draws it; it was the
+    // light primary container, the same lavender as a selected chip, so the
+    // one thing to press looked like a choice already made (review 16, 21).
     FilledTonalButton(
         modifier = modifier,
         colors = ButtonDefaults.filledTonalButtonColors(
             contentColor = when {
                 destructive -> MaterialTheme.colorScheme.onErrorContainer
-                positive -> MaterialTheme.colorScheme.onPrimaryContainer
+                positive -> MaterialTheme.colorScheme.onPrimary
                 else     -> MaterialTheme.colorScheme.onSecondaryContainer
             },
             containerColor = when {
                 destructive -> MaterialTheme.colorScheme.errorContainer
-                positive -> MaterialTheme.colorScheme.primaryContainer
+                positive -> MaterialTheme.colorScheme.primary
                 else     -> MaterialTheme.colorScheme.secondaryContainer
             }
         ),
         enabled = enabled,
         onClick = onClick,
     ) {
-        if (icon != null) Icon(imageVector = icon, contentDescription = text)
-        Spacer(modifier = Modifier.width(8.dp))
+        if (icon != null) {
+            Icon(imageVector = icon, contentDescription = text)
+            Spacer(modifier = Modifier.width(8.dp))
+        }
         Text(
             text = text,
             textAlign = TextAlign.Center,
@@ -95,8 +100,10 @@ fun OutlinedActionButton(
         enabled = enabled,
         onClick = onClick,
     ) {
-        if (icon != null) Icon(imageVector = icon, contentDescription = text)
-        Spacer(modifier = Modifier.width(8.dp))
+        if (icon != null) {
+            Icon(imageVector = icon, contentDescription = text)
+            Spacer(modifier = Modifier.width(8.dp))
+        }
         Text(
             text = text,
             textAlign = TextAlign.Center,

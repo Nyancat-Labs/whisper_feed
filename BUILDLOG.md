@@ -8,6 +8,32 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 27 October 2026 — Review batch 1: foundations (for 1.0.6)
+
+- Title bars (53, 50, 22): `ViewWithActionBar` wraps the large bar's
+  nested scroll in `collapseOnlyWhenScrolling`. Pre-scroll and pre-fling
+  reach the bar only once the content has consumed a scroll itself, so a
+  page that fits never collapses, and so never sits half collapsed with a
+  faded title. Long large titles auto-size down to 22sp before ellipsis.
+- Alignment (36, 28, 32): `PreferenceGroupHeading(insideMargin = true)` on
+  About and Sources, whose lists already carry the 16dp margin; headings
+  were 16dp too far in. Contributor photos 40dp, the size of every row
+  icon, so names start on the same column.
+- Shapes and colour (15, 27, 16, 21, 37): `categoryChipColors()` and
+  `categoryChipShape` shared by the feed's row and Sources; chips select
+  in `secondaryContainer`, `ActionButton(positive)` is filled `primary`.
+  `WhisperShapes.small` 12 → 8dp (Expressive's chip corner), so About's
+  link chips are no longer near-pills. List cards on About, Broken, Library,
+  Insecure, Suggestions, Statistics and Glance location moved from
+  `surfaceContainer` to `surfaceContainerHighest`, the settings rows' colour.
+- About header full width (31) and its link chips centred inside a 16dp
+  margin (30), since the file was open.
+- Sources already pads the list's end by the + button's height (88dp), so
+  item 26 looks like the button passing over rows mid-scroll rather than
+  covering the last one. To check on the phone before fixing anything.
+- `ReviewBatch1Test`; `ImageSizingTest` follows the 40dp photo. 1275
+  passing, 1 skipped, lint no errors.
+
 ## 27 October 2026 — Review sheet for preview testing
 
 - Testing 272fae7 and 2e413f0 on the Pixel gave 55 issues, too many to

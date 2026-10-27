@@ -199,7 +199,7 @@ fun FeedLibraryPage() {
 private fun PackRow(pack: LibraryPack, onClick: () -> Unit) {
     Surface(
         shape = MaterialTheme.shapes.large,
-        color = MaterialTheme.colorScheme.surfaceContainer,
+        color = MaterialTheme.colorScheme.surfaceContainerHighest,
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
     ) {
@@ -225,7 +225,7 @@ private fun PackRow(pack: LibraryPack, onClick: () -> Unit) {
 private fun FeedRow(feed: LibraryFeed, checked: Boolean, onToggle: () -> Unit) {
     Surface(
         shape = MaterialTheme.shapes.large,
-        color = MaterialTheme.colorScheme.surfaceContainer,
+        color = MaterialTheme.colorScheme.surfaceContainerHighest,
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onToggle),

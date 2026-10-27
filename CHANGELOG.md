@@ -9,6 +9,12 @@ Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 Unreleased
 ----------
 
+- **Tidier screens throughout.** Page titles stay large and still when a
+  page fits on the screen, instead of shrinking the moment you touch it,
+  and long titles get smaller to fit rather than being cut off. Section
+  headings, icons and text line up from page to page. Cards in lists share
+  one colour, the main button on a page is filled, and a chosen chip looks
+  the same wherever you choose one.
 - **Expressive motion throughout.** The whole app, and the launcher page,
   now use Material 3 Expressive's theme: movement settles with a little
   spring, and buttons, ripples and progress indicators take Expressive's

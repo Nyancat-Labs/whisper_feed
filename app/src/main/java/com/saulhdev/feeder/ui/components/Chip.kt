@@ -50,6 +50,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -60,6 +61,27 @@ import com.saulhdev.feeder.ui.icons.phosphor.CheckCircle
 import com.saulhdev.feeder.ui.icons.phosphor.Circle
 import com.saulhdev.feeder.utils.extensions.addIf
 
+/**
+ * A category chip's look, the same wherever categories are chosen: the feed's
+ * row and the Sources page drew them two ways (review 27). Filled even when
+ * off, so the label stays legible over a wallpaper (see CategoryChipRow), and
+ * selected in the secondary container, Expressive's role for a chosen chip,
+ * which keeps the darker primary for buttons and the main action (review 16).
+ */
+@Composable
+fun categoryChipColors() = FilterChipDefaults.filterChipColors(
+    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+    labelColor = MaterialTheme.colorScheme.onSurface,
+    iconColor = MaterialTheme.colorScheme.onSurface,
+    selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+    selectedLabelColor = MaterialTheme.colorScheme.onSecondaryContainer,
+    selectedLeadingIconColor = MaterialTheme.colorScheme.onSecondaryContainer,
+)
+
+/** A category chip's shape: round-ended, as the feed's have always been. */
+val categoryChipShape: Shape
+    @Composable get() = MaterialTheme.shapes.large
+
 @Composable
 fun SelectChip(
     modifier: Modifier = Modifier,
@@ -69,9 +91,9 @@ fun SelectChip(
         containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
         labelColor = MaterialTheme.colorScheme.onSurface,
         iconColor = MaterialTheme.colorScheme.onSurface,
-        selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-        selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        selectedLeadingIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+        selectedLabelColor = MaterialTheme.colorScheme.onSecondaryContainer,
+        selectedLeadingIconColor = MaterialTheme.colorScheme.onSecondaryContainer,
     ),
     alwaysShowIcon: Boolean = true,
     onSelected: () -> Unit = {},

@@ -48,7 +48,14 @@ import androidx.compose.material3.TopAppBarDefaults.enterAlwaysScrollBehavior
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.unit.Velocity
+import androidx.compose.foundation.text.TextAutoSize
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -148,8 +155,15 @@ fun ViewWithActionBar(
                     }
     }
 
+    // A large title collapses only on a page that can scroll. See
+    // collapseOnlyWhenScrolling.
+    val connection = remember(scrollBehavior, largeTitle) {
+        if (largeTitle) collapseOnlyWhenScrolling(scrollBehavior.nestedScrollConnection)
+        else scrollBehavior.nestedScrollConnection
+    }
+
     Scaffold(
-        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = modifier.nestedScroll(connection),
         topBar = {
             if (largeTitle) {
                 // Expressive's flexible app bar (stage 2, 25 October): its own
@@ -158,10 +172,19 @@ fun ViewWithActionBar(
                 // the screen no longer scrolls just to collapse its title.
                 LargeFlexibleTopAppBar(
                     title = {
+                        // One line, made smaller to fit before it is cut
+                        // short: "Import from bookmarks" lost its last word at
+                        // full size (review 22). The bar draws this same text
+                        // collapsed and expanded, each in its own style, so
+                        // the largest size is whichever style it is given.
                         Text(
                             text = title,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
+                            autoSize = TextAutoSize.StepBased(
+                                minFontSize = TITLE_MIN_SIZE,
+                                maxFontSize = LocalTextStyle.current.fontSize,
+                            ),
                         )
                     },
                     subtitle = if (subTitle.isNotEmpty()) {
@@ -216,6 +239,39 @@ fun ViewWithActionBar(
         }
     }
 }
+
+/** The smallest a large title is drawn before it is cut short instead. */
+private val TITLE_MIN_SIZE = 22.sp
+
+/**
+ * The app bar's scrolling, held back until the content has shown it scrolls.
+ *
+ * Material's collapsing bar takes every upward drag first, so a page that fits
+ * on the screen still shrank its title the moment it was touched, and a slow
+ * drag left the title half collapsed and greyed out (review 53 and 50). The
+ * content's own scrolling is not visible from here, so the first drag a page
+ * actually scrolls is the evidence: until then, the bar is passed only what
+ * the content left over, which on a page that fits is nothing it acts on.
+ * Expanding at the top and settling after a fling are the bar's, unchanged.
+ */
+private fun collapseOnlyWhenScrolling(bar: NestedScrollConnection) =
+    object : NestedScrollConnection {
+        var contentScrolls = false
+
+        override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset =
+            if (contentScrolls) bar.onPreScroll(available, source) else Offset.Zero
+
+        override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource): Offset {
+            if (consumed.y != 0f) contentScrolls = true
+            return bar.onPostScroll(consumed, available, source)
+        }
+
+        override suspend fun onPreFling(available: Velocity): Velocity =
+            if (contentScrolls) bar.onPreFling(available) else Velocity.Zero
+
+        override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity =
+            bar.onPostFling(consumed, available)
+    }
 
 @Composable
 fun RoundButton(

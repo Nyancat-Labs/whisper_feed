@@ -113,7 +113,7 @@ class ImageSizingTest {
         val contributor = read("ui/components/ContributorRow.kt")
         assertTrue(
             "the contributor photo lost its size",
-            contributor.contains(".size(30.dp)"),
+            contributor.contains(".size(40.dp)"),
         )
     }
 

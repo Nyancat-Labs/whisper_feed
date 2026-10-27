@@ -18,6 +18,8 @@
 
 package com.saulhdev.feeder.ui.pages
 
+import com.saulhdev.feeder.ui.components.categoryChipColors
+import com.saulhdev.feeder.ui.components.categoryChipShape
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.material3.Button
 import androidx.compose.runtime.key
@@ -748,7 +750,8 @@ fun SourceListPage(
                                             members.size,
                                             group.label,
                                             members.size,
-                                        )
+                                        ),
+                                        insideMargin = true,
                                     )
                                 }
                                 items(members, key = { it.id }) { item ->
@@ -801,7 +804,7 @@ fun SourceListPage(
                         // was only ever searched; with a category chip it is
                         // routine for one of the two sections to be empty.
                         if (state.enabledSources.isNotEmpty()) item {
-                            PreferenceGroupHeading(heading = stringResource(id = R.string.enabled))
+                            PreferenceGroupHeading(heading = stringResource(id = R.string.enabled), insideMargin = true)
                         }
                         items(state.enabledSources, key = { it.id }) { item ->
                             SourceItem(
@@ -846,7 +849,7 @@ fun SourceListPage(
                             )
                         }
                         if (state.disabledSources.isNotEmpty()) item {
-                            PreferenceGroupHeading(heading = stringResource(id = R.string.disabled))
+                            PreferenceGroupHeading(heading = stringResource(id = R.string.disabled), insideMargin = true)
                         }
                         items(state.disabledSources, key = { it.id }) { item ->
                             SourceItem(
@@ -1048,6 +1051,9 @@ internal fun CategoryChips(
                 leadingIcon = if (tag == chosen) {
                     { Icon(Phosphor.Check, null) }
                 } else null,
+                shape = categoryChipShape,
+                colors = categoryChipColors(),
+                border = null,
                 elevation = FilterChipDefaults.filterChipElevation(
                     elevation = if (lifted) 6.dp else 0.dp,
                 ),

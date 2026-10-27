@@ -81,6 +81,13 @@ fun PreferenceGroup(
 fun PreferenceGroupHeading(
     heading: String? = null,
     textAlignment: Alignment.Horizontal = Alignment.Start,
+    /**
+     * True on a page that already sets its content 16dp in from the screen
+     * (About, Sources): the heading then adds only the row's own 16, not the
+     * page margin again. It added both, and those headings sat 16dp to the
+     * right of everything under them (review 28, 32).
+     */
+    insideMargin: Boolean = false,
 ) = if (heading != null) {
     Column(
         verticalArrangement = Arrangement.Center,
@@ -91,7 +98,7 @@ fun PreferenceGroupHeading(
             // Aligned with the text of the rows it heads: the group's cards
             // start at the screen's 16dp margin and a ListItem insets its own
             // content by another 16, so the rows read from 32.
-            .padding(horizontal = 32.dp)
+            .padding(horizontal = if (insideMargin) 16.dp else 32.dp)
             .fillMaxWidth(),
         horizontalAlignment = textAlignment
     ) {

@@ -144,6 +144,9 @@ Google's rule: nothing under 200ms, the **loading indicator** from 200ms to
    - *Expressive*: cards tinted lightly from their picture or the site's
      icon (Android's Palette library, worked out once per picture and
      cached), the emphasized headline, livelier card shapes.
+   - Card style (owner, 27 October, as Harmonic offers it at first launch):
+     *Calm* keeps Cards edge to edge; *Expressive* gets contained cards, a
+     narrow margin, rounded corners and the picture inset inside the card.
    - Appearance gets a tint switch and a strength slider; subtle even at
      full strength.
 3. **Card menu, grouped by Material's rule:**

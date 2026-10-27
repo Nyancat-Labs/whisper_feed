@@ -17,6 +17,8 @@
  */
 package com.saulhdev.feeder.ui.overlay
 
+import com.saulhdev.feeder.ui.components.categoryChipColors
+import com.saulhdev.feeder.ui.components.categoryChipShape
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyRow
@@ -125,8 +127,8 @@ private fun CategoryChip(
             selected = selected,
             onClick = onClick,
             label = { Text(label) },
-            shape = MaterialTheme.shapes.large,
-            colors = legibleChipColors(),
+            shape = categoryChipShape,
+            colors = categoryChipColors(),
             border = null,
         )
         Spacer(Modifier.height(4.dp))
@@ -143,14 +145,5 @@ private fun CategoryChip(
 }
 
 private val INDICATOR_WIDTH = 18.dp
-
-/** See the note on [CategoryChipRow] for why the unselected state is filled. */
-@Composable
-private fun legibleChipColors() = androidx.compose.material3.FilterChipDefaults.filterChipColors(
-    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-    labelColor = MaterialTheme.colorScheme.onSurface,
-    selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-    selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
-)
 
 private const val ALL_CHIP_KEY = "__all__"
