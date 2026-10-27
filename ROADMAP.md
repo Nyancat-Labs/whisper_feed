@@ -1179,7 +1179,9 @@ or an explicit note saying why it is exempt.
 
 ### 8. Ship it
 
-- **The Lawnchair whitelist PR** — see below. Worth doing, and no longer the
+- **The Lawnchair whitelist PR** — **accepted (owner, 27 October 2026).** Help →
+  Launcher page to be updated in review batch 4 once the Lawnchair version
+  carrying it is known. Worth doing, and no longer the
   gate it was recorded as: see "What this is now". The app is usable without
   ever touching a launcher.
 - **Play and F-Droid together**, decided 27 September 2026, rather than the

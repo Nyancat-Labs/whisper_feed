@@ -8,6 +8,15 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 27 October 2026 — Lawnchair accepted the whitelist request
+
+- The owner heard from Lawnchair: Whisper is on the feed whitelist
+  ([#7399](https://github.com/LawnchairLauncher/lawnchair/pull/7399)).
+  Which Lawnchair version first carries it is still to confirm.
+- Once that version is out, Help → Launcher page should lead with "choose
+  Whisper as the feed" and keep the `/lawnchairdebug` steps only for older
+  versions. Planned for review batch 4, before the translations.
+
 ## 27 October 2026 — Review batch 1: foundations (for 1.0.6)
 
 - Title bars (53, 50, 22): `ViewWithActionBar` wraps the large bar's
