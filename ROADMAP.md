@@ -385,7 +385,7 @@ items below can ride in it alongside what is already on main.
    then models downloaded to the phone. After the redesign so its page is
    built in the new style once.
 8. **The home-screen widget**, then **read aloud** (7).
-9. **Translations** (10), once the features above have added their words.
+9. ~~**Translations** (10)~~: moved to 1.0.6, automatic (27 October; see *Translations*).
 10. **Reading inside the launcher panel** (11). Lawnchair readers only; not
     in the owner's list, so last.
 
@@ -3192,6 +3192,17 @@ Placed last because it affects only readers who use the panel. Until then the
 answer for them is to read from the app, where back works.
 
 ## Translations — later, and whole (seventh in the order)
+
+**Changed 27 October 2026 (owner): now, in 1.0.6, and automatic.** A user
+in France asked for French, Spanish and Italian. Claude writes the
+translations directly, not volunteers on Weblate: French, Spanish, Italian,
+German, Portuguese (Brazil), Portuguese (Portugal) and Polish. Every later
+change to English text updates all seven in the same commit, which is what
+removes the old reason to wait. Safeguards: a glossary per language so terms
+stay fixed; build checks for placeholders and plural forms; a check that
+flags labels much longer than the English; a "Report a translation
+mistake" link in About. Built after review batch 1 is tested, before
+batch 2. The plan below is kept for the record.
 
 Until 1.0.3 the app carried 28 languages from Neo Feed, none above 13% of
 its 564 strings. They are removed, and the build is English only
