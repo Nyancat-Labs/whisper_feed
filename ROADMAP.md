@@ -383,7 +383,7 @@ items below can ride in it alongside what is already on main.
    split is built with Expressive's own pieces and ships in **1.0.6**; the
    full redesign follows as **1.1.0**. Releases roughly monthly from here,
    not promised publicly; urgent fixes as 1.0.6.1 and so on.
-7. **AI summaries** (9) (*AI summaries*, below): your own cloud service first,
+7. **AI summaries** (9), **as 1.2.0** (owner, 27 October 2026) (*AI summaries*, below): your own cloud service first,
    then models downloaded to the phone. After the redesign so its page is
    built in the new style once.
 8. **The home-screen widget**, then **read aloud** (7).
