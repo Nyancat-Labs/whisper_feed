@@ -149,7 +149,8 @@ Google's rule: nothing under 200ms, the **loading indicator** from 200ms to
      narrow margin, rounded corners and the picture inset inside the card.
    - Appearance gets a tint switch and a strength slider; subtle even at
      full strength.
-3. **Card menu, grouped by Material's rule:**
+3. **Card menu, grouped by Material's rule** (moved into 1.0.6, review
+   batch 3, owner, 27 October):
    - Share · Pin to the top
    - More like this · Less like this · Why is this here?
    - Not interested · Hide source
