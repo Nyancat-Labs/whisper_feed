@@ -3213,6 +3213,15 @@ flags labels much longer than the English; a "Report a translation
 mistake" link in About. Built after the review batches (styling and
 visual fixes) are done, as the last piece of 1.0.6 (owner, 27 October). The plan below is kept for the record.
 
+**Open to volunteers later (owner, 28 October).** The files are standard
+`values-xx/strings.xml`, which Weblate reads as they are, so the Weblate plan
+below can be switched on whenever someone offers to help. Built for that now:
+the glossary as `docs/translations/glossary.csv` (Weblate imports it); a note
+that these translations are Claude's, so they can be imported as "needs
+review"; the About link for mistakes made easy to point at Weblate; and a
+rule in `docs/HANDOVER.md` that a string a person has corrected is never
+overwritten by Claude.
+
 Until 1.0.3 the app carried 28 languages from Neo Feed, none above 13% of
 its 564 strings. They are removed, and the build is English only
 (`localeFilters`), so every screen is one language. `TranslationCoverageTest`
