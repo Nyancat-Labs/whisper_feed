@@ -108,6 +108,11 @@ The owner is using the preview on the Pixel 10 for a week before release.
   Expressive overhaul (§19e), where type weights are decided together. Note
   for then: Inter is bundled at Regular, Medium and Bold only, so "bolder"
   is a full step unless SemiBold is added.
+- [ ] **December 2026: check F-Droid's download numbers** (owner, 28
+  October). F-Droid publishes weekly download requests, not installs, at
+  fdroid.gitlab.io/metrics (grote.gitlab.io/fdroid-metrics-distilled sums
+  them per app). On 28 October the newest week was 24 August, before
+  Whisper joined F-Droid, so there was nothing yet.
 - [ ] **When released: tell the user who asked for translations.** The
   owner emails him (27 October, hej@ inbox), who may also check the French.
 - [ ] **The Independent's bulletins** (/bulletin/ pages, 20 of every 100
