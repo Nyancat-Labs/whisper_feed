@@ -83,7 +83,9 @@ Release when the owner says so; there's no rush.
 
 **After releasing the translations:** remind the owner to email the user
 in France who asked for them (his email of 27 October is in the hej@
-inbox). He offered to check the French.
+inbox). He has agreed (28 October) to check the French: invite him to
+Weblate once it is set up, and send him the French preview before 1.0.6
+ships, so his corrections go into the release.
 
 - A stale "Syncing" notification is taken down (`clearStaleSyncNotice`).
 - Tour highlight boxes stay inside the screen.
