@@ -9,6 +9,12 @@ Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 Unreleased
 ----------
 
+- **Categories stay where you put them with FreshRSS.** Moving a feed to
+  another category, or deleting a category, is now sent to your server; it
+  used to be put back at the next sync.
+- **Long page titles wrap onto a second line** instead of being cut off.
+- **Sign out is red like Delete**, so everything that removes something
+  looks the same.
 - **Tidier screens throughout.** Page titles stay large and still when a
   page fits on the screen, instead of shrinking the moment you touch it,
   and long titles get smaller to fit rather than being cut off. Section

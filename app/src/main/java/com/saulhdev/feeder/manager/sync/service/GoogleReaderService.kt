@@ -30,7 +30,6 @@ import com.saulhdev.feeder.manager.sync.greader.GoogleReaderIds
 import com.saulhdev.feeder.manager.sync.greader.StreamItem
 import com.saulhdev.feeder.manager.sync.syncFeeds
 import com.saulhdev.feeder.data.db.ID_ALL
-import com.saulhdev.feeder.utils.isSameFeedUrl
 import com.saulhdev.feeder.utils.normalizeFeedUrl
 import com.saulhdev.feeder.utils.isUnmetered
 import com.saulhdev.feeder.manager.sync.greader.AccountTally
@@ -43,6 +42,7 @@ import com.saulhdev.feeder.manager.sync.greader.MissingFeed
 import com.saulhdev.feeder.manager.sync.greader.MissingKind
 import com.saulhdev.feeder.manager.sync.greader.Refusal
 import com.saulhdev.feeder.manager.sync.greader.refusedDueForRetry
+import com.saulhdev.feeder.manager.sync.greader.planFolders
 import com.saulhdev.feeder.manager.sync.greader.planSubscriptions
 import com.saulhdev.feeder.manager.sync.greader.matchFeeds
 import com.saulhdev.feeder.manager.sync.greader.readChanges
@@ -209,8 +209,8 @@ class GoogleReaderService(
      * in Whisper is removed from the server, because that is what the reader
      * did, here, on purpose.
      *
-     * Folders from the server win for a feed both sides have: they are what
-     * the reader set on whichever device they set it.
+     * Folders follow whichever side changed them since the last sync, the
+     * phone when both did; see [planFolders].
      */
     private suspend fun syncSubscriptions(auth: String, token: String?, retryRefused: Boolean): AccountTally {
         val remote = api.subscriptions(auth)
@@ -311,18 +311,38 @@ class GoogleReaderService(
         }
         GoogleReaderState.setNotOnServer(context, missing)
 
-        // Feeds both sides have: the server's folders.
-        remote.forEach { sub ->
-            val url = runCatching { URL(sub.feedUrl) }.getOrNull() ?: return@forEach
-            val existing = local.firstOrNull { isSameFeedUrl(it.url, url) } ?: return@forEach
-            val tag = sub.folders.joinToString(",")
-            if (existing.tag != tag && tag.isNotEmpty()) {
-                sources.updateSource(existing.copy(tag = tag))
-            } else if (tag.isEmpty() && existing.tags.isNotEmpty() && existing.tags.all(::isCatchAllFolder)) {
-                // Taken as a category by an earlier version; see isCatchAllFolder.
-                sources.updateSource(existing.copy(tag = ""))
+        // Feeds both sides have: their folders, whichever side changed them.
+        val lastFolders = GoogleReaderState.folders(context)
+        val nextFolders = mutableMapOf<String, Set<String>>()
+        for ((key, sub) in remoteAs) {
+            val existing = localByKey[key] ?: continue
+            // Taken as a category by an earlier version; see isCatchAllFolder.
+            val mine = existing.tags.filterNot(::isCatchAllFolder)
+            val plan = planFolders(mine, sub.folders, lastFolders[key])
+            plan.local?.let { names -> sources.updateSource(existing.copy(tag = names.joinToString(","))) }
+            if (plan.local == null && mine.size != existing.tags.size) {
+                sources.updateSource(existing.copy(tag = mine.joinToString(",")))
+            }
+            var sent = true
+            if (plan.addOnServer.isNotEmpty() || plan.removeOnServer.isNotEmpty()) {
+                // Removals first, then additions, one label a call. FreshRSS
+                // keeps one folder per feed: removing one moves the feed to
+                // its default folder and adding one moves it there, so the
+                // other way round would leave a moved feed in the default.
+                val stream = sub.id.ifBlank { sub.feedUrl }
+                sent = token != null &&
+                    plan.removeOnServer.all { api.editSubscription(auth, token, "edit", stream, removeLabel = it) } &&
+                    plan.addOnServer.all { api.editSubscription(auth, token, "edit", stream, addLabel = it) }
+            }
+            // Not sent: remembered as before, so it is tried again next time
+            // rather than the server's old folders being taken for new ones.
+            val last = lastFolders[key]
+            when {
+                sent -> nextFolders[key] = plan.agreed
+                last != null -> nextFolders[key] = last
             }
         }
+        GoogleReaderState.setFolders(context, nextFolders)
 
         // What is remembered is what was done, so a subscribe that failed is
         // tried again next time rather than taken for a feed the server dropped.

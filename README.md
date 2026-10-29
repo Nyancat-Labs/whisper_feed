@@ -13,7 +13,7 @@ disagree.
 [![Licence: GPL v3](https://img.shields.io/badge/licence-GPL--3.0-blue)](LICENSE)
 ![Version 1.0.5](https://img.shields.io/badge/version-1.0.5-informational)
 ![Android 8.0+](https://img.shields.io/badge/Android-8.0%2B-brightgreen)
-![Tests](https://img.shields.io/badge/tests-1275%20passing-success)
+![Tests](https://img.shields.io/badge/tests-1282%20passing-success)
 ![No trackers](https://img.shields.io/badge/trackers-none-success)
 
 <a href="https://play.google.com/store/apps/details?id=com.nyancatlabs.whisper"><img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play" height="80"></a>

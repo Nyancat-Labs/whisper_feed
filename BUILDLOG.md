@@ -8,6 +8,28 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 29 October 2026 — Batch 1 follow-up: category sync, titles, red buttons
+
+- Batch 1 tested: 16 of 17 steps passed at once, T3 on clarification.
+- Category sync both ways (59): `planFolders` in `SyncOutbox.kt` decides
+  per feed from the phone's categories, the server's, and both as of the
+  last sync (`GoogleReaderState.folders`, new pref `folders_v1`). Changed
+  on one side wins; both, the phone. First sight takes the server's unless
+  it has none. Sent with `subscription/edit`, removals before additions,
+  because FreshRSS keeps one folder per feed and a removal moves the feed
+  to its default folder. Unsent changes are remembered as before and tried
+  again. A feed with several categories ends in one folder on FreshRSS.
+- Large titles (64): `TwoRowsTopAppBar` with the large flexible bar's
+  heights and `displaySmall`; expanded title wraps to two lines (the bar
+  grows to fit, its measure policy takes the taller of height and title),
+  collapsed stays one. Replaces batch 1's auto-size.
+- Destructive buttons (63): `ActionButton(destructive)` draws the red
+  outline `OutlinedActionButton` uses, so Sign out matches Delete.
+- Item 50: Material already snaps the bar open or closed after a drag, and
+  `collapseOnlyWhenScrolling` passes post-fling through; left to a test step.
+- `FolderSyncTest`; `AccountHistoryTest`, `SettingsStage2Test` and
+  `ReviewBatch1Test` follow. 1282 passing, 1 skipped, lint no errors.
+
 ## 27 October 2026 — Lawnchair accepted the whitelist request
 
 - The owner heard from Lawnchair: Whisper is on the feed whitelist

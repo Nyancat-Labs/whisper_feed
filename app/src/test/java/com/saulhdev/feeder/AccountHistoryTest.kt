@@ -95,7 +95,8 @@ class AccountHistoryTest {
     @Test
     fun `a category taken from the catch-all folder is cleared on the next sync`() {
         val service = source("manager/sync/service/GoogleReaderService.kt")
-        assertTrue(service.contains("tag.isEmpty() && existing.tags.isNotEmpty() && existing.tags.all(::isCatchAllFolder)"))
-        assertTrue(service.contains("sources.updateSource(existing.copy(tag = \"\"))"))
+        // Still cleared, now as part of planFolders' input (review 59).
+        assertTrue(service.contains("val mine = existing.tags.filterNot(::isCatchAllFolder)"))
+        assertTrue(service.contains("sources.updateSource(existing.copy(tag = mine.joinToString(\",\")))"))
     }
 }

@@ -16,7 +16,11 @@ class SettingsStage2Test {
     @Test
     fun `large titles use the flexible app bar`() {
         val bar = read("ui/components/ViewWithActionBar.kt")
-        assertTrue(bar.contains("LargeFlexibleTopAppBar("))
+        // Drawn through TwoRowsTopAppBar since review 64, with the large
+        // flexible bar's own heights and title style.
+        assertTrue(bar.contains("TwoRowsTopAppBar("))
+        assertTrue(bar.contains("TopAppBarDefaults.LargeFlexibleAppBarWithoutSubtitleExpandedHeight"))
+        assertTrue(bar.contains("style = MaterialTheme.typography.displaySmall"))
         assertFalse(bar.contains("LargeTopAppBar("))
     }
 

@@ -38,6 +38,12 @@ fun ActionButton(
     enabled: Boolean = true,
     onClick: () -> Unit,
 ) {
+    // One look for everything that removes: the red outline Delete has. Sign
+    // out drew a pink filled button beside it (review 63).
+    if (destructive) {
+        OutlinedActionButton(modifier, text, positive, destructive = true, icon, enabled, onClick)
+        return
+    }
     // The main action is filled primary, as Expressive draws it; it was the
     // light primary container, the same lavender as a selected chip, so the
     // one thing to press looked like a choice already made (review 16, 21).
@@ -45,12 +51,10 @@ fun ActionButton(
         modifier = modifier,
         colors = ButtonDefaults.filledTonalButtonColors(
             contentColor = when {
-                destructive -> MaterialTheme.colorScheme.onErrorContainer
                 positive -> MaterialTheme.colorScheme.onPrimary
                 else     -> MaterialTheme.colorScheme.onSecondaryContainer
             },
             containerColor = when {
-                destructive -> MaterialTheme.colorScheme.errorContainer
                 positive -> MaterialTheme.colorScheme.primary
                 else     -> MaterialTheme.colorScheme.secondaryContainer
             }

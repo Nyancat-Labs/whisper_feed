@@ -205,6 +205,51 @@ fun rememberAfter(
 }
 
 /**
+ * One feed's categories after a sync: what Whisper should hold, what to add
+ * and remove on the server, and what both sides agree on.
+ */
+data class FolderPlan(
+    /** Whisper's categories from here on, or null to leave them as they are. */
+    val local: List<String>?,
+    val addOnServer: Set<String>,
+    val removeOnServer: Set<String>,
+    /** What both sides hold once the plan is carried out. */
+    val agreed: Set<String>,
+)
+
+/**
+ * Which side's categories win for a feed both sides have.
+ *
+ * Only the server's used to count, and a category changed on the phone was
+ * never sent, so the next sync put the old one back (review 59: a feed moved
+ * from Test to Tech three times was in Test again a day later). With what both
+ * held at the last sync remembered as [last], whichever side changed since
+ * wins, and the phone wins when both did: it is the change made in front of
+ * the reader. A feed seen for the first time takes the server's, as before,
+ * unless the server has none to give, when the phone's are sent instead.
+ * Categories are compared as sets, ignoring case and spacing, so a server that
+ * spells or orders them its own way is not taken for a change.
+ */
+fun planFolders(local: List<String>, server: List<String>, last: Set<String>?): FolderPlan {
+    fun key(names: Collection<String>) = names.map { it.trim().lowercase() }.toSet()
+    val localKey = key(local)
+    val serverKey = key(server)
+    fun push(): FolderPlan = FolderPlan(
+        local = null,
+        addOnServer = local.filter { it.trim().lowercase() !in serverKey }.toSet(),
+        removeOnServer = server.filter { it.trim().lowercase() !in localKey }.toSet(),
+        agreed = localKey,
+    )
+    fun pull(): FolderPlan = FolderPlan(server, emptySet(), emptySet(), serverKey)
+    return when {
+        localKey == serverKey -> FolderPlan(null, emptySet(), emptySet(), localKey)
+        last == null -> if (serverKey.isEmpty()) push() else pull()
+        localKey != last -> push()
+        else -> pull()
+    }
+}
+
+/**
  * What the server's unread list changes here: (to mark read, to mark unread).
  *
  * Over articles the server has claimed only, and never one still waiting in
@@ -249,6 +294,7 @@ object GoogleReaderState {
     private const val REFUSED = "refused"
     private const val SAVE_LOOKUPS = "save_lookups"
     private const val STARS_UNPLACED = "stars_unplaced"
+    private const val FOLDERS = "folders_v1"
 
     private val lock = Any()
 
@@ -309,6 +355,20 @@ object GoogleReaderState {
 
     fun setStarsUnplaced(context: Context, ids: Set<String>) {
         prefs(context).edit { putStringSet(STARS_UNPLACED, ids) }
+    }
+
+    /** Each feed's categories as both sides held them at the last sync. See planFolders. */
+    fun folders(context: Context): Map<String, Set<String>> =
+        prefs(context).getStringSet(FOLDERS, null).orEmpty().mapNotNull { entry ->
+            val tab = entry.indexOf('\t')
+            if (tab <= 0) null
+            else entry.substring(0, tab) to entry.substring(tab + 1).split('\n').filter(String::isNotEmpty).toSet()
+        }.toMap()
+
+    fun setFolders(context: Context, folders: Map<String, Set<String>>) {
+        prefs(context).edit {
+            putStringSet(FOLDERS, folders.mapTo(HashSet()) { (k, names) -> "$k\t${names.joinToString("\n")}" })
+        }
     }
 
     /** Server feed key to Whisper feed key, for pairs whose addresses differ. See matchFeeds. */

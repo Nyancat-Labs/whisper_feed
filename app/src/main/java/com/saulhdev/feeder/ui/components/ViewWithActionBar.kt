@@ -40,9 +40,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TwoRowsTopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarDefaults.enterAlwaysScrollBehavior
 import androidx.compose.material3.rememberTopAppBarState
@@ -53,8 +53,6 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.Velocity
-import androidx.compose.foundation.text.TextAutoSize
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -166,32 +164,45 @@ fun ViewWithActionBar(
         modifier = modifier.nestedScroll(connection),
         topBar = {
             if (largeTitle) {
-                // Expressive's flexible app bar (stage 2, 25 October): its own
-                // type scale and heights, a real subtitle slot, and a smaller
-                // expanded height than LargeTopAppBar, so a page that fits on
-                // the screen no longer scrolls just to collapse its title.
-                LargeFlexibleTopAppBar(
-                    title = {
-                        // One line, made smaller to fit before it is cut
-                        // short: "Import from bookmarks" lost its last word at
-                        // full size (review 22). The bar draws this same text
-                        // collapsed and expanded, each in its own style, so
-                        // the largest size is whichever style it is given.
-                        Text(
-                            text = title,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            autoSize = TextAutoSize.StepBased(
-                                minFontSize = TITLE_MIN_SIZE,
-                                maxFontSize = LocalTextStyle.current.fontSize,
-                            ),
-                        )
+                // Expressive's large flexible bar, drawn through TwoRowsTopAppBar
+                // so the large title and the small one can differ: the large
+                // one wraps onto a second line rather than being shrunk or cut
+                // ("Import from bookmarks", and longer once translated; review
+                // 22, 64), and the bar grows to fit it. Collapsed, one line.
+                TwoRowsTopAppBar(
+                    title = { expanded ->
+                        if (expanded) {
+                            Text(
+                                text = title,
+                                style = MaterialTheme.typography.displaySmall,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.padding(
+                                    bottom = if (subTitle.isEmpty()) LARGE_TITLE_BOTTOM else 0.dp,
+                                ),
+                            )
+                        } else {
+                            Text(text = title, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        }
                     },
                     subtitle = if (subTitle.isNotEmpty()) {
-                        { Text(text = subTitle, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+                        { expanded ->
+                            Text(
+                                text = subTitle,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = if (expanded) Modifier.padding(bottom = LARGE_TITLE_BOTTOM) else Modifier,
+                            )
+                        }
                     } else null,
                     navigationIcon = { navContent() },
                     actions = actions,
+                    collapsedHeight = TopAppBarDefaults.LargeAppBarCollapsedHeight,
+                    expandedHeight = if (subTitle.isNotEmpty()) {
+                        TopAppBarDefaults.LargeFlexibleAppBarWithSubtitleExpandedHeight
+                    } else {
+                        TopAppBarDefaults.LargeFlexibleAppBarWithoutSubtitleExpandedHeight
+                    },
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = MaterialTheme.colorScheme.background,
                         scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
@@ -240,8 +251,8 @@ fun ViewWithActionBar(
     }
 }
 
-/** The smallest a large title is drawn before it is cut short instead. */
-private val TITLE_MIN_SIZE = 22.sp
+/** Below a large title with no subtitle: Material's own large-title spacing. */
+private val LARGE_TITLE_BOTTOM = 28.dp
 
 /**
  * The app bar's scrolling, held back until the content has shown it scrolls.

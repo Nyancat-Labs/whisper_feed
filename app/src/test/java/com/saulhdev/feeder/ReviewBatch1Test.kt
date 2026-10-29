@@ -15,7 +15,8 @@ class ReviewBatch1Test {
         val bar = source("ui/components/ViewWithActionBar.kt")
         assertTrue(bar.contains("collapseOnlyWhenScrolling(scrollBehavior.nestedScrollConnection)"))
         assertTrue(bar.contains("if (contentScrolls) bar.onPreScroll(available, source) else Offset.Zero"))
-        assertTrue("long titles shrink before they are cut", bar.contains("autoSize = TextAutoSize.StepBased("))
+        assertTrue("long titles wrap to two lines when large", bar.contains("maxLines = 2,"))
+        assertTrue("and one when collapsed", bar.contains("Text(text = title, maxLines = 1, overflow = TextOverflow.Ellipsis)"))
     }
 
     @Test
