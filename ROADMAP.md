@@ -193,6 +193,72 @@ The owner is using the preview on the Pixel 10 for a week before release.
 
 ---
 
+## Asked for by users, and other valid points (recorded 1 November 2026)
+
+Kept here so none is forgotten. People are named only on the review sheet,
+which is private; here they are "a user". Item numbers are the sheet's.
+
+**Asked for by users**
+
+- **Home-screen widget** (77): resizable, headlines, pictures and short
+  summaries, tap to open in Whisper. Asked by two users. **After AI
+  summaries (1.2.0)** (owner, 1 November).
+- **Breaking-news notifications** (80): a user gets none and would like
+  alerts like the BBC News app's. Whisper already detects breaking news (a
+  story several distinct sources carry at once; see §6) but only notifies
+  about sync and updates. A notification when a sync finds a new cluster
+  would be done on the phone, no server. How quickly it arrives depends on
+  how often the background sync runs. Owner's decision pending.
+- **Videos inside Whisper** (78) and **audio and podcasts from feeds** (79):
+  **privacy first; to be reviewed later** (owner, 1 November). No embedded
+  player that brings tracking with it (YouTube's does); plain video and
+  audio files can play with Android's own player. A full podcast app
+  (queues, downloads) is out of scope.
+- **Translations**: in 1.0.6, see *Translations*. A French user reviews the
+  French.
+- **"Related articles" left in the reader** (76): French sites keep
+  "Sur le même sujet" and linked "à lire aussi" headlines. Review batch 5:
+  removed by their shape and by their headings in every app language;
+  BFMTV and Le Figaro join the real-feed check.
+
+**From Harmonic's changelog** (an open-source Android app, read 29 October)
+
+- **Startup and scrolling profile** (66): Whisper ships only its libraries'
+  baseline profiles. Record its own (start, scroll the feed, open an
+  article, filter sheet) and measure before and after. Needs a laptop with
+  the phone on USB.
+- **Long-press an article for a preview** (67), 1.1.0.
+- **Reset all settings** (68), review batch 4.
+- **Open paywalled sources through an archive** (69): opt-in per source;
+  owner's call.
+- **AI summaries and F-Droid** (70): F-Droid takes only open source, so
+  Google's closed on-device AI needs a Play-only build, as Harmonic did.
+  Shapes the 1.2.0 plan.
+
+**Google Play** (policy email of 29 October; Android Authority, 28 October)
+
+- **Trader status** (72): declare in Play Console when asked, from November.
+- **Home-network addresses** (73): Android 17 blocks them without a
+  permission. Decided 29 October: not supported; a clear message when one
+  fails. Before 1.0.6 ships.
+- **Memory and code-optimisation thresholds** (74): deadline February 2027;
+  measure Whisper against them before 1.1.0.
+- **Foldables** (65): from 2027 Play gives well-adapted apps more
+  visibility; criteria to come. Nothing may be lost when a phone folds or
+  unfolds (tests in batch 3); the reader off the hinge in 1.1.0; keyboard,
+  pointer and hover for laptops ("Googlebook") already in the brief for
+  1.1.0. Check against Google's criteria once published.
+
+**Ways of working**
+
+- **Google's elephant-goldfish-model**: a plugin for coding assistants that
+  drafts a design with full context, then has fresh reviewers with none
+  check it. Worth trying for the bigger features (widget, AI summaries,
+  audio) rather than for fixes.
+- **A "What's new" window** after store updates, not after a fresh
+  install (where the welcome screens are). Proposed for batch 4; owner's
+  decision pending.
+
 ## Reported bugs
 
 Found on device, so they take precedence over anything below when they are in
