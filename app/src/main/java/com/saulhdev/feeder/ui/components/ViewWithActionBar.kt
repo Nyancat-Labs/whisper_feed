@@ -18,6 +18,20 @@
 
 package com.saulhdev.feeder.ui.components
 
+import androidx.compose.animation.core.animate
+import androidx.compose.foundation.OverscrollEffect
+import androidx.compose.foundation.overscroll
+import androidx.compose.foundation.rememberOverscrollEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
@@ -153,15 +167,60 @@ fun ViewWithActionBar(
                     }
     }
 
-    // A large title collapses only on a page that can scroll. See
-    // collapseOnlyWhenScrolling.
-    val connection = remember(scrollBehavior, largeTitle) {
-        if (largeTitle) collapseOnlyWhenScrolling(scrollBehavior.nestedScrollConnection)
-        else scrollBehavior.nestedScrollConnection
+    // A large title collapses only on a page that can scroll, and a page
+    // that cannot still gives under the finger. See pageScrolling.
+    val stretch = rememberOverscrollEffect()
+    val connection = remember(scrollBehavior, largeTitle, stretch) {
+        pageScrolling(scrollBehavior.nestedScrollConnection, holdBack = largeTitle, stretch = stretch)
+    }
+
+    // A title let go halfway finishes opening or closing (review 50, test
+    // t003-06). Material settles it only at the end of a fling, and a fling
+    // that a finger stops, or a drag that ends without one, never gets there.
+    // So: whenever no finger is down and the bar has sat between open and
+    // closed for a moment, it goes to the nearer end.
+    var fingerDown by remember { mutableStateOf(false) }
+    val settleSpec = MaterialTheme.motionScheme.defaultSpatialSpec<Float>()
+    if (largeTitle) {
+        LaunchedEffect(appBarState) {
+            var job: Job? = null
+            var animating = false
+            snapshotFlow { appBarState.heightOffset to fingerDown }.collect { (offset, down) ->
+                if (down) {
+                    job?.cancel()
+                    return@collect
+                }
+                if (animating) return@collect
+                job?.cancel()
+                if (settleTarget(offset, appBarState.heightOffsetLimit) == null) return@collect
+                job = launch {
+                    delay(SETTLE_DELAY_MS)
+                    val from = appBarState.heightOffset
+                    val to = settleTarget(from, appBarState.heightOffsetLimit) ?: return@launch
+                    animating = true
+                    try {
+                        animate(from, to, animationSpec = settleSpec) { value, _ ->
+                            appBarState.heightOffset = value
+                        }
+                    } finally {
+                        animating = false
+                    }
+                }
+            }
+        }
     }
 
     Scaffold(
-        modifier = modifier.nestedScroll(connection),
+        modifier = modifier
+            .pointerInput(Unit) {
+                awaitPointerEventScope {
+                    while (true) {
+                        val event = awaitPointerEvent(PointerEventPass.Initial)
+                        fingerDown = event.changes.any { it.pressed }
+                    }
+                }
+            }
+            .nestedScroll(connection),
         topBar = {
             if (largeTitle) {
                 // Expressive's large flexible bar, drawn through TwoRowsTopAppBar
@@ -236,10 +295,12 @@ fun ViewWithActionBar(
         // page is handed the top and bottom only, so nothing is counted twice.
         val direction = LocalLayoutDirection.current
         Box(
-            modifier = Modifier.padding(
-                start = padding.calculateStartPadding(direction),
-                end = padding.calculateEndPadding(direction),
-            ),
+            modifier = Modifier
+                .padding(
+                    start = padding.calculateStartPadding(direction),
+                    end = padding.calculateEndPadding(direction),
+                )
+                .overscroll(stretch),
         ) {
             content(
                 PaddingValues(
@@ -254,35 +315,68 @@ fun ViewWithActionBar(
 /** Below a large title with no subtitle: Material's own large-title spacing. */
 private val LARGE_TITLE_BOTTOM = 28.dp
 
+/** How long the bar must sit still, half open, before it settles. */
+private const val SETTLE_DELAY_MS = 120L
+
 /**
- * The app bar's scrolling, held back until the content has shown it scrolls.
- *
- * Material's collapsing bar takes every upward drag first, so a page that fits
- * on the screen still shrank its title the moment it was touched, and a slow
- * drag left the title half collapsed and greyed out (review 53 and 50). The
- * content's own scrolling is not visible from here, so the first drag a page
- * actually scrolls is the evidence: until then, the bar is passed only what
- * the content left over, which on a page that fits is nothing it acts on.
- * Expanding at the top and settling after a fling are the bar's, unchanged.
+ * Where a bar held at [offset] settles: fully open (0) or fully closed
+ * ([limit], negative), whichever is nearer; null when it is already at one
+ * end, or cannot collapse at all.
  */
-private fun collapseOnlyWhenScrolling(bar: NestedScrollConnection) =
-    object : NestedScrollConnection {
-        var contentScrolls = false
+internal fun settleTarget(offset: Float, limit: Float): Float? {
+    if (limit >= 0f) return null
+    if (offset >= -0.5f || offset <= limit + 0.5f) return null
+    return if (offset > limit / 2) 0f else limit
+}
 
-        override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset =
-            if (contentScrolls) bar.onPreScroll(available, source) else Offset.Zero
+/**
+ * A page's scrolling, between its content and the app bar.
+ *
+ * [holdBack]: Material's collapsing bar takes every upward drag first, so a
+ * page that fits on the screen still shrank its title the moment it was
+ * touched, and a slow drag left the title half collapsed and greyed out
+ * (review 53 and 50). The content's own scrolling is not visible from here,
+ * so the first drag a page actually scrolls is the evidence: until then, the
+ * bar is passed only what the content left over, which on a page that fits is
+ * nothing it acts on. Expanding at the top and settling after a fling are the
+ * bar's, unchanged.
+ *
+ * [stretch]: Compose gives no stretch to a list with nothing to scroll, so a
+ * short page (Settings) was dead under the finger, where Android's own
+ * screens give a little (review 81). Until the content shows it scrolls,
+ * whatever the bar leaves of a drag or a fling goes to [stretch]; after that
+ * the list's own stretch does the job, as before.
+ */
+private fun pageScrolling(
+    bar: NestedScrollConnection,
+    holdBack: Boolean,
+    stretch: OverscrollEffect?,
+) = object : NestedScrollConnection {
+    var contentScrolls = false
 
-        override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource): Offset {
-            if (consumed.y != 0f) contentScrolls = true
-            return bar.onPostScroll(consumed, available, source)
-        }
+    override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset =
+        if (contentScrolls || !holdBack) bar.onPreScroll(available, source) else Offset.Zero
 
-        override suspend fun onPreFling(available: Velocity): Velocity =
-            if (contentScrolls) bar.onPreFling(available) else Velocity.Zero
-
-        override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity =
-            bar.onPostFling(consumed, available)
+    override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource): Offset {
+        if (consumed.y != 0f) contentScrolls = true
+        val barTook = bar.onPostScroll(consumed, available, source)
+        if (contentScrolls || stretch == null || source != NestedScrollSource.UserInput) return barTook
+        val left = available - barTook
+        if (left.y == 0f) return barTook
+        stretch.applyToScroll(Offset(0f, left.y), source) { Offset.Zero }
+        return barTook + Offset(0f, left.y)
     }
+
+    override suspend fun onPreFling(available: Velocity): Velocity =
+        if (contentScrolls || !holdBack) bar.onPreFling(available) else Velocity.Zero
+
+    override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
+        val barTook = bar.onPostFling(consumed, available)
+        if (contentScrolls || stretch == null) return barTook
+        stretch.applyToFling(Velocity(0f, (available - barTook).y)) { Velocity.Zero }
+        return available
+    }
+}
 
 @Composable
 fun RoundButton(

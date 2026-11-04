@@ -460,11 +460,15 @@
     </plurals>
     <string name="learned_reset_all_desc">Clears every More/Less score, restarts the reading counts from zero, and shows any hidden sources again. Your subscriptions, saved articles and what you have already read are not touched.</string>
     <string name="mark_read_title">Mark as read</string>
-    <string name="mark_read_explained">Acts straight away, unlike the choices above, and you can undo it.</string>
     <string name="mark_read_everything">Everything</string>
     <string name="mark_read_older_hour">Older than 1 hour</string>
     <string name="mark_read_older_day">Older than 24 hours</string>
     <string name="mark_read_older_two_days">Older than 48 hours</string>
+    <string name="mark_read_short_all">All</string>
+    <string name="mark_read_short_hour">1 h</string>
+    <string name="mark_read_short_day">24 h</string>
+    <string name="mark_read_short_two_days">48 h</string>
+    <string name="mark_read_pick">Marks unread articles older than the time you pick. Acts straight away, unlike the choices above, and you can undo it.</string>
     <string name="pref_mark_read_on_scroll">Mark as read while scrolling</string>
     <string name="pref_mark_read_on_scroll_summary">How long an article has to be on screen before scrolling past it counts as reading it. Nothing is marked while you are still looking at it. A fling past a card gives it about half a second.</string>
     <string name="mark_read_off">Off</string>
@@ -507,7 +511,7 @@
     <string name="action_apply">Apply</string>
     <string name="action_reset">Reset</string>
     <string name="sorting_order">Sorting order</string>
-    <string name="sorting_chronological">Chronological</string>
+    <string name="sorting_chronological">Date</string>
     <string name="sorting_title">Title</string>
     <string name="sorting_source">Source</string>
     <string name="switch_on">On</string>
@@ -515,6 +519,10 @@
     <string name="action_open_article">Open article</string>
     <string name="sort_ascending">Ascending</string>
     <string name="sort_descending">Descending</string>
+    <string name="sort_newest_first">Newest first</string>
+    <string name="sort_oldest_first">Oldest first</string>
+    <string name="sort_a_to_z">A–Z</string>
+    <string name="sort_z_to_a">Z–A</string>
     <string name="select_all">Select all</string>
     <string name="deselect_all">Deselect all</string>
 

@@ -9,6 +9,19 @@ Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 Unreleased
 ----------
 
+- **A tidier filter sheet.** It opens in one movement, starts below the
+  status bar, and its buttons sit clear of the gesture bar. Every section
+  is a card with an icon, open or closed. Sorting is two button groups in
+  plain words: Date, Title or Source, then Newest first or Oldest first
+  (A–Z or Z–A for names). Mark as read is one row, 1 h · 24 h · 48 h · All,
+  each showing how many it would mark, and a choice that would do the same
+  as another is left out.
+- **Page titles never stop halfway.** Let go while a title is shrinking and
+  it finishes opening or closing.
+- **Short pages give a little under your finger**, like Android's own
+  settings, instead of not moving at all.
+- **FreshRSS in other languages:** its default folder ("Sans catégorie",
+  "Sin categorizar" and so on) is no longer shown as a category.
 - **Categories stay where you put them with FreshRSS.** Moving a feed to
   another category, or deleting a category, is now sent to your server; it
   used to be put back at the next sync.

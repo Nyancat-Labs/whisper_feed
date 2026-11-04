@@ -73,6 +73,11 @@ import androidx.compose.material3.adaptive.navigation.NavigableListDetailPaneSca
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -411,8 +416,22 @@ fun ArticleListPage(
                     containerColor = Color.Transparent,
                     sheetContainerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
                     sheetShape = MaterialTheme.shapes.extraSmall,
+                    // Below the status bar when fully open (review 3): the
+                    // handle sat level with the clock.
+                    sheetDragHandle = {
+                        BottomSheetDefaults.DragHandle(
+                            modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars),
+                        )
+                    },
                     sheetContent = {
-                        if (scaffoldState.bottomSheetState.currentValue != SheetValue.Hidden) {
+                        // Drawn from the moment it is asked to open, not once
+                        // it has arrived (review 1). Waiting for it to arrive
+                        // sent an empty strip with a handle up first, and the
+                        // sheet only grew once that strip had landed.
+                        val sheet = scaffoldState.bottomSheetState
+                        if (sheet.currentValue != SheetValue.Hidden || sheet.targetValue != SheetValue.Hidden) {
+                            // Clear of the gesture bar (review 9).
+                            Box(modifier = Modifier.navigationBarsPadding()) {
                             SortFilterSheet(
                                 markReadCounts = { now -> viewModel.unreadCounts(now) },
                                 onMarkRead = { range, now ->
@@ -426,6 +445,7 @@ fun ArticleListPage(
                                 scope.launch {
                                     scaffoldState.bottomSheetState.hide()
                                 }
+                            }
                             }
                         } else Spacer(modifier = Modifier.height(8.dp))
                     },

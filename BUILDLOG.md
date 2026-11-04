@@ -8,6 +8,38 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 4 November 2026 — Review batch 2: filter sheet, title settle, stretch
+
+- Preview a58a672 tested: 7 of 8 steps passed; T6 (title let go halfway)
+  failed. Category sync confirmed on device: a feed moved off "Test" stayed
+  in Tech through two FreshRSS syncs. The one reappearance came from the
+  first sync on this build, which takes the server's folders by design.
+- Title settle (t003-06, item 50): Material settles the bar only at the end
+  of a fling, and a fling a finger stops, or a drag that ends without one,
+  never gets there. `ViewWithActionBar` now watches the bar's offset and
+  whether a finger is down (`PointerEventPass.Initial`, nothing consumed);
+  120 ms after the bar stops between open and closed with no finger down it
+  animates to the nearer end (`settleTarget`) on the theme's spatial spring.
+- Stretch on short pages (81): Compose gives no overscroll to a list with
+  nothing to scroll. `pageScrolling` (was `collapseOnlyWhenScrolling`, now
+  for small titles too) hands what the bar leaves of a drag or fling to an
+  `OverscrollEffect` drawn on the content, until the content shows it
+  scrolls; after that the list's own stretch works as before. Outside the
+  bar's connection's turn, so a pull-down still opens the title first.
+- Filter sheet (1–9): content composed as soon as the sheet's target is
+  open, not once it arrives (the empty strip that rose first); drag handle
+  padded by the status bar; sheet padded by the navigation bar. Blocks are
+  `surfaceContainerHighest` open or closed, content at 16dp, explanatory
+  lines at `BlockTextIndent` under the heading text. Sort: `ChoiceButtons`
+  twice (Date/Title/Source, then direction worded per sort; "Chronological"
+  is now "Date"). Mark as read: one connected row of tonal buttons with the
+  count under each; `markReadChoices` drops a range that marks the same as
+  the next wider one, or nothing, and always keeps All.
+- FreshRSS default folder (75): `isCatchAllFolder` knows the name in every
+  language FreshRSS ships, from its `gen.short.default_category`.
+- `ReviewBatch2Test`, `TitleSettleTest`; `ReviewBatch1Test` and
+  `AccountHistoryTest` follow. 1292 tests, 1 skipped.
+
 ## 29 October 2026 — Batch 1 follow-up: category sync, titles, red buttons
 
 - Batch 1 tested: 16 of 17 steps passed at once, T3 on clarification.

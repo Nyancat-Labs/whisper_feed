@@ -20,7 +20,6 @@ package com.saulhdev.feeder.ui.components
 
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -43,11 +42,17 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.saulhdev.feeder.ui.icons.Phosphor
 import com.saulhdev.feeder.ui.icons.phosphor.CaretDown
+
+/**
+ * How far a block's explanatory line is set in, so it starts under the
+ * heading's text rather than under its icon (review 6): the icon's 24dp and
+ * the 8dp gap after it. Controls (chips, buttons) use the full width.
+ */
+val BlockTextIndent = 32.dp
 
 @Composable
 fun ExpandableItemsBlock(
@@ -58,11 +63,10 @@ fun ExpandableItemsBlock(
     content: @Composable ColumnScope.() -> Unit,
 ) {
     var expanded by rememberSaveable { mutableStateOf(preExpanded) }
-    val surfaceColor by animateColorAsState(
-        targetValue = if (expanded) MaterialTheme.colorScheme.surfaceContainerHigh
-        else Color.Transparent,
-        label = "surfaceColor"
-    )
+    // A card open or closed (review 2): closed ones sat bare on the sheet
+    // beside open ones on a card, the same row drawn two ways. The colour of
+    // the switch rows beside them, so the sheet reads as one set.
+    val surfaceColor = MaterialTheme.colorScheme.surfaceContainerHighest
     val expandedPadding by animateDpAsState(
         targetValue = if (expanded) 2.dp else 0.dp,
         label = "expandedPadding"
@@ -80,10 +84,11 @@ fun ExpandableItemsBlock(
             BlockHeader(heading, icon)
             AnimatedVisibility(visible = expanded) {
                 Column(
+                    // In line with the heading's text (review 6).
                     Modifier.padding(
                         bottom = 16.dp,
-                        start = 8.dp,
-                        end = 8.dp,
+                        start = 16.dp,
+                        end = 16.dp,
                     )
                 ) {
                     content()
@@ -113,7 +118,7 @@ fun BlockHeader(
             icon?.let {
                 Icon(
                     imageVector = icon,
-                    contentDescription = heading
+                    contentDescription = null,
                 )
             }
             Text(

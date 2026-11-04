@@ -35,3 +35,22 @@ enum class MarkReadRange(private val olderThanMs: Long?) {
      */
     fun before(nowMs: Long): Long = olderThanMs?.let { nowMs - it } ?: Long.MAX_VALUE
 }
+
+/**
+ * The buttons worth showing, in the order the sheet shows them: 1 h, 24 h,
+ * 48 h, then All.
+ *
+ * A range that would mark exactly what the next wider one marks is left out
+ * (review 7: "Everything" and "Older than 1 hour" both said 13,928 whenever
+ * nothing had arrived in the last hour), and so is one with nothing to mark.
+ * All is always there, so the row is never empty.
+ */
+fun markReadChoices(counts: Map<MarkReadRange, Int>): List<MarkReadRange> {
+    val widestFirst = MarkReadRange.entries // Everything, then each narrower
+    val shown = widestFirst.filterIndexed { i, range ->
+        if (range == MarkReadRange.Everything) return@filterIndexed true
+        val count = counts[range] ?: 0
+        count > 0 && count != (counts[widestFirst[i - 1]] ?: 0)
+    }
+    return shown.filter { it != MarkReadRange.Everything } + MarkReadRange.Everything
+}

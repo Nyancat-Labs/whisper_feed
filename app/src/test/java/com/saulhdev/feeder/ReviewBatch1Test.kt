@@ -13,8 +13,8 @@ class ReviewBatch1Test {
     @Test
     fun `a large title collapses only once the page has scrolled`() {
         val bar = source("ui/components/ViewWithActionBar.kt")
-        assertTrue(bar.contains("collapseOnlyWhenScrolling(scrollBehavior.nestedScrollConnection)"))
-        assertTrue(bar.contains("if (contentScrolls) bar.onPreScroll(available, source) else Offset.Zero"))
+        assertTrue(bar.contains("pageScrolling(scrollBehavior.nestedScrollConnection, holdBack = largeTitle"))
+        assertTrue(bar.contains("if (contentScrolls || !holdBack) bar.onPreScroll(available, source) else Offset.Zero"))
         assertTrue("long titles wrap to two lines when large", bar.contains("maxLines = 2,"))
         assertTrue("and one when collapsed", bar.contains("Text(text = title, maxLines = 1, overflow = TextOverflow.Ellipsis)"))
     }

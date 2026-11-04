@@ -43,6 +43,9 @@ class AccountHistoryTest {
     fun `the server's folder for no folder is not a category`() {
         listOf("Uncategorized", "uncategorised", " UNCATEGORIZED ").forEach { assertTrue(it, isCatchAllFolder(it)) }
         listOf("Tech", "News", "Uncategorized stuff").forEach { assertFalse(it, isCatchAllFolder(it)) }
+        // FreshRSS names it in the account's language (review 75).
+        listOf("Sans catégorie", "SIN CATEGORIZAR", "Senza categoria", "Unkategorisiert", "Sem categoria", "Brak kategorii", "未分类")
+            .forEach { assertTrue(it, isCatchAllFolder(it)) }
         val sub = Subscription(
             categories = listOf(
                 SubscriptionCategory(id = "user/-/label/Uncategorized"),

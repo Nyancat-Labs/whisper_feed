@@ -17,6 +17,7 @@
  */
 package com.saulhdev.feeder.manager.sync.greader
 
+import java.util.Locale
 import com.saulhdev.feeder.manager.bookmarks.allowingPrivateNetworks
 import com.saulhdev.feeder.utils.HttpIdentity.asFeedReader
 import com.squareup.moshi.JsonClass
@@ -508,11 +509,42 @@ data class StreamLink(val href: String? = null, val type: String? = null)
 /**
  * A server's folder for feeds that have no folder.
  *
- * FreshRSS calls it "Uncategorized", in English whatever the account's
- * language, and other servers use the same word or its British spelling.
+ * FreshRSS names it when the account is created, in the account's language
+ * ("Sans catégorie" on a French server), and keeps that name (review 75).
+ * Every name its translations give it is here, from FreshRSS's own
+ * app/i18n/<language>/gen.php, gen.short.default_category; other servers use
+ * the English word or its British spelling.
  */
 fun isCatchAllFolder(name: String): Boolean =
-    name.trim().lowercase() in setOf("uncategorized", "uncategorised")
+    name.trim().lowercase(Locale.ROOT) in CATCH_ALL_FOLDERS
+
+private val CATCH_ALL_FOLDERS = setOf(
+    "uncategorized", "uncategorised",   // en, and other servers
+    "غير مصنف",                          // ar
+    "nezařazeno",                        // cs
+    "unkategorisiert",                   // de
+    "μη κατηγοριοποιημένα",              // el
+    "sin categorizar",                   // es
+    "دسته‌بندی‌نشده",                     // fa
+    "luokittelematon",                   // fi
+    "sans catégorie",                    // fr
+    "ללא קטגוריה",                       // he
+    "kategória nélküli",                 // hu
+    "tidak ada kategori",                // id
+    "senza categoria",                   // it
+    "未分類",                             // ja, zh-TW
+    "분류 없음",                          // ko
+    "neklasificēts",                     // lv
+    "niet ingedeeld",                    // nl
+    "pas triat",                         // oc
+    "brak kategorii",                    // pl
+    "sem categoria",                     // pt-BR, pt-PT
+    "без категории",                     // ru
+    "bez kategórie",                     // sk
+    "kategorisiz",                       // tr
+    "без категорії",                     // uk
+    "未分类",                             // zh-CN
+).map { it.lowercase(Locale.ROOT) }.toSet()
 
 /** More than a server moving its own path needs. */
 private const val MAX_SIGN_IN_REDIRECTS = 3

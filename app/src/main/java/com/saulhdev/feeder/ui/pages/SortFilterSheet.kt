@@ -41,7 +41,6 @@ import androidx.compose.ui.unit.dp
 import com.saulhdev.feeder.R
 import com.saulhdev.feeder.data.content.FeedPreferences
 import com.saulhdev.feeder.ui.components.ActionButton
-import com.saulhdev.feeder.ui.components.ChipsSwitch
 import com.saulhdev.feeder.ui.components.DeSelectAll
 import com.saulhdev.feeder.ui.components.ComposeSwitchView
 import com.saulhdev.feeder.ui.components.ExpandableItemsBlock
@@ -51,13 +50,26 @@ import com.saulhdev.feeder.ui.icons.Phosphor
 import com.saulhdev.feeder.ui.icons.phosphor.ArrowUUpLeft
 import com.saulhdev.feeder.ui.icons.phosphor.Check
 import com.saulhdev.feeder.ui.icons.phosphor.CheckCircle
-import com.saulhdev.feeder.ui.icons.phosphor.SortAscending
-import com.saulhdev.feeder.ui.icons.phosphor.SortDescending
 import com.saulhdev.feeder.utils.READ_HIDE
 import com.saulhdev.feeder.utils.readVisibilityOnShow
 import com.saulhdev.feeder.utils.extensions.koinNeoViewModel
 import com.saulhdev.feeder.viewmodels.MarkReadRange
 import com.saulhdev.feeder.viewmodels.SortFilterViewModel
+import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import com.saulhdev.feeder.data.entity.SORT_CHRONOLOGICAL
+import com.saulhdev.feeder.ui.components.BlockTextIndent
+import com.saulhdev.feeder.ui.components.ChoiceButtons
+import com.saulhdev.feeder.ui.icons.phosphor.Article
+import com.saulhdev.feeder.ui.icons.phosphor.Hash
+import com.saulhdev.feeder.ui.icons.phosphor.Rss
+import com.saulhdev.feeder.ui.icons.phosphor.Sort
+import com.saulhdev.feeder.viewmodels.markReadChoices
+import java.text.NumberFormat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.compose.koinInject
 import com.saulhdev.feeder.data.content.asState
@@ -184,31 +196,22 @@ fun SortFilterSheet(
             item {
                 ExpandableItemsBlock(
                     heading = stringResource(id = R.string.sorting_order),
+                    icon = Phosphor.Sort,
                     preExpanded = true,
                 ) {
-                    FlowRow(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        prefs.sortingFilter.entries.forEach {
-                            SelectChip(
-                                text = it.value,
-                                checked = it.key == sortOption,
-                                alwaysShowIcon = false,
-                            ) {
-                                sortOption = it.key
-                            }
-                        }
-                    }
-                    ChipsSwitch(
-                        firstTextId = R.string.sort_ascending,
-                        firstIcon = Phosphor.SortAscending,
-                        secondTextId = R.string.sort_descending,
-                        secondIcon = Phosphor.SortDescending,
-                        firstSelected = sortAscOption,
-                        onCheckedChange = { checked ->
-                            sortAscOption = checked
-                        }
+                    // Two button groups, what to sort by and which way, in
+                    // plain words (review 4, brief 8.4). It was chips above a
+                    // segmented Ascending/Descending: two kinds of control for
+                    // one kind of choice.
+                    ChoiceButtons(
+                        options = prefs.sortingFilter.entries,
+                        selected = sortOption,
+                        onSelect = { sortOption = it },
+                    )
+                    ChoiceButtons(
+                        options = sortDirections(sortOption),
+                        selected = if (sortAscOption) SORT_ASC else SORT_DESC,
+                        onSelect = { sortAscOption = it == SORT_ASC },
                     )
                 }
             }
@@ -220,6 +223,7 @@ fun SortFilterSheet(
                 // is indistinguishable from the articles being gone for good.
                 ComposeSwitchView(
                     titleId = R.string.show_read_articles,
+                    icon = Phosphor.Article,
                     isChecked = showReadOption,
                     onCheckedChange = { showReadOption = it },
                     index = 0,
@@ -244,6 +248,7 @@ fun SortFilterSheet(
             item {
                 ExpandableItemsBlock(
                     heading = stringResource(id = R.string.title_sources),
+                    icon = Phosphor.Rss,
                     preExpanded = sourcesOption.isNotEmpty(),
                 ) {
                     DeSelectAll(state.activeSources.map { it.id.toString() }, sourcesOption)
@@ -271,6 +276,7 @@ fun SortFilterSheet(
             item {
                 ExpandableItemsBlock(
                     heading = stringResource(id = R.string.source_tags),
+                    icon = Phosphor.Hash,
                     preExpanded = tagsOption.isNotEmpty(),
                 ) {
                     DeSelectAll(state.activeTags.map { it }, tagsOption)
@@ -324,6 +330,7 @@ private fun DismissedTodayBlock(
             ),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(start = BlockTextIndent),
         )
         items.forEach { item ->
             Row(
@@ -380,23 +387,82 @@ private fun MarkReadBlock(
         preExpanded = true,
     ) {
         Text(
-            text = stringResource(R.string.mark_read_explained),
+            text = stringResource(R.string.mark_read_pick),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(start = BlockTextIndent),
         )
-        MarkReadRange.entries.forEach { range ->
-            val count = counted?.get(range) ?: 0
-            OutlinedActionButton(
-                modifier = Modifier.fillMaxWidth(),
-                text = stringResource(range.label()) +
-                        if (counted != null) " \u00b7 " + pluralStringResource(R.plurals.mark_read_unread, count, count)
-                        else "",
-                positive = true,
-                enabled = count > 0,
-                onClick = { onMark(range, now) },
-            )
+        // One joined row, 1 h · 24 h · 48 h · All, each with what it would
+        // mark beneath (review 8, option A). Four full-width outlined buttons
+        // were the heaviest thing in the sheet for its least used action.
+        // A choice that would mark the same as a wider one is left out
+        // (review 7); see markReadChoices.
+        val shown = counted?.let(::markReadChoices) ?: return@ExpandableItemsBlock
+        val last = shown.size - 1
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(2.dp),
+        ) {
+            shown.forEachIndexed { i, range ->
+                val count = counted?.get(range) ?: 0
+                val full = stringResource(range.label()) + " \u00b7 " +
+                    pluralStringResource(R.plurals.mark_read_unread, count, count)
+                FilledTonalButton(
+                    onClick = { onMark(range, now) },
+                    enabled = count > 0,
+                    shape = joinedShape(i, last),
+                    contentPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .semantics { contentDescription = full },
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(stringResource(range.shortLabel()), maxLines = 1)
+                        Text(
+                            text = NumberFormat.getIntegerInstance().format(count),
+                            style = MaterialTheme.typography.labelSmall,
+                            maxLines = 1,
+                        )
+                    }
+                }
+            }
         }
     }
+}
+
+private const val SORT_ASC = "asc"
+private const val SORT_DESC = "desc"
+
+/** Which way, in words that fit what is sorted: by date, or alphabetically. */
+@Composable
+private fun sortDirections(sort: String): Map<String, String> =
+    if (sort == SORT_CHRONOLOGICAL) linkedMapOf(
+        SORT_DESC to stringResource(R.string.sort_newest_first),
+        SORT_ASC to stringResource(R.string.sort_oldest_first),
+    ) else linkedMapOf(
+        SORT_ASC to stringResource(R.string.sort_a_to_z),
+        SORT_DESC to stringResource(R.string.sort_z_to_a),
+    )
+
+/** A connected group's corners: round on the outside ends, tight between. */
+private fun joinedShape(index: Int, last: Int): Shape {
+    val round = CornerSize(50)
+    val tight = CornerSize(4.dp)
+    return when {
+        last == 0 -> RoundedCornerShape(round, round, round, round)
+        index == 0 -> RoundedCornerShape(round, tight, tight, round)
+        index == last -> RoundedCornerShape(tight, round, round, tight)
+        else -> RoundedCornerShape(tight, tight, tight, tight)
+    }
+}
+
+private fun MarkReadRange.shortLabel(): Int = when (this) {
+    MarkReadRange.Everything -> R.string.mark_read_short_all
+    MarkReadRange.OlderThanHour -> R.string.mark_read_short_hour
+    MarkReadRange.OlderThanDay -> R.string.mark_read_short_day
+    MarkReadRange.OlderThanTwoDays -> R.string.mark_read_short_two_days
 }
 
 private fun MarkReadRange.label(): Int = when (this) {
