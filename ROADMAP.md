@@ -249,6 +249,20 @@ which is private; here they are "a user". Item numbers are the sheet's.
   pointer and hover for laptops ("Googlebook") already in the brief for
   1.1.0. Check against Google's criteria once published.
 
+**The project**
+
+- **A website for Whisper** (owner, 4 November): a front page, "at some
+  stage". What it would hold: what Whisper is and what it is not (no
+  account, no tracking), screenshots, Play, F-Droid, GitHub and Obtainium
+  links, the privacy policy at a proper address instead of a GitHub file,
+  a short FAQ (FreshRSS, the launcher page, Lawnchair), and how to report a
+  problem or a translation mistake. No analytics, no cookies, no fonts
+  from other servers, so it matches the app. Simplest home: GitHub Pages
+  from this repository (free, published on each push); a domain of its own
+  later if wanted. Its address then goes in the Play listing's website
+  field and the About page. Suggested timing: after 1.0.6, before 1.1.0,
+  when the Expressive screenshots are final.
+
 **Ways of working**
 
 - **Google's elephant-goldfish-model**: a plugin for coding assistants that
