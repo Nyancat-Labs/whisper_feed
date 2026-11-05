@@ -15,7 +15,7 @@ class ReviewBatch3Test {
 
     @Test
     fun `the byline keeps everything when there is room`() {
-        val plan = bylinePlan(available = 300, category = 40, name = 80, age = 60, ageShort = 20, minName = 48)
+        val plan = bylinePlan(available = 300, category = 40, name = 80, age = 60, ageShort = 20)
         assertTrue(plan.showCategory)
         assertFalse(plan.shortAge)
         assertEquals(80, plan.nameRoom)
@@ -23,23 +23,32 @@ class ReviewBatch3Test {
 
     @Test
     fun `short of room, the category goes first, then the long age`() {
-        // 140 - 40 - 60 = 40: too little for the name, so the category goes.
-        val noCategory = bylinePlan(available = 140, category = 40, name = 100, age = 60, ageShort = 20, minName = 48)
+        // 160 - 40 - 60 = 60: not the whole name, so the category goes.
+        val noCategory = bylinePlan(available = 160, category = 40, name = 100, age = 60, ageShort = 20)
         assertFalse(noCategory.showCategory)
         assertFalse(noCategory.shortAge)
-        assertEquals(80, noCategory.nameRoom)
-        // Still too little: the short age.
-        val shortAge = bylinePlan(available = 100, category = 40, name = 100, age = 60, ageShort = 20, minName = 48)
+        assertEquals(100, noCategory.nameRoom)
+        // Still not: the short age, and the whole name.
+        val shortAge = bylinePlan(available = 130, category = 40, name = 100, age = 60, ageShort = 20)
         assertFalse(shortAge.showCategory)
         assertTrue(shortAge.shortAge)
-        assertEquals(80, shortAge.nameRoom)
+        assertEquals(100, shortAge.nameRoom)
     }
 
     @Test
-    fun `a short name does not cost the category`() {
-        val plan = bylinePlan(available = 120, category = 40, name = 30, age = 50, ageShort = 20, minName = 48)
-        assertTrue(plan.showCategory)
-        assertEquals(30, plan.nameRoom)
+    fun `a whole name beats the clock time`() {
+        // "The Independ… · 12m · 16:14 · 2 min" became "The Independent · 12m".
+        val plan = bylinePlan(available = 150, category = 0, name = 100, age = 90, ageShort = 25)
+        assertTrue(plan.shortAge)
+        assertEquals(100, plan.nameRoom)
+    }
+
+    @Test
+    fun `with no room for the whole name, the name gets all there is`() {
+        val plan = bylinePlan(available = 80, category = 40, name = 100, age = 60, ageShort = 20)
+        assertFalse(plan.showCategory)
+        assertTrue(plan.shortAge)
+        assertEquals(60, plan.nameRoom)
     }
 
     @Test

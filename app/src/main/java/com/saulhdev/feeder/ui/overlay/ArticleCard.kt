@@ -891,7 +891,6 @@ internal fun ArticleMeta(
             name = nameFull,
             age = ageFull.width,
             ageShort = ageShort.width,
-            minName = MIN_SOURCE_NAME.roundToPx(),
         )
         val ageP = if (plan.shortAge) ageShort else ageFull
         val nameWidth = if (plan.nameRoom >= nameFull) nameFull else {
@@ -905,7 +904,13 @@ internal fun ArticleMeta(
             )
             kotlin.math.ceil(cut.getLineRight(0)).toInt().coerceIn(0, plan.nameRoom.coerceAtLeast(0))
         }
-        val nameP = measurables[2].measure(Constraints.fixedWidth(nameWidth).copy(maxHeight = loose.maxHeight))
+        // Measured at the width the cut was worked out for, so it cuts in the
+        // same place; any narrower, and it cut a word earlier and left the
+        // gap this was meant to close ("telegraph.co.uk …  · 4m"). Placed by
+        // the width its letters really take.
+        val nameP = measurables[2].measure(
+            Constraints(maxWidth = if (nameWidth < nameFull) plan.nameRoom.coerceAtLeast(0) else nameFull, maxHeight = loose.maxHeight)
+        )
         val parts = buildList {
             add(mark); if (plan.showCategory) add(cat); add(nameP); add(ageP)
         }
@@ -913,37 +918,38 @@ internal fun ArticleMeta(
         // At least the width the row was told to take: smaller, and Compose
         // centres it in that width, which put the byline in the middle of a
         // full-width card (owner's screenshot, 5 November).
-        val width = (mark.width + gap + (if (plan.showCategory) cat.width else 0) + nameP.width + ageP.width)
+        // Each part's advance: the name's is its letters, not its box.
+        val advance = parts.map { if (it === nameP) nameWidth else it.width }
+        val width = (mark.width + gap + (if (plan.showCategory) cat.width else 0) + nameWidth + ageP.width)
             .coerceAtMost(max)
             .coerceAtLeast(constraints.minWidth)
         layout(width, height) {
             var x = 0
             parts.forEachIndexed { i, p ->
                 p.placeRelative(x, (height - p.height) / 2)
-                x += p.width + if (i == 0) gap else 0
+                x += advance[i] + if (i == 0) gap else 0
             }
         }
     }
 }
 
-/** Below this the source's name is no longer worth showing cut. */
-private val MIN_SOURCE_NAME = 48.dp
-
 /** What the byline shows in the room it has; see [bylinePlan]. */
 internal data class BylinePlan(val showCategory: Boolean, val shortAge: Boolean, val nameRoom: Int)
 
 /**
- * Fits the byline into [available] (after the mark): everything if it fits;
- * otherwise the category goes first, then the long age gives way to the
- * short one, until the source's name has at least [minName] (or all it
- * needs, if that is less).
+ * Fits the byline into [available] (after the mark). Everything if it fits;
+ * otherwise the category goes first, then the long age (clock time and
+ * reading time) gives way to the short one, until the source's whole name
+ * fits. A whole name is worth more than the clock time: "The Independent ·
+ * 7m" rather than "The Independ… · 12m · 16:14 · 2 min" (owner's
+ * screenshots, 5 November). When even the shortest line cannot hold the
+ * whole name, the name gets all the room there is.
  */
-internal fun bylinePlan(available: Int, category: Int, name: Int, age: Int, ageShort: Int, minName: Int): BylinePlan {
-    val wanted = minOf(name, minName)
+internal fun bylinePlan(available: Int, category: Int, name: Int, age: Int, ageShort: Int): BylinePlan {
     for ((withCategory, short) in listOf(true to false, false to false, false to true)) {
         if (withCategory && category == 0) continue
         val room = available - (if (withCategory) category else 0) - (if (short) ageShort else age)
-        if (room >= wanted) return BylinePlan(withCategory && category > 0, short, minOf(room, name))
+        if (room >= name) return BylinePlan(withCategory && category > 0, short, name)
     }
     return BylinePlan(false, true, (available - ageShort).coerceAtLeast(0))
 }
