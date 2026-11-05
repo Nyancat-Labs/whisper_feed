@@ -271,9 +271,11 @@ which is private; here they are "a user". Item numbers are the sheet's.
   field and the About page. Suggested timing: after 1.0.6, before 1.1.0,
   when the Expressive screenshots are final.
 
-- **GitHub Sponsors** (owner, 4 November): the owner's personal profile
-  is live. To do: fill in the profile; offer it beside Ko-fi in
-  `.github/FUNDING.yml`, the README and About (batch 4, with item 38).
+- **GitHub Sponsors** (owner, 4–5 November): Nyancat Labs has its own
+  profile; it is now in `.github/FUNDING.yml` and the README beside Ko-fi.
+  The owner's personal account (defsix) has one too, to be filled in at the
+  weekend; whether Whisper links to it as well is the owner's call. In the
+  app's About page with item 38, batch 4.
 
 **Ways of working**
 

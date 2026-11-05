@@ -1,6 +1,7 @@
 # The Sponsor button on the repository.
 #
-# Ko-fi rather than GitHub Sponsors: no enrolment queue, and nothing taken
-# from a one-off tip. GitHub still renders its own "Sponsor" button from this
-# file whichever platform is behind it.
+# Nyancat Labs on GitHub Sponsors, for regular support, and Ko-fi for a
+# one-off tip with nothing taken from it. GitHub lists both under its
+# "Sponsor" button.
+github: Nyancat-Labs
 ko_fi: nyancatlabs
