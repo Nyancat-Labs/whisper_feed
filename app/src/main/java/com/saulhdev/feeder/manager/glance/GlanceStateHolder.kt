@@ -17,6 +17,8 @@
  */
 package com.saulhdev.feeder.manager.glance
 
+import java.time.ZoneId
+import java.time.Instant
 import com.saulhdev.feeder.data.content.FeedPreferences
 import com.saulhdev.feeder.data.repository.ArticleRepository
 import kotlinx.coroutines.CoroutineScope
@@ -74,7 +76,11 @@ class GlanceStateHolder(
     val state: StateFlow<GlanceState> = combine(
         prefs.glanceEnabled.get(),
         prefs.glancePlaceName.get(),
-        dayStart.flatMapLatest { articleRepo.countReadSince(it) }.distinctUntilChanged(),
+        // Read on this phone, not everything marked read since midnight: a
+        // FreshRSS sync or one bulk Mark as read added hundreds (review 14).
+        dayStart.flatMapLatest {
+            articleRepo.readOnPhone(Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate())
+        }.distinctUntilChanged(),
         weather,
     ) { enabled, placeName, readToday, currentWeather ->
         GlanceState(

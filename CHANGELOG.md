@@ -9,6 +9,26 @@ Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 Unreleased
 ----------
 
+- **Long-press an article for a preview**: the picture, the source, the
+  whole headline and summary, with Open, Share and Save, without leaving
+  the feed.
+- **The article menu is grouped**, with the source's name at the top:
+  sharing and pinning; More, Less and "Why is this here?"; and Not
+  interested and Hide source.
+- **Source names stay readable.** When the line under a headline is short
+  of room, the category goes first, then the clock time and reading time,
+  before the source's name is cut; and the time follows the name with no
+  gap. Tiles without a picture in Mosaic are shorter, with their buttons on
+  that line.
+- **Fewer holes in Mosaic.** Before a wide lead story, a tile or two from
+  just after it may move up to even out the two columns.
+- **"Read today" counts what you read on this phone**, not articles your
+  server marked read or a Mark as read in the filter sheet. Mark as read no
+  longer counts in the reading statistics either.
+- **The selected category chip shows a tick** instead of an underline;
+  pull to refresh shows Expressive's loading indicator; the back-to-top
+  button is the small size.
+- **Folding or unfolding keeps an open search** open, with its words.
 - **A tidier filter sheet.** It opens in one movement, starts below the
   status bar, and its buttons sit clear of the gesture bar. Every section
   is a card with an icon, open or closed. Sorting is two button groups in

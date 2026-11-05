@@ -309,6 +309,8 @@
     <string name="unpin_article">Unpin</string>
     <string name="pinned_label">Pinned</string>
     <string name="why_this_size">Why is this here?</string>
+    <string name="action_preview_article">Preview the article</string>
+    <string name="preview_open">Open</string>
     <string name="why_explanation">Whisper sizes and orders articles from these signals alone. Nothing here comes from anywhere but your own phone.</string>
     <string name="why_no_image">No picture, so it stays small whatever else is true</string>
     <string name="why_very_fresh">Published in the last two hours</string>

@@ -96,6 +96,14 @@ interface ReadingTallyDao {
     )
     suspend fun subtract(day: String, hour: String, seen: Int, opened: Int)
 
+    /**
+     * Articles read on this phone on [day]: opened, or scrolled past with
+     * read-on-scroll. Not the server's reads, which are never tallied, nor a
+     * bulk Mark as read. The glance row's "Read today" (review 14).
+     */
+    @Query("SELECT COALESCE(SUM(seen), 0) FROM ReadingTally WHERE day = :day")
+    fun seenOn(day: String): Flow<Int>
+
     @Query(
         """
         SELECT day, SUM(seen) AS seen, SUM(opened) AS opened

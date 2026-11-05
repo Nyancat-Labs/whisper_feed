@@ -109,24 +109,14 @@ class SourceFilterTest {
             card.substring(at, at + 200).contains("Modifier.clickable"),
         )
 
-        // The span of the clickable Row, from the modifier that makes it
-        // tappable to the line that closes it. The mark and the name belong
-        // inside; the age is the first thing that must not be.
-        val opens = card.indexOf("modifier = identity.weight", at)
-        assertTrue("the identity Row is gone", opens > 0)
-        val closes = card.indexOf("\n        }", opens)
-        assertTrue("the identity Row never closes", closes > opens)
-        val target = card.substring(opens, closes)
-
-        assertTrue("the mark left the target", target.contains("SourceMark("))
-        assertTrue("the source name left the target", target.contains("text = shortSourceName(source),"))
-        // Matched on the interpolation rather than the word: `onImage` in the
-        // same block contains "age", which is the kind of near-miss that makes
-        // a test pass for the wrong reason and then fail for the wrong one.
-        assertTrue("the age was pulled into the target", !target.contains("\$age"))
+        // The mark, the category and the name each carry the identity's
+        // tap (the byline is laid out by hand since review 43); the age does
+        // not.
+        assertTrue("the mark left the target", card.contains("Box(identity.clearAndSetSemantics { }) {\n                SourceMark("))
+        assertTrue("the source name left the target", Regex("""text = name,[\s\S]{0,160}modifier = identity,""").containsMatchIn(card))
         assertTrue(
-            "the age is no longer drawn outside the target",
-            card.indexOf("\" · \$age\"", closes) > closes,
+            "the age was pulled into the target",
+            card.contains("Text(text = \" · \$age\", style = style, color = color, maxLines = 1, softWrap = false)"),
         )
     }
 

@@ -316,6 +316,9 @@ class ArticleListViewModel(
      * and the feed offers them back.
      */
     private val _undoableReads = MutableStateFlow<List<String>>(emptyList())
+
+    /** Which of [undoableReads] came from a bulk Mark as read; see undoReads. */
+    private var bulkReads: Set<String> = emptySet()
     val undoableReads: StateFlow<List<String>> = _undoableReads.asStateFlow()
 
     /** Records that an article was opened, for the unread and read-today counts. */
@@ -405,7 +408,10 @@ class ArticleListViewModel(
             // names this batch's count, so Undo must put back this batch and
             // no more. Anything scrolled past before it was in the range and
             // is read either way.
-            if (marked.isNotEmpty()) _undoableReads.value = marked
+            if (marked.isNotEmpty()) {
+                _undoableReads.value = marked
+                bulkReads = marked.toSet()
+            }
             onMarked(marked.size)
         }
     }
@@ -418,14 +424,21 @@ class ArticleListViewModel(
     fun undoReads() {
         viewModelScope.launch {
             val ids = _undoableReads.value
+            val bulk = bulkReads
             _undoableReads.value = emptyList()
-            if (ids.isNotEmpty()) articleRepo.unmarkRead(ids)
+            bulkReads = emptySet()
+            // A bulk mark was never tallied, so its undo takes nothing off
+            // the reading count; scroll marks were, and do.
+            val (wasBulk, scrolled) = ids.partition { it in bulk }
+            if (wasBulk.isNotEmpty()) articleRepo.unmarkRead(wasBulk, tallied = false)
+            if (scrolled.isNotEmpty()) articleRepo.unmarkRead(scrolled)
         }
     }
 
     /** The reader let the offer go. What was marked stays marked. */
     fun forgetUndoableReads() {
         _undoableReads.value = emptyList()
+        bulkReads = emptySet()
     }
 
     fun bookmarkArticle(id: String, boolean: Boolean) {

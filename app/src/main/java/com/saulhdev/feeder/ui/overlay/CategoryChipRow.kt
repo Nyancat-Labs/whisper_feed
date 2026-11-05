@@ -17,6 +17,11 @@
  */
 package com.saulhdev.feeder.ui.overlay
 
+import com.saulhdev.feeder.ui.icons.phosphor.Check
+import com.saulhdev.feeder.ui.icons.Phosphor
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.Icon
 import com.saulhdev.feeder.ui.components.categoryChipColors
 import com.saulhdev.feeder.ui.components.categoryChipShape
 import androidx.compose.foundation.layout.Arrangement
@@ -24,20 +29,12 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.Alignment
 import com.saulhdev.feeder.R
 
 /**
@@ -105,16 +102,12 @@ fun CategoryChipRow(
 }
 
 /**
- * A chip with an underline beneath it when it is on.
+ * A category chip: filled, with a tick, when it is on.
  *
- * Fill alone was doing all the work of showing selection, and a filled chip
- * next to a filled chip is a difference in shade — easy to miss at a glance,
- * and the first thing to go when the container colour has to be light enough
- * to stay legible over a wallpaper. The bar is a second, redundant signal that
- * does not depend on colour contrast at all.
- *
- * Height is reserved whether or not the chip is selected, so selecting one does
- * not shift the row.
+ * It had an underline as well (review 11: two marks for one thing, left over
+ * from when this row was a tab bar). The tick is Material's own sign of a
+ * chosen filter chip, and like the underline it does not depend on telling
+ * two shades apart.
  */
 @Composable
 private fun CategoryChip(
@@ -122,28 +115,18 @@ private fun CategoryChip(
     selected: Boolean,
     onClick: () -> Unit,
 ) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        FilterChip(
-            selected = selected,
-            onClick = onClick,
-            label = { Text(label) },
-            shape = categoryChipShape,
-            colors = categoryChipColors(),
-            border = null,
-        )
-        Spacer(Modifier.height(4.dp))
-        Box(
-            modifier = Modifier
-                .height(3.dp)
-                .width(if (selected) INDICATOR_WIDTH else 0.dp)
-                .background(
-                    color = MaterialTheme.colorScheme.primary,
-                    shape = RoundedCornerShape(2.dp),
-                )
-        )
-    }
+    FilterChip(
+        selected = selected,
+        onClick = onClick,
+        label = { Text(label) },
+        leadingIcon = if (selected) {
+            { Icon(Phosphor.Check, contentDescription = null, modifier = Modifier.size(FilterChipDefaults.IconSize)) }
+        } else null,
+        shape = categoryChipShape,
+        colors = categoryChipColors(),
+        border = null,
+    )
 }
 
-private val INDICATOR_WIDTH = 18.dp
 
 private const val ALL_CHIP_KEY = "__all__"

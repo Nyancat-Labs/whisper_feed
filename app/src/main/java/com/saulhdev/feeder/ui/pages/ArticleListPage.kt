@@ -18,6 +18,7 @@
 
 package com.saulhdev.feeder.ui.pages
 
+import androidx.compose.runtime.saveable.rememberSaveable
 import com.saulhdev.feeder.ui.components.FeedSnackbarHost
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
@@ -41,7 +42,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -225,7 +226,11 @@ fun ArticleListPage(
     val focusedFeed = remember(focusedSource, state.articles) {
         state.articles.firstOrNull { it.sourceId == focusedSource }
     }
-    var searching by remember { mutableStateOf(false) }
+    // Saveable, as everything here that a fold must not lose (review 65):
+    // folding or unfolding rebuilds the screen, and a plain remember came
+    // back closed while the query, kept in the view model, still filtered
+    // the feed, with no search field to say so or to clear it.
+    var searching by rememberSaveable { mutableStateOf(false) }
     val gridState = rememberLazyStaggeredGridState()
 
     // The same offer the overlay feed makes: hiding a source is one tap from a
@@ -286,7 +291,7 @@ fun ArticleListPage(
         offerReadsBack(count)
     }
 
-    var showBookmarks by remember { mutableStateOf(false) }
+    var showBookmarks by rememberSaveable { mutableStateOf(false) }
     // True until DataStore says otherwise, so neither the welcome nor the tour
     // flashes over the feed for a frame on every launch of an app that has
     // already shown both.
@@ -341,13 +346,16 @@ fun ArticleListPage(
 
     // What is drawn: the articles with their sizes and stories, built off the
     // main thread and never swapped in under a moving finger. See FeedFrame.
-    val frame = rememberFeedFrame(state.articles, state.focusedSource) {
+    val sort by prefs.sortingFilter.get().collectAsState(initial = SORT_CHRONOLOGICAL)
+    val frame = rememberFeedFrame(
+        state.articles, state.focusedSource,
+        lanes = if (feedLayoutIsGrid(layout) && sort == SORT_CHRONOLOGICAL) columns else 0,
+    ) {
         listState.isScrollInProgress || gridState.isScrollInProgress
     }
 
     // Day headings, in date order only: sorted by title or by source, a
     // heading per day would be scattered through the list. See FeedDays.
-    val sort by prefs.sortingFilter.get().collectAsState(initial = SORT_CHRONOLOGICAL)
     // "· 8 new" on the freshness line: the feed only, not a search or Saved.
     val seenAt by prefs.feedSeenAt.get().collectAsState(initial = 0L)
     val newCount = remember(frame.articles, seenAt, searching, showBookmarks) {
@@ -545,7 +553,9 @@ fun ArticleListPage(
                                 enter = fadeIn() + scaleIn(),
                                 exit = fadeOut() + scaleOut(),
                             ) {
-                                FloatingActionButton(
+                                // The small size (review 51): it covers less
+                                // of the articles, as the brief asks.
+                                SmallFloatingActionButton(
                                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                                     onClick = {

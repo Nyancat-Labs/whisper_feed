@@ -66,7 +66,7 @@ class CardReadabilityTest {
     @Test
     fun `only the card's line is shortened`() {
         assertEquals(1, Regex("shortSourceName\\(").findAll(cards).count())
-        assertTrue(cards.contains("text = shortSourceName(source),"))
+        assertTrue(cards.contains("val name = shortSourceName(source)"))
     }
 
     @Test

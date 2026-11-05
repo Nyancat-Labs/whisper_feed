@@ -440,10 +440,11 @@ class ArticleRepository(db: NeoFeedDb) {
         val ids = articlesDao.unreadIdsBefore(before)
         val now = System.currentTimeMillis()
         ids.chunked(SQLITE_ARG_LIMIT).forEach { articlesDao.markReadBatch(it, now) }
-        if (ids.isNotEmpty()) {
-            tally(seen = ids.size)
-            onReadChanged?.invoke(ids, true)
-        }
+        // Not tallied: clearing a backlog is not reading it. It was, and one
+        // tap added hundreds to "Read today" and to the reading charts
+        // (review 14). Undo puts these back without untallying; see
+        // unmarkRead.
+        if (ids.isNotEmpty()) onReadChanged?.invoke(ids, true)
         ids
     }
 
@@ -453,14 +454,14 @@ class ArticleRepository(db: NeoFeedDb) {
     }
 
     /** Puts back what [markAllRead], or a run of scroll marks, took. */
-    suspend fun unmarkRead(ids: List<String>) = withContext(jcc) {
+    suspend fun unmarkRead(ids: List<String>, tallied: Boolean = true) = withContext(jcc) {
         ids.chunked(SQLITE_ARG_LIMIT).forEach { articlesDao.unmarkRead(it) }
         // Out of the current hour, which is where they went in a moment ago.
         // An undo that crosses the turn of an hour takes them out of the wrong
         // bucket; the subtraction floors at zero so that is a rounding error
         // in one bar rather than a negative count.
         if (ids.isNotEmpty()) {
-            untally(seen = ids.size)
+            if (tallied) untally(seen = ids.size)
             onReadChanged?.invoke(ids, false)
         }
     }
@@ -577,6 +578,9 @@ class ArticleRepository(db: NeoFeedDb) {
     fun countUnread(): Flow<Int> = articlesDao.countUnread().flowOn(cc)
 
     fun countReadSince(since: Long): Flow<Int> = articlesDao.countReadSince(since).flowOn(cc)
+
+    /** Read on this phone on [day] ("2026-11-05"); see ReadingTallyDao.seenOn. */
+    fun readOnPhone(day: LocalDate): Flow<Int> = tallyDao.seenOn(day.toString()).flowOn(cc)
 
     /**
      * Saves an article, and only that.

@@ -17,6 +17,15 @@
  */
 package com.saulhdev.feeder.ui.overlay
 
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.material3.MenuDefaults
+import androidx.compose.material3.DropdownMenuGroup
+import androidx.compose.material3.DropdownMenuPopup
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,7 +34,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -68,6 +76,7 @@ import com.saulhdev.feeder.ui.icons.phosphor.Sparkle
  * @param tint set on the hero shape, where the menu sits over a photograph and
  *   the theme's content colours cannot be relied on to be visible.
  */
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ArticleOverflowMenu(
     onMoreLikeThis: () -> Unit,
@@ -88,6 +97,8 @@ fun ArticleOverflowMenu(
     onDismissStory: () -> Unit = {},
     /** "Not interested"; null on saved and pinned cards, which never offer it. */
     onNotInterested: (() -> Unit)? = null,
+    /** The article's source, named at the top of the menu. */
+    sourceName: String = "",
 ) {
     var expanded by remember { mutableStateOf(false) }
     var explain by remember { mutableStateOf(false) }
@@ -118,51 +129,56 @@ fun ArticleOverflowMenu(
             )
         }
 
-        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            MenuEntry(R.string.more_like_this, Phosphor.Sparkle) {
-                expanded = false
-                onMoreLikeThis()
+        // Expressive's menu (review 58): the source's name at the top, and
+        // the entries in three groups. Sharing and pinning; teaching the
+        // feed; and taking things away. The entries are the same as before.
+        val close = { expanded = false }
+        DropdownMenuPopup(expanded = expanded, onDismissRequest = close) {
+            if (sourceName.isNotBlank()) {
+                Text(
+                    text = sourceName,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .padding(MenuDefaults.DropdownMenuGroupLabelHorizontalPadding)
+                        .padding(vertical = 8.dp)
+                        .widthIn(max = 240.dp),
+                )
             }
-            MenuEntry(R.string.less_like_this, Phosphor.Prohibit) {
-                expanded = false
-                onLessLikeThis()
+            val groups = buildList<List<MenuChoice>> {
+                add(listOf(
+                    MenuChoice(R.string.share, Phosphor.ShareNetwork) { onShare() },
+                    MenuChoice(if (pinned) R.string.unpin_article else R.string.pin_article, Phosphor.Asterisk) { onPin(!pinned) },
+                ))
+                add(listOf(
+                    MenuChoice(R.string.more_like_this, Phosphor.Sparkle) { onMoreLikeThis() },
+                    MenuChoice(R.string.less_like_this, Phosphor.Prohibit) { onLessLikeThis() },
+                    MenuChoice(R.string.why_this_size, Phosphor.Info) { explain = true },
+                ))
+                add(buildList {
+                    // Only on the card that carries the promotion. Dismissing
+                    // is not hiding: the article keeps its place and loses the
+                    // breaking-news treatment.
+                    if (breaking) add(MenuChoice(R.string.dismiss_story, Phosphor.Prohibit) { onDismissStory() })
+                    // The swipe's twin, for anyone who would rather not swipe.
+                    if (onNotInterested != null) add(MenuChoice(R.string.not_interested, Phosphor.ThumbsDown) { onNotInterested() })
+                    add(MenuChoice(R.string.hide_source, Phosphor.EyeSlash) { onHideSource() })
+                })
             }
-            // The swipe's twin, for anyone who would rather not swipe and
-            // for anyone who does not know the swipe is there.
-            if (onNotInterested != null) {
-                MenuEntry(R.string.not_interested, Phosphor.ThumbsDown) {
-                    expanded = false
-                    onNotInterested()
+            groups.forEachIndexed { g, entries ->
+                if (g > 0) Spacer(Modifier.height(MenuDefaults.GroupSpacing))
+                DropdownMenuGroup(shapes = MenuDefaults.groupShape(g, groups.size)) {
+                    entries.forEachIndexed { e, choice ->
+                        DropdownMenuItem(
+                            onClick = { close(); choice.action() },
+                            text = { Text(stringResource(choice.textId)) },
+                            shape = MenuDefaults.itemShape(e, entries.size).shape,
+                            leadingIcon = { Icon(choice.icon, contentDescription = null) },
+                        )
+                    }
                 }
-            }
-            MenuEntry(
-                if (pinned) R.string.unpin_article else R.string.pin_article,
-                Phosphor.Asterisk,
-            ) {
-                expanded = false
-                onPin(!pinned)
-            }
-            if (breaking) {
-                // Only on the card that carries the promotion. Dismissing is not
-                // hiding: the article keeps its place in the feed and loses the
-                // treatment breaking news gets, which is the thing the reader is
-                // actually objecting to when they have scrolled past it twice.
-                MenuEntry(R.string.dismiss_story, Phosphor.Prohibit) {
-                    expanded = false
-                    onDismissStory()
-                }
-            }
-            MenuEntry(R.string.hide_source, Phosphor.EyeSlash) {
-                expanded = false
-                onHideSource()
-            }
-            MenuEntry(R.string.share, Phosphor.ShareNetwork) {
-                expanded = false
-                onShare()
-            }
-            MenuEntry(R.string.why_this_size, Phosphor.Info) {
-                expanded = false
-                explain = true
             }
         }
 
@@ -229,15 +245,5 @@ private fun WhyThisSizeDialog(
     )
 }
 
-@Composable
-private fun MenuEntry(
-    textId: Int,
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    onClick: () -> Unit,
-) {
-    DropdownMenuItem(
-        text = { Text(stringResource(textId)) },
-        leadingIcon = { Icon(icon, contentDescription = null) },
-        onClick = onClick,
-    )
-}
+/** One entry in the card's menu. */
+private class MenuChoice(val textId: Int, val icon: ImageVector, val action: () -> Unit)

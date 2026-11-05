@@ -1,5 +1,10 @@
 package com.saulhdev.feeder.ui.components
 
+import androidx.compose.material3.pulltorefresh.PullToRefreshState
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -91,6 +96,7 @@ fun PullToRefreshLazyColumn(
                 coroutineScope.launch { onRefresh() }
             },
             modifier = Modifier.fillMaxSize(),
+            indicator = { RefreshIndicator(pullToRefreshState, showing) },
         ) {
             LazyColumn(
                 state = listState,
@@ -136,6 +142,7 @@ fun PullToRefreshStaggeredGrid(
                 coroutineScope.launch { onRefresh() }
             },
             modifier = Modifier.fillMaxSize(),
+            indicator = { RefreshIndicator(pullToRefreshState, showing) },
         ) {
             LazyVerticalStaggeredGrid(
                 columns = StaggeredGridCells.Fixed(columns),
@@ -147,4 +154,19 @@ fun PullToRefreshStaggeredGrid(
             )
         }
     }
+}
+
+/**
+ * Expressive's loading indicator, the shape that changes in a filled
+ * container (review 47). The old spinning arc was small and grey and sat half
+ * over the glance cards, where it was hard to see.
+ */
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun BoxScope.RefreshIndicator(state: PullToRefreshState, refreshing: Boolean) {
+    PullToRefreshDefaults.LoadingIndicator(
+        state = state,
+        isRefreshing = refreshing,
+        modifier = Modifier.align(Alignment.TopCenter),
+    )
 }

@@ -17,6 +17,7 @@
  */
 package com.saulhdev.feeder.ui.overlay
 
+import com.saulhdev.feeder.data.entity.SORT_CHRONOLOGICAL
 import androidx.compose.foundation.layout.absolutePadding
 import com.saulhdev.feeder.ui.components.FeedSnackbarHost
 import androidx.compose.runtime.collectAsState
@@ -44,7 +45,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridS
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -225,7 +226,14 @@ fun FeedScaffold(
 
     // What is drawn: the articles with their sizes and stories, built off the
     // main thread and never swapped in under a moving finger. See FeedFrame.
-    val frame = rememberFeedFrame(articles, appliedFocus) {
+    val sortPrefs: FeedPreferences = koinInject()
+    val sort by sortPrefs.sortingFilter.get().collectAsState(initial = SORT_CHRONOLOGICAL)
+    // Mosaic's two lanes levelled before lead stories (review 42), in date
+    // order only: sorted by title or source, a move would show.
+    val frame = rememberFeedFrame(
+        articles, appliedFocus,
+        lanes = if (isGrid && sort == SORT_CHRONOLOGICAL) 2 else 0,
+    ) {
         listState.isScrollInProgress || gridState.isScrollInProgress
     }
 
@@ -657,7 +665,8 @@ fun FeedScaffold(
                 .align(Alignment.BottomEnd)
                 .padding(end = 24.dp, bottom = bottomInset + 24.dp),
         ) {
-            FloatingActionButton(
+            // The small size, as in the app (review 51).
+            SmallFloatingActionButton(
                 onClick = {
                     scope.launch {
                         if (isGrid) gridState.animateScrollToItem(0)

@@ -8,6 +8,43 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 5 November 2026 — Review batch 3: the feed
+
+- Preview e15f364 passed (all 11 fixes through To check).
+- Chips (11): the underline is gone; a selected category chip shows
+  Material's tick (`leadingIcon`), still a sign that does not depend on
+  telling two shades apart.
+- Refresh (47): `PullToRefreshDefaults.LoadingIndicator` in both feeds.
+  Back to top (51): `SmallFloatingActionButton` in both.
+- Veil (48): no code draws one; asked the owner for a screenshot. Possibly
+  cards dimming as a sync brings in reads from the server.
+- Byline (40, 43, 46): `ArticleMeta` is a hand-made `Layout`. `bylinePlan`
+  drops the category, then the long age (clock and reading time) for
+  `ageCompact`, until the name has 48dp or all it needs. The name's width
+  is the ellipsised text's real width (`TextMeasurer`, `getLineRight`), so
+  the age follows it. Mark, category and name each carry the identity's
+  tap; the age does not.
+- Text-only tiles (44): `MIN_WIDTH_FOR_ACTIONS_BESIDE_META` 220 → 140dp,
+  so a two-lane tile keeps its buttons on the byline.
+- Mosaic (42): `levelBeforeLeads` in `FeedLevel.kt`, applied by
+  `buildFeedFrame` when Mosaic is in date order. Estimated heights
+  (`mosaicTileHeight`); before each lead, up to two tiles from the next four
+  move up when that brings the lanes 16dp closer, never across a day or a
+  pin.
+- Read today (14): from `ReadingTally` (`seenOn(day)`), which already
+  counted only reads on the phone; `markAllRead` no longer tallies, and its
+  Undo no longer untallies (`unmarkRead(tallied = false)`). No database
+  change needed.
+- Card menu (58): `DropdownMenuPopup` with three `DropdownMenuGroup`s and
+  the source's name as a label. Long press (67): `cardClick` on all four
+  card shapes, `LocalCardLongPress`, and `ArticlePreviewDialog`.
+- Fold (65): no foldable or emulator here, so `FoldUnfoldTest` checks where
+  the state lives. Found and fixed: `searching` and `showBookmarks` were
+  plain `remember`, so a fold closed the search while the view model's
+  query still filtered the feed.
+- `ReviewBatch3Test`, `FoldUnfoldTest`; `ScreenshotGlitchesTest`,
+  `SourceFilterTest` and `CardReadabilityTest` follow.
+
 ## 4 November 2026 — Review batch 2: filter sheet, title settle, stretch
 
 - Preview a58a672 tested: 7 of 8 steps passed; T6 (title let go halfway)

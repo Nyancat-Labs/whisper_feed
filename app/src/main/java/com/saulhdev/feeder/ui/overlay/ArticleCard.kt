@@ -17,6 +17,11 @@
  */
 package com.saulhdev.feeder.ui.overlay
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.layout.layout
@@ -180,10 +185,26 @@ fun FeedArticleItem(
             breaking = coverage != null,
             onDismissStory = onDismissStory,
             onNotInterested = notInterested,
+            sourceName = shortSourceName(item.feedTitle),
+        )
+    }
+    // Long-press for a look at the whole article without leaving the feed
+    // (review 67).
+    var previewing by remember { mutableStateOf(false) }
+    if (previewing) {
+        ArticlePreviewDialog(
+            item = item,
+            onOpen = { previewing = false; onClick() },
+            onBookmark = onBookmark,
+            onShare = { previewing = false; onShare() },
+            onDismiss = { previewing = false },
         )
     }
     NotInterestedSwipe(onDismiss = notInterested) {
-        CompositionLocalProvider(LocalPictureFade provides if (cardFaded) PICTURE_FADE else 1f) {
+        CompositionLocalProvider(
+            LocalPictureFade provides if (cardFaded) PICTURE_FADE else 1f,
+            LocalCardLongPress provides { previewing = true },
+        ) {
         when (feedCardShape(index, hasImage, layout, emphasis)) {
             FeedCardShape.Hero    -> ArticleCard(
                 item, onClick, onBookmark, onShare, menu = menu, modifier = shapeModifier, coverage = coverage, lead = true,
@@ -265,7 +286,7 @@ fun ArticleCard(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .clickable(onClickLabel = openLabel, role = Role.Button, onClick = onClick)
+            .cardClick(openLabel, onClick)
     ) {
         val image = item.imageUrl
         // Edge to edge, square corners, outside the text's margin — the way the
@@ -345,6 +366,7 @@ fun ArticleCard(
                     sourceId = item.sourceId,
                     articleId = item.id,
                     age = withReadingTime(context, item.relativeAge(context, LocalTimeFormat.current), item.article.readingMinutes),
+                    ageCompact = item.relativeAge(context, TIME_RELATIVE),
                     // A size down. It is a byline, not a heading, and at
                     // labelLarge it competed with the summary above it.
                     style = MaterialTheme.typography.labelMedium,
@@ -384,7 +406,7 @@ fun ArticleCompactRow(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .clickable(onClickLabel = openLabel, role = Role.Button, onClick = onClick)
+            .cardClick(openLabel, onClick)
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
@@ -406,6 +428,7 @@ fun ArticleCompactRow(
                     sourceId = item.sourceId,
                     articleId = item.id,
                     age = withReadingTime(context, item.relativeAge(context, LocalTimeFormat.current), item.article.readingMinutes),
+                    ageCompact = item.relativeAge(context, TIME_RELATIVE),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     iconUrl = item.feedIconUrl,
@@ -481,7 +504,7 @@ fun ArticleTextRow(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .clickable(onClickLabel = openLabel, role = Role.Button, onClick = onClick)
+            .cardClick(openLabel, onClick)
     ) {
         Row(
             // The end margin too: CardActions reaches 13dp into it to line
@@ -506,6 +529,7 @@ fun ArticleTextRow(
                     sourceId = item.sourceId,
                     articleId = item.id,
                     age = withReadingTime(context, item.relativeAge(context, LocalTimeFormat.current), item.article.readingMinutes),
+                    ageCompact = item.relativeAge(context, TIME_RELATIVE),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     iconUrl = item.feedIconUrl,
@@ -582,7 +606,7 @@ fun ArticleMosaicTile(
             .padding(6.dp)
             .clip(MaterialTheme.shapes.medium)
             .background(MaterialTheme.colorScheme.surfaceContainerLow)
-            .clickable(onClickLabel = openLabel, role = Role.Button, onClick = onClick)
+            .cardClick(openLabel, onClick)
     ) {
         if (hasImage) {
             // The two buttons sit on the picture rather than under the text.
@@ -683,6 +707,7 @@ fun ArticleMosaicTile(
                     sourceId = item.sourceId,
                     articleId = item.id,
                     age = withReadingTime(context, item.relativeAge(context, LocalTimeFormat.current), item.article.readingMinutes),
+                    ageCompact = item.relativeAge(context, TIME_RELATIVE),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = metaModifier,
@@ -750,6 +775,27 @@ val LocalFocusSource = compositionLocalOf<((String, String) -> Unit)?> { null }
  */
 val LocalTimeFormat = compositionLocalOf { TIME_RELATIVE }
 
+/** What a long press on a card does; null where nothing does. See ArticlePreviewDialog. */
+val LocalCardLongPress = compositionLocalOf<(() -> Unit)?> { null }
+
+/**
+ * A card's tap, and its long press when the surface offers one: a tap opens
+ * the article, a long press shows its preview (review 67).
+ */
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun Modifier.cardClick(openLabel: String, onClick: () -> Unit): Modifier {
+    val longPress = LocalCardLongPress.current
+    val previewLabel = stringResource(R.string.action_preview_article)
+    return combinedClickable(
+        onClickLabel = openLabel,
+        role = Role.Button,
+        onLongClickLabel = if (longPress != null) previewLabel else null,
+        onLongClick = longPress,
+        onClick = onClick,
+    )
+}
+
 /** The byline under a headline, on every card and in the reader. */
 @Composable
 internal fun ArticleMeta(
@@ -764,6 +810,11 @@ internal fun ArticleMeta(
     onImage: Boolean = false,
     /** The article's category, after the mark; nothing when it has none. */
     category: String = "",
+    /**
+     * A shorter [age] for a narrow line: the relative age alone, without the
+     * clock time or reading time. Null when there is nothing shorter.
+     */
+    ageCompact: String? = null,
 ) {
     // Null on a surface that cannot narrow the feed.
     // A CompositionLocal rather than another parameter because this row is
@@ -772,56 +823,125 @@ internal fun ArticleMeta(
     // drift apart.
     val focusSource = LocalFocusSource.current
 
-    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
-        // The mark, the category and the name together, and nothing else. The age sits
-        // beside them and the buttons beyond that; a target that swallowed
-        // the whole row would take taps meant for the article, since this row
-        // sits directly under the headline.
-        // Said aloud, since "double-tap to activate" on a source's name says
-        // nothing about narrowing the feed. Shorter than the 48dp minimum to
-        // look at, but Compose widens a small target's touch area to 48dp
-        // where nothing closer competes for the touch, so it is not made
-        // taller, which would add height to every card.
-        val focusLabel = stringResource(R.string.focus_on_source)
-        val identity = if (focusSource != null && sourceId != null && articleId != null) {
-            Modifier.clickable(onClickLabel = focusLabel) { focusSource(sourceId, articleId) }
-        } else {
-            Modifier
-        }
-        Row(
-            modifier = identity.weight(1f, fill = false),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            SourceMark(iconUrl = iconUrl, sourceName = source, onImage = onImage)
-            Spacer(Modifier.width(6.dp))
-            // On the source's line rather than one of its own above the
-            // headline: the same words, a line less of every card. Never cut
-            // short; the source's name gives way first.
-            if (category.isNotBlank()) {
-                Text(
-                    text = "${category.uppercase()} · ",
-                    style = style,
-                    color = color,
-                    maxLines = 1,
-                    softWrap = false,
-                )
+    // The mark, the category and the name are the tap target, and nothing
+    // else. The age sits beside them and the buttons beyond that; a target
+    // that swallowed the whole row would take taps meant for the article,
+    // since this row sits directly under the headline.
+    // Said aloud, since "double-tap to activate" on a source's name says
+    // nothing about narrowing the feed. Shorter than the 48dp minimum to
+    // look at, but Compose widens a small target's touch area to 48dp
+    // where nothing closer competes for the touch, so it is not made
+    // taller, which would add height to every card.
+    val focusLabel = stringResource(R.string.focus_on_source)
+    val identity = if (focusSource != null && sourceId != null && articleId != null) {
+        Modifier.clickable(onClickLabel = focusLabel) { focusSource(sourceId, articleId) }
+    } else {
+        Modifier
+    }
+    // The publication, not its strapline; see shortSourceName.
+    val name = shortSourceName(source)
+    val measurer = rememberTextMeasurer()
+    val categoryText = if (category.isNotBlank()) "${category.uppercase()} · " else ""
+
+    // Laid out by hand so the source's name is the last thing to go (review
+    // 43: in a narrow Mosaic tile it shrank to ".." while the category and
+    // the clock time stayed whole). When the line is short of room, the
+    // category goes first, since the chip at the top already says it, then
+    // the clock time and reading time. And the age follows the name's last
+    // letter, not the end of the space the name was offered (review 40:
+    // "Andr…  · 1h").
+    Layout(
+        modifier = modifier,
+        content = {
+            Box(identity.clearAndSetSemantics { }) {
+                SourceMark(iconUrl = iconUrl, sourceName = source, onImage = onImage)
             }
             Text(
-                // The publication, not its strapline; see shortSourceName.
-                text = shortSourceName(source),
+                text = categoryText,
+                style = style,
+                color = color,
+                maxLines = 1,
+                softWrap = false,
+                modifier = identity.clearAndSetSemantics { },
+            )
+            Text(
+                text = name,
                 style = style,
                 color = color,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
+                modifier = identity,
             )
-        }
-        Text(
-            text = " · $age",
-            style = style,
-            color = color,
-            maxLines = 1,
+            Text(text = " · $age", style = style, color = color, maxLines = 1, softWrap = false)
+            Text(text = " · ${ageCompact ?: age}", style = style, color = color, maxLines = 1, softWrap = false)
+        },
+    ) { measurables, constraints ->
+        val loose = constraints.copy(minWidth = 0, minHeight = 0)
+        val mark = measurables[0].measure(loose)
+        val gap = 6.dp.roundToPx()
+        val cat = measurables[1].measure(loose)
+        val ageFull = measurables[3].measure(loose)
+        val ageShort = measurables[4].measure(loose)
+        val nameFull = measurables[2].maxIntrinsicWidth(constraints.maxHeight)
+        val max = if (constraints.hasBoundedWidth) constraints.maxWidth
+        else mark.width + gap + cat.width + nameFull + ageFull.width
+        val plan = bylinePlan(
+            available = max - mark.width - gap,
+            category = if (categoryText.isEmpty()) 0 else cat.width,
+            name = nameFull,
+            age = ageFull.width,
+            ageShort = ageShort.width,
+            minName = MIN_SOURCE_NAME.roundToPx(),
         )
+        val ageP = if (plan.shortAge) ageShort else ageFull
+        val nameWidth = if (plan.nameRoom >= nameFull) nameFull else {
+            // What the ellipsised name really takes, so the age can follow it.
+            val cut = measurer.measure(
+                text = name,
+                style = style,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                constraints = Constraints(maxWidth = plan.nameRoom.coerceAtLeast(0)),
+            )
+            kotlin.math.ceil(cut.getLineRight(0)).toInt().coerceIn(0, plan.nameRoom.coerceAtLeast(0))
+        }
+        val nameP = measurables[2].measure(Constraints.fixedWidth(nameWidth).copy(maxHeight = loose.maxHeight))
+        val parts = buildList {
+            add(mark); if (plan.showCategory) add(cat); add(nameP); add(ageP)
+        }
+        val height = parts.maxOf { it.height }
+        val width = (mark.width + gap + (if (plan.showCategory) cat.width else 0) + nameP.width + ageP.width)
+            .coerceAtMost(max)
+        layout(width, height) {
+            var x = 0
+            parts.forEachIndexed { i, p ->
+                p.placeRelative(x, (height - p.height) / 2)
+                x += p.width + if (i == 0) gap else 0
+            }
+        }
     }
+}
+
+/** Below this the source's name is no longer worth showing cut. */
+private val MIN_SOURCE_NAME = 48.dp
+
+/** What the byline shows in the room it has; see [bylinePlan]. */
+internal data class BylinePlan(val showCategory: Boolean, val shortAge: Boolean, val nameRoom: Int)
+
+/**
+ * Fits the byline into [available] (after the mark): everything if it fits;
+ * otherwise the category goes first, then the long age gives way to the
+ * short one, until the source's name has at least [minName] (or all it
+ * needs, if that is less).
+ */
+internal fun bylinePlan(available: Int, category: Int, name: Int, age: Int, ageShort: Int, minName: Int): BylinePlan {
+    val wanted = minOf(name, minName)
+    for ((withCategory, short) in listOf(true to false, false to false, false to true)) {
+        if (withCategory && category == 0) continue
+        val room = available - (if (withCategory) category else 0) - (if (short) ageShort else age)
+        if (room >= wanted) return BylinePlan(withCategory && category > 0, short, minOf(room, name))
+    }
+    return BylinePlan(false, true, (available - ageShort).coerceAtLeast(0))
 }
 
 /**
@@ -1018,12 +1138,16 @@ private val PHOTO_DISC_RADIUS = 16.dp
 
 /**
  * Whether the save and menu buttons, beside the line under a headline, leave
- * its source's name too little room to read. The two buttons take 84dp; the
- * mark, a category and an age about 75dp more; a name wants 60dp or so.
+ * its source's name too little room to read. The two buttons take 71dp of
+ * the line; the mark and a short age about 40dp more. Since the line drops
+ * the category and the clock time before it cuts the name (review 43), a
+ * two-column Mosaic tile (about 150dp) has room, and a text-only tile no
+ * longer needs a row of its own for its buttons (review 44). Only a tile in
+ * three or more lanes, on a large screen, still puts them underneath.
  */
 internal fun actionsCrowdMeta(width: Dp): Boolean = width < MIN_WIDTH_FOR_ACTIONS_BESIDE_META
 
-internal val MIN_WIDTH_FOR_ACTIONS_BESIDE_META = 220.dp
+internal val MIN_WIDTH_FOR_ACTIONS_BESIDE_META = 140.dp
 
 /** Half a button's spare width: where a 22dp glyph's box meets a 48dp target's edge. */
 val CARD_ACTIONS_EDGE = 13.dp

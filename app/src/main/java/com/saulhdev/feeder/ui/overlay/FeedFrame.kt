@@ -60,6 +60,7 @@ private data class FeedFrameInputs(
     val habit: Map<Long, Float>,
     val pace: Map<Long, Float>,
     val breaking: Boolean,
+    val lanes: Int,
 )
 
 /**
@@ -76,6 +77,8 @@ internal fun buildFeedFrame(
     pace: Map<Long, Float>,
     breaking: Boolean,
     nowMs: Long,
+    /** Mosaic's lanes, to level them before lead stories; 0 for any other layout. */
+    lanes: Int = 0,
 ): FeedFrame {
     // Off unless the reader has asked for it. The detection is inference, and
     // inference is occasionally wrong in public: a feed that gives a hero slot
@@ -92,6 +95,14 @@ internal fun buildFeedFrame(
         articles,
         feedEmphasisFor(articles, affinity, nowMs, habit, clusters, pace),
     )
+    // Mosaic only: a few tiles move up so the lanes are nearly level where a
+    // lead story starts (review 42). See levelBeforeLeads.
+    if (lanes >= 2) {
+        val order = levelBeforeLeads(articles, emphasis, lanes)
+        if (order != articles.indices.toList()) {
+            return FeedFrame(order.map { articles[it] }, order.map { emphasis[it] }, clusters, focus)
+        }
+    }
     return FeedFrame(articles, emphasis, clusters, focus)
 }
 
@@ -121,6 +132,8 @@ internal fun buildFeedFrame(
 fun rememberFeedFrame(
     articles: List<FeedItem>,
     focus: String?,
+    /** Mosaic's lanes; 0 for any other layout. See levelBeforeLeads. */
+    lanes: Int = 0,
     isScrolling: () -> Boolean,
 ): FeedFrame {
     val prefs: FeedPreferences = koinInject()
@@ -131,11 +144,11 @@ fun rememberFeedFrame(
     val breaking by prefs.breakingNews.asState()
     val scrolling by rememberUpdatedState(isScrolling)
 
-    val inputs = FeedFrameInputs(articles, focus, affinity, habit, pace, breaking)
+    val inputs = FeedFrameInputs(articles, focus, affinity, habit, pace, breaking, lanes)
     val built = remember { mutableStateOf(inputs) }
     var frame by remember {
         mutableStateOf(
-            buildFeedFrame(articles, focus, affinity, habit, pace, breaking, System.currentTimeMillis())
+            buildFeedFrame(articles, focus, affinity, habit, pace, breaking, System.currentTimeMillis(), lanes)
         )
     }
     // Restarted by every new set of inputs, which also abandons a build or a
@@ -145,7 +158,7 @@ fun rememberFeedFrame(
         snapshotFlow { scrolling() }.first { !it }
         frame = withContext(Dispatchers.Default) {
             with(inputs) {
-                buildFeedFrame(articles, focus, affinity, habit, pace, breaking, System.currentTimeMillis())
+                buildFeedFrame(articles, focus, affinity, habit, pace, breaking, System.currentTimeMillis(), lanes)
             }
         }
         built.value = inputs

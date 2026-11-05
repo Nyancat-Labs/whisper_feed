@@ -37,10 +37,12 @@ class ScreenshotGlitchesTest {
     // 1. "NEWS · · 2h": the source name squeezed to nothing on a narrow tile.
 
     @Test
-    fun `a two-column Mosaic tile puts the buttons under the source line`() {
-        // A tile on a 411dp phone is about 150dp inside its padding.
-        assertTrue(actionsCrowdMeta(150.dp))
-        assertTrue(actionsCrowdMeta(180.dp))
+    fun `a two-column Mosaic tile keeps the buttons on the source line`() {
+        // A tile on a 411dp phone is about 150dp inside its padding. The line
+        // now drops the category and clock time first (review 43, 44).
+        assertFalse(actionsCrowdMeta(150.dp))
+        // Three lanes on a large screen still put them underneath.
+        assertTrue(actionsCrowdMeta(110.dp))
         // A full-width tile keeps them beside it.
         assertFalse(actionsCrowdMeta(360.dp))
     }
