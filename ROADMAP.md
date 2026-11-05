@@ -208,7 +208,9 @@ which is private; here they are "a user". Item numbers are the sheet's.
   story several distinct sources carry at once; see §6) but only notifies
   about sync and updates. A notification when a sync finds a new cluster
   would be done on the phone, no server. How quickly it arrives depends on
-  how often the background sync runs. Owner's decision pending.
+  how often the background sync runs. **Decided 5 November: before
+  1.0.6.** Off by default, a switch in Your feed, a daily cap, and the
+  setting says alerts come with the background sync, not instantly.
 - **Videos inside Whisper** (78) and **audio and podcasts from feeds** (79):
   **privacy first; to be reviewed later** (owner, 1 November). No embedded
   player that brings tracking with it (YouTube's does); plain video and
@@ -227,10 +229,14 @@ which is private; here they are "a user". Item numbers are the sheet's.
   baseline profiles. Record its own (start, scroll the feed, open an
   article, filter sheet) and measure before and after. Needs a laptop with
   the phone on USB.
-- **Long-press an article for a preview** (67), 1.1.0.
+- **Long-press an article for a preview** (67): **review batch 3**, with
+  the card menu (58) (owner, 5 November).
 - **Reset all settings** (68), review batch 4.
-- **Open paywalled sources through an archive** (69): opt-in per source;
-  owner's call.
+- **Open paywalled sources through an archive** (69): **after 1.0.6**
+  (owner, 5 November). archive.org only, never archive.today (Play's
+  rules on getting round paywalls). An "Open archived copy" action in the
+  card menu for sources it is switched on for; Whisper checks a copy
+  exists first. Nothing is sent unless tapped.
 - **AI summaries and F-Droid** (70): F-Droid takes only open source, so
   Google's closed on-device AI needs a Play-only build, as Harmonic did.
   Shapes the 1.2.0 plan.
