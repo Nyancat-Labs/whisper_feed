@@ -43,7 +43,7 @@ and Google Play builds on two other devices.
   plain `remember`, so a fold closed the search while the view model's
   query still filtered the feed.
 - `ReviewBatch3Test`, `FoldUnfoldTest`; `ScreenshotGlitchesTest`,
-  `SourceFilterTest` and `CardReadabilityTest` follow.
+  `SourceFilterTest`, `CardReadabilityTest`, `FeedDaysTest`, `FocusAnchorTest` and `ImageSizingTest` follow. 1309 tests, 1 skipped.
 
 ## 4 November 2026 — Review batch 2: filter sheet, title settle, stretch
 
