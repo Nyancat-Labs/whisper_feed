@@ -65,7 +65,8 @@ class CardReadabilityTest {
 
     @Test
     fun `only the card's line is shortened`() {
-        assertEquals(1, Regex("shortSourceName\\(").findAll(cards).count())
+        // The byline, and the menu's heading (review 58).
+        assertEquals(2, Regex("shortSourceName\\(").findAll(cards).count())
         assertTrue(cards.contains("val name = shortSourceName(source)"))
     }
 

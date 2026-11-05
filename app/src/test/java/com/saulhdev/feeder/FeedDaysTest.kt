@@ -83,7 +83,7 @@ class FeedDaysTest {
     fun `share is in the menu, not on the card`() {
         val card = source("ui/overlay/ArticleCard.kt")
         assertFalse(card.contains("IconButton(onClick = onShare)"))
-        assertTrue(source("ui/overlay/ArticleMenu.kt").contains("MenuEntry(R.string.share, Phosphor.ShareNetwork)"))
+        assertTrue(source("ui/overlay/ArticleMenu.kt").contains("MenuChoice(R.string.share, Phosphor.ShareNetwork)"))
     }
 }
 

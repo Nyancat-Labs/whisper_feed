@@ -97,7 +97,7 @@ class ScreenshotGlitchesTest {
         val body = menu.substring(start, menu.indexOf("\n}\n", start) + 3)
         val box = body.indexOf("    Box(modifier = modifier) {\n")
         assertTrue("wrapped in a box", box > 0)
-        assertTrue(box < body.indexOf("IconButton(") && body.indexOf("IconButton(") < body.indexOf("DropdownMenu("))
+        assertTrue(box < body.indexOf("IconButton(") && body.indexOf("IconButton(") < body.indexOf("DropdownMenuPopup("))
         // The box closes after the menu and the dialog, at the function's end.
         assertTrue(body.trimEnd().endsWith("explain = false }\n    }\n}"))
     }

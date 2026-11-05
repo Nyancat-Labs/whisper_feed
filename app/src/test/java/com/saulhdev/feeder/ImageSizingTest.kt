@@ -127,6 +127,13 @@ class ImageSizingTest {
     }
 
     @Test
+    fun `the long-press preview's picture has a stated shape`() {
+        val sites = callSites(read("ui/overlay/ArticlePreview.kt"), "AsyncImage(")
+        assertTrue(sites.size == 1)
+        assertTrue(sites.single().contains(".aspectRatio(16f / 9f)"))
+    }
+
+    @Test
     fun `the full-screen picture is bounded too`() {
         val sites = callSites(read("ui/components/PictureViewer.kt"), "AsyncImage(")
         assertTrue(sites.size == 1)
@@ -148,6 +155,7 @@ class ImageSizingTest {
             "ui/pages/AboutPage.kt",
             "ui/pages/ArticlePage.kt",
             "ui/components/PictureViewer.kt",
+            "ui/overlay/ArticlePreview.kt",
         )
         val found = File("src/main/java/com/saulhdev/feeder")
             .walkTopDown()

@@ -79,7 +79,7 @@ class FocusAnchorTest {
     fun `both surfaces anchor, from the state rather than the request`() {
         assertTrue(
             "the app feed's frame is built under the state's focus",
-            page.contains("rememberFeedFrame(state.articles, state.focusedSource)"),
+            page.contains("rememberFeedFrame(\n        state.articles, state.focusedSource,"),
         )
         listOf(page to "the app feed", scaffold to "the panel").forEach { (text, what) ->
             assertTrue(
