@@ -237,7 +237,15 @@ which is private; here they are "a user". Item numbers are the sheet's.
 
 **Google Play** (policy email of 29 October; Android Authority, 28 October)
 
-- **Trader status** (72): declare in Play Console when asked, from November.
+- **Trader status** (72): declare in Play Console (Manage account >
+  Account details > About you > Trader status). Email received 4 November;
+  **deadline 1 February 2027**, after which updates stop and the apps are
+  removed. Google's signs of a trader: paid apps, in-app purchases or ads;
+  regular transactions; run as a business; a legal status such as a
+  D-U-N-S number. Whisper has no sales, ads or purchases; donations are
+  voluntary. A trader's phone number and address are shown on Play, and
+  each app needs a Terms of Service link; a non-trader's listing tells EEA
+  and UK users that consumer-protection rights do not apply. Owner's call.
 - **Home-network addresses** (73): Android 17 blocks them without a
   permission. Decided 29 October: not supported; a clear message when one
   fails. Before 1.0.6 ships.
@@ -262,6 +270,10 @@ which is private; here they are "a user". Item numbers are the sheet's.
   later if wanted. Its address then goes in the Play listing's website
   field and the About page. Suggested timing: after 1.0.6, before 1.1.0,
   when the Expressive screenshots are final.
+
+- **GitHub Sponsors** (owner, 4 November): the owner's personal profile
+  is live. To do: fill in the profile; offer it beside Ko-fi in
+  `.github/FUNDING.yml`, the README and About (batch 4, with item 38).
 
 **Ways of working**
 
