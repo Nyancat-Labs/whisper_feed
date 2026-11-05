@@ -43,6 +43,13 @@ class ReviewBatch3Test {
     }
 
     @Test
+    fun `the byline starts at the left edge however wide it is told to be`() {
+        // Narrower than its minimum, a layout is centred in it: the byline
+        // sat in the middle of a full-width card.
+        assertTrue(source("ui/overlay/ArticleCard.kt").contains(".coerceAtLeast(constraints.minWidth)"))
+    }
+
+    @Test
     fun `a tile moves up to level the lanes before a lead`() {
         // Lane heights after 0 and 1: 200 and 100; the lead at 2 would leave
         // 100 empty. The 100-high tile at 3 moves up into the short lane.

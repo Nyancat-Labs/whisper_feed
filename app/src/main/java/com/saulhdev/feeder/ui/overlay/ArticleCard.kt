@@ -910,8 +910,12 @@ internal fun ArticleMeta(
             add(mark); if (plan.showCategory) add(cat); add(nameP); add(ageP)
         }
         val height = parts.maxOf { it.height }
+        // At least the width the row was told to take: smaller, and Compose
+        // centres it in that width, which put the byline in the middle of a
+        // full-width card (owner's screenshot, 5 November).
         val width = (mark.width + gap + (if (plan.showCategory) cat.width else 0) + nameP.width + ageP.width)
             .coerceAtMost(max)
+            .coerceAtLeast(constraints.minWidth)
         layout(width, height) {
             var x = 0
             parts.forEachIndexed { i, p ->
