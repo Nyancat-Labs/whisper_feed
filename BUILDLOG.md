@@ -42,8 +42,16 @@ and Google Play builds on two other devices.
   the state lives. Found and fixed: `searching` and `showBookmarks` were
   plain `remember`, so a fold closed the search while the view model's
   query still filtered the feed.
+- After the owner's screenshots: the byline was centred in picture cards
+  (a `Layout` narrower than its minimum width is centred; now it takes
+  the minimum). Then names were cut to keep the clock time, and a cut
+  name measured at one width and drawn at a narrower one left a gap.
+  `bylinePlan` now keeps the whole name before the long age; the name is
+  measured at the width its cut was worked out for and advanced by its
+  drawn width. Items 82–84 added to the sheet (www., back-to-top over a
+  card's menu, text-only tiles).
 - `ReviewBatch3Test`, `FoldUnfoldTest`; `ScreenshotGlitchesTest`,
-  `SourceFilterTest`, `CardReadabilityTest`, `FeedDaysTest`, `FocusAnchorTest` and `ImageSizingTest` follow. 1309 tests, 1 skipped.
+  `SourceFilterTest`, `CardReadabilityTest`, `FeedDaysTest`, `FocusAnchorTest` and `ImageSizingTest` follow. 1311 tests, 1 skipped.
 
 ## 4 November 2026 — Review batch 2: filter sheet, title settle, stretch
 
