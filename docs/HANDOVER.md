@@ -48,6 +48,10 @@ Neo Feed).
   `title`, `detail` starting "You should see:", `issues` (the issue numbers
   it proves) and `status` (`open`, `pass`, `problem`, `untested`). The page
   closes an issue in `preview` once every test naming it passes.
+  Two slips to avoid (5 November): a fixed issue goes to `preview`, never
+  straight to `done`, or the To check tab is empty; and a new test starts
+  as `open`, never `untested`, which the page shows as already answered
+  ("Not tested").
 
 ## Release signing
 
