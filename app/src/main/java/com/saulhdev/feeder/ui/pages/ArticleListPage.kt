@@ -18,6 +18,7 @@
 
 package com.saulhdev.feeder.ui.pages
 
+import com.saulhdev.feeder.ui.components.rememberScrollingUp
 import androidx.compose.runtime.saveable.rememberSaveable
 import com.saulhdev.feeder.ui.components.FeedSnackbarHost
 import androidx.activity.compose.BackHandler
@@ -306,6 +307,8 @@ fun ArticleListPage(
     val gridEnd = rememberFeedEndSpace { gridState.layoutInfo.viewportSize.height }
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
     val showFAB by remember { derivedStateOf { listState.firstVisibleItemIndex > 4 } }
+    // Only on the way back up (review 83); see rememberScrollingUp.
+    val scrollingUp by rememberScrollingUp { listState.firstVisibleItemIndex to listState.firstVisibleItemScrollOffset }
 
     // Volume keys, when the reader has turned them on. Whichever container the
     // layout is using is the one that moves; asking both would fight.
@@ -549,7 +552,7 @@ fun ArticleListPage(
                             AnimatedVisibility(
                                 // Out of the way while an Undo is offered: it
                                 // sat over the Undo button (owner, 20 October).
-                                visible = showFAB && snackbarHostState.currentSnackbarData == null,
+                                visible = showFAB && scrollingUp && snackbarHostState.currentSnackbarData == null,
                                 enter = fadeIn() + scaleIn(),
                                 exit = fadeOut() + scaleOut(),
                             ) {

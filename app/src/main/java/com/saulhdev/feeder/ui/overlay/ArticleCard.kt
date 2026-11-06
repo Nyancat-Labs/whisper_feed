@@ -17,6 +17,7 @@
  */
 package com.saulhdev.feeder.ui.overlay
 
+import com.saulhdev.feeder.ui.icons.phosphor.BookBookmark
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -186,6 +187,9 @@ fun FeedArticleItem(
             onDismissStory = onDismissStory,
             onNotInterested = notInterested,
             sourceName = shortSourceName(item.feedTitle),
+            // Where the card has no save button of its own (review 84).
+            onSave = if (LocalMenuOffersSave.current) onBookmark else null,
+            saved = item.bookmarked,
         )
     }
     // Long-press for a look at the whole article without leaving the feed
@@ -680,7 +684,8 @@ fun ArticleMosaicTile(
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = when (size) {
-                    FeedEmphasis.Small  -> 2
+                    // With no picture there is room for a third line (review 84).
+                    FeedEmphasis.Small  -> if (hasImage) 2 else 3
                     FeedEmphasis.Medium -> 4
                     FeedEmphasis.Large  -> 3
                 },
@@ -714,39 +719,42 @@ fun ArticleMosaicTile(
                     iconUrl = item.feedIconUrl,
                 )
             }
-            // Only where there was no image to put them on. The buttons
-            // keep their full 48dp targets either way — the fix was to
-            // stop them claiming a row of their own, not to shrink them.
-            val actions: @Composable () -> Unit = {
-                CardActions {
-                    SaveButton(
-                        saved = item.bookmarked,
-                        onSavedChange = onBookmark,
-                        size = 18.dp,
-                    )
-                    menu(null)
-                }
-            }
-            BoxWithConstraints {
-                // Except on a narrow tile. Beside the buttons, a two-column
-                // Mosaic tile's line under the headline is ~55dp, and the
-                // source's name, the part allowed to shorten, shortened to
-                // nothing: "NEWS · · 2h". There they go under the line.
-                if (hasImage || !actionsCrowdMeta(maxWidth)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        meta(Modifier.weight(1f))
-                        if (!hasImage) actions()
+            // Only where there was no image to put them on: the ⋮ alone, with
+            // Save inside it (review 84). Both buttons on the line left a
+            // narrow tile four letters of the source's name ("Al Ja…") and a
+            // band of empty space under it. The ⋮ keeps its 48dp target but
+            // counts as one line of text high, so the tile ends with the line.
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                meta(Modifier.weight(1f))
+                if (!hasImage) {
+                    if (item.bookmarked) {
+                        // Saved, still visible at a glance without its button.
+                        Icon(
+                            imageVector = Phosphor.BookBookmark,
+                            contentDescription = stringResource(R.string.action_unsave),
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(start = 4.dp).size(16.dp),
+                        )
                     }
-                } else {
-                    Column {
-                        meta(Modifier.fillMaxWidth())
-                        Box(Modifier.align(Alignment.End)) { actions() }
+                    Box(
+                        modifier = Modifier
+                            .offset(x = CARD_ACTIONS_EDGE)
+                            .layout { measurable, constraints ->
+                                val p = measurable.measure(constraints)
+                                val h = TILE_LINE_HEIGHT.roundToPx()
+                                layout(p.width, h) { p.place(0, (h - p.height) / 2) }
+                            },
+                    ) {
+                        CompositionLocalProvider(LocalMenuOffersSave provides true) { menu(null) }
                     }
                 }
             }
         }
     }
 }
+
+/** The source line's height in a tile; the ⋮ beside it draws over its padding. */
+private val TILE_LINE_HEIGHT = 20.dp
 
 /**
  * "SFGATE · 10h" — the line under every headline.
@@ -774,6 +782,9 @@ val LocalFocusSource = compositionLocalOf<((String, String) -> Unit)?> { null }
  * rather than read from the preferences by every card's byline.
  */
 val LocalTimeFormat = compositionLocalOf { TIME_RELATIVE }
+
+/** Whether the card's ⋮ menu carries Save, because the card has no button for it. */
+val LocalMenuOffersSave = compositionLocalOf { false }
 
 /** What a long press on a card does; null where nothing does. See ArticlePreviewDialog. */
 val LocalCardLongPress = compositionLocalOf<(() -> Unit)?> { null }
@@ -1146,18 +1157,6 @@ private fun OnPhoto(content: @Composable () -> Unit) {
 internal const val PHOTO_DISC_ALPHA = 0.45f
 private val PHOTO_DISC_RADIUS = 16.dp
 
-/**
- * Whether the save and menu buttons, beside the line under a headline, leave
- * its source's name too little room to read. The two buttons take 71dp of
- * the line; the mark and a short age about 40dp more. Since the line drops
- * the category and the clock time before it cuts the name (review 43), a
- * two-column Mosaic tile (about 150dp) has room, and a text-only tile no
- * longer needs a row of its own for its buttons (review 44). Only a tile in
- * three or more lanes, on a large screen, still puts them underneath.
- */
-internal fun actionsCrowdMeta(width: Dp): Boolean = width < MIN_WIDTH_FOR_ACTIONS_BESIDE_META
-
-internal val MIN_WIDTH_FOR_ACTIONS_BESIDE_META = 140.dp
 
 /** Half a button's spare width: where a 22dp glyph's box meets a 48dp target's edge. */
 val CARD_ACTIONS_EDGE = 13.dp

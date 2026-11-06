@@ -17,6 +17,7 @@
  */
 package com.saulhdev.feeder.ui.overlay
 
+import com.saulhdev.feeder.ui.icons.phosphor.BookBookmark
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
@@ -99,6 +100,9 @@ fun ArticleOverflowMenu(
     onNotInterested: (() -> Unit)? = null,
     /** The article's source, named at the top of the menu. */
     sourceName: String = "",
+    /** Save in the menu, where the card has no room for its own button; null elsewhere. */
+    onSave: ((Boolean) -> Unit)? = null,
+    saved: Boolean = false,
 ) {
     var expanded by remember { mutableStateOf(false) }
     var explain by remember { mutableStateOf(false) }
@@ -134,21 +138,12 @@ fun ArticleOverflowMenu(
         // feed; and taking things away. The entries are the same as before.
         val close = { expanded = false }
         DropdownMenuPopup(expanded = expanded, onDismissRequest = close) {
-            if (sourceName.isNotBlank()) {
-                Text(
-                    text = sourceName,
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .padding(MenuDefaults.DropdownMenuGroupLabelHorizontalPadding)
-                        .padding(vertical = 8.dp)
-                        .widthIn(max = 240.dp),
-                )
-            }
             val groups = buildList<List<MenuChoice>> {
-                add(listOf(
+                add(listOfNotNull(
+                    // On a tile with no room for a save button (review 84).
+                    onSave?.let { save ->
+                        MenuChoice(if (saved) R.string.action_unsave else R.string.action_save, Phosphor.BookBookmark) { save(!saved) }
+                    },
                     MenuChoice(R.string.share, Phosphor.ShareNetwork) { onShare() },
                     MenuChoice(if (pinned) R.string.unpin_article else R.string.pin_article, Phosphor.Asterisk) { onPin(!pinned) },
                 ))
@@ -170,6 +165,22 @@ fun ArticleOverflowMenu(
             groups.forEachIndexed { g, entries ->
                 if (g > 0) Spacer(Modifier.height(MenuDefaults.GroupSpacing))
                 DropdownMenuGroup(shapes = MenuDefaults.groupShape(g, groups.size)) {
+                    // The source's name heads the first group, on the menu's
+                    // own surface; above it, it floated over the feed
+                    // (owner's screenshot, 6 November).
+                    if (g == 0 && sourceName.isNotBlank()) {
+                        Text(
+                            text = sourceName,
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier
+                                .padding(MenuDefaults.DropdownMenuGroupLabelHorizontalPadding)
+                                .padding(top = 12.dp, bottom = 4.dp)
+                                .widthIn(max = 240.dp),
+                        )
+                    }
                     entries.forEachIndexed { e, choice ->
                         DropdownMenuItem(
                             onClick = { close(); choice.action() },

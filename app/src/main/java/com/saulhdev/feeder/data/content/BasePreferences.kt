@@ -61,6 +61,8 @@ class StringSelectionPref(
      * Null keeps the dialog: for long lists, or labels that need a sentence.
      */
     val buttons: Map<String, Int>? = null,
+    /** A line under each choice in the dialog, by value, where the names alone say too little. */
+    val descriptions: Map<String, Int>? = null,
 ) : PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue)
 
 class StringSetPref(

@@ -20,7 +20,6 @@ package com.saulhdev.feeder
 import androidx.compose.ui.unit.dp
 import com.saulhdev.feeder.data.db.models.authorName
 import com.saulhdev.feeder.ui.overlay.PHOTO_DISC_ALPHA
-import com.saulhdev.feeder.ui.overlay.actionsCrowdMeta
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -37,19 +36,9 @@ class ScreenshotGlitchesTest {
     // 1. "NEWS · · 2h": the source name squeezed to nothing on a narrow tile.
 
     @Test
-    fun `a two-column Mosaic tile keeps the buttons on the source line`() {
-        // A tile on a 411dp phone is about 150dp inside its padding. The line
-        // now drops the category and clock time first (review 43, 44).
-        assertFalse(actionsCrowdMeta(150.dp))
-        // Three lanes on a large screen still put them underneath.
-        assertTrue(actionsCrowdMeta(110.dp))
-        // A full-width tile keeps them beside it.
-        assertFalse(actionsCrowdMeta(360.dp))
-    }
-
-    @Test
-    fun `the tile without a picture asks before putting buttons beside the line`() {
-        assertTrue(card.contains("if (hasImage || !actionsCrowdMeta(maxWidth))"))
+    fun `a tile without a picture keeps only its menu on the source line`() {
+        // Save went into the menu (review 84), so the name has the room.
+        assertTrue(card.contains("CompositionLocalProvider(LocalMenuOffersSave provides true) { menu(null) }"))
     }
 
     // 2. White icons vanishing on a white photograph.

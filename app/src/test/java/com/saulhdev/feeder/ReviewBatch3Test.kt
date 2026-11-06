@@ -1,5 +1,6 @@
 package com.saulhdev.feeder
 
+import com.saulhdev.feeder.ui.components.isTowardsTop
 import com.saulhdev.feeder.ui.overlay.bylinePlan
 import com.saulhdev.feeder.ui.overlay.levelOrder
 import org.junit.Assert.assertEquals
@@ -128,5 +129,40 @@ class ReviewBatch3Test {
         assertEquals(4, Regex("""\.cardClick\(openLabel, onClick\)""").findAll(card).count())
         assertTrue(card.contains("onLongClick = longPress,"))
         assertTrue(card.contains("ArticlePreviewDialog("))
+    }
+
+    @Test
+    fun `the menu's heading sits inside its first group`() {
+        val menu = source("ui/overlay/ArticleMenu.kt")
+        val group = menu.indexOf("DropdownMenuGroup(shapes")
+        val heading = menu.indexOf("text = sourceName,")
+        assertTrue("the source's name floated above the menu", group in 0 until heading)
+    }
+
+    @Test
+    fun `back to top shows on the way up only`() {
+        assertTrue(isTowardsTop(5 to 0, 4 to 300))
+        assertTrue(isTowardsTop(5 to 200, 5 to 100))
+        assertFalse(isTowardsTop(5 to 100, 5 to 200))
+        assertFalse(isTowardsTop(4 to 300, 5 to 0))
+        assertTrue(source("ui/pages/ArticleListPage.kt").contains("visible = showFAB && scrollingUp &&"))
+        assertTrue(source("ui/overlay/FeedScaffold.kt").contains("visible = showScrollToTop && scrollingUp &&"))
+    }
+
+    @Test
+    fun `a text-only tile saves from its menu`() {
+        val card = source("ui/overlay/ArticleCard.kt")
+        assertTrue(card.contains("onSave = if (LocalMenuOffersSave.current) onBookmark else null,"))
+        assertTrue(card.contains("FeedEmphasis.Small  -> if (hasImage) 2 else 3"))
+        assertTrue(source("ui/overlay/ArticleMenu.kt").contains("R.string.action_save"))
+    }
+
+    @Test
+    fun `each feed layout says what it looks like`() {
+        val prefs = source("data/content/FeedPreferences.kt")
+        listOf("cards", "magazine", "list", "list_pictures", "mosaic").forEach {
+            assertTrue(it, prefs.contains("R.string.layout_${it}_summary"))
+        }
+        assertTrue(source("ui/components/dialog/StringSelectionPrefDialogUI.kt").contains("supporting = pref.descriptions?.get(it.first)"))
     }
 }

@@ -43,6 +43,10 @@ import com.saulhdev.feeder.utils.getReaderTextSizes
 import com.saulhdev.feeder.utils.READER_TEXT_DEFAULT
 import com.saulhdev.feeder.utils.TIME_RELATIVE
 import com.saulhdev.feeder.utils.LAYOUT_CARDS
+import com.saulhdev.feeder.utils.LAYOUT_LIST
+import com.saulhdev.feeder.utils.LAYOUT_LIST_PICTURES
+import com.saulhdev.feeder.utils.LAYOUT_MAGAZINE
+import com.saulhdev.feeder.utils.LAYOUT_MOSAIC
 import com.saulhdev.feeder.ui.icons.phosphor.Asterisk
 import com.saulhdev.feeder.ui.icons.phosphor.BookBookmark
 import com.saulhdev.feeder.ui.icons.phosphor.BracketsSquare
@@ -205,6 +209,15 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
         dataStore = dataStore,
         defaultValue = LAYOUT_CARDS,
         entries = getFeedLayouts(context),
+        // What each one looks like, since "Magazine" and "Mosaic" say little
+        // on their own (owner, 6 November).
+        descriptions = mapOf(
+            LAYOUT_CARDS to R.string.layout_cards_summary,
+            LAYOUT_MAGAZINE to R.string.layout_magazine_summary,
+            LAYOUT_LIST to R.string.layout_list_summary,
+            LAYOUT_LIST_PICTURES to R.string.layout_list_pictures_summary,
+            LAYOUT_MOSAIC to R.string.layout_mosaic_summary,
+        ),
     )
 
     /**

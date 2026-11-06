@@ -79,6 +79,7 @@ fun StringSelectionPrefDialogUI(
                 items(items = entryPairs, key = { it.first }) {
                     SingleSelectionListItem(
                         text = it.second,
+                        supporting = pref.descriptions?.get(it.first)?.let { id -> stringResource(id) },
                         isSelected = selected == it.first
                     ) {
                         selected = it.first
@@ -108,6 +109,8 @@ fun SingleSelectionListItem(
     text: String,
     isSelected: Boolean,
     isEnabled: Boolean = true,
+    /** A line under the choice saying what it is; none by default. */
+    supporting: String? = null,
     endWidget: (@Composable () -> Unit)? = null,
     onClick: () -> Unit = {}
 ) {
@@ -131,14 +134,24 @@ fun SingleSelectionListItem(
                 unselectedColor = MaterialTheme.colorScheme.onSurface
             )
         )
-        Text(
+        Column(
             modifier = Modifier
                 .weight(1f)
                 .padding(vertical = 6.dp),
-            text = text,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold
-        )
+        ) {
+            Text(
+                text = text,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold
+            )
+            if (supporting != null) {
+                Text(
+                    text = supporting,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
         if (endWidget != null) {
             Spacer(modifier = Modifier.width(8.dp))
             endWidget()

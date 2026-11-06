@@ -17,6 +17,7 @@
  */
 package com.saulhdev.feeder.ui.overlay
 
+import com.saulhdev.feeder.ui.components.rememberScrollingUp
 import com.saulhdev.feeder.data.entity.SORT_CHRONOLOGICAL
 import androidx.compose.foundation.layout.absolutePadding
 import com.saulhdev.feeder.ui.components.FeedSnackbarHost
@@ -217,6 +218,11 @@ fun FeedScaffold(
         },
         scrollToTop = { if (isGrid) gridState.scrollToItem(0) else listState.scrollToItem(0) },
     )
+    // Only on the way back up (review 83); see rememberScrollingUp.
+    val scrollingUp by rememberScrollingUp {
+        if (isGrid) gridState.firstVisibleItemIndex to gridState.firstVisibleItemScrollOffset
+        else listState.firstVisibleItemIndex to listState.firstVisibleItemScrollOffset
+    }
     val showScrollToTop by remember(isGrid) {
         derivedStateOf {
             if (isGrid) gridState.firstVisibleItemIndex > 5
@@ -658,7 +664,7 @@ fun FeedScaffold(
 
         AnimatedVisibility(
             // Out of the way while an Undo is offered; see ArticleListPage.
-            visible = showScrollToTop && snackbarHostState.currentSnackbarData == null,
+            visible = showScrollToTop && scrollingUp && snackbarHostState.currentSnackbarData == null,
             enter = fadeIn() + scaleIn(),
             exit = fadeOut() + scaleOut(),
             modifier = Modifier

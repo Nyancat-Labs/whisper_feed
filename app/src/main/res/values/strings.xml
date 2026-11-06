@@ -37,6 +37,11 @@
     <string name="choice_read_hide">Hide</string>
     <string name="layout_list_pictures">List with pictures</string>
     <string name="layout_mosaic">Mosaic</string>
+    <string name="layout_cards_summary">Large pictures and summaries, one story below another, with the most important ones biggest.</string>
+    <string name="layout_magazine_summary">Every story with a picture gets a full card; stories without one are short rows.</string>
+    <string name="layout_list_summary">Headlines only, in a tight list. The most stories on screen.</string>
+    <string name="layout_list_pictures_summary">A tight list of headlines, each with a small picture beside it.</string>
+    <string name="layout_mosaic_summary">Tiles in two columns, like a newspaper front page, with the main stories across both.</string>
     <string name="source_pin">Pin to the top</string>
     <string name="source_unpin">Unpin from the top</string>
     <plurals name="source_pin_full">
