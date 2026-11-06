@@ -13,9 +13,10 @@ Unreleased
   Cards, Magazine, List, List with pictures and Mosaic.
 - **The back-to-top button gets out of the way** while you scroll down,
   and comes back when you scroll up.
-- **Mosaic tiles without a picture** keep only the ⋮ on their source line,
-  with Save inside it, so the source's name has room and the headline can
-  run to three lines. A small mark shows an article is saved.
+- **Mosaic tiles have one button, ⋮, with Save inside it**, so the
+  source's name has room, photos carry one disc instead of two, and
+  headlines without a picture can run to three lines. A small mark shows an
+  article is saved. Cards, Magazine and the lists keep their Save button.
 - **Long-press an article for a preview**: the picture, the source, the
   whole headline and summary, with Open, Share and Save, without leaving
   the feed.

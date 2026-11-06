@@ -656,15 +656,12 @@ fun ArticleMosaicTile(
                     modifier = Modifier.align(Alignment.TopEnd),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
+                    // The ⋮ alone, with Save inside it, on every Mosaic tile
+                    // (owner, 6 November): one pattern for the whole layout,
+                    // and one disc fewer on the photograph.
                     OnPhoto {
-                        SaveButton(
-                            saved = item.bookmarked,
-                            onSavedChange = onBookmark,
-                            size = 20.dp,
-                            onImage = true,
-                        )
+                        CompositionLocalProvider(LocalMenuOffersSave provides true) { menu(Color.White) }
                     }
-                    OnPhoto { menu(Color.White) }
                 }
             }
         }
@@ -726,16 +723,16 @@ fun ArticleMosaicTile(
             // counts as one line of text high, so the tile ends with the line.
             Row(verticalAlignment = Alignment.CenterVertically) {
                 meta(Modifier.weight(1f))
+                if (item.bookmarked) {
+                    // Saved, still visible at a glance without its button.
+                    Icon(
+                        imageVector = Phosphor.BookBookmark,
+                        contentDescription = stringResource(R.string.action_unsave),
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(start = 4.dp).size(16.dp),
+                    )
+                }
                 if (!hasImage) {
-                    if (item.bookmarked) {
-                        // Saved, still visible at a glance without its button.
-                        Icon(
-                            imageVector = Phosphor.BookBookmark,
-                            contentDescription = stringResource(R.string.action_unsave),
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(start = 4.dp).size(16.dp),
-                        )
-                    }
                     Box(
                         modifier = Modifier
                             .offset(x = CARD_ACTIONS_EDGE)

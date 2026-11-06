@@ -165,4 +165,12 @@ class ReviewBatch3Test {
         }
         assertTrue(source("ui/components/dialog/StringSelectionPrefDialogUI.kt").contains("supporting = pref.descriptions?.get(it.first)"))
     }
+
+    @Test
+    fun `every Mosaic tile keeps only its menu, with Save inside`() {
+        val card = source("ui/overlay/ArticleCard.kt")
+        val tile = card.substring(card.indexOf("fun ArticleMosaicTile("), card.indexOf("private val TILE_LINE_HEIGHT"))
+        assertFalse("a save button on a tile", tile.contains("SaveButton("))
+        assertEquals(2, Regex("""LocalMenuOffersSave provides true""").findAll(tile).count())
+    }
 }
