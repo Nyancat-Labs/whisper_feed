@@ -50,8 +50,15 @@ and Google Play builds on two other devices.
   measured at the width its cut was worked out for and advanced by its
   drawn width. Items 82–84 added to the sheet (www., back-to-top over a
   card's menu, text-only tiles).
+- Follow-up (6 November, owner's screenshots and answers): the menu's
+  source name, with its icon, heads the first group (it floated above the
+  menu). Back to top shows only while scrolling up (`rememberScrollingUp`,
+  item 83). Text-only Mosaic tiles keep only ⋮, with Save in it
+  (`LocalMenuOffersSave`), a saved mark, a ⋮ that counts one line high,
+  and three-line headlines (84). Feed layout choices carry a description
+  (`StringSelectionPref.descriptions`, 86). Veil (48) dropped by the owner.
 - `ReviewBatch3Test`, `FoldUnfoldTest`; `ScreenshotGlitchesTest`,
-  `SourceFilterTest`, `CardReadabilityTest`, `FeedDaysTest`, `FocusAnchorTest` and `ImageSizingTest` follow. 1311 tests, 1 skipped.
+  `SourceFilterTest`, `CardReadabilityTest`, `FeedDaysTest`, `FocusAnchorTest` and `ImageSizingTest` follow. 1314 tests, 1 skipped.
 
 ## 4 November 2026 — Review batch 2: filter sheet, title settle, stretch
 
