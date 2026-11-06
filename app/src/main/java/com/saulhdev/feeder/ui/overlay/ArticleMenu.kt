@@ -17,6 +17,8 @@
  */
 package com.saulhdev.feeder.ui.overlay
 
+import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.width
 import com.saulhdev.feeder.ui.icons.phosphor.BookBookmark
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -100,6 +102,8 @@ fun ArticleOverflowMenu(
     onNotInterested: (() -> Unit)? = null,
     /** The article's source, named at the top of the menu. */
     sourceName: String = "",
+    /** That source's icon, beside its name. */
+    sourceIcon: String? = null,
     /** Save in the menu, where the card has no room for its own button; null elsewhere. */
     onSave: ((Boolean) -> Unit)? = null,
     saved: Boolean = false,
@@ -169,17 +173,25 @@ fun ArticleOverflowMenu(
                     // own surface; above it, it floated over the feed
                     // (owner's screenshot, 6 November).
                     if (g == 0 && sourceName.isNotBlank()) {
-                        Text(
-                            text = sourceName,
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
+                        // With the source's own icon, as on the card (owner,
+                        // 6 November).
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
                                 .padding(MenuDefaults.DropdownMenuGroupLabelHorizontalPadding)
                                 .padding(top = 12.dp, bottom = 4.dp)
                                 .widthIn(max = 240.dp),
-                        )
+                        ) {
+                            SourceMark(iconUrl = sourceIcon, sourceName = sourceName)
+                            Spacer(Modifier.width(8.dp))
+                            Text(
+                                text = sourceName,
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
                     }
                     entries.forEachIndexed { e, choice ->
                         DropdownMenuItem(

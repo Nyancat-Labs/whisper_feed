@@ -30,7 +30,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -187,6 +186,7 @@ fun FeedArticleItem(
             onDismissStory = onDismissStory,
             onNotInterested = notInterested,
             sourceName = shortSourceName(item.feedTitle),
+            sourceIcon = item.feedIconUrl,
             // Where the card has no save button of its own (review 84).
             onSave = if (LocalMenuOffersSave.current) onBookmark else null,
             saved = item.bookmarked,
