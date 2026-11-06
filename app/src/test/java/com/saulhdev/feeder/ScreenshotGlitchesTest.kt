@@ -51,9 +51,9 @@ class ScreenshotGlitchesTest {
     }
 
     @Test
-    fun `both controls on a photograph sit on a disc`() {
-        assertTrue(card.contains("OnPhoto {\n                        SaveButton("))
-        assertTrue(card.contains("OnPhoto { menu(Color.White) }"))
+    fun `the control on a photograph sits on a disc`() {
+        // One control since 6 November: the ⋮, with Save inside it.
+        assertTrue(card.contains("OnPhoto {\n                        CompositionLocalProvider(LocalMenuOffersSave provides true) { menu(Color.White) }"))
         assertFalse("the thin fade is gone", card.contains("Brush.verticalGradient"))
     }
 
