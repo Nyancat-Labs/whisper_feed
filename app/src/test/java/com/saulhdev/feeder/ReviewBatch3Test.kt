@@ -173,4 +173,14 @@ class ReviewBatch3Test {
         assertFalse("a save button on a tile", tile.contains("SaveButton("))
         assertEquals(2, Regex("""LocalMenuOffersSave provides true""").findAll(tile).count())
     }
+
+    @Test
+    fun `an update shows in the line under the chips, not on the weather tiles`() {
+        val line = source("ui/overlay/SyncFreshnessLine.kt")
+        assertTrue(line.contains("if (freshness == SyncFreshness.Updating) {"))
+        assertTrue(line.contains("ContainedLoadingIndicator("))
+        assertTrue("centred", line.contains("contentAlignment = Alignment.Center,"))
+        // The pulled one follows the finger and goes back on release.
+        assertTrue(source("ui/components/PullToRefreshLazyColumn.kt").contains("isRefreshing = false,"))
+    }
 }

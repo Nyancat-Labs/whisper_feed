@@ -17,6 +17,16 @@
  */
 package com.saulhdev.feeder.ui.overlay
 
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.Alignment
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.ContainedLoadingIndicator
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -69,6 +79,7 @@ fun SyncFreshnessLine(modifier: Modifier = Modifier, newCount: Int = 0) = SyncFr
  * The same words without a line of their own, for drawing beside something
  * else: the app puts them at the right of the first day heading.
  */
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun SyncFreshnessText(modifier: Modifier = Modifier, textAlign: TextAlign? = null, newCount: Int = 0) {
     val sources: SourcesRepository = koinInject()
@@ -108,6 +119,32 @@ fun SyncFreshnessText(modifier: Modifier = Modifier, textAlign: TextAlign? = nul
                 withNew(context.getString(R.string.freshness_updated, freshness.age.format(context)), newCount, context)
         }
     }
+    // While updating: Expressive's loading indicator, centred in the line's
+    // own space (owner, 7 November), in place of the words. The one that
+    // drops in when you pull sat on the weather tiles; it now only follows
+    // the pull and goes back once you let go. The indicator counts as one
+    // line of text high and draws over the white space either side, so the
+    // feed does not move when an update starts or ends.
+    if (freshness == SyncFreshness.Updating) {
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .semantics { contentDescription = text; liveRegion = LiveRegionMode.Polite },
+            contentAlignment = Alignment.Center,
+        ) {
+            ContainedLoadingIndicator(
+                modifier = Modifier
+                    .layout { measurable, constraints ->
+                        val size = UPDATING_INDICATOR.roundToPx()
+                        val p = measurable.measure(Constraints.fixed(size, size))
+                        val h = UPDATING_LINE.roundToPx()
+                        layout(p.width, h) { p.place(0, (h - p.height) / 2) }
+                    },
+            )
+        }
+        return
+    }
+
     val late = freshness == SyncFreshness.NeverUpdated ||
         (freshness is SyncFreshness.Updated && freshness.overdue)
 
@@ -129,3 +166,9 @@ fun SyncFreshnessText(modifier: Modifier = Modifier, textAlign: TextAlign? = nul
 private fun withNew(updated: String, newCount: Int, context: android.content.Context): String =
     if (newCount <= 0) updated
     else context.getString(R.string.freshness_with_new, updated, newCount)
+
+/** The indicator while updating: small enough for the gap between chips and articles. */
+private val UPDATING_INDICATOR = 32.dp
+
+/** The height of the line it stands in for, so nothing below it moves. */
+private val UPDATING_LINE = 16.dp

@@ -158,15 +158,16 @@ fun PullToRefreshStaggeredGrid(
 
 /**
  * Expressive's loading indicator, the shape that changes in a filled
- * container (review 47). The old spinning arc was small and grey and sat half
- * over the glance cards, where it was hard to see.
+ * container (review 47), following the pull only. Once you let go it goes
+ * back up, and the update shows in the line under the category chips
+ * instead (owner, 7 November): left down, it sat on the weather tiles.
  */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun BoxScope.RefreshIndicator(state: PullToRefreshState, refreshing: Boolean) {
+private fun BoxScope.RefreshIndicator(state: PullToRefreshState, @Suppress("UNUSED_PARAMETER") refreshing: Boolean) {
     PullToRefreshDefaults.LoadingIndicator(
         state = state,
-        isRefreshing = refreshing,
+        isRefreshing = false,
         modifier = Modifier.align(Alignment.TopCenter),
     )
 }
