@@ -139,16 +139,21 @@ fun SingleSelectionListItem(
                 .weight(1f)
                 .padding(vertical = 6.dp),
         ) {
+            // The name in the theme's full text colour, the line under it
+            // smaller and quieter (owner, 8 November: both came out the
+            // dialog's grey, too dark, with little between them).
             Text(
                 text = text,
                 fontSize = 16.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
             )
             if (supporting != null) {
                 Text(
                     text = supporting,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 2.dp),
                 )
             }
         }

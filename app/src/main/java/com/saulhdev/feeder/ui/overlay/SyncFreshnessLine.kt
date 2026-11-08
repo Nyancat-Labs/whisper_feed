@@ -17,6 +17,13 @@
  */
 package com.saulhdev.feeder.ui.overlay
 
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.foundation.layout.offset
+import androidx.compose.ui.layout.positionInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.contentDescription
@@ -126,14 +133,25 @@ fun SyncFreshnessText(modifier: Modifier = Modifier, textAlign: TextAlign? = nul
     // line of text high and draws over the white space either side, so the
     // feed does not move when an update starts or ends.
     if (freshness == SyncFreshness.Updating) {
+        // Centred on the screen, not on the space it is given: beside the
+        // "Today" heading that space starts after the word, and the indicator
+        // sat right of centre (owner's screenshots, 8 November).
+        val windowWidth = LocalWindowInfo.current.containerSize.width
+        var slotStart by remember { mutableFloatStateOf(0f) }
+        var slotWidth by remember { mutableIntStateOf(0) }
         Box(
             modifier = modifier
                 .fillMaxWidth()
+                .onGloballyPositioned {
+                    slotStart = it.positionInWindow().x
+                    slotWidth = it.size.width
+                }
                 .semantics { contentDescription = text; liveRegion = LiveRegionMode.Polite },
             contentAlignment = Alignment.Center,
         ) {
             ContainedLoadingIndicator(
                 modifier = Modifier
+                    .offset { IntOffset(centreShift(windowWidth, slotStart, slotWidth), 0) }
                     .layout { measurable, constraints ->
                         val size = UPDATING_INDICATOR.roundToPx()
                         val p = measurable.measure(Constraints.fixed(size, size))
@@ -172,3 +190,8 @@ private val UPDATING_INDICATOR = 32.dp
 
 /** The height of the line it stands in for, so nothing below it moves. */
 private val UPDATING_LINE = 16.dp
+
+/** How far to move something centred in a slot so it is centred in the window. */
+internal fun centreShift(windowWidth: Int, slotStart: Float, slotWidth: Int): Int =
+    if (windowWidth <= 0 || slotWidth <= 0) 0
+    else (windowWidth / 2f - (slotStart + slotWidth / 2f)).toInt()

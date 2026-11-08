@@ -17,9 +17,9 @@
  */
 package com.saulhdev.feeder.ui.overlay
 
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.Alignment
 import androidx.compose.foundation.layout.width
-import com.saulhdev.feeder.ui.icons.phosphor.BookBookmark
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
@@ -146,7 +146,7 @@ fun ArticleOverflowMenu(
                 add(listOfNotNull(
                     // On a tile with no room for a save button (review 84).
                     onSave?.let { save ->
-                        MenuChoice(if (saved) R.string.action_unsave else R.string.action_save, Phosphor.BookBookmark) { save(!saved) }
+                        MenuChoice(if (saved) R.string.action_unsave else R.string.action_save, drawable = R.drawable.ic_whisper_save) { save(!saved) }
                     },
                     MenuChoice(R.string.share, Phosphor.ShareNetwork) { onShare() },
                     MenuChoice(if (pinned) R.string.unpin_article else R.string.pin_article, Phosphor.Asterisk) { onPin(!pinned) },
@@ -198,7 +198,11 @@ fun ArticleOverflowMenu(
                             onClick = { close(); choice.action() },
                             text = { Text(stringResource(choice.textId)) },
                             shape = MenuDefaults.itemShape(e, entries.size).shape,
-                            leadingIcon = { Icon(choice.icon, contentDescription = null) },
+                            leadingIcon = {
+                                val drawable = choice.drawable
+                                if (drawable != null) Icon(painterResource(drawable), contentDescription = null)
+                                else choice.icon?.let { Icon(it, contentDescription = null) }
+                            },
                         )
                     }
                 }
@@ -269,4 +273,10 @@ private fun WhyThisSizeDialog(
 }
 
 /** One entry in the card's menu. */
-private class MenuChoice(val textId: Int, val icon: ImageVector, val action: () -> Unit)
+private class MenuChoice(
+    val textId: Int,
+    val icon: ImageVector? = null,
+    /** A drawable instead of [icon]: Save uses Whisper's own mark, as everywhere else. */
+    val drawable: Int? = null,
+    val action: () -> Unit,
+)

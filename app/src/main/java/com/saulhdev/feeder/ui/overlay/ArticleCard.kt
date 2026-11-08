@@ -17,7 +17,6 @@
  */
 package com.saulhdev.feeder.ui.overlay
 
-import com.saulhdev.feeder.ui.icons.phosphor.BookBookmark
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -725,8 +724,10 @@ fun ArticleMosaicTile(
                 meta(Modifier.weight(1f))
                 if (item.bookmarked) {
                     // Saved, still visible at a glance without its button.
+                    // Whisper's own save mark, as on every other card (owner,
+                    // 8 November).
                     Icon(
-                        imageVector = Phosphor.BookBookmark,
+                        painter = painterResource(R.drawable.ic_whisper_save),
                         contentDescription = stringResource(R.string.action_unsave),
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(start = 4.dp).size(16.dp),

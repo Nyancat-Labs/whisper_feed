@@ -154,7 +154,7 @@ class ReviewBatch3Test {
         val card = source("ui/overlay/ArticleCard.kt")
         assertTrue(card.contains("onSave = if (LocalMenuOffersSave.current) onBookmark else null,"))
         assertTrue(card.contains("FeedEmphasis.Small  -> if (hasImage) 2 else 3"))
-        assertTrue(source("ui/overlay/ArticleMenu.kt").contains("R.string.action_save"))
+        assertTrue(source("ui/overlay/ArticleMenu.kt").contains("R.string.action_save, drawable = R.drawable.ic_whisper_save"))
     }
 
     @Test
@@ -182,5 +182,13 @@ class ReviewBatch3Test {
         assertTrue("centred", line.contains("contentAlignment = Alignment.Center,"))
         // The pulled one follows the finger and goes back on release.
         assertTrue(source("ui/components/PullToRefreshLazyColumn.kt").contains("isRefreshing = false,"))
+    }
+
+    @Test
+    fun `the update indicator is centred on the screen and the pulled one leaves`() {
+        assertEquals(0, com.saulhdev.feeder.ui.overlay.centreShift(1000, 0f, 1000))
+        // Beside "Today": the slot starts at 300 and runs to 1000.
+        assertEquals(-150, com.saulhdev.feeder.ui.overlay.centreShift(1000, 300f, 700))
+        assertTrue(source("ui/components/PullToRefreshLazyColumn.kt").contains("if (refreshing) return"))
     }
 }

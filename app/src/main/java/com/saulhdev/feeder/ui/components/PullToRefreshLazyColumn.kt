@@ -164,7 +164,11 @@ fun PullToRefreshStaggeredGrid(
  */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun BoxScope.RefreshIndicator(state: PullToRefreshState, @Suppress("UNUSED_PARAMETER") refreshing: Boolean) {
+private fun BoxScope.RefreshIndicator(state: PullToRefreshState, refreshing: Boolean) {
+    // Gone the moment the update starts. Left to Material, it stayed at the
+    // pulled position for the whole update, over the weather tiles, beside
+    // the one in the line below (owner's screenshots, 8 November).
+    if (refreshing) return
     PullToRefreshDefaults.LoadingIndicator(
         state = state,
         isRefreshing = false,

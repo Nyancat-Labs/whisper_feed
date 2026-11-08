@@ -10,8 +10,9 @@ Unreleased
 ----------
 
 - **Updating shows under the category chips**: Expressive's loading
-  indicator, centred in the line above the articles, instead of sitting on
-  the weather tiles.
+  indicator, centred on the screen in the line above the articles; the one
+  you pull down goes away as the update starts instead of sitting on the
+  weather tiles.
 - **Feed layout says what each choice looks like**, with a line under
   Cards, Magazine, List, List with pictures and Mosaic.
 - **The back-to-top button gets out of the way** while you scroll down,

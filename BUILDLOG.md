@@ -58,7 +58,7 @@ and Google Play builds on two other devices.
   and three-line headlines (84). Feed layout choices carry a description
   (`StringSelectionPref.descriptions`, 86). Veil (48) dropped by the owner.
 - `ReviewBatch3Test`, `FoldUnfoldTest`; `ScreenshotGlitchesTest`,
-  `SourceFilterTest`, `CardReadabilityTest`, `FeedDaysTest`, `FocusAnchorTest` and `ImageSizingTest` follow. 1316 tests, 1 skipped. Every Mosaic tile then went to ⋮ only (owner, 6 November); the update indicator moved to the freshness line, centred (7 November, item 87).
+  `SourceFilterTest`, `CardReadabilityTest`, `FeedDaysTest`, `FocusAnchorTest` and `ImageSizingTest` follow. 1316 tests, 1 skipped. Every Mosaic tile then went to ⋮ only (owner, 6 November); the update indicator moved to the freshness line, centred (7 November, item 87). 8 November, from the owner's tests: the pulled indicator stayed at its pulled place for the whole update (Material holds it there while refreshing), so it now draws nothing once refreshing; the line's indicator is centred on the window (`centreShift`), not on the slot beside "Today"; Save in the menu and the saved mark use `ic_whisper_save`; the layout dialog's names are `onSurface`, their descriptions `bodySmall`. 1317 tests.
 
 ## 4 November 2026 — Review batch 2: filter sheet, title settle, stretch
 
