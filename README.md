@@ -317,6 +317,14 @@ restricts sensitive permissions for apps not installed from a store — unblock
 it via **Settings → Apps → Whisper → ⋮ → Allow restricted settings**, then
 grant it.
 
+## Translations
+
+Whisper is translated on [Hosted Weblate](https://hosted.weblate.org/projects/whisper/).
+French, Spanish, Italian, German, Polish and Portuguese (Brazil and
+Portugal) are being drafted for the next release; the project opens to
+volunteers once they are in, so native speakers can correct them and add
+more languages.
+
 ## Documentation
 
 | | |
