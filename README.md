@@ -20,8 +20,8 @@ disagree.
 <a href="https://f-droid.org/packages/com.nyancatlabs.whisper/"><img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" alt="Get it on F-Droid" height="80"></a>
 <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/Nyancat-Labs/whisper_feed"><img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium" height="80"></a>
 
-<a href="https://ko-fi.com/nyancatlabs"><img src="https://storage.ko-fi.com/cdn/kofi2.png?v=3" alt="Support Whisper on Ko-fi" height="36"></a>
-<a href="https://github.com/sponsors/Nyancat-Labs"><img src="https://img.shields.io/badge/Sponsor-Nyancat%20Labs-ea4aaa?logo=githubsponsors&logoColor=white" alt="Sponsor Nyancat Labs on GitHub" height="36"></a>
+<a href="https://ko-fi.com/nyancatlabs"><img src="https://img.shields.io/badge/Ko--fi-Buy%20me%20a%20coffee-FF5E5B?style=for-the-badge&logo=kofi&logoColor=white" alt="Support Whisper on Ko-fi" height="36"></a>
+<a href="https://github.com/sponsors/Nyancat-Labs"><img src="https://img.shields.io/badge/GitHub%20Sponsors-Nyancat%20Labs-EA4AAA?style=for-the-badge&logo=githubsponsors&logoColor=white" alt="Sponsor Nyancat Labs on GitHub" height="36"></a>
 
 </div>
 
