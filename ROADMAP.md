@@ -3316,6 +3316,20 @@ flags labels much longer than the English; a "Report a translation
 mistake" link in About. Built after the review batches (styling and
 visual fixes) are done, as the last piece of 1.0.6 (owner, 27 October). The plan below is kept for the record.
 
+**Weblate set up 8 November 2026** (owner, guided here): Hosted Weblate,
+project `whisper` (hosted.weblate.org/projects/whisper), licence
+GPL-3.0-or-later. Components: **App** (`app/src/main/res/values-*/strings.xml`,
+base `values/strings.xml`, 687 strings) and **Plurals**
+(`values-*/plurals.xml`, 2), both Android String Resource, base file not
+editable on Weblate (English changes only in code), new languages from the
+base file. Plus the automatic Glossary. **Locked** until Claude's seven
+translations land; Libre (gratis) hosting requested. To do when unlocking:
+give Weblate a way to push (Weblate's GitHub app or a pull-request
+integration, owner's choice then), import `docs/translations/glossary.csv`
+into the Glossary, mark Claude's strings as needing review, add the store
+listing (`fastlane/metadata/android/*`) as a component, and point About's
+"Report a translation mistake" at the project.
+
 **Open to volunteers later (owner, 28 October).** The files are standard
 `values-xx/strings.xml`, which Weblate reads as they are, so the Weblate plan
 below can be switched on whenever someone offers to help. Built for that now:

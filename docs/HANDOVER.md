@@ -121,3 +121,12 @@ ships, so his corrections go into the release.
   at beta01 on 7 Oct.
 - **Roadmap:** ROADMAP.md, "After the stores" has the order. Auto-scroll is
   wanted soon.
+
+## Weblate (set up 8 November 2026)
+
+hosted.weblate.org/projects/whisper — components App (strings.xml) and
+Plurals (plurals.xml), base files read-only there, project **locked** until
+Claude's translations land; Libre hosting requested. Weblate cannot push to
+GitHub yet (no push URL), on purpose. See ROADMAP *Translations* for what to
+do when unlocking. A string a person corrects on Weblate is never
+overwritten by Claude.
