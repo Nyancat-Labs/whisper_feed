@@ -248,10 +248,10 @@ which is private; here they are "a user". Item numbers are the sheet's.
   **deadline 1 February 2027**, after which updates stop and the apps are
   removed. Google's signs of a trader: paid apps, in-app purchases or ads;
   regular transactions; run as a business; a legal status such as a
-  D-U-N-S number. Whisper has no sales, ads or purchases; donations are
-  voluntary. A trader's phone number and address are shown on Play, and
-  each app needs a Terms of Service link; a non-trader's listing tells EEA
-  and UK users that consumer-protection rights do not apply. Owner's call.
+  D-U-N-S number. **Done 8 November 2026:** the account is declared a
+  trader (Nyancat Labs is a registered business), Whisper confirmed as a
+  trader app, and the change sent for review. The Terms of Service link,
+  optional, was left empty: there is no Terms page yet (see the website).
 - **Home-network addresses** (73): Android 17 blocks them without a
   permission. Decided 29 October: not supported; a clear message when one
   fails. Before 1.0.6 ships.
@@ -275,7 +275,10 @@ which is private; here they are "a user". Item numbers are the sheet's.
   from this repository (free, published on each push); a domain of its own
   later if wanted. Its address then goes in the Play listing's website
   field and the About page. Suggested timing: after 1.0.6, before 1.1.0,
-  when the Expressive screenshots are final.
+  when the Expressive screenshots are final. **Also a Terms of Use page**,
+  drafted from `DISCLAIMER.md` and read by whoever handles Nyancat Labs'
+  legal side; its address then goes in Play Console (App content >
+  App-level trader status and Terms of Service), left empty on 8 November.
 
 - **GitHub Sponsors** (owner, 4–5 November): Nyancat Labs has its own
   profile; it is now in `.github/FUNDING.yml` and the README beside Ko-fi.
