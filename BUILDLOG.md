@@ -29,6 +29,12 @@ and Google Play builds on two other devices.
   `LocalRefreshAnchor`; near the top when that line is off screen. Fades
   when the update ends. The small one in the line is gone; the line says
   "Updating…".
+- Refresh bounce (owner, same day): after a pull, `rememberRefreshing`
+  held the indicator for a flat 600ms; enqueued sync work can take longer
+  to report running, so it faded, reset to the top, and dropped in again.
+  Now held until the update it started finishes (5s grace for one that
+  never reports). Fading and following the finger are one effect, so a
+  finished update fades in place before the finger is followed again.
 
 ## 5 November 2026 — Review batch 3: the feed
 

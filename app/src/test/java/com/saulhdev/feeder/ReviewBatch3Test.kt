@@ -194,4 +194,14 @@ class ReviewBatch3Test {
         assertEquals(40f, com.saulhdev.feeder.ui.components.restingTop(Float.NaN, 200f, 100f, 40f), 0f)
         assertEquals(40f, com.saulhdev.feeder.ui.components.restingTop(150f, 200f, 100f, 40f), 0f)
     }
+
+    @Test
+    fun `after a pull the indicator stays until the update ends, without dropping out`() {
+        val pull = source("ui/components/PullToRefreshLazyColumn.kt")
+        // Held until the update it started reports finished, not for a flat moment.
+        assertTrue(pull.contains("snapshotFlow { running }.first { !it }"))
+        // Fade, then follow the finger: one effect, so the order cannot flip.
+        assertEquals(1, Regex("""snapshotFlow \{ state.distanceFraction \}""").findAll(pull).count())
+        assertFalse(pull.contains("if (leaving) return@collect"))
+    }
 }

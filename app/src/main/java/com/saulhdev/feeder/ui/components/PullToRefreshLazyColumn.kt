@@ -46,6 +46,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.Dp
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withTimeoutOrNull
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.LaunchedEffect
 import kotlinx.coroutines.launch
 
@@ -73,17 +76,30 @@ private const val MIN_VISIBLE_MS = 600L
 private fun rememberRefreshing(isRefreshing: Boolean): Pair<Boolean, () -> Unit> {
     var pulledAt by remember { mutableLongStateOf(0L) }
     var settled by remember { mutableStateOf(false) }
+    val running by rememberUpdatedState(isRefreshing)
 
+    // Held from the pull until the update it started has finished, not for a
+    // flat moment. Enqueued work can take longer than that to report itself
+    // running, and the gap dropped the indicator and brought it back: up,
+    // then down again (owner, 9 November). If no update ever reports, it
+    // gives up after START_GRACE_MS.
     LaunchedEffect(pulledAt) {
         if (pulledAt == 0L) return@LaunchedEffect
         settled = false
         delay(MIN_VISIBLE_MS)
+        val started = running || withTimeoutOrNull(START_GRACE_MS) {
+            snapshotFlow { running }.first { it }
+        } != null
+        if (started) snapshotFlow { running }.first { !it }
         settled = true
     }
 
     val showing = isRefreshing || (pulledAt != 0L && !settled)
     return showing to { pulledAt = System.currentTimeMillis() }
 }
+
+/** How long after a pull to wait for the update to report that it started. */
+private const val START_GRACE_MS = 5_000L
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -215,10 +231,19 @@ private fun BoxScope.RefreshIndicator(state: PullToRefreshState, refreshing: Boo
     val target = restingTop(anchor.centreY, boxTop, size, fallback)
 
     // Following the finger: only while no update runs and none is fading.
+    // One effect for "not updating", so the order is fixed: an indicator
+    // still showing fades where it is first, and only then does it follow the
+    // finger again. Two effects could run the other way round and snap it up
+    // to Material's resting place before fading.
     LaunchedEffect(refreshing) {
         if (refreshing) return@LaunchedEffect
+        if (alpha.value > 0f && !pulledOnly(state.distanceFraction, y.value, threshold, size)) {
+            leaving = true
+            alpha.animateTo(0f)
+            y.snapTo(-size)
+            leaving = false
+        }
         snapshotFlow { state.distanceFraction }.collect { fraction ->
-            if (leaving) return@collect
             y.snapTo(fraction * threshold - size)
             alpha.snapTo((fraction * 2f).coerceIn(0f, 1f))
         }
@@ -228,14 +253,6 @@ private fun BoxScope.RefreshIndicator(state: PullToRefreshState, refreshing: Boo
         if (!refreshing) return@LaunchedEffect
         launch { alpha.animateTo(1f) }
         y.animateTo(target, spring(stiffness = Spring.StiffnessMediumLow))
-    }
-    // Out when it ends: faded where it is, not sent back up.
-    LaunchedEffect(refreshing) {
-        if (refreshing || alpha.value == 0f) return@LaunchedEffect
-        leaving = true
-        alpha.animateTo(0f)
-        y.snapTo(-size)
-        leaving = false
     }
 
     Box(
@@ -258,6 +275,10 @@ private fun BoxScope.RefreshIndicator(state: PullToRefreshState, refreshing: Boo
         }
     }
 }
+
+/** Whether the indicator is simply where the finger has it, so nothing needs fading. */
+private fun pulledOnly(fraction: Float, y: Float, threshold: Float, size: Float): Boolean =
+    kotlin.math.abs(fraction * threshold - size - y) < 1f
 
 /** The indicator's top while updating: centred on the anchor, or near the top without one. */
 internal fun restingTop(anchorCentre: Float, boxTop: Float, size: Float, fallback: Float): Float {
