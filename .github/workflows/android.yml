@@ -1,44 +1,48 @@
-name: 076 Feed CI
+name: Whisper CI
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
 
+# The job only reads the repository. Without this block its token gets the
+# repository's default rights, which may include write.
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
+      # Actions are pinned to a commit, not a tag: a tag can be moved to
+      # different code, a commit cannot. Dependabot proposes the updates.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          java-version: 17
+          persist-credentials: false
+      - name: Set up JDK 21
+        uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
+        with:
+          java-version: 21
           distribution: 'temurin'
           cache: gradle
-      - uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-      - name: Compile with Gradle
-        run: ./gradlew assembleDebug
-
-      - name: Save name of our Artifact
-        id: set-result-artifact
+      - name: Unit tests
+        run: ./gradlew :app:testDebugUnitTest
+      - name: Lint
+        run: ./gradlew :app:lintDebug
+      - name: Debug APK
+        run: ./gradlew :app:assembleDebug
+      - name: Find the APK
         run: |
-          ARTIFACT_PATHNAME_APK=$(ls app/build/outputs/apk/debug/*.apk | head -n 1)
-          ARTIFACT_NAME_APK=$(basename $ARTIFACT_PATHNAME_APK)
-          echo "ARTIFACT_NAME_APK is " ${ARTIFACT_NAME_APK}
-          echo "ARTIFACT_PATHNAME_APK=${ARTIFACT_PATHNAME_APK}" >> $GITHUB_ENV
-          echo "ARTIFACT_NAME_APK=${ARTIFACT_NAME_APK}" >> $GITHUB_ENV
-
-      - uses: actions/upload-artifact@v4
+          APK=$(ls app/build/outputs/apk/debug/*.apk | head -n 1)
+          echo "APK_PATH=${APK}" >> "$GITHUB_ENV"
+          echo "APK_NAME=$(basename "${APK}")" >> "$GITHUB_ENV"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: ${{ env.ARTIFACT_NAME_APK }}
-          path: ${{ env.ARTIFACT_PATHNAME_APK }}
+          name: ${{ env.APK_NAME }}
+          path: ${{ env.APK_PATH }}
+          retention-days: 14

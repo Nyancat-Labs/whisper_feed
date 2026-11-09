@@ -9,6 +9,10 @@ Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 Unreleased
 ----------
 
+- **Security tidy-up** after an audit: a developer-only preview screen is
+  no longer packed into the app, the feed library no longer carries its
+  original compiler's email address, and the app is about 265 KB lighter.
+  How to report a vulnerability is in `SECURITY.md`.
 - **One update indicator**: the one you pull down glides to the middle
   of the line under the category chips and stays there until the update
   ends, instead of jumping back over the weather tiles.
@@ -136,7 +140,7 @@ Unreleased
   over back while it has pages to go back through, so Android's back
   animation plays. The "Sync status" notification channel says what it is
   for.
-- **Comments link** (Jitka). When a feed says where an article is
+- **Comments link** (a reader). When a feed says where an article is
   discussed, the reader ends with "Comments on news.ycombinator.com" (or
   whichever site). Hacker News is the main beneficiary: its link is the
   story, and the discussion was unreachable from Whisper until now. About

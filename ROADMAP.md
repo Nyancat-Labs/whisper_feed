@@ -84,12 +84,12 @@ The owner is using the preview on the Pixel 10 for a week before release.
   articles split around adverts (Ars, Wired), srcset addresses with commas.
   All confirmed on the Pixel 10, Ars and Wired in full included (19
   October).
-- [x] **New-article count** (Jitka). "Updated 12m ago · 8 new": unread
+- [x] **New-article count** (a reader). "Updated 12m ago · 8 new": unread
   articles arrived since the reader last left the feed (the app going to
   the background, or the panel closing), in the tab on screen. Decided 19
   October: since last looked rather than per sync, and nothing shown at
   zero.
-- [x] **Tap a picture to enlarge it** (Jitka). Full screen on black, zoom,
+- [x] **Tap a picture to enlarge it** (a reader). Full screen on black, zoom,
   swipe down to close; Save (Pictures/Whisper, Android 10 and later, no
   permission) and Share; a linked picture's link is a button there. The
   opening picture too. Decoded at most twice the screen, 4096 pixels.
@@ -97,12 +97,12 @@ The owner is using the preview on the Pixel 10 for a week before release.
   finger, a flick or an 80dp pull closes, less springs back, on Expressive's
   default spatial spring - the first piece of §19e's motion, written out
   until MaterialExpressiveTheme supplies it.
-- [x] **Back from the empty end of the feed** (Jitka, 19 October). With read
+- [x] **Back from the empty end of the feed** (a reader, 19 October). With read
   articles hidden, returning to the app or pressing "Try again" at the end
   left her on the empty end space. Now: when the app resumes or the panel
   opens, or new articles arrive, and nothing but the end is on screen, the
   feed goes to the top. Articles leaving as they are read never move it.
-- [ ] ~~**Headline more prominent, perhaps bold**~~ (Jitka, 19 October).
+- [ ] ~~**Headline more prominent, perhaps bold**~~ (a reader, 19 October).
   Not in 1.0.6, by decision: headlines are Medium in the feed and the reader
   alike, and the feed's look was settled with care. Re-evaluate with the
   Expressive overhaul (§19e), where type weights are decided together. Note
@@ -134,7 +134,7 @@ The owner is using the preview on the Pixel 10 for a week before release.
   HomeFeeder before it", below the two Neo Feed authors, so HomeFeeder keeps
   a link; the header keeps only our own four. Attribution itself is the
   licence page and the source headers, so nothing is lost.
-- [x] **Link to an article's comments** (Jitka). Built 20 October, on main
+- [x] **Link to an article's comments** (a reader). Built 20 October, on main
   for 1.0.6, at the owner's request after the check below: a button at the
   end of the reader, named by the site, only when the feed gives one.
   Database 29 (`Article.commentsLink`). Not offered to readers who open
@@ -477,7 +477,7 @@ items below can ride in it alongside what is already on main.
    main for 1.0.6, awaiting the owner's test.** (6), in one database change
    (version 28).
 4. ~~**Comments link**~~ — **built 20 October 2026, on main for 1.0.6.** (5)
-   (Jitka; see *Next release: 1.0.6*).
+   (a reader; see *Next release: 1.0.6*).
 5. ~~**Auto-scroll**~~ — **parked 21 October 2026** by the owner, whose
    idea it was: it does not fit how Whisper is used (phone, launcher panel,
    by thumb), nobody else has asked, and it has to be fenced off from the
@@ -3501,7 +3501,7 @@ to point at. After the stores are live, so the badges link to real listings.
 
 ## From the first user email, 16 October 2026
 
-Jitka wrote to hej@nyancatlabs.com (from which store isn't known). Her
+A reader wrote to hej@nyancatlabs.com (from which store isn't known). Her
 principle: everything should be at your fingertips on the main screen. Liked: saving
 in one tap, saved articles and sources one tap from the feed, the top bar
 hiding on scroll, and day headings. Asked for, in the order she wrote them.

@@ -27,6 +27,8 @@ Neo Feed).
 - **Diagnostics never log field contents.** Counts, class names and feed
   titles are fine. Headlines, links and IDs are not (`ReportPrivacyTest`).
 - **Never commit `keystore.properties` or the `.p12`.**
+- **No user's name or address in the repository.** It is public. "A
+  reader" in files; names only on the private review sheet.
 - **Commits:** no model names in messages or pushed files. Update the README
   test-count badge when the test count changes.
 - **Writing:** release notes and replies should sound human, with little bold.
@@ -110,7 +112,7 @@ ships, so his corrections go into the release.
   arrived. No action needed.
 - **Daily reminder:** routine `trig_012NELTGdde7wPutZFQxu25j` (8:52 Dublin).
   Point it at the new session, and turn it off once both items above are done.
-- **First user feedback (Jitka, by email):** see ROADMAP.md, "From the first
+- **First user feedback (a reader, by email):** see ROADMAP.md, "From the first
   user email". Done: hide summaries and time format. Next in her order:
   - an in-app text size (needs design; cards are laid out for fixed text);
   - a new-article count in the top bar.

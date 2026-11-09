@@ -8,6 +8,35 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 9 November 2026 — Security audit
+
+Covered: repo and full history, manifest and network config, the
+security-sensitive code, the build and Actions, the container, and the built
+APK (f6632d3). No secret in the tree, the history or the APK. Sheet items
+92-101.
+
+- 100: `ui-tooling` was `implementation`, so every build shipped Compose's
+  exported `PreviewActivity`. Now `debugImplementation`; `@Preview` comes
+  from `ui-tooling-preview`, which stays. Checked in the merged preview
+  manifest.
+- 101: Rome's two stray jars excluded from packaging; the `fileTree` over
+  `app/libs` removed.
+- 92: a reader's first name replaced with "a reader" in CHANGELOG, ROADMAP
+  and HANDOVER (CHANGELOG is also shown inside the app). History not
+  rewritten.
+- 99: `<ownerEmail>` stripped from the 34 library OPML files. Two podcast
+  descriptions still carry their publishers' own contact addresses, which
+  is their text.
+- 96: `distributionSha256Sum` in the Gradle wrapper, matching both
+  services.gradle.org and the local download.
+- 95: workflow renamed Whisper CI, read-only token, JDK 21, runs tests and
+  lint, actions pinned to commits, credentials not persisted.
+- 97: `SECURITY.md` and `.github/dependabot.yml` (Gradle and Actions,
+  weekly). Dependabot opens pull requests; nothing merges by itself.
+- `SecurityAuditTest` pins all of the above.
+- Owner's: 93 (unused cloud keys in the environment), 94 (signing key
+  backup), 97 (repo security switches), 98 (2FA, rulesets on main and tags).
+
 ## 9 November 2026 — Add source feedback; one refresh indicator
 
 - Add source, offline: `whisperHasNetwork` is asked before searching

@@ -265,7 +265,11 @@ android {
     }
 
     packaging {
-        resources.pickFirsts.add("rome-utils-2.1.0.jar")
+        // Rome's artefact carries copies of its own jars as plain files.
+        // Nothing reads them; they were 265 KB of dead weight in the APK
+        // (security audit, 9 November).
+        resources.excludes.add("rome-2.1.0.jar")
+        resources.excludes.add("rome-utils-2.1.0.jar")
     }
 
     // The dependency list Android Studio writes into the APK is encrypted
@@ -346,7 +350,8 @@ kotlin {
 }
 
 dependencies {
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+    // No fileTree over app/libs: a jar dropped in that folder would be built
+    // into the app without appearing in the dependency list.
     implementation(project(":google-gsa"))
 
     implementation(libs.symbol.processing.api)
@@ -384,7 +389,11 @@ dependencies {
     implementation(libs.compose.adaptive.layout)
     implementation(libs.compose.adaptive.navigation)
     implementation(libs.compose.ui)
-    implementation(libs.compose.ui.tooling)
+    // Debug only. ui-tooling brings PreviewActivity, exported, which draws
+    // any composable named in an intent: Android Studio's preview pane, and
+    // nothing a shipped app should carry (security audit, 9 November). The
+    // @Preview annotation itself is tooling-preview, below.
+    debugImplementation(libs.compose.ui.tooling)
     implementation(libs.compose.ui.tooling.preview)
     implementation(libs.navigation.compose)
 
