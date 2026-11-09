@@ -9,10 +9,13 @@ Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 Unreleased
 ----------
 
-- **Updating shows under the category chips**: Expressive's loading
-  indicator, centred on the screen in the line above the articles; the one
-  you pull down goes away as the update starts instead of sitting on the
-  weather tiles.
+- **One update indicator**: the one you pull down glides to the middle
+  of the line under the category chips and stays there until the update
+  ends, instead of jumping back over the weather tiles.
+- **Adding a source tells you when you're offline**, or when the site
+  didn't answer, rather than saying it has no feed.
+- **Filing a new source says it saved**: "Saved under Tech" with a tick,
+  and a Done button to finish.
 - **Feed layout says what each choice looks like**, with a line under
   Cards, Magazine, List, List with pictures and Mosaic.
 - **The back-to-top button gets out of the way** while you scroll down,

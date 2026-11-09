@@ -41,7 +41,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
+import com.saulhdev.feeder.ui.icons.phosphor.CheckCircle
+import com.saulhdev.feeder.utils.whisperHasNetwork
+import com.saulhdev.feeder.viewmodels.SearchFailure
+import com.saulhdev.feeder.viewmodels.SearchFeedViewModel.Companion.FAILED_TO_PARSE_PLACEHOLDER
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -143,6 +153,16 @@ fun SourceAddPage(
         val search: (String) -> Unit = { text ->
             results = emptyList()
             errors = emptyList()
+            if (!whisperHasNetwork(context)) {
+                // Asking every candidate address with no network would end in
+                // "No feed found", which blames the site.
+                errors = listOf(
+                    SearchResult(
+                        FAILED_TO_PARSE_PLACEHOLDER, text.trim(), "",
+                        isError = true, failure = SearchFailure.Offline,
+                    )
+                )
+            } else {
             currentlySearching = true
             coroutineScope.launch {
                 val found = if (FeedNameSearch.looksLikeAddress(text)) {
@@ -159,6 +179,7 @@ fun SourceAddPage(
                     .collect {
                         if (it.isError) errors = errors + it else results = results + it
                     }
+            }
             }
         }
         // Arrived with something to look for: look for it.
@@ -197,7 +218,8 @@ fun SourceAddPage(
                 onFile = { result, tag ->
                     filed[result.url] = tag
                     sourcesViewModel.setCategory(result.url, tag)
-                }
+                },
+                onDone = { navController.popBackStack() },
             )
         }
     }
@@ -216,6 +238,7 @@ fun AddFeedView(
     addedNow: List<String> = emptyList(),
     filedAs: Map<String, String> = emptyMap(),
     onFile: (SearchResult, String) -> Unit = { _, _ -> },
+    onDone: () -> Unit = {},
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
@@ -249,6 +272,7 @@ fun AddFeedView(
                 addedNow = addedNow,
                 filedAs = filedAs,
                 onFile = onFile,
+                onDone = onDone,
             )
         }
     }
@@ -288,9 +312,11 @@ fun SearchFeedUI(
                 focusManager.clearFocus()
             },
         singleLine = true,
-        colors = TextFieldDefaults.colors(
+        // Outlined colours, not filled ones. A filled background inside an
+        // outline has a gap cut out of it where the label sits on the border,
+        // which showed as a pale box behind "Web address or name".
+        colors = OutlinedTextFieldDefaults.colors(
             focusedTextColor = MaterialTheme.colorScheme.onSurface,
-            unfocusedIndicatorColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12F),
         ),
 
         isError = isNotValidUrl,
@@ -339,16 +365,23 @@ fun SearchResult(
     addedNow: List<String> = emptyList(),
     filedAs: Map<String, String> = emptyMap(),
     onFile: (SearchResult, String) -> Unit = { _, _ -> },
+    onDone: () -> Unit = {},
 ) {
     if (results.item.isEmpty()) {
         for (error in errors.item) {
-            val title = stringResource(
-                R.string.failed_to_parse,
-                error.url
-            )
+            val (title, description) = when (error.failure) {
+                SearchFailure.Offline -> stringResource(R.string.add_feed_offline) to
+                    stringResource(R.string.add_feed_offline_hint)
+                SearchFailure.Unreachable -> stringResource(
+                    R.string.add_feed_unreachable,
+                    hostOf(error.url),
+                ) to stringResource(R.string.add_feed_unreachable_hint)
+                SearchFailure.NotFound -> stringResource(R.string.failed_to_parse, error.url) to
+                    stringResource(R.string.add_feed_not_found_hint)
+            }
             ErrorResultView(
                 title = title,
-                description = error.description
+                description = description,
             )
         }
     }
@@ -362,6 +395,7 @@ fun SearchResult(
             allTags = allTags,
             filedAs = filedAs[result.url],
             onFile = { onFile(result, it) },
+            onDone = onDone,
         ) {
             onClick(result)
         }
@@ -395,17 +429,17 @@ fun SearchResultView(
     allTags: List<String> = emptyList(),
     filedAs: String? = null,
     onFile: (String) -> Unit = {},
+    onDone: () -> Unit = {},
     onClick: () -> Unit,
 ) {
-    Card(
-        onClick = onClick,
-        enabled = !alreadyAdded,
-        modifier = Modifier
-            .fillMaxWidth()
-            .safeSemantics {
-                testTag = "searchResult"
-            }
-    ) {
+    // Not a disabled card once added: disabled greys the feed's own name,
+    // which read as something having gone wrong at the moment it went right.
+    val cardModifier = Modifier
+        .fillMaxWidth()
+        .safeSemantics {
+            testTag = "searchResult"
+        }
+    val content: @Composable ColumnScope.() -> Unit = {
         Column(
             verticalArrangement = Arrangement.spacedBy(4.dp),
             modifier = Modifier
@@ -467,9 +501,19 @@ fun SearchResultView(
                     chosen = filedAs,
                     onChoose = onFile,
                 )
+                // Everything here is saved as it is tapped; Done is the way
+                // out, so the screen ends somewhere rather than just stopping.
+                FilledTonalButton(
+                    onClick = onDone,
+                    modifier = Modifier.align(Alignment.End),
+                ) {
+                    Text(stringResource(R.string.add_feed_done))
+                }
             }
         }
     }
+    if (alreadyAdded) Card(modifier = cardModifier, content = content)
+    else Card(onClick = onClick, modifier = cardModifier, content = content)
 }
 
 /**
@@ -490,20 +534,48 @@ private fun CategoryPicker(
     val named = remember(allTags) { allTags.filter { it.isNotBlank() }.sorted() }
 
     Spacer(Modifier.height(4.dp))
-    Text(
-        text = stringResource(R.string.add_feed_category),
-        style = MaterialTheme.typography.labelMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
+    // The heading answers "did that save?": it turns into the answer, with a
+    // tick, the moment a category is chosen.
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+    ) {
+        if (chosen != null) {
+            Icon(
+                imageVector = Phosphor.CheckCircle,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(16.dp),
+            )
+        }
+        Text(
+            text = if (chosen != null) stringResource(R.string.add_feed_filed, chosen)
+            else stringResource(R.string.add_feed_category),
+            style = MaterialTheme.typography.labelMedium,
+            color = if (chosen != null) MaterialTheme.colorScheme.primary
+            else MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
     FlowRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        named.forEach { tag ->
+        (named + listOfNotNull(chosen?.takeIf { it !in named })).forEach { tag ->
+            val selected = tag == chosen
             FilterChip(
-                selected = tag == chosen,
+                selected = selected,
                 onClick = { onChoose(tag) },
                 label = { Text(tag) },
+                leadingIcon = if (selected) {
+                    {
+                        Icon(
+                            imageVector = Phosphor.Check,
+                            contentDescription = null,
+                            modifier = Modifier.size(FilterChipDefaults.IconSize),
+                        )
+                    }
+                } else null,
             )
         }
     }
@@ -524,13 +596,16 @@ private fun CategoryPicker(
                 // reader asked for; the same trap the edit screen already
                 // guards against.
                 val value = typed.trim()
-                if (value.isNotEmpty()) onChoose(value)
+                if (value.isNotEmpty()) {
+                    onChoose(value)
+                    typed = ""
+                }
             }
         ),
         trailingIcon = {
             val value = typed.trim()
             if (value.isNotEmpty()) {
-                IconButton(onClick = { onChoose(value) }) {
+                IconButton(onClick = { onChoose(value); typed = "" }) {
                     Icon(
                         imageVector = Phosphor.Check,
                         contentDescription = stringResource(R.string.sources_add_tag),
@@ -557,17 +632,20 @@ fun ErrorResultView(
             verticalArrangement = Arrangement.spacedBy(4.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp)
+                .padding(12.dp)
         ) {
             Text(
                 title,
                 style = MaterialTheme.typography.titleSmall
                     .copy(color = MaterialTheme.colorScheme.error)
             )
-            Text(
-                description,
-                style = MaterialTheme.typography.bodyMedium
-            )
+            if (description.isNotBlank()) {
+                Text(
+                    description,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         }
     }
 }
@@ -590,6 +668,10 @@ private fun isValidUrl(url: String): Boolean {
 }
 
 private fun isNotValidUrl(url: String) = !isValidUrl(url)
+
+/** "076.io" from "https://076.io", or what was given if it has no host. */
+internal fun hostOf(url: String): String =
+    runCatching { URL(url).host }.getOrNull()?.takeIf { it.isNotBlank() }?.removePrefix("www.") ?: url
 
 /**
  * The phone's country, for which domain a name is tried on first: the

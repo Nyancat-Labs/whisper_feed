@@ -270,6 +270,13 @@
     <string name="add_feed_category">File it under</string>
     <string name="add_rss">Add new RSS</string>
     <string name="failed_to_parse">No feed found for %1$s</string>
+    <string name="add_feed_not_found_hint">The site may not publish a feed, or the address may be different. Try the site\'s name instead.</string>
+    <string name="add_feed_offline">You\'re offline</string>
+    <string name="add_feed_offline_hint">Connect to Wi-Fi or mobile data, then search again.</string>
+    <string name="add_feed_unreachable">Couldn\'t reach %1$s</string>
+    <string name="add_feed_unreachable_hint">Check your connection and the address, then search again.</string>
+    <string name="add_feed_filed">Saved under %1$s</string>
+    <string name="add_feed_done">Done</string>
     <string name="edit_rss">Edit Feed Item</string>
     <string name="add_input_hint" translatable="false">URL</string>
     <string name="title">Title</string>

@@ -29,6 +29,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.ContainedLoadingIndicator
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInWindow
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.Dp
 import kotlinx.coroutines.delay
@@ -84,6 +98,7 @@ fun PullToRefreshLazyColumn(
     val (showing, onPulled) = rememberRefreshing(isRefreshing)
     val coroutineScope = rememberCoroutineScope()
     val pullToRefreshState = rememberPullToRefreshState()
+    val anchor = remember { RefreshAnchor() }
 
     Box(
         modifier = modifier.fillMaxSize(),
@@ -96,8 +111,9 @@ fun PullToRefreshLazyColumn(
                 coroutineScope.launch { onRefresh() }
             },
             modifier = Modifier.fillMaxSize(),
-            indicator = { RefreshIndicator(pullToRefreshState, showing) },
+            indicator = { RefreshIndicator(pullToRefreshState, showing, anchor) },
         ) {
+            CompositionLocalProvider(LocalRefreshAnchor provides anchor) {
             LazyColumn(
                 state = listState,
                 contentPadding = contentPadding,
@@ -105,6 +121,7 @@ fun PullToRefreshLazyColumn(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 content = content
             )
+            }
         }
     }
 }
@@ -132,6 +149,7 @@ fun PullToRefreshStaggeredGrid(
     val (showing, onPulled) = rememberRefreshing(isRefreshing)
     val coroutineScope = rememberCoroutineScope()
     val pullToRefreshState = rememberPullToRefreshState()
+    val anchor = remember { RefreshAnchor() }
 
     Box(modifier = modifier.fillMaxSize()) {
         PullToRefreshBox(
@@ -142,8 +160,9 @@ fun PullToRefreshStaggeredGrid(
                 coroutineScope.launch { onRefresh() }
             },
             modifier = Modifier.fillMaxSize(),
-            indicator = { RefreshIndicator(pullToRefreshState, showing) },
+            indicator = { RefreshIndicator(pullToRefreshState, showing, anchor) },
         ) {
+            CompositionLocalProvider(LocalRefreshAnchor provides anchor) {
             LazyVerticalStaggeredGrid(
                 columns = StaggeredGridCells.Fixed(columns),
                 horizontalArrangement = Arrangement.spacedBy(laneSpacing),
@@ -152,26 +171,100 @@ fun PullToRefreshStaggeredGrid(
                 modifier = Modifier.fillMaxSize(),
                 content = content,
             )
+            }
         }
     }
 }
 
 /**
- * Expressive's loading indicator, the shape that changes in a filled
- * container (review 47), following the pull only. Once you let go it goes
- * back up, and the update shows in the line under the category chips
- * instead (owner, 7 November): left down, it sat on the weather tiles.
+ * Where the update indicator rests while an update runs: the middle of the
+ * line under the category chips, in window pixels. The freshness line
+ * reports itself here; NaN while it is not on screen.
+ */
+class RefreshAnchor {
+    var centreY by mutableFloatStateOf(Float.NaN)
+}
+
+/** Provided by the refresh containers to what they hold. */
+val LocalRefreshAnchor = compositionLocalOf<RefreshAnchor?> { null }
+
+/**
+ * One indicator, Expressive's shape in a filled container (review 47), from
+ * the pull to the end of the update (owner, 9 November).
+ *
+ * Material's own went back up to its resting place when you let go, which
+ * left it over the weather tiles; hiding it there and showing a second, small
+ * one in the line below made it jump up, down and in from the side. This one
+ * follows the finger, then glides from wherever it was let go to the middle
+ * of the line under the chips and spins there until the update ends, then
+ * fades. A background update shows it there too. With that line scrolled
+ * away it rests near the top instead.
  */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun BoxScope.RefreshIndicator(state: PullToRefreshState, refreshing: Boolean) {
-    // Gone the moment the update starts. Left to Material, it stayed at the
-    // pulled position for the whole update, over the weather tiles, beside
-    // the one in the line below (owner's screenshots, 8 November).
-    if (refreshing) return
-    PullToRefreshDefaults.LoadingIndicator(
-        state = state,
-        isRefreshing = false,
-        modifier = Modifier.align(Alignment.TopCenter),
-    )
+private fun BoxScope.RefreshIndicator(state: PullToRefreshState, refreshing: Boolean, anchor: RefreshAnchor) {
+    val density = LocalDensity.current
+    val size = with(density) { REFRESH_INDICATOR.toPx() }
+    val threshold = with(density) { PullToRefreshDefaults.PositionalThreshold.toPx() }
+    val fallback = with(density) { REFRESH_FALLBACK.toPx() }
+    var boxTop by remember { mutableFloatStateOf(0f) }
+    val y = remember { Animatable(-size) }
+    val alpha = remember { Animatable(0f) }
+    var leaving by remember { mutableStateOf(false) }
+
+    val target = restingTop(anchor.centreY, boxTop, size, fallback)
+
+    // Following the finger: only while no update runs and none is fading.
+    LaunchedEffect(refreshing) {
+        if (refreshing) return@LaunchedEffect
+        snapshotFlow { state.distanceFraction }.collect { fraction ->
+            if (leaving) return@collect
+            y.snapTo(fraction * threshold - size)
+            alpha.snapTo((fraction * 2f).coerceIn(0f, 1f))
+        }
+    }
+    // Into place when an update starts, and kept there as the line moves.
+    LaunchedEffect(refreshing, target) {
+        if (!refreshing) return@LaunchedEffect
+        launch { alpha.animateTo(1f) }
+        y.animateTo(target, spring(stiffness = Spring.StiffnessMediumLow))
+    }
+    // Out when it ends: faded where it is, not sent back up.
+    LaunchedEffect(refreshing) {
+        if (refreshing || alpha.value == 0f) return@LaunchedEffect
+        leaving = true
+        alpha.animateTo(0f)
+        y.snapTo(-size)
+        leaving = false
+    }
+
+    Box(
+        modifier = Modifier
+            .matchParentSize()
+            .clipToBounds()
+            .onGloballyPositioned { boxTop = it.positionInWindow().y },
+    ) {
+        if (alpha.value > 0f) {
+            val pulled = { state.distanceFraction.coerceIn(0f, 1f) }
+            val placed = Modifier
+                .align(Alignment.TopCenter)
+                .size(REFRESH_INDICATOR)
+                .graphicsLayer {
+                    translationY = y.value
+                    this.alpha = alpha.value
+                }
+            if (refreshing || leaving) ContainedLoadingIndicator(modifier = placed)
+            else ContainedLoadingIndicator(progress = pulled, modifier = placed)
+        }
+    }
 }
+
+/** The indicator's top while updating: centred on the anchor, or near the top without one. */
+internal fun restingTop(anchorCentre: Float, boxTop: Float, size: Float, fallback: Float): Float {
+    if (anchorCentre.isNaN()) return fallback
+    val top = anchorCentre - boxTop - size / 2f
+    return if (top < 0f) fallback else top
+}
+
+private val REFRESH_INDICATOR = 48.dp
+private val REFRESH_FALLBACK = 16.dp

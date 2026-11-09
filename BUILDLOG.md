@@ -8,6 +8,28 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 9 November 2026 — Add source feedback; one refresh indicator
+
+- Add source, offline: `whisperHasNetwork` is asked before searching
+  ("You're offline"). If the typed address itself gets no answer
+  (`isNetworkFailure`: unknown host, refused, timeout, socket), the search
+  stops with "Couldn't reach 076.io" instead of probing the other stages
+  and ending in "No feed found". `SearchResult.failure` carries which.
+- Add source, filing: the heading turns into "Saved under X" with a tick,
+  the chosen chip shows Material's tick, a typed category clears its box,
+  and Done goes back. The added card is no longer a disabled `Card`, which
+  greyed the feed's name. The search box uses outlined colours: a filled
+  background inside an outline is cut away behind the label, which showed
+  as a pale box.
+- Refresh: one indicator (`RefreshIndicator` in
+  `PullToRefreshLazyColumn.kt`), drawn by hand rather than Material's,
+  which returns to its threshold on release. It follows the pull, then
+  animates from where it was let go to `restingTop`: centred on the
+  freshness line, which reports its window position through
+  `LocalRefreshAnchor`; near the top when that line is off screen. Fades
+  when the update ends. The small one in the line is gone; the line says
+  "Updating…".
+
 ## 5 November 2026 — Review batch 3: the feed
 
 - Preview e15f364 passed (all 11 fixes through To check).

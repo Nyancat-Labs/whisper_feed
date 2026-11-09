@@ -17,23 +17,12 @@
  */
 package com.saulhdev.feeder.ui.overlay
 
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.ui.unit.IntOffset
-import androidx.compose.foundation.layout.offset
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.Constraints
-import androidx.compose.ui.layout.layout
-import androidx.compose.ui.Alignment
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.ContainedLoadingIndicator
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -46,6 +35,8 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.runtime.DisposableEffect
+import com.saulhdev.feeder.ui.components.LocalRefreshAnchor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -126,42 +117,21 @@ fun SyncFreshnessText(modifier: Modifier = Modifier, textAlign: TextAlign? = nul
                 withNew(context.getString(R.string.freshness_updated, freshness.age.format(context)), newCount, context)
         }
     }
-    // While updating: Expressive's loading indicator, centred in the line's
-    // own space (owner, 7 November), in place of the words. The one that
-    // drops in when you pull sat on the weather tiles; it now only follows
-    // the pull and goes back once you let go. The indicator counts as one
-    // line of text high and draws over the white space either side, so the
-    // feed does not move when an update starts or ends.
-    if (freshness == SyncFreshness.Updating) {
-        // Centred on the screen, not on the space it is given: beside the
-        // "Today" heading that space starts after the word, and the indicator
-        // sat right of centre (owner's screenshots, 8 November).
-        val windowWidth = LocalWindowInfo.current.containerSize.width
-        var slotStart by remember { mutableFloatStateOf(0f) }
-        var slotWidth by remember { mutableIntStateOf(0) }
-        Box(
-            modifier = modifier
-                .fillMaxWidth()
-                .onGloballyPositioned {
-                    slotStart = it.positionInWindow().x
-                    slotWidth = it.size.width
-                }
-                .semantics { contentDescription = text; liveRegion = LiveRegionMode.Polite },
-            contentAlignment = Alignment.Center,
-        ) {
-            ContainedLoadingIndicator(
-                modifier = Modifier
-                    .offset { IntOffset(centreShift(windowWidth, slotStart, slotWidth), 0) }
-                    .layout { measurable, constraints ->
-                        val size = UPDATING_INDICATOR.roundToPx()
-                        val p = measurable.measure(Constraints.fixed(size, size))
-                        val h = UPDATING_LINE.roundToPx()
-                        layout(p.width, h) { p.place(0, (h - p.height) / 2) }
-                    },
-            )
-        }
-        return
+    // Where the update indicator rests while an update runs (owner,
+    // 9 November): one indicator, the one you pull, centred on this line.
+    // The small one that used to stand in for the words here is gone; while
+    // updating, the line says so in words.
+    val anchor = LocalRefreshAnchor.current
+    if (anchor != null) {
+        DisposableEffect(anchor) { onDispose { anchor.centreY = Float.NaN } }
     }
+    val placed = if (anchor == null) modifier else modifier.onGloballyPositioned {
+        anchor.centreY = it.positionInWindow().y + it.size.height / 2f
+    }
+    // Announced when an update starts, not every minute as the age ticks.
+    val anchored = if (freshness == SyncFreshness.Updating) {
+        placed.semantics { liveRegion = LiveRegionMode.Polite }
+    } else placed
 
     val late = freshness == SyncFreshness.NeverUpdated ||
         (freshness is SyncFreshness.Updated && freshness.overdue)
@@ -172,7 +142,7 @@ fun SyncFreshnessText(modifier: Modifier = Modifier, textAlign: TextAlign? = nul
         color = if (late) MaterialTheme.colorScheme.error
         else MaterialTheme.colorScheme.onSurfaceVariant,
         textAlign = textAlign,
-        modifier = modifier,
+        modifier = anchored,
     )
 }
 
@@ -184,14 +154,3 @@ fun SyncFreshnessText(modifier: Modifier = Modifier, textAlign: TextAlign? = nul
 private fun withNew(updated: String, newCount: Int, context: android.content.Context): String =
     if (newCount <= 0) updated
     else context.getString(R.string.freshness_with_new, updated, newCount)
-
-/** The indicator while updating: small enough for the gap between chips and articles. */
-private val UPDATING_INDICATOR = 32.dp
-
-/** The height of the line it stands in for, so nothing below it moves. */
-private val UPDATING_LINE = 16.dp
-
-/** How far to move something centred in a slot so it is centred in the window. */
-internal fun centreShift(windowWidth: Int, slotStart: Float, slotWidth: Int): Int =
-    if (windowWidth <= 0 || slotWidth <= 0) 0
-    else (windowWidth / 2f - (slotStart + slotWidth / 2f)).toInt()

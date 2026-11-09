@@ -63,6 +63,7 @@ class SearchFeedViewModel(
      */
     fun searchForFeeds(url: URL): Flow<SearchResult> = flow {
         val seen = mutableSetOf<String>()
+        var unreachable = false
 
         suspend fun tryUrl(candidate: URL): SearchResult? {
             if (!seen.add(normalizeFeedUrl(candidate))) return null
@@ -76,7 +77,8 @@ class SearchFeedViewModel(
                         alreadyAdded = sourcesRepo.findSourceByUrl(candidate) != null,
                     )
                 }
-            } catch (_: Throwable) {
+            } catch (t: Throwable) {
+                unreachable = isNetworkFailure(t)
                 null
             }
         }
@@ -85,6 +87,23 @@ class SearchFeedViewModel(
         val direct = tryUrl(url)
         if (direct != null) {
             emit(direct)
+            return@flow
+        }
+        // The site itself did not answer: no connection, a dropped one, or an
+        // address that does not exist. Every other stage asks the same site,
+        // so they would only fail the same way and end in "No feed found",
+        // which blames the site for the network.
+        if (unreachable) {
+            Log.d(TAG, "Site did not answer")
+            emit(
+                SearchResult(
+                    title = FAILED_TO_PARSE_PLACEHOLDER,
+                    url = url.toString(),
+                    description = "",
+                    isError = true,
+                    failure = SearchFailure.Unreachable,
+                )
+            )
             return@flow
         }
 
@@ -179,4 +198,22 @@ data class SearchResult(
     val description: String,
     val isError: Boolean,
     val alreadyAdded: Boolean = false,
+    val failure: SearchFailure = SearchFailure.NotFound,
 ) : Parcelable
+
+/** Why a search came back empty, so the reader is told the right thing. */
+enum class SearchFailure { NotFound, Unreachable, Offline }
+
+/**
+ * Whether [t] means no answer came back at all, rather than an answer that
+ * was not a feed. Looks down the cause chain: the parser wraps what it
+ * catches. An HTTP error status is an answer, so it is not one of these.
+ */
+internal fun isNetworkFailure(t: Throwable): Boolean =
+    generateSequence(t) { it.cause }.take(8).any {
+        it is java.net.UnknownHostException ||
+            it is java.net.ConnectException ||
+            it is java.net.NoRouteToHostException ||
+            it is java.io.InterruptedIOException ||
+            it is java.net.SocketException
+    }

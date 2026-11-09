@@ -96,7 +96,7 @@ class ReviewBatch3Test {
 
     @Test
     fun `refresh uses Expressive's indicator and back to top is small`() {
-        assertTrue(source("ui/components/PullToRefreshLazyColumn.kt").contains("PullToRefreshDefaults.LoadingIndicator("))
+        assertTrue(source("ui/components/PullToRefreshLazyColumn.kt").contains("ContainedLoadingIndicator(progress = pulled"))
         assertTrue(source("ui/pages/ArticleListPage.kt").contains("SmallFloatingActionButton("))
         assertTrue(source("ui/overlay/FeedScaffold.kt").contains("SmallFloatingActionButton("))
     }
@@ -175,20 +175,23 @@ class ReviewBatch3Test {
     }
 
     @Test
-    fun `an update shows in the line under the chips, not on the weather tiles`() {
+    fun `one indicator, from the pull to the end of the update`() {
         val line = source("ui/overlay/SyncFreshnessLine.kt")
-        assertTrue(line.contains("if (freshness == SyncFreshness.Updating) {"))
-        assertTrue(line.contains("ContainedLoadingIndicator("))
-        assertTrue("centred", line.contains("contentAlignment = Alignment.Center,"))
-        // The pulled one follows the finger and goes back on release.
-        assertTrue(source("ui/components/PullToRefreshLazyColumn.kt").contains("isRefreshing = false,"))
+        assertFalse("no second indicator in the line", line.contains("ContainedLoadingIndicator("))
+        assertTrue(line.contains("anchor.centreY ="))
+        val pull = source("ui/components/PullToRefreshLazyColumn.kt")
+        assertFalse("not hidden when the update starts", pull.contains("if (refreshing) return\n"))
+        assertTrue(pull.contains("y.animateTo(target"))
     }
 
     @Test
-    fun `the update indicator is centred on the screen and the pulled one leaves`() {
-        assertEquals(0, com.saulhdev.feeder.ui.overlay.centreShift(1000, 0f, 1000))
-        // Beside "Today": the slot starts at 300 and runs to 1000.
-        assertEquals(-150, com.saulhdev.feeder.ui.overlay.centreShift(1000, 300f, 700))
-        assertTrue(source("ui/components/PullToRefreshLazyColumn.kt").contains("if (refreshing) return"))
+    fun `while updating, the indicator rests on the line under the chips`() {
+        val r = com.saulhdev.feeder.ui.components.restingTop(
+            anchorCentre = 700f, boxTop = 200f, size = 100f, fallback = 40f,
+        )
+        assertEquals(450f, r, 0f)
+        // Line scrolled away, or above the list: near the top.
+        assertEquals(40f, com.saulhdev.feeder.ui.components.restingTop(Float.NaN, 200f, 100f, 40f), 0f)
+        assertEquals(40f, com.saulhdev.feeder.ui.components.restingTop(150f, 200f, 100f, 40f), 0f)
     }
 }
