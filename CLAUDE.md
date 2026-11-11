@@ -22,7 +22,13 @@ Project: Whisper. What it is: an Android RSS reader that shows why it placed eac
 - Screenshots and files I send are files too: save each into archive/screenshots/ (non-images: archive/board-files/) named YYYY-MM-DD-HHMM-what-it-shows.ext.
 
 ## Work board (job tracking artifact)
-Board for this project: none yet: build one the first time there is something to track.
+Board for this project: the preview review sheet, https://claude.ai/artifact/ErrU1RDxYbTrd6nU2rowRk. Don't build a second board.
+
+This board keeps its own layout, so where the rules below differ, follow docs/HANDOVER.md ("The review sheet" and "The board from 11 November 2026"):
+- Records: issues (`i<nnn>`, field n, kind "issue") and build tests (`t<seq>-<nn>`, kind "test"), no ref field.
+- Issue status: open, fix, later, drop, merged, then preview once a fix is in a build, done when I tap Works. A fixed issue goes to preview, never straight to done.
+- Test status: open, pass, problem, untested. A new test starts as open.
+- Question: answer in reply, then set the status back to the one in askedFrom (open if it's missing).
 
 - One board per project for everything open: decisions, my jobs, Claude's jobs, issues, shopping. Same style on every board: a copy of my reference board page, https://claude.ai/artifact/JBUfp8qh7DjQDFweo8Xvhe (read it with the Artifact tool), with only the title and intro changed. Publish as a private Artifact with capabilities {"db": {}, "assets": {}}. Save the page source as files/work-board.html and record the URL in the README.
 - Records live in the artifact database, collection items, never in the page source. Change them with ArtifactData, not by republishing.
