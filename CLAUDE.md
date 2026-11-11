@@ -11,6 +11,7 @@ Project: Whisper. What it is: an Android RSS reader that shows why it placed eac
 - When changing code, show only what changes and where, unless I ask for the full file.
 - If a request is unclear, ask one short question first. If unsure, say so rather than guessing.
 - Ask before deleting files, installing packages, force-pushing, pushing to main, or anything irreversible.
+- Exception for this repo: push to main without asking (and keep the session branch in step), but only after the full test suite passes.
 - Use Irish/UK English.
 
 ## Project documents (top of the repo)
