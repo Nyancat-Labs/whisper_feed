@@ -55,6 +55,39 @@ Neo Feed).
   as `open`, never `untested`, which the page shows as already answered
   ("Not tested").
 
+**The board from 11 November 2026** (same features as the owner's Homelab
+board; page source in `files/work-board.html`, published with
+`capabilities: {"db": {}, "assets": {}}`):
+
+- **Question.** Any card can have `status: "question"`: the owner pressed
+  Question. At the start of a session answer those first, in `reply`, then
+  set the status back to what `askedFrom` holds (`open` if it is missing),
+  so the card gets its buttons back. On this board a question can be asked
+  on a card that is in preview or done, which is why it is not always
+  `open`.
+- **`reply` is the only field of Claude's the card always shows.** Put every
+  answer there. `fixNote` shows only on preview and done cards; text in any
+  other new field is invisible to the owner.
+- **`files`**: a list of `{id, name, type, size, at, by}`, `by` being `def`
+  or `claude`. Append only.
+- **New attachments.** At the start of each session open every attachment
+  the owner added (`by: "def"`): Artifact tool, `action: read`, the board
+  url, `path: <asset id>`. Look at it, and save a copy in
+  `archive/screenshots/` (anything that is not an image:
+  `archive/board-files/`) named `YYYY-MM-DD-HHMM-what-it-shows.ext`.
+- **Files sent in chat** are files too: save them to the same folders in
+  the same turn.
+- **Attaching something yourself**: Artifact tool with `asset: true`, the
+  board url and `file_path`; then append the entry with `by: "claude"` to
+  the item's `files`.
+- **`archive/` is gitignored.** The repository is public and screenshots
+  show the owner's phone. It lives in the container only, so it does not
+  survive a new container: the board's asset store is the lasting copy.
+- **Never overwrite a `note`.** It is the owner's field.
+- **Undo the upgrade**: republish the previous page version with
+  `capabilities: {"db": {}}`. Uploaded files stay in the asset store until
+  deleted.
+
 ## Release signing
 
 The owner holds `nyancatlabs-whisper-release.p12` and `keystore.properties`.

@@ -31,3 +31,7 @@ keystore.properties
 # The one exception: the public Android debug key, which signs debug builds
 # so two of them can replace each other. It is not a secret.
 !app/debug.keystore
+
+# Screenshots and files from the review board and chat. The repository is
+# public and these show the owner's phone.
+archive/

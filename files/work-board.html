@@ -1,0 +1,480 @@
+<title>Whisper Preview Review</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: one narrow column, a sticky tab bar, items grouped by the screen they belong to. */
+:root{
+  --bg:#f6f5fb; --surface:#ffffff; --surface-2:#edecf6; --line:#dddce9;
+  --fg:#1c1b2a; --muted:#5d5c72; --accent:#4b4990; --accent-soft:#e2e1f6;
+  --fix:#256246; --fix-soft:#d9eee2; --later:#80520f; --later-soft:#f5e7cc;
+  --drop:#6f6e82; --drop-soft:#e9e9ef; --bad:#9c302a; --bad-soft:#f6deda;
+  --font:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#13121b; --surface:#1c1b27; --surface-2:#252433; --line:#33324a;
+  --fg:#e9e8f4; --muted:#a3a2ba; --accent:#b9b7f5; --accent-soft:#2f2d55;
+  --fix:#8fd6b0; --fix-soft:#1d3a2c; --later:#efc274; --later-soft:#3d3018;
+  --drop:#a09fb4; --drop-soft:#2a2a36; --bad:#f2a49d; --bad-soft:#45221f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#13121b; --surface:#1c1b27; --surface-2:#252433; --line:#33324a;
+  --fg:#e9e8f4; --muted:#a3a2ba; --accent:#b9b7f5; --accent-soft:#2f2d55;
+  --fix:#8fd6b0; --fix-soft:#1d3a2c; --later:#efc274; --later-soft:#3d3018;
+  --drop:#a09fb4; --drop-soft:#2a2a36; --bad:#f2a49d; --bad-soft:#45221f; color-scheme:dark}
+
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:15px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:720px;margin:0 auto;padding-block:20px 64px}
+header .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+h1{font-size:28px;font-weight:600;margin:4px 0 6px;text-wrap:balance}
+header p{margin:0;color:var(--muted);max-width:60ch}
+.tally{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.tally span{font-size:13px;padding:4px 10px;border-radius:999px;background:var(--surface-2);color:var(--muted);font-variant-numeric:tabular-nums}
+.tally b{color:var(--fg);font-weight:600}
+
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:12px;margin-top:8px;
+  display:flex;gap:6px;overflow-x:auto;border-bottom:1px solid var(--line)}
+nav button{flex:0 0 auto;font:inherit;font-size:14px;font-weight:500;border:0;border-radius:999px;padding:8px 14px;
+  background:var(--surface-2);color:var(--fg);cursor:pointer}
+nav button[aria-selected="true"]{background:var(--accent);color:var(--bg)}
+nav button .c{font-variant-numeric:tabular-nums;opacity:.75;margin-left:4px}
+
+.notice{margin-top:16px;padding:12px 14px;border-radius:12px;background:var(--later-soft);color:var(--later);font-size:14px}
+.empty{margin-top:28px;color:var(--muted);text-align:center}
+h2{font-size:13px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:26px 0 8px}
+.group{display:flex;flex-direction:column;gap:8px}
+
+.item{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.item.s-fix{border-left:4px solid var(--fix)} .item.s-later{border-left:4px solid var(--later)}
+.item.s-drop,.item.s-merged{opacity:.62} .item.s-pass{border-left:4px solid var(--fix)}
+.item.s-problem{border-left:4px solid var(--bad)} .item.s-untested{border-left:4px solid var(--drop)}
+.item.s-preview{border-left:4px solid var(--accent)} .item.s-done{opacity:.62;border-left:4px solid var(--fix)}
+.build{margin:0;font-size:13px;color:var(--accent);font-weight:500}
+.more-btn{align-self:flex-start;font:inherit;font-size:13px;font-weight:500;border:0;background:none;color:var(--accent);padding:4px 0;cursor:pointer;min-height:32px}
+.more-btn::after{content:" \25BE"} .more-btn[aria-expanded="true"]::after{content:" \25B4"}
+.more{background:var(--surface-2);border-radius:10px;padding:10px 12px;font-size:14px;display:flex;flex-direction:column;gap:8px}
+.more p{margin:0;max-width:65ch}
+.build code{font-family:var(--mono);font-size:12px}
+.top{display:flex;gap:10px;align-items:baseline}
+.num{font-family:var(--mono);font-size:13px;color:var(--accent);min-width:2.2em;font-variant-numeric:tabular-nums}
+.title{font-weight:600;font-size:15px;margin:0;flex:1;min-width:0}
+.q{font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px;border-radius:999px;background:var(--accent-soft);color:var(--accent);white-space:nowrap}
+.detail{margin:0;color:var(--muted);font-size:14px}
+.suggest{margin:0;font-size:14px}
+.suggest b{font-weight:600}
+.merged{font-size:13px;color:var(--muted)}
+.seg{display:flex;gap:4px;flex-wrap:wrap}
+.seg button{font:inherit;font-size:13px;font-weight:500;border:1px solid var(--line);background:transparent;color:var(--fg);
+  padding:7px 14px;border-radius:999px;cursor:pointer;min-height:36px}
+.seg button[aria-pressed="true"].o-fix,.seg button[aria-pressed="true"].o-pass{background:var(--fix-soft);color:var(--fix);border-color:var(--fix)}
+.seg button[aria-pressed="true"].o-later,.seg button[aria-pressed="true"].o-untested{background:var(--later-soft);color:var(--later);border-color:var(--later)}
+.seg button[aria-pressed="true"].o-drop{background:var(--drop-soft);color:var(--drop);border-color:var(--drop)}
+.seg button[aria-pressed="true"].o-problem{background:var(--bad-soft);color:var(--bad);border-color:var(--bad)}
+.seg button[aria-pressed="true"].o-question{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+.item.s-question{border-left:4px solid var(--accent)}
+.seg button.o-works{border-color:var(--fix);color:var(--fix)} .seg button.o-wrong{border-color:var(--bad);color:var(--bad)}
+.seg button.o-reopen{color:var(--muted)}
+.seg button:disabled{cursor:default;opacity:.6}
+textarea,input[type=text]{font:inherit;font-size:14px;width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:10px;
+  background:var(--surface-2);color:var(--fg);padding:8px 10px}
+textarea{min-height:38px;resize:vertical}
+.saved{font-size:12px;color:var(--muted);min-height:1em}
+.reply{font-size:14px;background:var(--accent-soft);color:var(--fg);border-radius:10px;padding:8px 10px;margin:0;white-space:pre-wrap}
+.reply b{color:var(--accent);font-weight:600}
+button:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.add{margin-top:28px;background:var(--surface);border:1px dashed var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.add h3{margin:0;font-size:15px;font-weight:600}
+.add .go{align-self:flex-start;font:inherit;font-weight:600;font-size:14px;border:0;border-radius:999px;padding:9px 18px;background:var(--accent);color:var(--bg);cursor:pointer}
+.add .go:disabled{opacity:.5;cursor:default}
+.files{display:flex;gap:8px;flex-wrap:wrap}
+.files a{display:block;line-height:0;border-radius:8px}
+.files img{width:76px;height:76px;object-fit:cover;border-radius:8px;border:1px solid var(--line);background:var(--surface-2)}
+.files a.doc{line-height:1.3;font-size:13px;padding:8px 10px;border:1px solid var(--line);background:var(--surface-2);color:var(--accent);text-decoration:none;max-width:100%;overflow-wrap:anywhere}
+.attach{align-self:flex-start;font-size:13px;font-weight:500;color:var(--accent);cursor:pointer;padding:6px 0;min-height:32px;display:inline-flex;align-items:center}
+.attach:focus-within{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Whisper · preview review · for 1.0.6</div>
+    <h1>Preview review</h1>
+    <p>Everything found while testing. Pick Fix, Later or Drop on each issue, and answer where there's a question. Each preview build gets its own steps under Build tests: work through them in order. When every test for an issue passes, the issue closes by itself. Press Question on any card to ask Claude about it; the answer appears on the card.</p>
+    <div class="tally" id="tally"></div>
+    <div class="saved" id="stamp" style="margin-top:8px"></div>
+  </header>
+  <nav role="tablist" id="tabs">
+    <button role="tab" data-tab="decide">To decide<span class="c" id="c-decide"></span></button>
+    <button role="tab" data-tab="verify">To check<span class="c" id="c-verify"></span></button>
+    <button role="tab" data-tab="all">All issues<span class="c" id="c-all"></span></button>
+    <button role="tab" data-tab="check">Build tests<span class="c" id="c-check"></span></button>
+  </nav>
+  <div id="notice" class="notice" hidden></div>
+  <main id="list"><p class="empty">Loading the list…</p></main>
+  <form class="add" id="add">
+    <h3>Add an issue</h3>
+    <input type="text" id="add-title" placeholder="What's wrong, in a few words" maxlength="140">
+    <textarea id="add-detail" placeholder="Where you saw it, and anything else (optional)"></textarea>
+    <button class="go" type="submit" id="add-go">Add to the list</button>
+  </form>
+</div>
+
+<script>
+(() => {
+  // Question is the last button on every kind of card: it sets status "question", which Claude answers in `reply`.
+  const QUESTION = ["question","Question"];
+  const ISSUE_OPTS = [["fix","Fix"],["later","Later"],["drop","Drop"],QUESTION];
+  const CHECK_OPTS = [["pass","Pass"],["problem","Problem"],["untested","Not tested"],QUESTION];
+  // Once a fix is built: Works closes it, Still wrong sends it back to Fix.
+  const PREVIEW_OPTS = [["done","Works","works"],["fix","Still wrong","wrong"],QUESTION];
+  const DONE_OPTS = [["fix","Reopen","reopen"],QUESTION];
+  const items = new Map();
+  const cards = new Map();
+  const expanded = new Set();
+  // Finished work stays on record but out of the way.
+  const FINISHED = new Set(["done", "drop", "merged"]);
+  const openBuilds = new Set();
+  let showFinished = false;
+  const chains = new Map();
+  let db = null, assets = null, writable = true, tab = "decide", pending = false, loaded = false;
+  const FILE_TYPES = { md: "text/markdown", csv: "text/csv", json: "application/json", txt: "text/plain", log: "text/plain", pdf: "application/pdf" };
+
+  try { const t = localStorage.getItem("tab"); if (t) tab = t; } catch (e) {}
+
+  const $ = (id) => document.getElementById(id);
+  // A question stays here until it's answered, even once Fix is chosen. A card you pressed Question on counts as open too.
+  const isOpenIssue = (it) => it.kind === "issue" &&
+    (!it.status || it.status === "open" || it.status === "question" || (it.needsAnswer && !(it.note || "").trim() && it.status !== "drop" && it.status !== "merged"));
+
+  function queue(id, fn) {
+    const next = (chains.get(id) || Promise.resolve()).then(fn, fn);
+    chains.set(id, next.catch(() => {}));
+    return next;
+  }
+
+  function write(id, data) {
+    if (!db || !writable) return Promise.reject();
+    return queue(id, () => db.doc("items/" + id).update({ ...data, updatedAt: Date.now() }))
+      .catch((e) => { if (e && e.code === "invalid_argument") readOnly(); throw e; });
+  }
+
+  function readOnly() {
+    writable = false;
+    showNotice("You can read this list but not change it from this view.");
+    document.querySelectorAll(".seg button, textarea, #add input, #add button").forEach((el) => el.disabled = true);
+    document.querySelectorAll(".attach").forEach((el) => el.hidden = true);
+  }
+  function showNotice(t) { const n = $("notice"); n.textContent = t; n.hidden = false; }
+
+  function makeCard(id) {
+    const el = document.createElement("article");
+    el.className = "item";
+    el.innerHTML = '<div class="top"><span class="num"></span><h3 class="title"></h3></div>' +
+      '<p class="detail"></p><p class="suggest"></p><button type="button" class="more-btn" aria-expanded="false">More detail</button>' +
+      '<div class="more" hidden></div><p class="build"></p><p class="merged"></p>' +
+      '<div class="seg" role="group"></div><p class="reply" hidden></p>' +
+      '<div class="files" hidden></div><textarea rows="1"></textarea><div class="saved"></div>' +
+      '<label class="attach" hidden><input type="file" accept="image/*,application/pdf,.txt,.log,.md,.csv,.json" style="position:absolute;opacity:0;width:1px;height:1px"><span>+ Add a file or screenshot</span></label>';
+    // Attachments: the file goes to the artifact's asset store; the card's document keeps the pointer (files: [{id,name,type,size,at,by}]).
+    const fin = el.querySelector(".attach input"), flab = el.querySelector(".attach span");
+    fin.id = "file-" + id;
+    fin.addEventListener("change", async () => {
+      const f = fin.files && fin.files[0]; fin.value = ""; if (!f || !assets) return;
+      const ext = (f.name.split(".").pop() || "").toLowerCase();
+      const type = FILE_TYPES[ext] || f.type;
+      flab.textContent = "Uploading…";
+      try {
+        const a = await assets.upload(f, type ? { type } : undefined);
+        // Read the list again after the upload, so a file added meanwhile (from another device, or by Claude) is kept.
+        const cur = items.get(id) || {};
+        const files = [...(Array.isArray(cur.files) ? cur.files : []), { id: a.id, name: f.name.slice(0, 120), type: a.contentType, size: a.sizeBytes, at: Date.now(), by: "def" }];
+        items.set(id, { ...cur, files }); render();
+        await write(id, { files });
+        flab.textContent = "+ Add a file or screenshot";
+      } catch (e) {
+        const c = e && e.code;
+        flab.textContent = c === "too_large" ? "Too big (20 MB at most). Pick another" : c === "unsupported_type" ? "That kind of file isn't accepted. Pick another" : "Not added. Tap to try again";
+      }
+    });
+    const ta = el.querySelector("textarea");
+    let timer = null;
+    const saveNote = () => {
+      clearTimeout(timer);
+      const it = items.get(id);
+      if (!it || (it.note || "") === ta.value) return;
+      el.querySelector(".saved").textContent = "Saving…";
+      write(id, { note: ta.value }).then(() => el.querySelector(".saved").textContent = "Saved",
+        () => el.querySelector(".saved").textContent = "Not saved");
+    };
+    ta.addEventListener("input", () => { clearTimeout(timer); timer = setTimeout(saveNote, 900); });
+    ta.addEventListener("blur", () => { saveNote(); if (pending) { pending = false; render(); } });
+    const mb = el.querySelector(".more-btn");
+    mb.setAttribute("aria-controls", "more-" + id);
+    el.querySelector(".more").id = "more-" + id;
+    mb.addEventListener("click", () => {
+      if (expanded.has(id)) expanded.delete(id); else expanded.add(id);
+      const it = items.get(id); if (it) fillCard(el, id, it);
+    });
+    ta.id = "note-" + id;
+    ta.setAttribute("aria-label", "Note");
+    return el;
+  }
+
+  // The buttons a card shows. A card with a question open keeps the buttons of the status it was asked from.
+  function optsFor(it) {
+    const s = it.status === "question" ? (it.askedFrom || "open") : (it.status || "open");
+    return isTest(it) ? CHECK_OPTS : s === "preview" ? PREVIEW_OPTS : s === "done" ? DONE_OPTS : ISSUE_OPTS;
+  }
+
+  function fillCard(el, id, it) {
+    const status = it.status || "open";
+    el.className = "item s-" + status;
+    el.querySelector(".num").textContent = it.kind === "check" ? "C" + it.n : it.kind === "test" ? "T" + it.n : it.n;
+    const top = el.querySelector(".top");
+    top.querySelector(".title").textContent = it.title || "";
+    let q = top.querySelector(".q");
+    const ask = it.question || it.needsAnswer || status === "question";
+    if (ask && !q) { q = document.createElement("span"); q.className = "q"; top.appendChild(q); }
+    if (!ask && q) q.remove();
+    if (q) q.textContent = status === "question" ? "Question" : it.needsAnswer && !(it.note || "").trim() ? "Needs answer" : "Question";
+    const d = el.querySelector(".detail"); d.textContent = it.detail || ""; d.hidden = !it.detail;
+    const s = el.querySelector(".suggest");
+    s.hidden = !it.suggest;
+    if (it.suggest) { s.textContent = ""; const b = document.createElement("b"); b.textContent = "Suggested: "; s.append(b, it.suggest); }
+    const m = el.querySelector(".merged");
+    m.hidden = status !== "merged";
+    m.textContent = it.mergedInto ? "Merged into " + it.mergedInto + ". Decide it there." : "Merged with another item.";
+    const mb = el.querySelector(".more-btn"), mo = el.querySelector(".more");
+    const open = expanded.has(id);
+    mb.hidden = !it.more;
+    mb.textContent = open ? "Less detail" : "More detail";
+    mb.setAttribute("aria-expanded", String(open && !!it.more));
+    mo.hidden = !(open && it.more);
+    if (!mo.hidden && mo.dataset.src !== it.more) {
+      mo.dataset.src = it.more; mo.textContent = "";
+      for (const para of String(it.more).split(/\n\s*\n/)) { const p = document.createElement("p"); p.textContent = para.trim(); mo.appendChild(p); }
+    }
+    const bl = el.querySelector(".build");
+    const built = status === "question" ? (it.askedFrom || "open") : status;
+    bl.hidden = !(built === "preview" || built === "done");
+    if (!bl.hidden) {
+      bl.textContent = built === "done" ? "Done, checked in " : "In preview ";
+      const c = document.createElement("code"); c.textContent = it.build || ""; bl.appendChild(c);
+      if (it.fixNote) bl.append(". " + it.fixNote);
+    }
+    const seg = el.querySelector(".seg");
+    seg.hidden = status === "merged";
+    const opts = optsFor(it);
+    const oneShot = opts === PREVIEW_OPTS || opts === DONE_OPTS;
+    seg.setAttribute("aria-label", isTest(it) ? "Result" : oneShot ? "Check" : "Decision");
+    const key = opts.map((o) => o[0] + o[1]).join("|");
+    if (seg.dataset.key !== key) {
+      seg.dataset.key = key;
+      seg.textContent = "";
+      for (const [v, label, cls] of opts) {
+        const b = document.createElement("button");
+        b.type = "button"; b.className = "o-" + (cls || v); b.textContent = label; b.dataset.v = v;
+        b.addEventListener("click", () => {
+          const cur = items.get(id); if (!cur) return;
+          const was = cur.status || "open";
+          let next, data;
+          if (v === "question") {
+            // Question remembers the status it was pressed from; pressing it again goes back there.
+            next = was === "question" ? (cur.askedFrom || "open") : "question";
+            data = was === "question" ? { status: next } : { status: next, askedFrom: was };
+          } else {
+            const shot = optsFor(cur) === PREVIEW_OPTS || optsFor(cur) === DONE_OPTS;
+            next = shot ? v : (was === v) ? "open" : v;
+            data = { status: next };
+          }
+          items.set(id, { ...cur, ...data }); render();
+          write(id, data).then(() => { if (next === "pass") closeIssues(items.get(id)); },
+            () => { items.set(id, cur); render(); });
+        });
+        seg.appendChild(b);
+      }
+    }
+    for (const b of seg.children) {
+      const on = b.dataset.v === "question" ? status === "question" : (!oneShot && b.dataset.v === status);
+      b.setAttribute("aria-pressed", String(on)); b.disabled = !writable;
+    }
+    const rp = el.querySelector(".reply"); rp.hidden = !it.reply;
+    if (it.reply) { rp.textContent = ""; const b = document.createElement("b"); b.textContent = "Claude: "; rp.append(b, it.reply); }
+    const fl = el.querySelector(".files"), files = Array.isArray(it.files) ? it.files : [];
+    fl.hidden = !files.length;
+    const sig = files.map((f) => f && f.id).join(",");
+    if (fl.dataset.sig !== sig) {
+      fl.dataset.sig = sig; fl.textContent = "";
+      for (const f of files) {
+        if (!f || !/^[0-9a-f]{32}$/.test(f.id || "")) continue;
+        const a = document.createElement("a"); a.href = "/_blob/" + f.id; a.target = "_blank"; a.rel = "noopener"; a.title = f.name || "file";
+        if (/^image\//.test(f.type || "")) { const im = document.createElement("img"); im.src = "/_blob/" + f.id; im.alt = f.name || "attachment"; im.loading = "lazy"; a.appendChild(im); }
+        else { a.className = "doc"; a.textContent = f.name || "file"; }
+        fl.appendChild(a);
+      }
+    }
+    el.querySelector(".attach").hidden = !(assets && writable) || status === "merged";
+    const ta = el.querySelector("textarea");
+    ta.hidden = status === "merged";
+    ta.placeholder = status === "question" ? "Your question for Claude" : status === "preview" ? "What's still wrong (if anything)" : status === "problem" ? "What went wrong" : it.question ? "Your answer" : "Note (optional)";
+    ta.disabled = !writable;
+    if (document.activeElement !== ta) ta.value = it.note || "";
+  }
+
+  // Newest build's tests first, then in the order they're meant to be done.
+  function sorted(list) { return list.sort((a, b) => ((b[1].seq || 0) - (a[1].seq || 0)) || ((a[1].n || 0) - (b[1].n || 0))); }
+  const isTest = (it) => it.kind === "check" || it.kind === "test";
+
+  // Every test that names an issue has passed: the issue is done.
+  function closeIssues(test) {
+    if (test.kind !== "test" || !Array.isArray(test.issues)) return;
+    const all = [...items.entries()];
+    for (const n of test.issues) {
+      const issue = all.find(([, it]) => it.kind === "issue" && it.n === n);
+      if (!issue || issue[1].status !== "preview") continue;
+      const tests = all.filter(([, it]) => it.kind === "test" && Array.isArray(it.issues) && it.issues.includes(n));
+      if (tests.every(([, it]) => it.status === "pass")) {
+        items.set(issue[0], { ...issue[1], status: "done" }); render();
+        write(issue[0], { status: "done" }).catch(() => {});
+      }
+    }
+  }
+
+  function render() {
+    if (document.activeElement && document.activeElement.tagName === "TEXTAREA" && document.activeElement.closest("#list")) { pending = true; updateCounts(); return; }
+    const all = [...items.entries()];
+    let shown;
+    let finished = 0;
+    if (tab === "check") shown = all.filter(([, it]) => isTest(it));
+    else if (tab === "all") {
+      const issues = all.filter(([, it]) => it.kind === "issue");
+      finished = issues.filter(([, it]) => FINISHED.has(it.status)).length;
+      shown = showFinished ? issues : issues.filter(([, it]) => !FINISHED.has(it.status));
+    }
+    else if (tab === "verify") shown = all.filter(([, it]) => it.kind === "issue" && it.status === "preview");
+    else shown = all.filter(([, it]) => isOpenIssue(it));
+    sorted(shown);
+    const list = $("list");
+    list.textContent = "";
+    if (!loaded) { list.innerHTML = '<p class="empty">Loading the list…</p>'; }
+    else if (!shown.length) {
+      const p = document.createElement("p"); p.className = "empty";
+      p.textContent = tab === "decide" ? "Nothing left to decide. Claude can start on the fixes."
+        : tab === "verify" ? "Nothing to check yet. Fixes appear here when they reach a preview build." : "Nothing here yet.";
+      list.appendChild(p);
+    } else {
+      const groups = new Map();
+      for (const [id, it] of shown) { const a = it.area || "Other"; if (!groups.has(a)) groups.set(a, []); groups.get(a).push([id, it]); }
+      for (const [area, rows] of groups) {
+        const h = document.createElement("h2"); h.textContent = area;
+        const g = document.createElement("div"); g.className = "group";
+        // A build whose every step passed folds to one line.
+        const allPassed = tab === "check" && rows.every(([, it]) => it.status === "pass");
+        if (allPassed) {
+          const open = openBuilds.has(area);
+          const fold = document.createElement("button");
+          fold.type = "button"; fold.className = "more-btn";
+          fold.setAttribute("aria-expanded", String(open));
+          fold.textContent = (open ? "Hide" : "All " + rows.length + " passed. Show");
+          fold.addEventListener("click", () => { if (openBuilds.has(area)) openBuilds.delete(area); else openBuilds.add(area); render(); });
+          if (!open) { list.append(h, fold); continue; }
+          list.append(h, fold);
+        }
+        for (const [id, it] of rows) {
+          let el = cards.get(id); if (!el) { el = makeCard(id); cards.set(id, el); }
+          fillCard(el, id, it); g.appendChild(el);
+        }
+        list.append(h, g);
+      }
+    }
+    if (loaded && tab === "all" && finished) {
+      const t = document.createElement("button");
+      t.type = "button"; t.className = "more-btn"; t.style.marginTop = "20px";
+      t.setAttribute("aria-expanded", String(showFinished));
+      t.textContent = showFinished ? "Hide finished" : "Show finished (" + finished + ")";
+      t.addEventListener("click", () => { showFinished = !showFinished; render(); });
+      list.appendChild(t);
+    }
+    $("add").hidden = tab === "check" || tab === "verify";
+    for (const b of $("tabs").children) b.setAttribute("aria-selected", String(b.dataset.tab === tab));
+    updateCounts();
+  }
+
+  function updateCounts() {
+    const all = [...items.values()];
+    const issues = all.filter((i) => i.kind === "issue" && i.status !== "merged");
+    const by = (s) => issues.filter((i) => (i.status || "open") === s).length;
+    const toDecide = issues.filter(isOpenIssue).length;
+    const checks = all.filter(isTest);
+    // A test you asked a question on is still unanswered.
+    const checksOpen = checks.filter((i) => !i.status || i.status === "open" || i.status === "question").length;
+    $("c-decide").textContent = loaded ? toDecide : "";
+    $("c-all").textContent = loaded ? issues.length : "";
+    $("c-verify").textContent = loaded ? by("preview") : "";
+    $("c-check").textContent = loaded ? (checks.length - checksOpen) + "/" + checks.length : "";
+    const t = $("tally"); t.textContent = "";
+    if (!loaded) return;
+    const asked = all.filter((i) => i.status === "question").length;
+    const rows = [["to decide", toDecide], ["to fix", by("fix")], ["to check", by("preview")], ["done", by("done")], ["later", by("later")], ["dropped", by("drop")]];
+    if (asked) rows.splice(1, 0, ["questions", asked]);
+    for (const [label, n] of rows) {
+      const s = document.createElement("span"); const b = document.createElement("b"); b.textContent = n; s.append(b, " " + label); t.appendChild(s);
+    }
+  }
+
+  $("tabs").addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-tab]"); if (!b) return;
+    tab = b.dataset.tab; try { localStorage.setItem("tab", tab); } catch (err) {}
+    window.scrollTo({ top: 0 }); render();
+  });
+
+  $("add").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const title = $("add-title").value.trim(); if (!title || !db || !writable) return;
+    const n = Math.max(0, ...[...items.values()].filter((i) => i.kind === "issue").map((i) => i.n || 0)) + 1;
+    const id = "i" + String(n).padStart(3, "0");
+    $("add-go").disabled = true;
+    try {
+      await db.doc("items/" + id).set({ n, kind: "issue", area: "Added while testing", title,
+        detail: $("add-detail").value.trim(), status: "open", note: "", createdAt: Date.now() });
+      $("add-title").value = ""; $("add-detail").value = "";
+    } catch (err) {
+      if (err && err.code === "invalid_argument") readOnly(); else showNotice("That wasn't saved. Try again in a moment.");
+    } finally { $("add-go").disabled = !writable; }
+  });
+
+  render();
+
+  (async () => {
+    db = window.claude && window.claude.use ? await window.claude.use("db") : null;
+    if (!db) { loaded = true; showNotice("The list needs you to be signed in to claude.ai to load."); writable = false; render(); return; }
+    // One live subscription. It is replaced (never doubled) when the page comes back into view after
+    // a while or the connection drops, because a pinned board can sit open for days and go stale.
+    let unsub = null, hiddenAt = 0, retries = 0, retryTimer = null;
+    const stamp = () => { $("stamp").textContent = "Updated " + new Date().toLocaleTimeString("en-IE", { hour: "2-digit", minute: "2-digit" }); };
+    const subscribe = () => {
+      clearTimeout(retryTimer);
+      if (unsub) { try { unsub(); } catch (e) {} unsub = null; }
+      unsub = db.collection("items").onSnapshot((snap) => {
+        items.clear();
+        for (const d of snap.docs) items.set(d.id, d.data());
+        loaded = true; retries = 0; if (writable) $("notice").hidden = true; stamp(); render();
+      }, () => {
+        loaded = true; unsub = null;
+        if (retries++ < 3) retryTimer = setTimeout(subscribe, 4000 * retries);
+        else { showNotice("The board stopped updating. Reload the page."); render(); }
+      });
+    };
+    subscribe();
+    // File attachments need the assets capability (editors only); without it the cards just have no upload control.
+    window.claude.use("assets").then((a) => { assets = a || null; if (assets) render(); }, () => {});
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) { hiddenAt = Date.now(); return; }
+      if (hiddenAt && Date.now() - hiddenAt >= 30000) { retries = 0; subscribe(); }
+    });
+  })();
+})();
+</script>

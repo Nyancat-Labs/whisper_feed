@@ -8,6 +8,25 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 11 November 2026 — Review board upgrade
+
+The review sheet got the four features added to the owner's Homelab board
+the same day. Only the page changed; no record was touched (176 before and
+after, same versions). Source: `files/work-board.html`.
+
+- Attachments on every card: `assets` capability beside `db`; the file goes
+  to the asset store and the card's `files` list keeps the pointer.
+- One `onSnapshot` subscription in `subscribe()`, re-run after 30 s hidden
+  and retried three times (4, 8, 12 s) on error.
+- "Updated HH:MM" under the counters.
+- A Question button on all four button sets (`status: "question"`). This
+  board has more states than Homelab's, so the page also writes
+  `askedFrom`, the status the card had, and that is where it goes back to.
+- The card now shows `reply`, which this board did not have.
+- Checked with a mocked `window.claude` in headless Chromium; the real
+  upload button is the owner's to try, on card 102.
+- Rules for using it are in `docs/HANDOVER.md`. `archive/` is gitignored.
+
 ## 9 November 2026 — Security audit
 
 Covered: repo and full history, manifest and network config, the
