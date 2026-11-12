@@ -228,13 +228,18 @@ interface FeedArticleDao {
     suspend fun setHidden(id: String, at: Long)
 
     /** How many this source has had turned down since [since]. */
-    @Query("SELECT COUNT(*) FROM Article WHERE feedId = :feedId AND hiddenAt >= :since AND hiddenAt > 0")
+    @Query(
+        "SELECT COUNT(*) FROM Article WHERE feedId = :feedId AND hiddenAt >= :since AND hiddenAt > 0 " +
+            "AND hiddenAt >= COALESCE((SELECT learnedResetAt FROM Feeds WHERE Feeds.id = :feedId), 0)"
+    )
     suspend fun countHiddenSince(feedId: Long, since: Long): Int
 
     /** Dismissals per source since [since], for What Whisper learned. */
     @Query(
         "SELECT feedId, COUNT(*) AS reads FROM Article " +
-            "WHERE hiddenAt >= :since AND hiddenAt > 0 GROUP BY feedId"
+            "WHERE hiddenAt >= :since AND hiddenAt > 0 " +
+            "AND hiddenAt >= COALESCE((SELECT learnedResetAt FROM Feeds WHERE Feeds.id = Article.feedId), 0) " +
+            "GROUP BY feedId"
     )
     fun hiddenPerSource(since: Long): Flow<List<SourceReadCount>>
 
@@ -374,11 +379,15 @@ interface FeedArticleDao {
             COUNT(*) AS seen
         FROM Article
         WHERE readAt >= :since
+            AND (:allHistory
+                OR readAt >= COALESCE((SELECT learnedResetAt FROM Feeds WHERE Feeds.id = Article.feedId), 0))
         GROUP BY feedId
         """
     )
     fun engagementPerSource(
         since: Long,
+        /** True for statistics, which report history; false for what is learned from it. */
+        allHistory: Boolean,
         glancedMs: Long,
         heldMs: Long,
         readingMs: Long,

@@ -104,6 +104,10 @@ interface FeedSourceDao {
     @Query("DELETE FROM Feeds WHERE id = :id")
     suspend fun deleteFeedById(id: Long)
 
+    /** Starts what is learned about these sources again from [at]; see Feed.learnedResetAt. */
+    @Query("UPDATE Feeds SET learnedResetAt = :at WHERE id IN (:ids)")
+    suspend fun setLearnedResetAt(ids: Collection<Long>, at: Long)
+
     /** Marks a source as removed while keeping the row its saved articles need. */
     @Query("UPDATE Feeds SET removedAt = :at, isEnabled = 0 WHERE id = :id")
     suspend fun markRemoved(id: Long, at: Long)

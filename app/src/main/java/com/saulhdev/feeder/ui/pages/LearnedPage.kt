@@ -17,6 +17,15 @@
  */
 package com.saulhdev.feeder.ui.pages
 
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.material3.Checkbox
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
+import com.saulhdev.feeder.ui.icons.phosphor.ArrowLeft
+import com.saulhdev.feeder.ui.icons.phosphor.X
+
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -77,11 +86,32 @@ fun LearnedPage(
 ) {
     val sources by viewModel.sources.collectAsState()
     var confirmReset by remember { mutableStateOf(false) }
+    // Several sources forgotten at once (owner, 9 November): long-press one
+    // to start, tap others to add them, Forget in the bar. Saved, so a turn
+    // of the phone keeps it.
+    var selected by rememberSaveable { mutableStateOf(emptySet<Long>()) }
+    val selecting = selected.isNotEmpty()
+    BackHandler(enabled = selecting) { selected = emptySet() }
 
     ViewWithActionBar(
-        title = stringResource(R.string.pref_learned),
+        title = if (selecting) {
+            pluralStringResource(R.plurals.sources_selected, selected.size, selected.size)
+        } else {
+            stringResource(R.string.pref_learned)
+        },
         largeTitle = true,
         showBackButton = true,
+        backIcon = if (selecting) Phosphor.X else Phosphor.ArrowLeft,
+        backDescription = if (selecting) R.string.sources_clear_selection else R.string.go_back,
+        onBackAction = if (selecting) ({ selected = emptySet() }) else null,
+        actions = {
+            if (selecting) {
+                TextButton(onClick = {
+                    viewModel.forget(selected)
+                    selected = emptySet()
+                }) { Text(stringResource(R.string.learned_forget_selected)) }
+            }
+        },
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
@@ -103,8 +133,15 @@ fun LearnedPage(
             }
 
             items(sources, key = { it.id }) { source ->
+                val toggle = {
+                    selected = if (source.id in selected) selected - source.id else selected + source.id
+                }
                 LearnedRow(
                     source = source,
+                    selecting = selecting,
+                    isSelected = source.id in selected,
+                    onTap = { if (selecting) toggle() },
+                    onLongPress = toggle,
                     onForget = { viewModel.forget(source.id) },
                     onUnhide = { viewModel.unhide(source.id) },
                 )
@@ -147,16 +184,28 @@ fun LearnedPage(
 @Composable
 private fun LearnedRow(
     source: LearnedSource,
+    selecting: Boolean,
+    isSelected: Boolean,
+    onTap: () -> Unit,
+    onLongPress: () -> Unit,
     onForget: () -> Unit,
     onUnhide: () -> Unit,
 ) {
     ListItem(
-        modifier = Modifier.clip(MaterialTheme.shapes.large),
+        modifier = Modifier
+            .clip(MaterialTheme.shapes.large)
+            .combinedClickable(onClick = onTap, onLongClick = onLongPress)
+            .semantics { this.selected = isSelected },
         colors = ListItemDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+            containerColor = if (isSelected) MaterialTheme.colorScheme.secondaryContainer
+            else MaterialTheme.colorScheme.surfaceContainerHighest,
         ),
         leadingContent = {
-            SourceMark(iconUrl = source.iconUrl, sourceName = source.title, size = 28.dp)
+            if (selecting) {
+                Checkbox(checked = isSelected, onCheckedChange = null)
+            } else {
+                SourceMark(iconUrl = source.iconUrl, sourceName = source.title, size = 28.dp)
+            }
         },
         headlineContent = { Text(source.title) },
         supportingContent = {
@@ -170,6 +219,15 @@ private fun LearnedRow(
                     ),
                     style = MaterialTheme.typography.bodySmall,
                 )
+                if (source.faded) {
+                    // The verdict the feed acts on, said where it can be
+                    // undone: the setting promised this screen shows it.
+                    Text(
+                        text = stringResource(R.string.learned_faded),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                }
                 if (source.dismissed > 0) {
                     Text(
                         text = pluralStringResource(
@@ -198,7 +256,9 @@ private fun LearnedRow(
                         Icon(Phosphor.EyeSlash, stringResource(R.string.learned_unhide))
                     }
                 }
-                if (source.affinity != 0) {
+                // Whenever there is anything to forget, not only More and Less:
+                // a source faded for being skipped has no score, and had no bin.
+                if (source.hasLearned && !selecting) {
                     IconButton(onClick = onForget) {
                         Icon(Phosphor.TrashSimple, stringResource(R.string.learned_forget))
                     }

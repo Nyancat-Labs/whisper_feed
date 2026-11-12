@@ -42,7 +42,11 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Button
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.ui.semantics.LiveRegionMode
@@ -165,8 +169,9 @@ fun SourceAddPage(
             } else {
             currentlySearching = true
             coroutineScope.launch {
-                val found = if (FeedNameSearch.looksLikeAddress(text)) {
-                    searchFeedViewModel.searchForFeeds(sloppyLinkToStrictURLNoThrows(text.trim()))
+                val address = FeedNameSearch.addressFrom(text)
+                val found = if (address != null) {
+                    searchFeedViewModel.searchForFeeds(sloppyLinkToStrictURLNoThrows(address))
                 } else {
                     searchFeedViewModel.searchByName(
                         name = text,
@@ -289,7 +294,7 @@ fun SearchFeedUI(
     // A name is as good as an address now; only an address can be wrong.
     val isNotValidUrl by remember(feedUrl) {
         derivedStateOf {
-            FeedNameSearch.looksLikeAddress(feedUrl) && isNotValidUrl(feedUrl)
+            FeedNameSearch.addressFrom(feedUrl)?.let(::isNotValidUrl) == true
         }
     }
     val isValidUrl by remember(feedUrl) {
@@ -503,7 +508,8 @@ fun SearchResultView(
                 )
                 // Everything here is saved as it is tapped; Done is the way
                 // out, so the screen ends somewhere rather than just stopping.
-                FilledTonalButton(
+                // Filled once there is something saved: the obvious next tap.
+                Button(
                     onClick = onDone,
                     modifier = Modifier.align(Alignment.End),
                 ) {
@@ -534,28 +540,44 @@ private fun CategoryPicker(
     val named = remember(allTags) { allTags.filter { it.isNotBlank() }.sorted() }
 
     Spacer(Modifier.height(4.dp))
-    // The heading answers "did that save?": it turns into the answer, with a
-    // tick, the moment a category is chosen.
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
-        modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
-    ) {
-        if (chosen != null) {
+    // The heading answers "did that save?": it turns into the answer the
+    // moment a category is chosen. A tinted line was easy to miss (owner,
+    // 12 November), so the answer sits in a filled band in the accent
+    // colour and gives one small pulse each time it changes.
+    if (chosen == null) {
+        Text(
+            text = stringResource(R.string.add_feed_category),
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    } else {
+        val pulse = remember { Animatable(1f) }
+        LaunchedEffect(chosen) {
+            pulse.snapTo(1f)
+            pulse.animateTo(1.04f, tween(120))
+            pulse.animateTo(1f, tween(180))
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier
+                .graphicsLayer { scaleX = pulse.value; scaleY = pulse.value }
+                .background(MaterialTheme.colorScheme.primaryContainer, MaterialTheme.shapes.small)
+                .padding(horizontal = 10.dp, vertical = 6.dp)
+                .semantics { liveRegion = LiveRegionMode.Polite },
+        ) {
             Icon(
                 imageVector = Phosphor.CheckCircle,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(16.dp),
+                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                modifier = Modifier.size(20.dp),
+            )
+            Text(
+                text = stringResource(R.string.add_feed_filed, chosen),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
             )
         }
-        Text(
-            text = if (chosen != null) stringResource(R.string.add_feed_filed, chosen)
-            else stringResource(R.string.add_feed_category),
-            style = MaterialTheme.typography.labelMedium,
-            color = if (chosen != null) MaterialTheme.colorScheme.primary
-            else MaterialTheme.colorScheme.onSurfaceVariant,
-        )
     }
     FlowRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),

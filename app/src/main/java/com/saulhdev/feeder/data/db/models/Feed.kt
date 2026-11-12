@@ -125,6 +125,14 @@ data class Feed(
      */
     @ColumnInfo(defaultValue = "1")
     val showInAll: Boolean = true,
+    /**
+     * When the reader last told Whisper to forget what it learned about this
+     * source alone (sheet 91). Engagement and dismissals from before it are
+     * left out of the weighting, the fading and the Learned screen, as the
+     * global reset does for every source. 0: never.
+     */
+    @ColumnInfo(defaultValue = "0")
+    val learnedResetAt: Long = 0L,
 ) {
     /**
      * The feed's categories.

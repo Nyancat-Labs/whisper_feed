@@ -48,9 +48,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.saulhdev.feeder.data.content.StringSelectionPref
 import com.saulhdev.feeder.utils.extensions.blockShadow
 import kotlinx.coroutines.launch
@@ -137,21 +135,22 @@ fun SingleSelectionListItem(
         Column(
             modifier = Modifier
                 .weight(1f)
-                .padding(vertical = 6.dp),
+                .padding(vertical = if (supporting != null) 10.dp else 6.dp),
         ) {
-            // The name in the theme's full text colour, the line under it
-            // smaller and quieter (owner, 8 November: both came out the
-            // dialog's grey, too dark, with little between them).
+            // Exactly a Settings row (BasePreference): title in titleMedium
+            // and the full text colour, the line under it in bodyMedium and
+            // the quieter colour. Bold names stood out from the rest of the
+            // app (owner, 12 November); the space between choices keeps
+            // them apart instead.
             Text(
                 text = text,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,
             )
             if (supporting != null) {
                 Text(
                     text = supporting,
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 2.dp),
                 )

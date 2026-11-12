@@ -428,6 +428,10 @@ class SourcesRepository(db: NeoFeedDb) {
         if (feeds.isNotEmpty()) feedsDao.updateAll(feeds)
     }
 
+    /** Forgets what was learned from these sources' articles, from now. */
+    suspend fun resetLearned(ids: Collection<Long>, at: Long = System.currentTimeMillis()) =
+        withContext(jcc) { if (ids.isNotEmpty()) feedsDao.setLearnedResetAt(ids, at) }
+
     suspend fun setEnabled(ids: Collection<Long>, enabled: Boolean) = withContext(jcc) {
         val feeds = feedsDao.loadAllFeeds()
             .filter { it.id in ids && it.isEnabled != enabled }

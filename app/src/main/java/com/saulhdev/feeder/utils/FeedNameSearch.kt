@@ -35,10 +35,28 @@ object FeedNameSearch {
     const val MAX_GUESSES = 6
 
     /** Something with a dot, a slash or a scheme was meant as an address. */
-    fun looksLikeAddress(text: String): Boolean {
+    fun looksLikeAddress(text: String): Boolean = addressFrom(text) != null
+
+    /**
+     * The address [text] means, or null if it is a name.
+     *
+     * "the verge.com" and "sky News.com" are addresses typed with a space,
+     * often put there by the keyboard's suggestions (sheet 103): ending in a
+     * domain ending, they lose their spaces and their capitals. A sentence
+     * with a full stop in it ("Mr. Potato Head") is still a name, because
+     * it does not end in one.
+     */
+    fun addressFrom(text: String): String? {
         val t = text.trim()
-        return t.contains("://") || t.contains('/') || (t.contains('.') && !t.contains(' '))
+        if (t.isEmpty()) return null
+        if (t.contains("://") || t.contains('/')) return t
+        if (!t.contains(' ')) return t.takeIf { it.contains('.') }
+        val joined = t.split(Regex("\\s+")).joinToString("").lowercase()
+        return joined.takeIf { SPACED_HOST.matches(it) }
     }
+
+    /** Letters, digits and hyphens in dotted labels, ending in a 2-6 letter domain ending. */
+    private val SPACED_HOST = Regex("^[\\p{L}\\p{N}-]+(\\.[\\p{L}\\p{N}-]+)*\\.\\p{L}{2,6}$")
 
     /** The name as a host would spell it, or null if nothing usable is left. */
     private fun label(words: List<String>, joiner: String): String? =

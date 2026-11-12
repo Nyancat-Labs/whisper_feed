@@ -41,6 +41,17 @@ class FeedNameSearchTest {
     }
 
     @Test
+    fun `an address typed with spaces or capitals is still an address`() {
+        assertEquals("theverge.com", FeedNameSearch.addressFrom("the verge.com"))
+        assertEquals("skynews.com", FeedNameSearch.addressFrom("sky News.com"))
+        assertEquals("rte.ie", FeedNameSearch.addressFrom(" rte .ie "))
+        assertEquals("bbc.co.uk", FeedNameSearch.addressFrom("bbc .co.uk"))
+        assertEquals(null, FeedNameSearch.addressFrom("Mr. Potato Head"))
+        assertEquals(null, FeedNameSearch.addressFrom("the verge"))
+        assertEquals("https://example.org/feed", FeedNameSearch.addressFrom("https://example.org/feed"))
+    }
+
+    @Test
     fun `the library answers to a name, spaces and case aside`() {
         assertTrue(FeedNameSearch.matches("the journal", "TheJournal.ie", "https://www.thejournal.ie/feed/"))
         assertTrue(FeedNameSearch.matches("arstechnica", "Ars Technica", "https://feeds.arstechnica.com/arstechnica/index"))

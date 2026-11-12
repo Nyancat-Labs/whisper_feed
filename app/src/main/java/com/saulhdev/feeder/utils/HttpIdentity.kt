@@ -19,6 +19,7 @@ package com.saulhdev.feeder.utils
 
 import com.saulhdev.feeder.BuildConfig
 import okhttp3.Interceptor
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Response
 
@@ -127,6 +128,26 @@ object HttpIdentity {
      */
     fun OkHttpClient.Builder.asImageFetcher(): OkHttpClient.Builder =
         addInterceptor(interceptor(ARTICLE_AGENT, IMAGE_ACCEPT))
+            .addInterceptor(repairDoubleEncoding)
+
+    /**
+     * One more try for a picture whose address was encoded twice.
+     *
+     * Quartz's feed spells "Michael Burry.jpg" as `Michael%2520Burry.jpg`:
+     * the space became `%20` and then its `%` became `%25`. Their image
+     * server refuses that (403) and serves `Michael%20Burry.jpg` (sheet 105,
+     * 12 November). Only on a 4xx, only when the address holds such a
+     * sequence, and only once, so a working picture costs nothing.
+     */
+    private val repairDoubleEncoding = Interceptor { chain ->
+        val request = chain.request()
+        val response = chain.proceed(request)
+        if (response.code !in 400..499) return@Interceptor response
+        val repaired = undoubleEncoded(request.url.toString())?.toHttpUrlOrNull()
+            ?: return@Interceptor response
+        response.close()
+        chain.proceed(request.newBuilder().url(repaired).build())
+    }
 
     /** Identifies as Whisper, and asks for a feed. */
     fun OkHttpClient.Builder.asFeedReader(): OkHttpClient.Builder =
@@ -135,4 +156,15 @@ object HttpIdentity {
     /** Identifies as a browser, and asks for a page. */
     fun OkHttpClient.Builder.asArticleReader(): OkHttpClient.Builder =
         addInterceptor(interceptor(ARTICLE_AGENT, HTML_ACCEPT))
+}
+
+/**
+ * [url] with each doubly encoded escape (`%25` and two hex digits) decoded
+ * once, or null when it has none. `%2520` becomes `%20`; a lone `%25`
+ * (a real per cent sign) is left alone.
+ */
+internal fun undoubleEncoded(url: String): String? {
+    val twice = Regex("%25([0-9A-Fa-f]{2})")
+    if (!twice.containsMatchIn(url)) return null
+    return twice.replace(url) { "%" + it.groupValues[1] }
 }

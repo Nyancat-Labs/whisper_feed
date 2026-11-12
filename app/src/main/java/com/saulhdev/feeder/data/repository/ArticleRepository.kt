@@ -474,9 +474,14 @@ class ArticleRepository(db: NeoFeedDb) {
      * that the four numbers live in one place — beside the rest of the
      * weighting, where anybody arguing with them will be looking.
      */
-    fun engagementPerSource(since: Long): Flow<Map<Long, SourceEngagement>> =
+    fun engagementPerSource(
+        since: Long,
+        /** Statistics pass true: a per-source reset forgets the learning, not the history. */
+        allHistory: Boolean = false,
+    ): Flow<Map<Long, SourceEngagement>> =
         articlesDao.engagementPerSource(
             since = since,
+            allHistory = allHistory,
             glancedMs = ArticleWeight.GLANCED_MS,
             heldMs = ArticleWeight.HELD_MS,
             readingMs = ArticleWeight.READING_MS,

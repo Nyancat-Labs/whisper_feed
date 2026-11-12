@@ -183,7 +183,7 @@ class StatisticsViewModel(
             articleRepo.readingByHour(fromDay),
             articleRepo.readingTime(fromDay),
             sourcesRepo.getAllSourcesFlow(),
-            articleRepo.engagementPerSource(from),
+            articleRepo.engagementPerSource(from, allHistory = true),
         ) { days, hours, time, feeds, engagement ->
             val shares = topSources(feeds.associate { it.id to it.title }, engagement)
             val total = days.sumOf { it.seen }

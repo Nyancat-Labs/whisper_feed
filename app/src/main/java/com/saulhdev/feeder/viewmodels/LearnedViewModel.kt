@@ -17,6 +17,8 @@
  */
 package com.saulhdev.feeder.viewmodels
 
+import com.saulhdev.feeder.ui.overlay.isSkippedSource
+
 import com.saulhdev.feeder.utils.usableImageUrl
 import androidx.lifecycle.viewModelScope
 import com.saulhdev.feeder.data.content.FeedPreferences
@@ -61,7 +63,12 @@ data class LearnedSource(
      * the reader can see where that came from.
      */
     val dismissed: Int = 0,
-)
+    /** Shown faded in the feed, because its articles are usually scrolled past. */
+    val faded: Boolean = false,
+) {
+    /** Anything the bin would throw away. */
+    val hasLearned: Boolean get() = affinity != 0 || seen > 0 || dismissed > 0
+}
 
 /**
  * What the reader has taught the app, laid out so it can be disagreed with.
@@ -99,7 +106,8 @@ class LearnedViewModel(
             articleRepo.engagementPerSource(habitWindowStart(resetAt))
         },
         articleRepo.dismissedThisWeek(),
-    ) { feeds, affinityRaw, engagement, dismissed ->
+        prefs.dimSkipped.get(),
+    ) { feeds, affinityRaw, engagement, dismissed, dim ->
         val affinity = parseAffinity(affinityRaw)
         val most = engagement.values.maxOfOrNull { it.score }?.takeIf { it > 0 }
         feeds.map { feed ->
@@ -124,6 +132,7 @@ class LearnedViewModel(
                 // said the same thing in a second place.
                 hidden = !feed.isEnabled,
                 dismissed = dismissed[id] ?: 0,
+                faded = dim && row != null && isSkippedSource(row),
             )
         }.sortedWith(
             compareByDescending<LearnedSource> { it.nudge }.thenBy { it.title.lowercase() }
@@ -135,13 +144,25 @@ class LearnedViewModel(
         ioScope.launch { sourcesRepo.setEnabled(listOf(id), enabled = true) }
     }
 
-    /** Forgets one source's scores, leaving every other source alone. */
-    fun forget(id: Long) {
+    /** Forgets one source entirely, leaving every other source alone. */
+    fun forget(id: Long) = forget(setOf(id))
+
+    /**
+     * Forgets everything learned about these sources: More and Less, and the
+     * counts of what was seen, opened and turned down, so a source faded for
+     * being skipped stops being faded (sheet 91). It used to clear More and
+     * Less only, which left a faded source faded. Read state is kept, as
+     * [resetAll] keeps it.
+     */
+    fun forget(ids: Set<Long>) {
+        if (ids.isEmpty()) return
         ioScope.launch {
+            val keys = ids.map(Long::toString).toSet()
             val remaining = prefs.sourceAffinity.getValue()
-                .filterNot { it.substringBeforeLast(':') == id.toString() }
+                .filterNot { it.substringBeforeLast(':') in keys }
                 .toSet()
             prefs.sourceAffinity.setValue(remaining)
+            sourcesRepo.resetLearned(ids)
         }
     }
 

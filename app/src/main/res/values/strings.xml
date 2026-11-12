@@ -465,8 +465,10 @@
         <item quantity="one">Not interested: %1$d this week</item>
         <item quantity="other">Not interested: %1$d this week (every 3 count as one Less)</item>
     </plurals>
-    <string name="learned_forget">Forget this source\'s score</string>
+    <string name="learned_forget">Forget what was learned about this source</string>
     <string name="learned_unhide">Show this source again</string>
+    <string name="learned_faded">Faded: you usually scroll past this</string>
+    <string name="learned_forget_selected">Forget</string>
     <string name="learned_reset_all">Forget everything</string>
     <plurals name="covered_by_sources">
         <item quantity="one">Covered by %1$d source</item>
