@@ -17,8 +17,6 @@
  */
 package com.saulhdev.feeder.ui.overlay
 
-import androidx.compose.ui.layout.positionInWindow
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
@@ -35,8 +33,6 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.runtime.DisposableEffect
-import com.saulhdev.feeder.ui.components.LocalRefreshAnchor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -117,19 +113,9 @@ fun SyncFreshnessText(modifier: Modifier = Modifier, textAlign: TextAlign? = nul
                 withNew(context.getString(R.string.freshness_updated, freshness.age.format(context)), newCount, context)
         }
     }
-    // Where the update indicator rests while an update runs (owner,
-    // 9 November): one indicator, the one you pull, centred on this line.
-    // The small one that used to stand in for the words here is gone; while
-    // updating, the line says so in words.
-    val anchor = LocalRefreshAnchor.current
-    if (anchor != null) {
-        DisposableEffect(anchor) { onDispose { anchor.centreY = Float.NaN } }
-    }
-    val placed = if (anchor == null) modifier else modifier.onGloballyPositioned {
-        anchor.centreY = it.positionInWindow().y + it.size.height / 2f
-    }
+    val placed = modifier
     // Announced when an update starts, not every minute as the age ticks.
-    val anchored = if (freshness == SyncFreshness.Updating) {
+    val shown = if (freshness == SyncFreshness.Updating) {
         placed.semantics { liveRegion = LiveRegionMode.Polite }
     } else placed
 
@@ -142,7 +128,7 @@ fun SyncFreshnessText(modifier: Modifier = Modifier, textAlign: TextAlign? = nul
         color = if (late) MaterialTheme.colorScheme.error
         else MaterialTheme.colorScheme.onSurfaceVariant,
         textAlign = textAlign,
-        modifier = anchored,
+        modifier = shown,
     )
 }
 

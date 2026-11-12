@@ -96,7 +96,7 @@ class ReviewBatch3Test {
 
     @Test
     fun `refresh uses Expressive's indicator and back to top is small`() {
-        assertTrue(source("ui/components/PullToRefreshLazyColumn.kt").contains("ContainedLoadingIndicator(progress = pulled"))
+        assertTrue(source("ui/components/PullToRefreshLazyColumn.kt").contains("PullToRefreshDefaults.LoadingIndicator("))
         assertTrue(source("ui/pages/ArticleListPage.kt").contains("SmallFloatingActionButton("))
         assertTrue(source("ui/overlay/FeedScaffold.kt").contains("SmallFloatingActionButton("))
     }
@@ -175,24 +175,15 @@ class ReviewBatch3Test {
     }
 
     @Test
-    fun `one indicator, from the pull to the end of the update`() {
+    fun `one indicator, Material's own, resting at a fixed spot`() {
         val line = source("ui/overlay/SyncFreshnessLine.kt")
         assertFalse("no second indicator in the line", line.contains("ContainedLoadingIndicator("))
-        assertTrue(line.contains("anchor.centreY ="))
+        assertFalse("the line no longer steers the indicator", line.contains("LocalRefreshAnchor"))
         val pull = source("ui/components/PullToRefreshLazyColumn.kt")
-        assertFalse("not hidden when the update starts", pull.contains("if (refreshing) return\n"))
-        assertTrue(pull.contains("y.animateTo(target"))
-    }
-
-    @Test
-    fun `while updating, the indicator rests on the line under the chips`() {
-        val r = com.saulhdev.feeder.ui.components.restingTop(
-            anchorCentre = 700f, boxTop = 200f, size = 100f, fallback = 40f,
-        )
-        assertEquals(450f, r, 0f)
-        // Line scrolled away, or above the list: near the top.
-        assertEquals(40f, com.saulhdev.feeder.ui.components.restingTop(Float.NaN, 200f, 100f, 40f), 0f)
-        assertEquals(40f, com.saulhdev.feeder.ui.components.restingTop(150f, 200f, 100f, 40f), 0f)
+        // Material places it and holds it while refreshing; nothing chases the list (sheet 106).
+        assertTrue(pull.contains("isRefreshing = refreshing,"))
+        assertFalse(pull.contains("RefreshAnchor"))
+        assertFalse(pull.contains("if (refreshing) return\n"))
     }
 
     @Test
@@ -200,8 +191,5 @@ class ReviewBatch3Test {
         val pull = source("ui/components/PullToRefreshLazyColumn.kt")
         // Held until the update it started reports finished, not for a flat moment.
         assertTrue(pull.contains("snapshotFlow { running }.first { !it }"))
-        // Fade, then follow the finger: one effect, so the order cannot flip.
-        assertEquals(1, Regex("""snapshotFlow \{ state.distanceFraction \}""").findAll(pull).count())
-        assertFalse(pull.contains("if (leaving) return@collect"))
     }
 }
