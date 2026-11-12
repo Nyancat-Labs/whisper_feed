@@ -306,9 +306,11 @@ the way.
   Cause: leaving Sources cut the message short, so the undo was never
   forgotten. Fixed on main (leaving makes the removal final); in the next
   build.
-- **"the verge.com" is searched as a name** (sheet 103). A space makes it a
-  name search. Proposed: text ending in a domain ending loses its spaces and
-  is searched as an address. Owner to decide.
+- **"the verge.com" is searched as a name** (sheet 103, Fix). A space makes
+  it a name search. Text ending in a domain ending loses its spaces and is
+  searched as an address.
+- **Feed layout dialog: names too heavy** (sheet 88, back to Fix). Regular
+  weight like Settings rows, more space between choices.
 - **Refresh indicator still bounced in f6632d3** (sheet 87). Fixed on main
   (31e0d71), not yet built.
 - **"Saved under …" needs more emphasis** (test T4 of f6632d3). Proposal on

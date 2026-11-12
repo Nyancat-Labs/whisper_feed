@@ -26,6 +26,11 @@ Owner tested f6632d3; no build made (owner: read, don't build yet).
   second time). `SourceListPage` now forgets single and bulk removals when
   the screen is disposed. Side effect: a rotation or fold also ends the
   Undo. Not built yet.
+- Board, later the same day: 63c9895 T1 and T3 passed; T4 (feed layout
+  dialog) a problem, bold names too heavy for the rest of the app, so 88
+  back to Fix (names to regular weight, as Settings rows). 103 set to Fix
+  by the owner. 98 done (owner's GitHub settings, not checked from here).
+  The owner's upload on 102 works both ways.
 
 ## 11 November 2026 — Review board upgrade
 
