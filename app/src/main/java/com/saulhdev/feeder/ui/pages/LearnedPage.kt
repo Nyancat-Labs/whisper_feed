@@ -86,6 +86,7 @@ fun LearnedPage(
 ) {
     val sources by viewModel.sources.collectAsState()
     var confirmReset by remember { mutableStateOf(false) }
+    var showEmpty by rememberSaveable { mutableStateOf(false) }
     // Several sources forgotten at once (owner, 9 November): long-press one
     // to start, tap others to add them, Forget in the bar. Saved, so a turn
     // of the phone keeps it.
@@ -132,7 +133,15 @@ fun LearnedPage(
                 )
             }
 
-            items(sources, key = { it.id }) { source ->
+            // Two groups (owner, 12 November): after a reset a source's zeros
+            // looked exactly like a source that never had anything, so you
+            // could not see what you had cleared. Sources with nothing learned
+            // go below, one line each, folded away until asked for.
+            val (learned, empty) = sources.partition { it.hasLearned }
+            if (learned.isNotEmpty()) {
+                item(key = "h-learned") { GroupHeading(stringResource(R.string.learned_group_learned)) }
+            }
+            items(learned, key = { it.id }) { source ->
                 val toggle = {
                     selected = if (source.id in selected) selected - source.id else selected + source.id
                 }
@@ -145,6 +154,26 @@ fun LearnedPage(
                     onForget = { viewModel.forget(source.id) },
                     onUnhide = { viewModel.unhide(source.id) },
                 )
+            }
+            if (empty.isNotEmpty()) {
+                item(key = "h-empty") {
+                    TextButton(
+                        onClick = { showEmpty = !showEmpty },
+                        modifier = Modifier.padding(top = 12.dp),
+                    ) {
+                        Text(
+                            stringResource(
+                                if (showEmpty) R.string.learned_group_empty_hide else R.string.learned_group_empty_show,
+                                empty.size,
+                            )
+                        )
+                    }
+                }
+                if (showEmpty) {
+                    items(empty, key = { it.id }) { source ->
+                        EmptyRow(source = source, onUnhide = { viewModel.unhide(source.id) })
+                    }
+                }
             }
 
             item {
@@ -265,5 +294,44 @@ private fun LearnedRow(
                 }
             }
         },
+    )
+}
+
+@Composable
+private fun GroupHeading(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.titleSmall,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.padding(start = 4.dp, top = 8.dp, bottom = 4.dp),
+    )
+}
+
+/** A source Whisper knows nothing about yet: one line, nothing to forget or select. */
+@Composable
+private fun EmptyRow(source: LearnedSource, onUnhide: () -> Unit) {
+    ListItem(
+        modifier = Modifier.clip(MaterialTheme.shapes.large),
+        colors = ListItemDefaults.colors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        ),
+        leadingContent = {
+            SourceMark(iconUrl = source.iconUrl, sourceName = source.title, size = 24.dp)
+        },
+        headlineContent = { Text(source.title) },
+        supportingContent = {
+            Text(
+                stringResource(R.string.learned_nothing_yet),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        },
+        trailingContent = if (source.hidden) {
+            {
+                IconButton(onClick = onUnhide) {
+                    Icon(Phosphor.EyeSlash, stringResource(R.string.learned_unhide))
+                }
+            }
+        } else null,
     )
 }

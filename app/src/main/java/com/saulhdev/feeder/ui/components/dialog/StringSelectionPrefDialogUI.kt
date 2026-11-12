@@ -18,9 +18,14 @@
 
 package com.saulhdev.feeder.ui.components.dialog
 
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.semantics.Role
+
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.AlertDialog
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -112,6 +117,10 @@ fun SingleSelectionListItem(
     endWidget: (@Composable () -> Unit)? = null,
     onClick: () -> Unit = {}
 ) {
+    // Material's list of choices in a dialog (owner, 12 November): the radio
+    // lines up with the title's left edge rather than sitting 22dp in, it
+    // is level with the name when there is a line under it, and the whole
+    // row is the one tap target, announced as a radio button.
     Row(
         // At least 48, not exactly: at 200% text a choice such as "Only on
         // Wi-Fi and while charging" takes two lines, and a fixed row cut the
@@ -119,19 +128,30 @@ fun SingleSelectionListItem(
         modifier = modifier
             .fillMaxWidth()
             .heightIn(min = 48.dp)
-            .clickable(onClick = onClick, enabled = isEnabled),
-        verticalAlignment = Alignment.CenterVertically
+            .selectable(
+                selected = isSelected,
+                enabled = isEnabled,
+                role = Role.RadioButton,
+                onClick = onClick,
+            ),
+        verticalAlignment = if (supporting != null) Alignment.Top else Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        RadioButton(
-            selected = isSelected,
-            enabled = isEnabled,
-            onClick = onClick,
-            modifier = Modifier.padding(start = 8.dp, end = 8.dp),
-            colors = RadioButtonDefaults.colors(
-                selectedColor = MaterialTheme.colorScheme.primary,
-                unselectedColor = MaterialTheme.colorScheme.onSurface
+        // The row is the touch target, so the radio need not reserve its own
+        // 48dp: without that it draws at the row's edge, under the title.
+        CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) {
+            RadioButton(
+                selected = isSelected,
+                enabled = isEnabled,
+                onClick = null,
+                // Level with the name's first line (titleMedium, 24sp line).
+                modifier = Modifier.padding(top = if (supporting != null) 12.dp else 0.dp),
+                colors = RadioButtonDefaults.colors(
+                    selectedColor = MaterialTheme.colorScheme.primary,
+                    unselectedColor = MaterialTheme.colorScheme.onSurface
+                )
             )
-        )
+        }
         Column(
             modifier = Modifier
                 .weight(1f)

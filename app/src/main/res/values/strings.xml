@@ -469,6 +469,10 @@
     <string name="learned_unhide">Show this source again</string>
     <string name="learned_faded">Faded: you usually scroll past this</string>
     <string name="learned_forget_selected">Forget</string>
+    <string name="learned_group_learned">Learned</string>
+    <string name="learned_group_empty_show">Nothing learned yet (%1$d)</string>
+    <string name="learned_group_empty_hide">Hide nothing learned yet (%1$d)</string>
+    <string name="learned_nothing_yet">Nothing learned yet</string>
     <string name="learned_reset_all">Forget everything</string>
     <plurals name="covered_by_sources">
         <item quantity="one">Covered by %1$d source</item>

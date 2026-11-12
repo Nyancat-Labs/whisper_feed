@@ -78,4 +78,19 @@ class Batch1112Test {
         assertTrue(page.contains("viewModel.forget(selected)"))
         assertTrue(page.contains("R.string.learned_faded"))
     }
+
+    @Test
+    fun `layout choices line up with the title, Material's way`() {
+        val dialog = source("ui/components/dialog/StringSelectionPrefDialogUI.kt")
+        assertTrue(dialog.contains("LocalMinimumInteractiveComponentSize provides 0.dp"))
+        assertTrue(dialog.contains("role = Role.RadioButton"))
+        assertTrue(dialog.contains("onClick = null,"))
+    }
+
+    @Test
+    fun `sources with nothing learned are grouped apart`() {
+        val page = source("ui/pages/LearnedPage.kt")
+        assertTrue(page.contains("sources.partition { it.hasLearned }"))
+        assertTrue(page.contains("R.string.learned_nothing_yet"))
+    }
 }
