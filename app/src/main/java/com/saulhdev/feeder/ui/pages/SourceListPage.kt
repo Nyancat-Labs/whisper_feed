@@ -227,7 +227,18 @@ fun SourceListPage(
 
     // Leaving the screen with a selection still live would mean coming back to
     // a bulk action armed against a list that may have changed underneath it.
-    DisposableEffect(Unit) { onDispose { viewModel.clearSelection() } }
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.clearSelection()
+            // Leaving makes a removal final. The undo was kept until its
+            // message ended, and a message cut short by leaving never ends:
+            // "Removed 076" came back on every visit, and its Undo could put
+            // a source back a second time after it had been re-added (sheet
+            // 104, 12 November).
+            viewModel.forgetDeleted()
+            viewModel.forgetDeletedSources()
+        }
+    }
 
     // Back dismisses the selection before it dismisses the screen, which is
     // the same promise the close cross in the app bar makes. Without this the

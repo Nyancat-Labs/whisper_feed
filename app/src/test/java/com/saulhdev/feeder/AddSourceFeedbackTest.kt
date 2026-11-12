@@ -63,4 +63,13 @@ class AddSourceFeedbackTest {
     fun `an added feed's card is not greyed out as disabled`() {
         assertFalse(page.contains("enabled = !alreadyAdded"))
     }
+
+    @Test
+    fun `leaving Sources makes a removal final, so its undo message does not come back`() {
+        val sources = File("src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt").readText()
+        val dispose = sources.substring(sources.indexOf("DisposableEffect(Unit) {"))
+            .substringBefore("\n    }\n")
+        assertTrue(dispose.contains("viewModel.forgetDeleted()"))
+        assertTrue(dispose.contains("viewModel.forgetDeletedSources()"))
+    }
 }
