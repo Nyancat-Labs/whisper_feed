@@ -8,6 +8,19 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 12 November 2026 — Refresh indicator, Material's way (sheet 106)
+
+Owner's screenshots of d3ea2e7 against Harmonic: the indicator sat on the
+"Today" line, clipped the first card, and while the list scrolled it lagged
+behind the line, jumped, then parked over the first headline. The cause was
+the design, not a bug: it tracked the line's window position with a spring.
+Owner: follow Material's guidelines. `RefreshIndicator` is now
+`PullToRefreshDefaults.LoadingIndicator(isRefreshing = refreshing)` at
+TopCenter, which Material holds at its fixed spot for the update. The anchor
+(`RefreshAnchor`, `LocalRefreshAnchor`, `restingTop`) is gone;
+`rememberRefreshing` still holds the state from pull to the end of the
+update. 1341 tests (one test of the removed geometry dropped).
+
 ## 12 November 2026 — Batch for the next preview
 
 - 88: `SingleSelectionListItem` uses Settings row styles (titleMedium,

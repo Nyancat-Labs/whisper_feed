@@ -19,8 +19,8 @@ Unreleased
   one) now load.
 - **Leaving Sources makes a removal final**, so "Removed …" no longer
   comes back on every visit.
-- **The refresh indicator stays put** from the pull to the end of the
-  update.
+- **The refresh indicator follows Material's design**: it follows your
+  pull, then stays in one place near the top until the update ends.
 - **Feed layout choices** read like the rest of Settings.
 - **"Saved under …"** is easier to see when filing a new source.
 - **Security tidy-up** after an audit: a developer-only preview screen is
