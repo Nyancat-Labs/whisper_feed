@@ -8,6 +8,21 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 12 November 2026 — Results from d3ea2e7
+
+- Passed: T1 (database 29 -> 30 kept everything), T4, T5, T6, T8, T9.
+  Items 99, 103, 104, 105 done.
+- T3 (88): radios sat about 22dp in from the dialog title and centred on
+  two- and three-line choices. Now Material's list in a dialog: the row is
+  `selectable(role = RadioButton)`, the radio draws without its own 48dp
+  (`LocalMinimumInteractiveComponentSize` 0) so it lines up with the title,
+  and it is top-aligned with the name when there is a description.
+- T7 (91): after a reset, zeros looked like never-learned sources. The
+  Learned page now splits into "Learned" and a folded "Nothing learned yet"
+  group of one-line rows with no bin and no selection.
+- T6 question answered: the snackbar's inverse colours are Material's.
+- 1343 tests.
+
 ## 12 November 2026 — Refresh indicator, Material's way (sheet 106)
 
 Owner's screenshots of d3ea2e7 against Harmonic: the indicator sat on the
