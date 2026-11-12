@@ -301,24 +301,8 @@ which is private; here they are "a user". Item numbers are the sheet's.
 Found on device, so they take precedence over anything below when they are in
 the way.
 
-- **"Removed 076" stays until dismissed** (sheet 104, 12 November). The
-  Sources undo bar never closes by itself, even after leaving the app.
-  Cause: leaving Sources cut the message short, so the undo was never
-  forgotten. Fixed on main (leaving makes the removal final); in the next
-  build.
-- **"the verge.com" is searched as a name** (sheet 103, Fix). A space makes
-  it a name search. Text ending in a domain ending loses its spaces and is
-  searched as an address.
-- **Quartz pictures with a space in the file name don't load** (sheet 105).
-  Quartz's feed double-encodes the space (`%2520`) and its image server
-  refuses that address. Proposed: on failure, retry once decoded, then fall
-  back to the page's og:image. Owner to decide.
-- **Feed layout dialog: names too heavy** (sheet 88, back to Fix). Regular
-  weight like Settings rows, more space between choices.
-- **Refresh indicator still bounced in f6632d3** (sheet 87). Fixed on main
-  (31e0d71), not yet built.
-- **"Saved under …" needs more emphasis** (test T4 of f6632d3). Proposal on
-  the sheet.
+- Items 87, 88, 91, 103, 104, 105 and the "Saved under" emphasis are fixed
+  on main and in the next preview, waiting for the owner's tests.
 
 - **A sync in the foreground lost its network.** 17 October, Pixel 10 Pro on
   Android 17: the 10:52 scheduled sync started on screen and ran as a

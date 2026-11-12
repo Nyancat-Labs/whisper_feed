@@ -8,6 +8,26 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 12 November 2026 — Batch for the next preview
+
+- 88: `SingleSelectionListItem` uses Settings row styles (titleMedium,
+  bodyMedium) instead of bold 16sp; 10dp vertical padding with a
+  description.
+- 103: `FeedNameSearch.addressFrom`: text with spaces that joins into a
+  host ending in a 2-6 letter domain ending is an address, lowercased.
+  "Mr. Potato Head" stays a name.
+- T4 of f6632d3: "Saved under" in a primaryContainer band with a 20dp tick
+  and one small pulse; Done a filled Button.
+- 105: `repairDoubleEncoding` on the image client: on a 4xx, if the URL
+  holds `%25XX`, one retry with it decoded once (`undoubleEncoded`). No
+  og:image fallback yet: the retry fixes Quartz, and the fallback would need
+  a page fetch per broken picture.
+- 91: database 29 -> 30, `Feeds.learnedResetAt`. Engagement and dismissal
+  queries leave out rows before a source's own reset (statistics pass
+  `allHistory`). Learned page: faded line, bin whenever `hasLearned`,
+  long-press multi-select with Forget in the bar.
+- 1342 tests (`Batch1112Test`, `FeedNameSearchTest`).
+
 ## 12 November 2026 — Results from f6632d3
 
 Owner tested f6632d3; no build made (owner: read, don't build yet).

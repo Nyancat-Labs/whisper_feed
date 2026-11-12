@@ -9,6 +9,20 @@ Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 Unreleased
 ----------
 
+- **Forget one source, or several**, under What Whisper has learned:
+  the bin now clears what Whisper counted as well as More and Less, so a
+  faded source stops being faded. Long-press to pick several. Faded sources
+  say so.
+- **"the verge.com" finds The Verge.** An address typed with a space or a
+  capital is searched as an address.
+- **Pictures from feeds that spell their addresses wrong** (Quartz, for
+  one) now load.
+- **Leaving Sources makes a removal final**, so "Removed …" no longer
+  comes back on every visit.
+- **The refresh indicator stays put** from the pull to the end of the
+  update.
+- **Feed layout choices** read like the rest of Settings.
+- **"Saved under …"** is easier to see when filing a new source.
 - **Security tidy-up** after an audit: a developer-only preview screen is
   no longer packed into the app, the feed library no longer carries its
   original compiler's email address, and the app is about 265 KB lighter.
