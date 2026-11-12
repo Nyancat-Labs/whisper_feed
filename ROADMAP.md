@@ -309,6 +309,10 @@ the way.
 - **"the verge.com" is searched as a name** (sheet 103, Fix). A space makes
   it a name search. Text ending in a domain ending loses its spaces and is
   searched as an address.
+- **Quartz pictures with a space in the file name don't load** (sheet 105).
+  Quartz's feed double-encodes the space (`%2520`) and its image server
+  refuses that address. Proposed: on failure, retry once decoded, then fall
+  back to the page's og:image. Owner to decide.
 - **Feed layout dialog: names too heavy** (sheet 88, back to Fix). Regular
   weight like Settings rows, more space between choices.
 - **Refresh indicator still bounced in f6632d3** (sheet 87). Fixed on main

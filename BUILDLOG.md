@@ -31,6 +31,10 @@ Owner tested f6632d3; no build made (owner: read, don't build yet).
   back to Fix (names to regular weight, as Settings rows). 103 set to Fix
   by the owner. 98 done (owner's GitHub settings, not checked from here).
   The owner's upload on 102 works both ways.
+- 105: two Quartz articles showed the wave placeholder. Their feed's
+  `media:thumbnail` addresses double-encode a space (`Michael%2520Burry.jpg`);
+  qz.com's Cloudflare resizer answers 403 to that and 200 to `%20`. Checked
+  with curl. Feed's fault; a repair is proposed on the sheet.
 
 ## 11 November 2026 — Review board upgrade
 
