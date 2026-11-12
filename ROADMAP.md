@@ -303,9 +303,9 @@ the way.
 
 - **"Removed 076" stays until dismissed** (sheet 104, 12 November). The
   Sources undo bar never closes by itself, even after leaving the app.
-  Probably Android's accessibility timing stretching a snackbar that has a
-  button; waiting on the owner's settings. Proposed: close after 10 s unless
-  TalkBack is on, and on leaving the screen.
+  Cause: leaving Sources cut the message short, so the undo was never
+  forgotten. Fixed on main (leaving makes the removal final); in the next
+  build.
 - **"the verge.com" is searched as a name** (sheet 103). A space makes it a
   name search. Proposed: text ending in a domain ending loses its spaces and
   is searched as an address. Owner to decide.

@@ -20,6 +20,12 @@ Owner tested f6632d3; no build made (owner: read, don't build yet).
   104 (the Sources undo bar never closes). Replies, proposals and the
   owner's screenshots are on the cards; screenshots also in
   `archive/screenshots/` (gitignored).
+- 104 fixed on main (owner agreed): the removed source was kept for Undo
+  until its message ended, and leaving Sources cut the message short, so
+  it came back on every visit (and its Undo could add a re-added source a
+  second time). `SourceListPage` now forgets single and bulk removals when
+  the screen is disposed. Side effect: a rotation or fold also ends the
+  Undo. Not built yet.
 
 ## 11 November 2026 — Review board upgrade
 
