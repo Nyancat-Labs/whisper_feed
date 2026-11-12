@@ -19,7 +19,6 @@
 package com.saulhdev.feeder.ui.components.dialog
 
 import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.semantics.Role
