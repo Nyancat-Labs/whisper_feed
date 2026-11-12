@@ -8,6 +8,19 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 12 November 2026 — Results from f6632d3
+
+Owner tested f6632d3; no build made (owner: read, don't build yet).
+
+- Passed: T1 install, T3 offline when adding a source, T4 filing (with a
+  note that "Saved under" needs more emphasis). Items 89 and 90 done.
+- T2 refresh still bounced: expected, the fix (31e0d71) came after this
+  build. Item 87 back to Fix.
+- New: 103 ("the verge.com" searched as a name because of the space) and
+  104 (the Sources undo bar never closes). Replies, proposals and the
+  owner's screenshots are on the cards; screenshots also in
+  `archive/screenshots/` (gitignored).
+
 ## 11 November 2026 — Review board upgrade
 
 The review sheet got the four features added to the owner's Homelab board

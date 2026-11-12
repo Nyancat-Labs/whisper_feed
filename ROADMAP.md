@@ -301,6 +301,19 @@ which is private; here they are "a user". Item numbers are the sheet's.
 Found on device, so they take precedence over anything below when they are in
 the way.
 
+- **"Removed 076" stays until dismissed** (sheet 104, 12 November). The
+  Sources undo bar never closes by itself, even after leaving the app.
+  Probably Android's accessibility timing stretching a snackbar that has a
+  button; waiting on the owner's settings. Proposed: close after 10 s unless
+  TalkBack is on, and on leaving the screen.
+- **"the verge.com" is searched as a name** (sheet 103). A space makes it a
+  name search. Proposed: text ending in a domain ending loses its spaces and
+  is searched as an address. Owner to decide.
+- **Refresh indicator still bounced in f6632d3** (sheet 87). Fixed on main
+  (31e0d71), not yet built.
+- **"Saved under …" needs more emphasis** (test T4 of f6632d3). Proposal on
+  the sheet.
+
 - **A sync in the foreground lost its network.** 17 October, Pixel 10 Pro on
   Android 17: the 10:52 scheduled sync started on screen and ran as a
   foreground task, which is meant to keep its network when the reader looks
