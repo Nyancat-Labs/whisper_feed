@@ -4,6 +4,32 @@ For a new Claude Code session picking up from the first one (late September to
 17 October 2026). The repository is the record; this note covers what isn't
 obvious from it.
 
+## Where we are (15 November 2026)
+
+Start here after a /clear. CLAUDE.md has the working rules; this is state.
+
+- **Preview 218a5b9** is with the owner: steps T1-T4 on the review sheet
+  (Material's refresh indicator 106, layout dialog 88, Learned groups 91).
+  Nothing else is waiting for a build.
+- **Szept** holds every open job (project Whisper, ids 130, 146-197), each
+  with priority, slot and plan; every open sheet card's reply carries its
+  Szept number. At the start of a session: `list_questions`, then the
+  sheet, then Szept.
+- **Next for Claude:** batch 4 (Sources, Import, About, Help: sheet 23,
+  25, 26, 29, 33-39, 57, 60, 61, 107; Szept 154-167), planned for 21 Nov.
+  Then batch 5 (reader 52, 71, 76, 45), 80, 73 (28 Nov), translations
+  (5 Dec), release 1.0.6 (12 Dec).
+- **Weblate (Szept 130, urgent, trial ends 22 Nov):** the owner unlocks the
+  project, adds French under App, then replies to Weblate Care (ticket
+  2015248) that a language is added; Claude drafts the reply, asking to
+  extend the trial if approval might run past the 22nd.
+- **Feed library:** Joho no Todai added (English in tech.opml, Japanese in
+  japan.opml); reply sent. Sheet 108 can close once it ships.
+- **Open on the sheet for the owner:** 107 (Open website button: Fix?),
+  102 (Drop if the board works), 109 (check the picture tap), 85 (Later).
+- **archive/** (gitignored, this container only) holds the owner's
+  screenshots; the sheet's asset store has the same files.
+
 ## The app
 
 Whisper, an Android RSS reader. Package `com.nyancatlabs.whisper`, published by
