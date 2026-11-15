@@ -39,6 +39,7 @@
       <outline type="rss" text="Golem.de" title="Golem.de" xmlUrl="https://rss.golem.de/rss.php?feed=RSS2.0"/>
       <outline type="rss" text="The Register" title="The Register" xmlUrl="https://www.theregister.com/headlines.atom"/>
       <outline type="rss" text="heise online" title="heise online" xmlUrl="https://www.heise.de/rss/heise-atom.xml"/>
+      <outline type="rss" text="Joho no Todai (English)" title="Joho no Todai (English)" description="Independent analysis of the latest tech industry news. English edition of Joho no Todai." xmlUrl="https://joho-todai.com/en/rss/"/>
     </outline>
   </body>
 </opml>

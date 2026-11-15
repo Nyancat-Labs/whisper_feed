@@ -12,6 +12,7 @@
       <outline type="rss" text="NYT &gt; Japan" title="NYT &gt; Japan" xmlUrl="https://www.nytimes.com/svc/collections/v1/publish/http://www.nytimes.com/topic/destination/japan/rss.xml"/>
       <outline type="rss" text="ライブドアニュース - 主要トピックス" title="ライブドアニュース - 主要トピックス" xmlUrl="https://news.livedoor.com/topics/rss/top.xml"/>
       <outline type="rss" text="朝日新聞デジタル" title="朝日新聞デジタル" xmlUrl="https://rss.asahi.com/rss/asahi/newsheadlines.rdf"/>
+      <outline type="rss" text="情報の灯台" title="情報の灯台" xmlUrl="https://joho-todai.com/rss/"/>
     </outline>
     <outline text="News" title="News">
     </outline>
