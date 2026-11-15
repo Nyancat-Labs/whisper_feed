@@ -27,6 +27,7 @@ Szept holds everything still to do, across all projects. Use the Szept connector
 - Every entry gets a priority: urgent (security, or a deadline where something breaks or expires), important (matters, no rush), normal (routine), someday (ideas, maybe-laters). One left without a priority shows as "unsorted" and gets flagged.
 - Every entry also gets a slot (how it gets done) and a plan (roughly when). Slots: sat-day (hands-on, Saturday daytime), evening (computer work, Saturday/Sunday evening), work-gap (a short remote job; only if it needs few windows), claude (you do it alone), waiting (blocked). Plan = the Saturday of the weekend to aim for (YYYY-MM-DD), or "later". Spread jobs over weekends, a few hours per slot, urgent first; a due time, if any, still rules.
 - Set project to this project's name, put "board <ref>" in the text when it belongs to a board card, and add a short opening line (claude_prompt) I can paste to pick the job up with you.
+- I can add notes and ask you questions on any Szept item. At the start of a session check list_questions and answer each one with add_comment_reply; read my notes on the items you work on.
 - Add the entry in the same turn the card or ROADMAP line is created, and put the Szept id in the card's reply. When it's finished or dropped, complete or cancel the Szept entry in the same turn.
 
 ## Work board (job tracking artifact)
