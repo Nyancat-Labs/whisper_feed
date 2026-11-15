@@ -8,6 +8,21 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 15 November 2026 — Preview 218a5b9; everything open into Szept
+
+- Preview 218a5b9 built and sent: Material's refresh indicator (106), the
+  layout dialog aligned (88), the Learned groups (91). Steps T1-T4 on the
+  sheet. 87 merged into 106.
+- Review board page: the redraw held back while typing waits 400 ms after
+  the note box loses focus, so a tap on "+ Add a file" is no longer lost
+  (sheet 109). The white gap after the keyboard is claude.ai's frame.
+- Owner's CLAUDE.md Szept rules merged from GitHub. Szept now holds every
+  open sheet card (Szept 146-178, 182-191; 108 is 131), the rest of 1.0.6
+  (release 179, the email to the French user 180, the website 181) and
+  the long-term ROADMAP items (192-197), each with priority, slot and plan.
+  Each card's reply carries its Szept number. 130 and 131 moved to project
+  Whisper.
+
 ## 12 November 2026 — Results from d3ea2e7
 
 - Passed: T1 (database 29 -> 30 kept everything), T4, T5, T6, T8, T9.
