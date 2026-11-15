@@ -210,7 +210,10 @@ button:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px soli
         () => el.querySelector(".saved").textContent = "Not saved");
     };
     ta.addEventListener("input", () => { clearTimeout(timer); timer = setTimeout(saveNote, 900); });
-    ta.addEventListener("blur", () => { saveNote(); if (pending) { pending = false; render(); } });
+    // The redraw held back while typing waits a moment after the box loses focus:
+    // redrawing at once moved the card under the finger, so a tap on
+    // "+ Add a file" or a button straight after typing was lost (sheet 109).
+    ta.addEventListener("blur", () => { saveNote(); if (pending) { pending = false; setTimeout(render, 400); } });
     const mb = el.querySelector(".more-btn");
     mb.setAttribute("aria-controls", "more-" + id);
     el.querySelector(".more").id = "more-" + id;
