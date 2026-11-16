@@ -22,7 +22,7 @@ and Google Play builds on two other devices.
   an empty `values-fr/plurals.xml`: every later language would need one too,
   or Weblate refuses it again. Undo: `git revert` this commit.
 - **Owner, same evening:** pressed Update on App, which then showed
-  693 strings to translate (655 + 38 plurals; 9 marked not translatable), then deleted the Plurals component. Weblate shows the licence as GPL-3.0-only; the project is GPL-3.0-or-later, to be corrected. After approval: push to GitHub, repository hooks, unlock.
+  693 strings to translate (655 + 38 plurals; 9 marked not translatable), then deleted the Plurals component. Licence on Weblate corrected from GPL-3.0-only to GPL-3.0-or-later at project level (App inherits it), to match `LICENSE` and the README. After approval: push to GitHub, repository hooks, unlock.
 
 ## 15 November 2026 — Preview 218a5b9; everything open into Szept
 

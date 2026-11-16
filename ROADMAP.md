@@ -3343,8 +3343,6 @@ into the Glossary, mark Claude's strings as needing review, add the store
 listing (`fastlane/metadata/android/*`) as a component, and point About's
 "Report a translation mistake" at the project.
 
-- [ ] **Weblate licence:** App shows GPL-3.0-only; the project is
-  GPL-3.0-or-later. Owner to change it (App → Operations → Settings → Basic).
 - [ ] **After Libre approval (trial ends 22 November):** set up push to
   GitHub and repository hooks, then unlock for translators with the steps
   above (Szept #215).
