@@ -185,9 +185,10 @@ ships, so his corrections go into the release.
 
 ## Weblate (set up 8 November 2026)
 
-hosted.weblate.org/projects/whisper — components App (strings.xml) and
-Plurals (plurals.xml), base files read-only there, project **locked** until
-Claude's translations land; Libre hosting requested. Weblate cannot push to
+hosted.weblate.org/projects/whisper — one component, App (strings.xml, all
+plurals included; the Plurals component and plurals.xml went on 16 November),
+base file read-only there, French added 16 November, project **locked** until
+Claude's translations land; Libre hosting requested (pending; trial ends 22 November). Weblate cannot push to
 GitHub yet (no push URL), on purpose. See ROADMAP *Translations* for what to
 do when unlocking. A string a person corrects on Weblate is never
 overwritten by Claude.

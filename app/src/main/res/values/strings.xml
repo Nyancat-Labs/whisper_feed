@@ -832,4 +832,12 @@
         <item quantity="one">Failed %1$d time in a row</item>
         <item quantity="other">Failed %1$d times in a row</item>
     </plurals>
+    <plurals name="mark_read_unread">
+        <item quantity="one">%1$d unread</item>
+        <item quantity="other">%1$d unread</item>
+    </plurals>
+    <plurals name="articles_marked_read">
+        <item quantity="one">%1$d article marked as read</item>
+        <item quantity="other">%1$d articles marked as read</item>
+    </plurals>
 </resources>

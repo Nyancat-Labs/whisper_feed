@@ -8,6 +8,22 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 16 November 2026 — Weblate: French added; plurals moved into strings.xml
+
+- **Owner, on Weblate:** French added to the App component (687 strings).
+  Libre hosting approval requested ("Pending approval"); trial ends
+  22 November, Alice asked to extend it if the review needs longer.
+- **Problem:** the Plurals component said "No file mask matches" and refused
+  French, because only `values/plurals.xml` existed, no `values-*/plurals.xml`.
+- **Fix (repo):** the two plurals in `values/plurals.xml`
+  (`mark_read_unread`, `articles_marked_read`) moved to the end of
+  `values/strings.xml`, and `plurals.xml` deleted. Android merges every file
+  in `values/`, so names, English wording and the app are unchanged. Why not
+  an empty `values-fr/plurals.xml`: every later language would need one too,
+  or Weblate refuses it again. Undo: `git revert` this commit.
+- **Next (owner):** delete the Plurals component on Weblate; App then shows
+  689 strings. After approval: push to GitHub, repository hooks, unlock.
+
 ## 15 November 2026 — Preview 218a5b9; everything open into Szept
 
 - Preview 218a5b9 built and sent: Material's refresh indicator (106), the

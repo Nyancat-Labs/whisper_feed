@@ -3321,17 +3321,34 @@ visual fixes) are done, as the last piece of 1.0.6 (owner, 27 October). The plan
 
 **Weblate set up 8 November 2026** (owner, guided here): Hosted Weblate,
 project `whisper` (hosted.weblate.org/projects/whisper), licence
-GPL-3.0-or-later. Components: **App** (`app/src/main/res/values-*/strings.xml`,
-base `values/strings.xml`, 687 strings) and **Plurals**
-(`values-*/plurals.xml`, 2), both Android String Resource, base file not
-editable on Weblate (English changes only in code), new languages from the
-base file. Plus the automatic Glossary. **Locked** until Claude's seven
-translations land; Libre (gratis) hosting requested. To do when unlocking:
+GPL-3.0-or-later. Component: **App** (`app/src/main/res/values-*/strings.xml`,
+base `values/strings.xml`, Android String Resource, base file not editable
+on Weblate (English changes only in code), new languages from the base
+file). Plus the automatic Glossary.
+
+**16 November 2026 (owner, from the homelab session):** French added to App
+(then 687 strings). Libre hosting approval requested from the billing page,
+status "Pending approval"; the trial ends 22 November and Alice (Weblate)
+has been asked to extend it if needed. The second component, **Plurals**
+(`values-*/plurals.xml`), failed with "No file mask matches" (only
+`values/plurals.xml` existed) and refused French. Fixed in the repo the same
+day: its two plurals moved into `values/strings.xml` (App now 689 strings,
+38 plurals) and `plurals.xml` removed, so every language needs only one
+file. Owner to do: delete the Plurals component on Weblate (it holds no
+translations).
+
+**Locked** until Claude's seven translations land. To do when unlocking:
 give Weblate a way to push (Weblate's GitHub app or a pull-request
 integration, owner's choice then), import `docs/translations/glossary.csv`
 into the Glossary, mark Claude's strings as needing review, add the store
 listing (`fastlane/metadata/android/*`) as a component, and point About's
 "Report a translation mistake" at the project.
+
+- [ ] **Delete the Plurals component on Weblate** (owner; see BUILDLOG
+  16 November; Szept #214), then check App shows 689 strings.
+- [ ] **After Libre approval (trial ends 22 November):** set up push to
+  GitHub and repository hooks, then unlock for translators with the steps
+  above (Szept #215).
 
 **Open to volunteers later (owner, 28 October).** The files are standard
 `values-xx/strings.xml`, which Weblate reads as they are, so the Weblate plan
