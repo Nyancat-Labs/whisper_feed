@@ -3332,7 +3332,7 @@ status "Pending approval"; the trial ends 22 November and Alice (Weblate)
 has been asked to extend it if needed. The second component, **Plurals**
 (`values-*/plurals.xml`), failed with "No file mask matches" (only
 `values/plurals.xml` existed) and refused French. Fixed in the repo the same
-day: its two plurals moved into `values/strings.xml` (App now 689 strings,
+day: its two plurals moved into `values/strings.xml` (App now 693 strings to translate,
 38 plurals) and `plurals.xml` removed, so every language needs only one
 file. Owner to do: delete the Plurals component on Weblate (it holds no
 translations).
@@ -3345,7 +3345,7 @@ listing (`fastlane/metadata/android/*`) as a component, and point About's
 "Report a translation mistake" at the project.
 
 - [ ] **Delete the Plurals component on Weblate** (owner; see BUILDLOG
-  16 November; Szept #214), then check App shows 689 strings.
+  16 November; Szept #214), then check App shows 693 strings.
 - [ ] **After Libre approval (trial ends 22 November):** set up push to
   GitHub and repository hooks, then unlock for translators with the steps
   above (Szept #215).

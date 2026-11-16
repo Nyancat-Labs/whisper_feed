@@ -21,8 +21,8 @@ and Google Play builds on two other devices.
   in `values/`, so names, English wording and the app are unchanged. Why not
   an empty `values-fr/plurals.xml`: every later language would need one too,
   or Weblate refuses it again. Undo: `git revert` this commit.
-- **Next (owner):** delete the Plurals component on Weblate; App then shows
-  689 strings. After approval: push to GitHub, repository hooks, unlock.
+- **Next (owner):** delete the Plurals component on Weblate. After Update, App showed
+  693 strings to translate (655 + 38 plurals; 9 marked not translatable). After approval: push to GitHub, repository hooks, unlock.
 
 ## 15 November 2026 — Preview 218a5b9; everything open into Szept
 
