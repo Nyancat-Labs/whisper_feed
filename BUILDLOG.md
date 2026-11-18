@@ -8,6 +8,18 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 18 November 2026 — Preview 43ee0b0 (218a5b9 was never installed)
+
+- About on the owner's phone showed d3ea2e7: the 218a5b9 APK never got
+  installed, so its T2-T4 results were for the old build. Those steps set to
+  untested; 106 reopened to preview.
+- Preview 43ee0b0 built from main with the release key (fingerprint checked,
+  `.dev` id, versionCode 6): the three fixes (106, 88, 91), Joho no Todai in
+  the library (108), and the Weblate plurals move (no visible change).
+  Tests 1343 passing, lint clean. Steps T1-T5 (`t011-*`) on the sheet.
+- The first build failed fetching a lint dependency from Maven Central (the
+  file was there a minute later); a retry built. If it recurs, retry.
+
 ## 18 November 2026 — Results from 218a5b9 (review sheet)
 
 - T1 install and T2 refresh indicator: Pass. T3 feed layout dialog: Problem

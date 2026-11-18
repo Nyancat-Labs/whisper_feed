@@ -8,7 +8,7 @@ obvious from it.
 
 Start here after a /clear. CLAUDE.md has the working rules; this is state.
 
-- **Preview 218a5b9** is with the owner: steps T1-T4 on the review sheet
+- **Preview 43ee0b0** is with the owner (218a5b9 never got installed): steps T1-T5 on the review sheet
   (Material's refresh indicator 106, layout dialog 88, Learned groups 91).
   Nothing else is waiting for a build.
 - **Szept** holds every open job (project Whisper, ids 130, 146-197), each
