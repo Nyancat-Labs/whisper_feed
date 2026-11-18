@@ -8,6 +8,21 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 18 November 2026 — Results from 218a5b9 (review sheet)
+
+- T1 install and T2 refresh indicator: Pass. T3 feed layout dialog: Problem
+  (radios indented and centred on the description). T4 Learned groups:
+  question, answered, back to open. t009-07: asked again, already answered,
+  back to open.
+- All three screenshots show the previous build's behaviour (indicator on
+  the 'Today' line, no 'Learned' heading, the old dialog), though the code
+  for each is in 218a5b9. Likely the phone is still on d3ea2e7: owner to
+  check the version in About, then reinstall and redo T2-T4.
+- Owner's question (T4): move What Whisper has learned and Your reading to
+  Your data? Claude's advice: keep them under Your feed (Learned steers the
+  feed), and perhaps add a 'Forget what Whisper has learned' line under
+  Your data. Waiting for the owner's choice.
+
 ## 16 November 2026 — Weblate: French added; plurals moved into strings.xml
 
 - **Owner, on Weblate:** French added to the App component (687 strings).
