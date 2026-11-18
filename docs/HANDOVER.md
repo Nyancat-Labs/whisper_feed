@@ -8,9 +8,8 @@ obvious from it.
 
 Start here after a /clear. CLAUDE.md has the working rules; this is state.
 
-- **Preview 43ee0b0** is with the owner (218a5b9 never got installed): steps T1-T5 on the review sheet
-  (Material's refresh indicator 106, layout dialog 88, Learned groups 91).
-  Nothing else is waiting for a build.
+- **Preview 43ee0b0** tested 18 November: T1-T5 pass (106, 88, 91, 108
+  closed), T6-T7 not tested. Nothing is waiting for a build.
 - **Szept** holds every open job (project Whisper, ids 130, 146-197), each
   with priority, slot and plan; every open sheet card's reply carries its
   Szept number. At the start of a session: `list_questions`, then the

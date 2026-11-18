@@ -8,6 +8,17 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 18 November 2026 — Results from 43ee0b0
+
+- T1-T5 pass: install and version, Material's refresh indicator (106), the
+  Feed layout dialog lined up (88), the Learned groups (91), Joho no Todai in
+  the library (108). All four issues closed; Szept 150-152 done.
+- T6 (Read today) and T7 (TalkBack) not tested. T7 checked in code instead:
+  `selectableGroup()` and `Role.RadioButton` in
+  `StringSelectionPrefDialogUI.kt`, which is what TalkBack reads.
+- Still open from the owner: whether to add a 'Forget what Whisper has
+  learned' line under Your data (asked on T4, no answer yet).
+
 ## 18 November 2026 — Preview 43ee0b0 (218a5b9 was never installed)
 
 - About on the owner's phone showed d3ea2e7: the 218a5b9 APK never got
