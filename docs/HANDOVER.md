@@ -80,6 +80,12 @@ Neo Feed).
   straight to `done`, or the To check tab is empty; and a new test starts
   as `open`, never `untested`, which the page shows as already answered
   ("Not tested").
+  **Clearing down (18 November):** once a build's steps are all settled (or
+  replaced by a later build), move its test cards to the `archive`
+  collection (same database, same doc ids; the page never reads it), so the
+  Build tests tab shows only the current build. Undo: copy back to `items`.
+  Finished issues stay in `items`: the All issues tab hides them already,
+  and the page numbers new issues from the highest `n` in `items`.
 
 **The board from 11 November 2026** (same features as the owner's Homelab
 board; page source in `files/work-board.html`, published with

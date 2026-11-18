@@ -17,6 +17,11 @@ and Google Play builds on two other devices.
   `.dev` id, versionCode 6): the three fixes (106, 88, 91), Joho no Todai in
   the library (108), and the Weblate plurals move (no visible change).
   Tests 1343 passing, lint clean. Steps T1-T5 (`t011-*`) on the sheet.
+- Board cleared down: the 88 test and checklist cards of builds 272fae7 to
+  218a5b9 moved to the `archive` collection (not deleted). Every issue behind
+  them is done, or replaced by 106 and in this build. Two never-done checks
+  carried into this build as T6 (Read today) and T7 (TalkBack, optional).
+  Build tests now shows only 43ee0b0, T1-T7; To check shows 88, 91, 106, 108.
 - The first build failed fetching a lint dependency from Maven Central (the
   file was there a minute later); a retry built. If it recurs, retry.
 
