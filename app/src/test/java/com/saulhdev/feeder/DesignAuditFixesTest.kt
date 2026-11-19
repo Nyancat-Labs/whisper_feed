@@ -25,7 +25,7 @@ class DesignAuditFixesTest {
     @Test
     fun `the last rows of Settings and Sources clear the gesture bar`() {
         assertTrue(src("ui/pages/PreferencesPage.kt").contains("bottom = paddingValues.calculateBottomPadding() + 16.dp"))
-        assertTrue(src("ui/pages/SourceListPage.kt").contains("bottom = paddingValues.calculateBottomPadding() + 88.dp"))
+        assertTrue(src("ui/pages/SourceListPage.kt").contains("bottom = paddingValues.calculateBottomPadding() + 104.dp"))
     }
 
     @Test

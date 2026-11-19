@@ -43,8 +43,12 @@ class PlayNewsPolicyTest {
     @Test
     fun `it gives an email address that opens the mail app`() {
         assertTrue(about.contains("internal const val CONTACT_EMAIL = \"hej@nyancatlabs.com\""))
-        assertTrue(about.contains("ContactRow(R.string.about_contact_email, CONTACT_EMAIL, \"mailto:\$CONTACT_EMAIL\")"))
-        assertTrue(about.contains("Modifier.clickable { context.launchView(row.url) }"))
+        // A row of its own since batch 4 (sheet 61): the address shown under
+        // "Email us", and a tap opens the mail app.
+        val email = about.substringAfter("titleId = R.string.about_contact_email,").substringBefore("),")
+        assertTrue(email.contains("summary = CONTACT_EMAIL,"))
+        assertTrue(email.contains("url = \"mailto:\$CONTACT_EMAIL\""))
+        assertTrue(about.contains("row.url != null -> context.launchView(row.url)"))
     }
 
     @Test
