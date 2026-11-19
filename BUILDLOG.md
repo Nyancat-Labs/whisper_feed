@@ -8,6 +8,24 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 19 November 2026 — Card 68, preview 8afd9fc
+
+- `manager/backup/SettingsReset.kt`: removes every DataStore key not in
+  KEEP, so each setting reads its default. KEEP = SettingsBackup's
+  NOT_PORTABLE (now internal) plus welcome and tour seen, the full-text
+  migration flag, learning (reset time, source affinity), pinned and hidden
+  sources, category order, the weather place, the cloud and device backup
+  choices, and the account key. The sync account is in SharedPreferences
+  and untouched.
+- Help → Reset all settings, as a StringPref with the new `confirmId`:
+  ActionPreference asks with an AlertDialog first. Confirm instead of the
+  card's Undo: the screen redraws as theme and layout reset, and a settings
+  backup is the way back.
+- Goes into 1.0.6: the trial week starts after this weekend's checks.
+- Board: stale T5 of build 13 set to Not tested (replaced by T4 of build
+  14). ResetSettingsTest (2, real preference store); 1383 pass, lint clean.
+  Board build 17.
+
 ## 19 November 2026 — Release date
 
 - Agreed with the owner: 1.0.6 the weekend of 28 November, after this

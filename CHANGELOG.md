@@ -9,6 +9,9 @@ Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 Unreleased
 ----------
 
+- **Reset all settings** in Help, for when you can't find your way back:
+  it asks first, and leaves your sources, saved articles and what Whisper
+  has learned alone.
 - **Feeds with stray code after their end** (Darknet, for one) are read,
   as browsers read them, instead of being reported as broken.
 - **Sites that turn reading apps away** are named as such, on Feeds that
