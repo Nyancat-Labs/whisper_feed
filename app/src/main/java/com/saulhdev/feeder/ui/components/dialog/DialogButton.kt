@@ -1,5 +1,6 @@
 package com.saulhdev.feeder.ui.components.dialog
 
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -18,7 +19,8 @@ fun DialogPositiveButton(
     onClick: () -> Unit = {}
 ) {
     TextButton(
-        shape = MaterialTheme.shapes.large,
+        // A pill, like every other button (sheet 15).
+        shape = CircleShape,
         onClick = onClick,
         modifier = modifier,
         colors = ButtonDefaults.buttonColors(
@@ -41,7 +43,8 @@ fun DialogNegativeButton(
     onClick: () -> Unit = {}
 ) {
     TextButton(
-        shape = MaterialTheme.shapes.large,
+        // A pill, like every other button (sheet 15).
+        shape = CircleShape,
         onClick = onClick,
         modifier = modifier
     ) {

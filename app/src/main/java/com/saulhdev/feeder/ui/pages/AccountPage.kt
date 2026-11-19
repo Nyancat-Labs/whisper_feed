@@ -175,8 +175,11 @@ fun AccountPage(
                         text = stringResource(R.string.account_sign_out),
                         icon = Phosphor.Power,
                         modifier = Modifier.fillMaxWidth(),
+                        // Not the red of Delete: signing out removes nothing
+                        // (the line under it says so), and the pink read as a
+                        // warning (owner, sheet 15).
                         positive = false,
-                        destructive = true,
+                        destructive = false,
                         onClick = viewModel::signOut,
                     )
                 }
