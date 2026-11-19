@@ -8,6 +8,22 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 19 November 2026 — Results from 6a97e06; card 121, preview f580c5f
+
+- All seven steps of build 15 passed: 117, 118 and 120 closed. Darknet is
+  back and updates; IT Security Guru shows the blocks-apps card. The
+  diagnostics (archive/board-files/2026-11-19-2244-…) show FreshRSS refused
+  to add Darknet (400), so it lives on the phone only: the server's parser
+  has the same trouble with the trailing script. Told the owner.
+- 121: Preview on a source's page showed the previous source's result
+  (Darknet's under Huffington Post). SourceEditViewModel is shared between
+  pages; `setFeedId` now clears the preview when the source changes, an
+  address edit clears it, and the fetch job is cancelled with it. Preview
+  also reports `BlocksApps` for a 403. Batch7Test covers it; 1381 pass,
+  lint clean. Preview f580c5f, board build 16.
+- 122 (new, to decide): the owner asked whether the light message box on
+  the dark theme is right. Recommended keeping Material's inverse colours.
+
 ## 19 November 2026 — Batch 7, preview 6a97e06
 
 - **117, Darknet.** `FeedParser.parseRssAtom` now reads the body as bytes
