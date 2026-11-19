@@ -232,6 +232,15 @@ which is private; here they are "a user". Item numbers are the sheet's.
 - **Long-press an article for a preview** (67): **review batch 3**, with
   the card menu (58) (owner, 5 November).
 - **Reset all settings** (68): planned for 5 December (Szept 178).
+- **Open articles per source** (113, asked by a user by email, 19 November):
+  each source's page gets "Open articles: As in Settings / Reader /
+  Browser", using today's reader and browser hand-off unchanged. New
+  per-source column (migration and test), carried in backups. No Custom Tab
+  (owner, 19 November). **Batch 5, 28 November** (Szept 234); then reply to
+  the user who asked.
+- **Reading time from Chrome Custom Tabs** (someday, Szept 235): Chrome can
+  report scroll depth and when a tab closes, which would tell a read from a
+  bounce. Chrome only, so opt-in and explained if ever done.
 - **Open paywalled sources through an archive** (69): **after 1.0.6**
   (owner, 5 November). archive.org only, never archive.today (Play's
   rules on getting round paywalls). An "Open archived copy" action in the

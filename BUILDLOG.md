@@ -40,6 +40,10 @@ and Google Play builds on two other devices.
   sent to the owner; steps T1-T10 on the sheet; Szept 154-167, 169, 229
   done, 230 is the owner's testing.
 - Not tested on a phone yet.
+- A user asked by email (19 November) to open one paid newsletter in the
+  browser and everything else in the reader. Owner chose per-source
+  Reader/Browser on the existing two, no Custom Tab: sheet 113, batch 5,
+  Szept 234. Chrome engagement signals noted as someday (Szept 235).
 - Owner's diagnostics from 43ee0b0 (19 November, archive/board-files):
   new sheet 111 (seven feeds return under 1 KB and no articles every time,
   never flagged; Szept 232) and 112 (the 08:11 sync "reached sign-in
