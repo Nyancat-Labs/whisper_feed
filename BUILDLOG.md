@@ -16,7 +16,11 @@ and Google Play builds on two other devices.
 - T6 (Read today) and T7 (TalkBack) not tested. T7 checked in code instead:
   `selectableGroup()` and `Role.RadioButton` in
   `StringSelectionPrefDialogUI.kt`, which is what TalkBack reads.
-- Still open from the owner: whether to add a 'Forget what Whisper has
+- 19 November: 102 dropped (board features work), 109 closed (picture tap
+  works after typing a note); Szept 148-149 done. The T4 question became
+  sheet 110 (Szept 229): move 'Your reading' to Your data, keep Learned in
+  Your feed, add a Forget line under Your data. Owner to decide.
+- Was open from the owner: whether to add a 'Forget what Whisper has
   learned' line under Your data (asked on T4, no answer yet).
 
 ## 18 November 2026 — Preview 43ee0b0 (218a5b9 was never installed)

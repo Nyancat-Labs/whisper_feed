@@ -24,8 +24,8 @@ Start here after a /clear. CLAUDE.md has the working rules; this is state.
   extend the trial if approval might run past the 22nd.
 - **Feed library:** Joho no Todai added (English in tech.opml, Japanese in
   japan.opml); reply sent. Sheet 108 can close once it ships.
-- **Open on the sheet for the owner:** 107 (Open website button: Fix?),
-  102 (Drop if the board works), 109 (check the picture tap), 85 (Later).
+- **Open on the sheet for the owner:** 110 (move 'Your reading' to Your
+  data? Szept 229), 85 (Later). 107 is on Fix, in batch 4.
 - **archive/** (gitignored, this container only) holds the owner's
   screenshots; the sheet's asset store has the same files.
 
