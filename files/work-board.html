@@ -140,7 +140,9 @@ button:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px soli
   let showFinished = false;
   const chains = new Map();
   let db = null, assets = null, writable = true, tab = "decide", pending = false, loaded = false;
-  const FILE_TYPES = { md: "text/markdown", csv: "text/csv", json: "application/json", txt: "text/plain", log: "text/plain", pdf: "application/pdf" };
+  const FILE_TYPES = { md: "text/markdown", csv: "text/csv", json: "application/json", txt: "text/plain", log: "text/plain", pdf: "application/pdf",
+    // Backups and feeds (owner, 19 November): sent as plain text, a type the store takes.
+    opml: "text/plain", xml: "text/plain", rss: "text/plain" };
 
   try { const t = localStorage.getItem("tab"); if (t) tab = t; } catch (e) {}
 
@@ -177,7 +179,7 @@ button:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px soli
       '<div class="more" hidden></div><p class="build"></p><p class="merged"></p>' +
       '<div class="seg" role="group"></div><p class="reply" hidden></p>' +
       '<div class="files" hidden></div><textarea rows="1"></textarea><div class="saved"></div>' +
-      '<label class="attach" hidden><input type="file" accept="image/*,application/pdf,.txt,.log,.md,.csv,.json" style="position:absolute;opacity:0;width:1px;height:1px"><span>+ Add files or screenshots</span></label>';
+      '<label class="attach" hidden><input type="file" accept="image/*,application/pdf,.txt,.log,.md,.csv,.json,.opml,.xml,.rss" style="position:absolute;opacity:0;width:1px;height:1px"><span>+ Add files or screenshots</span></label>';
     // Attachments: the file goes to the artifact's asset store; the card's document keeps the pointer (files: [{id,name,type,size,at,by}]).
     const fin = el.querySelector(".attach input"), flab = el.querySelector(".attach span");
     fin.id = "file-" + id;

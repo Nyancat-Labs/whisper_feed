@@ -8,6 +8,13 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 19 November 2026 — Board: OPML uploads (119)
+
+- The owner's backup OPML wouldn't attach on the board: the picker's accept
+  list had no .opml. Board version 11 accepts .opml, .xml and .rss, sent as
+  text/plain. The backup itself (archive/board-files/2026-11-19-2257-…)
+  shows whisperShowInAll="false" on Cyberspace: half of T8 of build 14.
+
 ## 19 November 2026 — Results from 6a97e06; card 121, preview f580c5f
 
 - All seven steps of build 15 passed: 117, 118 and 120 closed. Darknet is
