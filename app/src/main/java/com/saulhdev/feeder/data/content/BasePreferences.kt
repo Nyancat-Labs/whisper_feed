@@ -45,6 +45,8 @@ class StringPref(
     val defaultValue: String = "",
     val onClick: (() -> Unit)? = null,
     val route: NavRoute? = null,
+    /** Asks first, with this message, before [onClick]: for an action that can't be undone. */
+    @StringRes val confirmId: Int? = null,
 ) : PrefDelegate<String>(titleId, summaryId, dataStore, key, defaultValue)
 
 class StringSelectionPref(

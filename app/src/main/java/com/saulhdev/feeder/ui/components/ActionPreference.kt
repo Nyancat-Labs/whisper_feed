@@ -20,7 +20,15 @@ package com.saulhdev.feeder.ui.components
 import androidx.annotation.StringRes
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import com.saulhdev.feeder.ui.components.dialog.DialogNegativeButton
+import com.saulhdev.feeder.ui.components.dialog.DialogPositiveButton
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -37,6 +45,24 @@ fun ActionPreference(
     isEnabled: Boolean = true,
 ) {
     val navController = LocalNavController.current
+    var asking by remember { mutableStateOf(false) }
+    if (asking && pref.confirmId != null) {
+        AlertDialog(
+            onDismissRequest = { asking = false },
+            title = { Text(stringResource(pref.titleId)) },
+            text = { Text(stringResource(pref.confirmId)) },
+            confirmButton = {
+                DialogPositiveButton(
+                    text = stringResource(pref.titleId),
+                    onClick = {
+                        asking = false
+                        pref.onClick?.invoke()
+                    },
+                )
+            },
+            dismissButton = { DialogNegativeButton(onClick = { asking = false }) },
+        )
+    }
     BasePreference(
         modifier = modifier,
         titleId = pref.titleId,
@@ -53,6 +79,8 @@ fun ActionPreference(
         onClick = {
             if (pref.route != null) {
                 navController.navigate(pref.route)
+            } else if (pref.confirmId != null) {
+                asking = true
             } else {
                 pref.onClick?.invoke()
             }

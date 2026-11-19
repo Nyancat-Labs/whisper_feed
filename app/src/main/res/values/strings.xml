@@ -627,6 +627,10 @@
     <string name="tour_filter_body">Change the order, mute a source, or hide what you have already read.</string>
     <string name="tour_overflow_title">Settings</string>
     <string name="tour_overflow_body">Your sources, the layout, what gets fetched in full, and what Whisper has learned about your reading. Reload and restart are at the top.</string>
+    <string name="pref_reset_settings">Reset all settings</string>
+    <string name="pref_reset_settings_summary">Every setting back to how Whisper comes. Your sources, saved articles and what Whisper has learned stay.</string>
+    <string name="pref_reset_settings_confirm">Every setting goes back to how Whisper comes: look, layout, reading, sync and notifications. Your sources and their categories, saved articles, what Whisper has learned, your sync account and your backup folder stay as they are. This can\'t be undone, except from a settings backup.</string>
+    <string name="pref_reset_settings_done">Settings reset</string>
     <string name="pref_show_tour">Show the tour again</string>
     <string name="pref_show_tour_queued">The tour will start when you go back to your feed.</string>
     <string name="pref_show_tour_summary">Walk through the feed\'s controls</string>

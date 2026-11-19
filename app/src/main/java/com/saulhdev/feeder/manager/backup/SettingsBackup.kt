@@ -74,7 +74,7 @@ object SettingsBackup {
      * destination it cannot write to. The reader picks a folder on the new
      * device, which takes one tap and is honest about what happened.
      */
-    private val NOT_PORTABLE = setOf(
+    internal val NOT_PORTABLE = setOf(
         "pref_backup_folder",
         "pref_backup_last_run",
         // Also this phone's: when its folder stopped working, and whether it

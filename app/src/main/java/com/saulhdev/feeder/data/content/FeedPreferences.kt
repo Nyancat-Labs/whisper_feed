@@ -17,8 +17,10 @@
  */
 package com.saulhdev.feeder.data.content
 
+import com.saulhdev.feeder.manager.backup.SettingsReset
 import com.saulhdev.feeder.ui.navigation.SettingsSectionName
 import com.saulhdev.feeder.ui.icons.phosphor.TrashSimple
+import com.saulhdev.feeder.ui.icons.phosphor.ArrowCounterClockwise
 import com.saulhdev.feeder.ui.icons.phosphor.Play
 import android.content.Context
 import android.widget.Toast
@@ -750,6 +752,28 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
         }
     )
 
+    /**
+     * Every setting back to its default (sheet 68). Asks first: there is no
+     * Undo, because the screen changes under the reader as the theme and
+     * layout reset. A settings backup is the way back.
+     */
+    var resetSettings = StringPref(
+        titleId = R.string.pref_reset_settings,
+        summaryId = R.string.pref_reset_settings_summary,
+        icon = Phosphor.ArrowCounterClockwise,
+        key = RESET_SETTINGS,
+        dataStore = dataStore,
+        confirmId = R.string.pref_reset_settings_confirm,
+        onClick = {
+            CoroutineScope(Dispatchers.IO).launch {
+                SettingsReset.reset(dataStore)
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, context.getString(R.string.pref_reset_settings_done), Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    )
+
     var markReadOnScroll = FloatPref(
         titleId = R.string.pref_mark_read_on_scroll,
         summaryId = R.string.pref_mark_read_on_scroll_summary,
@@ -1374,6 +1398,7 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
         val TOUR_SEEN = booleanKey("pref_tour_seen")
         val NOTIFICATION_PERMISSION_ASKED = booleanKey("pref_notification_permission_asked")
         val SHOW_TOUR = stringKey("pref_show_tour")
+        val RESET_SETTINGS = stringKey("pref_reset_settings")
         val LAUNCHER_SETUP = stringKey("pref_launcher_setup")
         val SOURCES_ROUTE = stringKey("pref_sources_route")
         val SOURCES_SORT = stringKey("pref_sources_sort")

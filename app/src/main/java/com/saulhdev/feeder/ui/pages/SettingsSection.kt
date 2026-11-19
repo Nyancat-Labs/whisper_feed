@@ -152,6 +152,7 @@ fun settingsRows(prefs: FeedPreferences, section: SettingsSection, debugging: Bo
             prefs.showTour,
             prefs.launcherSetup,
             prefs.reportProblemPage,
+            prefs.resetSettings,
         )
         SettingsSection.DIAGNOSTICS -> listOfNotNull(
             prefs.reportProblem,
