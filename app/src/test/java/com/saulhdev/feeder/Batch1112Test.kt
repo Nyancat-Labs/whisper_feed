@@ -66,7 +66,8 @@ class Batch1112Test {
     @Test
     fun `the new column has its migration`() {
         val db = source("data/db/NeoFeedDb.kt")
-        assertTrue(db.contains("version = 30,"))
+        // Later batches add columns of their own; only the order matters here.
+        assertTrue(Regex("version = (\\d+),").find(db)!!.groupValues[1].toInt() >= 30)
         assertTrue(db.contains("ALTER TABLE Feeds ADD COLUMN learnedResetAt INTEGER NOT NULL DEFAULT 0"))
         assertTrue(db.contains("MIGRATION_29_30,"))
     }

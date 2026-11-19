@@ -613,7 +613,8 @@ class OverlayView(val context: Context) :
         settleBrowserRead()
         syncScope.launch { viewModel.markOpened(item.id) }
         launchKeepingPanel {
-            if (prefs.articleOpenMode.getValue() == FeedPreferences.OPEN_MODE_BROWSER) {
+            val mode = FeedPreferences.openModeFor(item.feed.openMode, prefs.articleOpenMode.getValue())
+            if (mode == FeedPreferences.OPEN_MODE_BROWSER) {
                 // No lifecycle to tick against once the browser is in front,
                 // so the trip away is the measurement. See BrowserReadTimer.
                 BrowserReadTimer.left(item.id)

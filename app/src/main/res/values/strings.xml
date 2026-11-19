@@ -32,6 +32,9 @@
     <string name="choice_time_both">Both</string>
     <string name="choice_open_reader">Reader</string>
     <string name="choice_open_browser">Browser</string>
+    <string name="source_open_mode">Open articles</string>
+    <string name="source_open_mode_summary">For this source only. "As in Settings" follows Settings → Reading.</string>
+    <string name="source_open_as_settings">As in Settings</string>
     <string name="choice_read_keep">Keep</string>
     <string name="choice_read_fade">Fade</string>
     <string name="choice_read_hide">Hide</string>
@@ -425,6 +428,7 @@
     <string name="account_problem_no_token">The server answered, but not the way a Google Reader service does. Check the address points at the API rather than the website.</string>
     <string name="account_problem_signed_out">The server no longer accepts that sign-in. Sign in again.</string>
     <string name="account_problem_moved">That address passed the sign-in on to another server, %1$s. Whisper does not send your password on to a server you did not type. If that is the right one, sign in with its address.</string>
+    <string name="account_problem_home_network">Android blocks apps from reaching addresses on your home network. Use your server\'s public address instead (one starting with https:// that works away from home).</string>
     <string name="account_problem_unknown">Could not reach that server. %1$s</string>
     <string name="account_problem_unknown_bare">Could not reach that server.</string>
     <string name="feed_day_today">Today</string>

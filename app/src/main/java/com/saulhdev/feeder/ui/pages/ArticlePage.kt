@@ -185,9 +185,11 @@ fun ArticlePage(
     // this screen keeps the old one until something unrelated happens to
     // recompose it.
     val locale = LocalConfiguration.current.locales[0]
+    // The date only: the line above already gives the time ("4m · 13:42"),
+    // so "Tuesday 27 October 2026 at 13:42" said it twice (sheet 52).
     val dateTimeFormat: DateTimeFormatter =
         remember(locale) {
-            DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL, FormatStyle.SHORT)
+            DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
                 .withLocale(locale)
         }
 
@@ -388,7 +390,8 @@ fun ArticlePage(
                                 Text(
                                     text = authorDate,
                                     // Quiet: the card's byline above already says
-                                    // how long ago; this is for who and exactly when.
+                                    // how long ago and at what time; this is for
+                                    // who, and which day.
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier

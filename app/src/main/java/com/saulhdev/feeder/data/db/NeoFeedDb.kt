@@ -52,7 +52,7 @@ const val ID_ALL: Long = -1L
         Suggestion::class,
         ReadingTally::class,
     ],
-    version = 30,
+    version = 31,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -233,6 +233,7 @@ abstract class NeoFeedDb : RoomDatabase() {
 }
 
 val allMigrations = arrayOf(
+    MIGRATION_30_31,
     MIGRATION_29_30,
     MIGRATION_28_29,
     MIGRATION_27_28,
@@ -259,6 +260,14 @@ val allMigrations = arrayOf(
     MIGRATION_12_13,
     MIGRATION_13_14,
 )
+
+@Suppress("ClassName")
+object MIGRATION_30_31 : Migration(30, 31) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Every source follows Settings until someone chooses otherwise.
+        db.execSQL("ALTER TABLE Feeds ADD COLUMN openMode TEXT NOT NULL DEFAULT ''")
+    }
+}
 
 @Suppress("ClassName")
 object MIGRATION_29_30 : Migration(29, 30) {

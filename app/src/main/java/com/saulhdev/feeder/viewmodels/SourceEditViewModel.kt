@@ -100,6 +100,7 @@ class SourceEditViewModel : NeoViewModel() {
                 fullTextByDefault = state.fullTextByDefault,
                 isEnabled = state.isEnabled,
                 showInAll = state.showInAll,
+                openMode = state.openMode,
             ),
             resync = needsResync
         )
@@ -131,6 +132,7 @@ class SourceEditViewModel : NeoViewModel() {
             fullTextByDefault = feed.fullTextByDefault,
             isEnabled = feed.isEnabled,
             showInAll = feed.showInAll,
+            openMode = feed.openMode,
         )
     }.stateIn(
         viewModelScope,

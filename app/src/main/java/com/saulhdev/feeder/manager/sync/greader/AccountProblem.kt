@@ -82,6 +82,15 @@ enum class AccountProblem {
      */
     MOVED,
 
+    /**
+     * The server is on the home network (192.168.x.x, nas.local and the like)
+     * and the connection failed. Android 17 refuses apps' connections to the
+     * local network unless they ask for a permission Whisper does not ask for;
+     * home-network servers are not supported, and saying so beats "nothing
+     * answered" (owner, 29 October, sheet 73).
+     */
+    HOME_NETWORK,
+
     /** Everything else, which keeps the original text rather than losing it. */
     UNKNOWN,
 }
@@ -112,6 +121,32 @@ private fun Throwable.chain(): List<Throwable> {
 /** Which problem a thrown exception describes. */
 fun problemFrom(cause: Throwable?): AccountProblem {
     val chain = cause?.chain() ?: return AccountProblem.UNKNOWN
+    val base = problemFromChain(chain)
+    // A connection that never got going, to an address on the home network.
+    // OkHttp names the address it tried in the message ("Failed to connect to
+    // nas.local/192.168.1.5:443"), so the address is read from there.
+    val connectionFailed = base == AccountProblem.REFUSED || base == AccountProblem.TIMEOUT ||
+        base == AccountProblem.UNKNOWN || chain.any { it is SecurityException }
+    return if (connectionFailed && chain.any { mentionsHomeNetwork(it.message) }) {
+        AccountProblem.HOME_NETWORK
+    } else {
+        base
+    }
+}
+
+/** A private IPv4 range, loopback, link-local, or a home-network name. */
+private val HOME_ADDRESS = Regex(
+    """(?<![\d.])(10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|""" +
+        """172\.(1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}|127\.\d{1,3}\.\d{1,3}\.\d{1,3}|""" +
+        """169\.254\.\d{1,3}\.\d{1,3})(?![\d])|""" +
+        """[a-z0-9-]+\.(local|lan|home\.arpa|internal)\b""",
+    RegexOption.IGNORE_CASE,
+)
+
+internal fun mentionsHomeNetwork(message: String?): Boolean =
+    message != null && HOME_ADDRESS.containsMatchIn(message)
+
+private fun problemFromChain(chain: List<Throwable>): AccountProblem {
 
     // Order is by specificity, not by likelihood. ConnectException and
     // UnknownHostException are both IOExceptions, SocketTimeoutException is an

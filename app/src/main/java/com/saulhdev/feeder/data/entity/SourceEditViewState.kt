@@ -29,4 +29,6 @@ data class SourceEditViewState(
     val fullTextByDefault: Boolean = true,
     val isEnabled: Boolean = true,
     val showInAll: Boolean = true,
+    /** "" follows Settings; otherwise reader or browser (sheet 113). */
+    val openMode: String = "",
 )

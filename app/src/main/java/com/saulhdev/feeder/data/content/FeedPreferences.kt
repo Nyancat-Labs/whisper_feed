@@ -1333,6 +1333,14 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
 
         /** Hand the article's URL to the device's default browser. */
         const val OPEN_MODE_BROWSER = "browser"
+
+        /**
+         * How one article opens: its source's own choice if it has one,
+         * otherwise the setting for all of them (sheet 113).
+         */
+        fun openModeFor(sourceMode: String, settingMode: String): String =
+            if (sourceMode == OPEN_MODE_READER || sourceMode == OPEN_MODE_BROWSER) sourceMode
+            else settingMode
         val REMOVE_DUPLICATES = booleanKey("pref_remove_duplicates")
         val VOLUME_KEY_SCROLL = booleanKey("pref_volume_key_scroll")
         val READ_VISIBILITY = stringKey("pref_read_visibility")

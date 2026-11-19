@@ -425,6 +425,7 @@ private fun accountProblemText(problem: AccountProblem, detail: String?): String
     AccountProblem.NO_TOKEN -> stringResource(R.string.account_problem_no_token)
     AccountProblem.SIGNED_OUT -> stringResource(R.string.account_problem_signed_out)
     AccountProblem.MOVED -> stringResource(R.string.account_problem_moved, detail.orEmpty())
+    AccountProblem.HOME_NETWORK -> stringResource(R.string.account_problem_home_network)
 
     AccountProblem.SERVER_ERROR ->
         stringResource(R.string.account_problem_server_error, detail.orEmpty())

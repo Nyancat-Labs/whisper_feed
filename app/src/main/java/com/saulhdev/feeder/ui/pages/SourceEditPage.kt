@@ -18,6 +18,12 @@
 
 package com.saulhdev.feeder.ui.pages
 
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import com.saulhdev.feeder.ui.components.BasePreference
+import com.saulhdev.feeder.ui.components.SegmentedTabButton
+import com.saulhdev.feeder.ui.icons.phosphor.GearSix
+import com.saulhdev.feeder.ui.icons.phosphor.Article
+import com.saulhdev.feeder.ui.icons.phosphor.Browser
 import com.saulhdev.feeder.ui.theme.SEGMENT_GAP
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.WindowInsets
@@ -123,6 +129,7 @@ fun SourceEditPage(
                     fullTextByDefault = freshFeed.fullTextByDefault,
                     isEnabled = freshFeed.isEnabled,
                     showInAll = freshFeed.showInAll,
+                    openMode = freshFeed.openMode,
                 )
                 hasLoaded = true
             }
@@ -344,7 +351,7 @@ fun SourceEditView(
                     onEdited()
                 },
                 index = 0,
-                groupSize = 3
+                groupSize = 4
             )
             Spacer(modifier = Modifier.height(SEGMENT_GAP))
             ComposeSwitchView(
@@ -356,7 +363,7 @@ fun SourceEditView(
                     onEdited()
                 },
                 index = 1,
-                groupSize = 3
+                groupSize = 4
             )
             Spacer(modifier = Modifier.height(SEGMENT_GAP))
             // Off with no category, the source would only turn up in search,
@@ -372,7 +379,40 @@ fun SourceEditView(
                     onEdited()
                 },
                 index = 2,
-                groupSize = 3
+                groupSize = 4
+            )
+            Spacer(modifier = Modifier.height(SEGMENT_GAP))
+            // One source in the browser, the rest in the reader: a paid
+            // newsletter that needs the browser where the reader is signed in
+            // (asked by a user, 19 November; sheet 113). Both are the same
+            // reader and the same browser hand-off as the setting for all.
+            BasePreference(
+                titleId = R.string.source_open_mode,
+                summaryId = R.string.source_open_mode_summary,
+                index = 3,
+                groupSize = 4,
+                bottomWidget = {
+                    SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
+                        val choices = listOf(
+                            Triple("", R.string.source_open_as_settings, Phosphor.GearSix),
+                            Triple(FeedPreferences.OPEN_MODE_READER, R.string.choice_open_reader, Phosphor.Article),
+                            Triple(FeedPreferences.OPEN_MODE_BROWSER, R.string.choice_open_browser, Phosphor.Browser),
+                        )
+                        choices.forEachIndexed { i, (mode, label, icon) ->
+                            SegmentedTabButton(
+                                text = stringResource(label),
+                                icon = icon,
+                                index = i,
+                                count = choices.size,
+                                selected = { editState.value.openMode == mode },
+                                onClick = {
+                                    editState.value = editState.value.copy(openMode = mode)
+                                    onEdited()
+                                },
+                            )
+                        }
+                    }
+                },
             )
         }
 

@@ -659,7 +659,7 @@ fun ArticleListPage(
                                             index = index,
                                             onClick = {
                                                 viewModel.markOpened(item.id)
-                                                if (openMode == FeedPreferences.OPEN_MODE_BROWSER) {
+                                                if (FeedPreferences.openModeFor(item.feed.openMode, openMode) == FeedPreferences.OPEN_MODE_BROWSER) {
                                                     // Whisper is about to stop
                                                     // being on screen, so the
                                                     // only clock left is how
@@ -736,7 +736,7 @@ fun ArticleListPage(
                                             onPin = { viewModel.setPinned(item.id, it) },
                                             onClick = {
                                                 viewModel.markOpened(item.id)
-                                                if (openMode == FeedPreferences.OPEN_MODE_BROWSER) {
+                                                if (FeedPreferences.openModeFor(item.feed.openMode, openMode) == FeedPreferences.OPEN_MODE_BROWSER) {
                                                     // Whisper is about to stop
                                                     // being on screen, so the
                                                     // only clock left is how
