@@ -68,8 +68,10 @@ class ReviewFixesTest {
         val buttons = read("ui/components/Button.kt")
         assertFalse(buttons.contains("colorScheme.tertiary"))
         assertTrue(buttons.contains("destructive -> MaterialTheme.colorScheme.error"))
-        // Remove, forget and sign out say so in red.
-        listOf("SourceEditPage", "LearnedPage", "AccountPage", "BrokenFeedsPage").forEach {
+        // Remove and forget say so in red. Sign out no longer does: it
+        // removes nothing, and the dark theme draws that red as pink, which
+        // the owner flagged (sheet 15, 19 November; see Batch6Test).
+        listOf("SourceEditPage", "LearnedPage", "BrokenFeedsPage").forEach {
             assertTrue(it, read("ui/pages/$it.kt").contains("destructive = true"))
         }
         assertFalse("Reset is not destructive", read("ui/pages/SortFilterSheet.kt").contains("destructive = true"))

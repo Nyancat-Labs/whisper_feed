@@ -18,6 +18,7 @@
 
 package com.saulhdev.feeder.ui.pages
 
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.material3.LinearProgressIndicator
 import com.saulhdev.feeder.ui.icons.phosphor.MagnifyingGlass
 import com.saulhdev.feeder.viewmodels.FeedPreview
@@ -324,7 +325,7 @@ fun SourceEditView(
                     )
                     is FeedPreview.Found -> Column(modifier = Modifier.padding(top = 8.dp)) {
                         Text(
-                            text = stringResource(R.string.source_preview_found, p.title.ifBlank { "—" }, p.count),
+                            text = pluralStringResource(R.plurals.source_preview_found, p.count, p.title.ifBlank { "—" }, p.count),
                             style = MaterialTheme.typography.titleSmall,
                             color = MaterialTheme.colorScheme.primary,
                         )

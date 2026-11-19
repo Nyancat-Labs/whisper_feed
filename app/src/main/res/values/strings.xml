@@ -34,7 +34,6 @@
     <string name="choice_open_browser">Browser</string>
     <string name="source_open_mode">Open articles</string>
     <string name="source_preview">Preview this feed</string>
-    <string name="source_preview_found">%1$s · %2$d articles in the feed</string>
     <string name="source_preview_not_feed">No feed at that address. It may have moved: Open website on Feeds that stopped working shows the site.</string>
     <string name="source_preview_unreachable">Couldn\'t reach that address. Check your connection and the address.</string>
     <string name="source_open_mode_summary">For this source only. Default follows Settings → Reading.</string>
@@ -868,5 +867,9 @@
     <plurals name="articles_marked_read">
         <item quantity="one">%1$d article marked as read</item>
         <item quantity="other">%1$d articles marked as read</item>
+    </plurals>
+    <plurals name="source_preview_found">
+        <item quantity="one">%1$s · %2$d article in the feed</item>
+        <item quantity="other">%1$s · %2$d articles in the feed</item>
     </plurals>
 </resources>
