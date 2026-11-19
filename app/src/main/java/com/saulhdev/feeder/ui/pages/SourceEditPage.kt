@@ -226,6 +226,7 @@ fun SourceEditPage(
                 fullTextForAll = fullTextForAll,
                 preview = preview,
                 onPreview = { viewModel.preview(editState.value.url) },
+                onAddressChanged = { viewModel.clearPreview() },
             )
         }
     }
@@ -265,6 +266,8 @@ fun SourceEditView(
     fullTextForAll: Boolean = false,
     preview: FeedPreview? = null,
     onPreview: (() -> Unit)? = null,
+    /** The address changed, so a preview of the old one no longer applies. */
+    onAddressChanged: () -> Unit = {},
 ) {
     val (focusTitle, focusTag) = createRefs()
     val focusManager = LocalFocusManager.current
@@ -277,6 +280,7 @@ fun SourceEditView(
                 value = editState.value.url,
                 onValueChange = {
                     editState.value = editState.value.copy(url = it)
+                    onAddressChanged()
                     onEdited()
                 },
                 label = {
@@ -344,6 +348,7 @@ fun SourceEditView(
                                 FeedPreview.Why.NotAFeed -> R.string.source_preview_not_feed
                                 FeedPreview.Why.Unreachable -> R.string.source_preview_unreachable
                                 FeedPreview.Why.HomeNetwork -> R.string.add_feed_home_network_hint
+                                FeedPreview.Why.BlocksApps -> R.string.blocks_apps_explanation
                             }
                         ),
                         style = MaterialTheme.typography.bodyMedium,

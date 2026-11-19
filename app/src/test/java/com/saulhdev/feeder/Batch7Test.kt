@@ -20,7 +20,7 @@ import java.io.File
 import java.net.SocketTimeoutException
 import java.net.URL
 
-/** Batch 7, 19 November (sheet 117, 118, 120). */
+/** Batch 7, 19 November (sheet 117, 118, 120, 121). */
 class Batch7Test {
 
     private fun source(path: String) = File("src/main/java/com/saulhdev/feeder/$path").readText()
@@ -99,5 +99,14 @@ class Batch7Test {
         File("src/main/java/com/saulhdev/feeder/ui/pages").listFiles()!!.forEach {
             assertFalse(it.name, Regex("""[^d]SnackbarHost\(snackbarHostState""").containsMatchIn(it.readText()))
         }
+    }
+
+    // 121
+    @Test
+    fun `a preview belongs to one source's page and one address`() {
+        val vm = source("viewmodels/SourceEditViewModel.kt")
+        assertTrue(vm.contains("if (_feedId.replayCache.firstOrNull() != value) clearPreview()"))
+        assertTrue(vm.contains("refusesApps(e) -> FeedPreview.Why.BlocksApps"))
+        assertTrue(source("ui/pages/SourceEditPage.kt").contains("onAddressChanged = { viewModel.clearPreview() }"))
     }
 }

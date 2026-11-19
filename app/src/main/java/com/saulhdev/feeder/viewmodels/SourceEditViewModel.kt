@@ -50,6 +50,10 @@ class SourceEditViewModel : NeoViewModel() {
     private val _feedId: MutableSharedFlow<Long> = MutableSharedFlow(replay = 1)
 
     fun setFeedId(value: Long) {
+        // This model outlives one source's page, so a preview made on one
+        // showed on the next one opened: Darknet's headlines under the
+        // Huffington Post's address (owner's screenshot; sheet 121).
+        if (_feedId.replayCache.firstOrNull() != value) clearPreview()
         _feedId.tryEmit(value)
     }
 
@@ -154,9 +158,12 @@ class SourceEditViewModel : NeoViewModel() {
     private val _preview = MutableStateFlow<FeedPreview?>(null)
     val preview: StateFlow<FeedPreview?> = _preview
 
+    private var previewJob: kotlinx.coroutines.Job? = null
+
     fun preview(address: String) {
+        previewJob?.cancel()
         _preview.value = FeedPreview.Loading
-        viewModelScope.launch(Dispatchers.IO) {
+        previewJob = viewModelScope.launch(Dispatchers.IO) {
             val url = runCatching { sloppyLinkToStrictURL(address.trim()) }.getOrNull()
             _preview.value = when {
                 url == null -> FeedPreview.Failed(FeedPreview.Why.NotAFeed)
@@ -170,13 +177,21 @@ class SourceEditViewModel : NeoViewModel() {
                     throw e
                 } catch (e: Exception) {
                     val io = generateSequence<Throwable>(e) { it.cause }.any { it is java.io.IOException }
-                    FeedPreview.Failed(if (io) FeedPreview.Why.Unreachable else FeedPreview.Why.NotAFeed)
+                    FeedPreview.Failed(
+                        when {
+                            refusesApps(e) -> FeedPreview.Why.BlocksApps
+                            io -> FeedPreview.Why.Unreachable
+                            else -> FeedPreview.Why.NotAFeed
+                        }
+                    )
                 }
             }
         }
     }
 
     fun clearPreview() {
+        // A preview still on its way would land on the next page otherwise.
+        previewJob?.cancel()
         _preview.value = null
     }
 }
@@ -186,5 +201,5 @@ sealed interface FeedPreview {
     data object Loading : FeedPreview
     data class Found(val title: String, val headlines: List<String>, val count: Int) : FeedPreview
     data class Failed(val why: Why) : FeedPreview
-    enum class Why { NotAFeed, Unreachable, HomeNetwork }
+    enum class Why { NotAFeed, Unreachable, HomeNetwork, BlocksApps }
 }
