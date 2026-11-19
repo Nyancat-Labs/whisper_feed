@@ -34,6 +34,14 @@ and Google Play builds on two other devices.
   why not).
 - **15** Sign out outlined in the normal colour (reverses review 63's red,
   which the dark theme draws pink); dialog buttons are pills.
+- Owner's diagnostics at 21:34 (still on 3896ca3, archive/board-files):
+  no crashes or errors; 126 sources (Darknet unsubscribed after the Open
+  website test); 2 failing (IT Security Guru 403, Coolsmartphone timeouts);
+  Ireland: BreakingNews still empty every fetch, which 1c18b40 will list.
+- Board and Szept (owner): the owner works on the board only; Szept
+  entries renamed "Board N – …", one per open card (eight new "test"
+  entries for the cards in preview), and Szept numbers removed from 17
+  open cards' replies. CLAUDE.md and HANDOVER say so.
 - Tests 1373 passing (`Batch6Test`, 12). `CountWordsTest` caught a plain
   "%d articles" (now a plural); `ReviewFixesTest` updated for Sign out.
   Preview signed; steps T1-T10 (`t014-*`). Not tested on a phone yet.
