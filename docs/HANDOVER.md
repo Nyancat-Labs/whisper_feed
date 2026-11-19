@@ -14,9 +14,10 @@ Start here after a /clear. CLAUDE.md has the working rules; this is state.
 - **Signing key** is in this container at `/root/whisper-signing/` (owner
   asked to keep it, 18 November), `keystore.properties` points at it. A new
   container needs both files uploaded again.
-- **Szept** holds every open job (project Whisper), each with priority, slot
-  and plan; every open sheet card's reply carries its Szept number. At the
-  start of a session: `list_questions`, then the sheet, then Szept.
+- **Szept** mirrors the sheet behind the scenes (owner, 19 November): each
+  open card's entry starts "Board N – ", and no Szept numbers appear on the
+  sheet. The owner works on the sheet only. At the start of a session:
+  `list_questions`, then the sheet, then bring Szept in step.
 - **Next for Claude:** batch 6 from the owner's results and 111/112/114 if
   picked, then Reset all settings (68) and the startup profile (66), then
   translations once text stops changing, then release 1.0.6.

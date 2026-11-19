@@ -28,7 +28,8 @@ Szept holds everything still to do, across all projects. Use the Szept connector
 - Every entry also gets a slot (how it gets done) and a plan (roughly when). Slots: sat-day (hands-on, Saturday daytime), evening (computer work, Saturday/Sunday evening), work-gap (a short remote job; only if it needs few windows), claude (you do it alone), waiting (blocked). Plan = the Saturday of the weekend to aim for (YYYY-MM-DD), or "later". Spread jobs over weekends, a few hours per slot, urgent first; a due time, if any, still rules.
 - Set project to this project's name, put "board <ref>" in the text when it belongs to a board card, and add a short opening line (claude_prompt) I can paste to pick the job up with you.
 - I can add notes and ask you questions on any Szept item. At the start of a session check list_questions and answer each one with add_comment_reply; read my notes on the items you work on.
-- Add the entry in the same turn the card or ROADMAP line is created, and put the Szept id in the card's reply. When it's finished or dropped, complete or cancel the Szept entry in the same turn.
+- Add the entry in the same turn the card or ROADMAP line is created. When it's finished or dropped, complete or cancel the Szept entry in the same turn.
+- For this project I work on the review board only, not Szept (owner, 19 November 2026). You keep Szept in step behind the scenes: each board card's Szept entry starts "Board N – " with the card's board number, and Szept numbers never appear on the board (not in replies, not in notes). A card waiting for my test has its own "Board N – test …" entry. Szept keeps only what isn't on the board as entries of their own (release, Weblate, key backup and the like).
 
 ## Work board (job tracking artifact)
 Board for this project: the preview review sheet, https://claude.ai/artifact/ErrU1RDxYbTrd6nU2rowRk. Don't build a second board.
