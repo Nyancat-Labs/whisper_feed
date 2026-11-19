@@ -8,17 +8,19 @@ obvious from it.
 
 Start here after a /clear. CLAUDE.md has the working rules; this is state.
 
-- **Preview f801bc3** (batch 4) is with the owner: steps T1-T10 on the
-  sheet (`t012-*`), Szept 230. Sheet 20, 23, 25, 26, 29, 33-39, 57, 60,
-  61, 107, 110 are in preview.
+- **Preview 3896ca3** (batches 4 and 5) is with the owner: steps `t012-*`
+  (batch 4) and `t013-*` (batch 5) on the sheet, Szept 230. In preview:
+  20, 23, 25, 26, 29, 33-39, 57, 60, 61, 107, 110 and 45, 52, 71, 73, 76,
+  80, 113. To decide: 111, 112, 114.
 - **Signing key** is in this container at `/root/whisper-signing/` (owner
   asked to keep it, 18 November), `keystore.properties` points at it. A new
   container needs both files uploaded again.
 - **Szept** holds every open job (project Whisper), each with priority, slot
   and plan; every open sheet card's reply carries its Szept number. At the
   start of a session: `list_questions`, then the sheet, then Szept.
-- **Next for Claude:** batch 5 (reader 52, 71, 76, 45), 80, 73 (28 Nov),
-  then translations and Reset all settings (5 Dec), release 1.0.6 (12 Dec).
+- **Next for Claude:** batch 6 from the owner's results and 111/112/114 if
+  picked, then Reset all settings (68) and the startup profile (66), then
+  translations once text stops changing, then release 1.0.6.
 - **Weblate:** French added, Plurals component gone (plurals now in
   strings.xml, 693 strings), licence GPL-3.0-or-later, Libre approval
   pending; trial ends 22 Nov (Szept 215). After approval: push to GitHub,

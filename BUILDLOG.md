@@ -8,6 +8,46 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 19 November 2026 — Batch 5, preview 3896ca3
+
+Started the same day as batch 4, at the owner's request, so the owner tests
+one build while the next is made. 3896ca3 includes batch 4.
+
+- **52** Reader: the second line keeps author and day; the time is only in
+  the line above (`ofLocalizedDate(FULL)`).
+- **73** A failed connection to a home-network address (private IPv4,
+  loopback, link-local, `.local`/`.lan`/`.home.arpa`/`.internal`, read from
+  OkHttp's own message) is `AccountProblem.HOME_NETWORK`: "Android blocks
+  apps from reaching addresses on your home network…". No permission.
+- **113** Per-source "Open articles": As in Settings / Reader / Browser.
+  `Feed.openMode` (database 31, `MIGRATION_30_31`, schema exported;
+  `MigrationTest` upgrades every version with its rows).
+  `FeedPreferences.openModeFor` at all three places an article opens.
+  Found: backups (OPML) carry no per-source settings at all: sheet 114.
+- **80** `BreakingAlert`: after a successful sync, if "Notify me of breaking
+  news" is on (off by default, Your feed), one notification per new
+  breaking cluster from News sources, at most 3 a day; the first run after
+  switching on only notes what is there; switching off forgets.
+- **45** Parser: an enclosure with no or a generic type but an image address
+  counts; pictures inside `media:group` count; `.avif`; a title that is only
+  a file name becomes the post's first line. The feed itself is still
+  unknown here.
+- **76** `dropRelatedBlocks`: by heading in every app language plus English,
+  with the link list after it; "Lire aussi : <link>"; an opening paragraph
+  that is only a link to the same site.
+- **71** Pictures: stated width/height give the shape (`aspectRatio`, `Fit`);
+  decoded up to 4x as tall as wide (a square limit squeezed tall ones;
+  width-only would have let an infographic decode whole, which
+  `ImageSizingTest` caught); `dropEmptySlots` removes empty containers.
+- **Real-feed check** on 12 articles (BFMTV, Le Figaro, Bored Panda): the
+  same text and 157 pictures before and after; none of today's articles had
+  a related block, so the rules are covered by unit tests built on the
+  reported shapes.
+- **Tests** 1361 passing (`Batch5Test`, 12); `AccountProblemTest` example
+  moved to a public address, `ImageSizingTest` accepts the new bound.
+  Preview signed with the release key; steps T1-T8 (`t013-*`) on the sheet.
+  Not tested on a phone yet.
+
 ## 19 November 2026 — Batch 4, preview f801bc3
 
 - **About** (33-35, 37-39, 61): Contact us is an intro line and three

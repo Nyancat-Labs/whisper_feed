@@ -9,6 +9,17 @@ Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 Unreleased
 ----------
 
+- **Open articles per source**: each source can open in the reader or the
+  browser, whatever the setting for the rest.
+- **Breaking-news notifications**, off unless you turn them on: one for each
+  new story several of your News sources cover, at most three a day.
+- **The reader** no longer shows "Related" and "Lire aussi" blocks, keeps
+  tall pictures whole, drops the gaps left by empty ad slots, and gives the
+  time once.
+- **Photo posts** from feeds that attach pictures unusually now show them,
+  and a file name is no longer used as a headline.
+- **A sync server on your home network** gets a plain explanation instead
+  of "nothing answered".
 - **Sources, tidied**: a push-pin instead of the asterisk for pinning,
   the list drawn as one joined group like Settings, room above the + button
   for the last row, a Sort button of its own, and the ⋮ menu in three
