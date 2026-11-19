@@ -111,8 +111,8 @@ The owner is using the preview on the Pixel 10 for a week before release.
 - [x] **Batch 7 (board 117, 118, 120)**, preview 6a97e06, 19 November:
   feeds with junk after their end, sites that block apps, readable error
   names, the Expressive loading indicator, one message box. Passed.
-- [ ] **Board 121** (preview per source), preview f580c5f, waiting for the
-  owner's test. **Board 122**: message box colours, the owner to decide.
+- [x] **Board 121** (preview per source), preview f580c5f: passed.
+  **Board 122** (message box colours): dropped, Material's colours stay.
 - [ ] **December 2026: check F-Droid's download numbers** (owner, 28
   October). F-Droid publishes weekly download requests, not installs, at
   fdroid.gitlab.io/metrics (grote.gitlab.io/fdroid-metrics-distilled sums

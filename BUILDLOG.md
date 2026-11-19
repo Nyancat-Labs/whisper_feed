@@ -8,6 +8,16 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 19 November 2026 — Results from f580c5f
+
+- T1 and T2 of build 16 passed (23:02): 121 closed. The owner's 'Still
+  wrong' and 9to5Google screenshot (22:59-23:00, archive/screenshots) came
+  from the build before; the note landed on card 115 by mistake, so 115 went
+  back to To check (still waiting for real breaking news).
+- 122 dropped by the owner: message boxes keep Material's inverse colours.
+- 114: backup writing confirmed from the owner's files; restore unchecked
+  on a phone.
+
 ## 19 November 2026 — Board: OPML uploads (119)
 
 - The owner's backup OPML wouldn't attach on the board: the picker's accept
