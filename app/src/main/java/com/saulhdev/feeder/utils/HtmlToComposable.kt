@@ -1585,10 +1585,12 @@ private fun TextComposer.handleImage(
                                     .placeholder(imagePlaceholder)
                                     .error(imagePlaceholder)
                                     .scale(Scale.FIT)
-                                    // By width only: a square limit squeezed a tall
-                                    // picture (a column of Reddit comments) to fit
-                                    // the width as height (sheet 71).
-                                    .size(coil.size.Size(coil.size.Dimension(imageWidth), coil.size.Dimension.Undefined))
+                                    // Up to four times as tall as wide: a square limit
+                                    // squeezed a tall picture (a column of Reddit
+                                    // comments) into the width as its height, and
+                                    // drew it blurred at full width (sheet 71). An
+                                    // infographic taller than that is still bounded.
+                                    .size(imageWidth, imageWidth * MAX_IMAGE_TALLNESS)
                                     .precision(Precision.INEXACT)
                                     .tag(ImageSurface::class.java, ImageSurface.Article)
                                     .build(),
@@ -2013,6 +2015,9 @@ internal fun withLinks(paragraph: AnnotatedString, open: (String) -> Unit): Anno
 /** Whether filling [columnPx] would stretch a [decodedPx]-wide image past [MAX_IMAGE_UPSCALE]x. */
 internal fun isTooSmallToStretch(decodedPx: Int, columnPx: Int): Boolean =
     decodedPx > 0 && columnPx > 0 && decodedPx * MAX_IMAGE_UPSCALE < columnPx
+
+/** How many times taller than the column is wide a body picture decodes at most. */
+internal const val MAX_IMAGE_TALLNESS = 4
 
 /** The most an article image is ever enlarged to fill the column. */
 internal const val MAX_IMAGE_UPSCALE = 2

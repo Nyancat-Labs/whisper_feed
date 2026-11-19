@@ -99,7 +99,7 @@ class ImageSizingTest {
         sites.forEachIndexed { index, site ->
             assertTrue(
                 "body image $index lost its request size and will decode whole",
-                site.contains(".size(imageWidth)"),
+                site.contains(".size(imageWidth)") || site.contains(".size(imageWidth, imageWidth * MAX_IMAGE_TALLNESS)"),
             )
         }
     }

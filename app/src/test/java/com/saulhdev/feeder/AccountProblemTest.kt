@@ -58,7 +58,9 @@ class AccountProblemTest {
         )
         assertEquals(
             AccountProblem.REFUSED,
-            problemFrom(ConnectException("Failed to connect to /192.168.1.50:8443")),
+            // A public address: a home-network one has its own answer now
+            // (sheet 73, tested in Batch5Test).
+            problemFrom(ConnectException("Failed to connect to rss.example.com/203.0.113.50:8443")),
         )
     }
 
