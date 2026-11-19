@@ -177,27 +177,39 @@ button:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px soli
       '<div class="more" hidden></div><p class="build"></p><p class="merged"></p>' +
       '<div class="seg" role="group"></div><p class="reply" hidden></p>' +
       '<div class="files" hidden></div><textarea rows="1"></textarea><div class="saved"></div>' +
-      '<label class="attach" hidden><input type="file" accept="image/*,application/pdf,.txt,.log,.md,.csv,.json" style="position:absolute;opacity:0;width:1px;height:1px"><span>+ Add a file or screenshot</span></label>';
+      '<label class="attach" hidden><input type="file" accept="image/*,application/pdf,.txt,.log,.md,.csv,.json" style="position:absolute;opacity:0;width:1px;height:1px"><span>+ Add files or screenshots</span></label>';
     // Attachments: the file goes to the artifact's asset store; the card's document keeps the pointer (files: [{id,name,type,size,at,by}]).
     const fin = el.querySelector(".attach input"), flab = el.querySelector(".attach span");
     fin.id = "file-" + id;
+    // Several files at once (sheet 119): each uploads in turn, and one that
+    // fails doesn't stop the rest.
+    fin.multiple = true;
     fin.addEventListener("change", async () => {
-      const f = fin.files && fin.files[0]; fin.value = ""; if (!f || !assets) return;
-      const ext = (f.name.split(".").pop() || "").toLowerCase();
-      const type = FILE_TYPES[ext] || f.type;
-      flab.textContent = "Uploading…";
-      try {
-        const a = await assets.upload(f, type ? { type } : undefined);
-        // Read the list again after the upload, so a file added meanwhile (from another device, or by Claude) is kept.
-        const cur = items.get(id) || {};
-        const files = [...(Array.isArray(cur.files) ? cur.files : []), { id: a.id, name: f.name.slice(0, 120), type: a.contentType, size: a.sizeBytes, at: Date.now(), by: "def" }];
-        items.set(id, { ...cur, files }); render();
-        await write(id, { files });
-        flab.textContent = "+ Add a file or screenshot";
-      } catch (e) {
-        const c = e && e.code;
-        flab.textContent = c === "too_large" ? "Too big (20 MB at most). Pick another" : c === "unsupported_type" ? "That kind of file isn't accepted. Pick another" : "Not added. Tap to try again";
+      const picked = fin.files ? [...fin.files] : []; fin.value = ""; if (!picked.length || !assets) return;
+      const added = [], failed = [];
+      for (const [k, f] of picked.entries()) {
+        flab.textContent = picked.length > 1 ? "Uploading " + (k + 1) + " of " + picked.length + "…" : "Uploading…";
+        const ext = (f.name.split(".").pop() || "").toLowerCase();
+        const type = FILE_TYPES[ext] || f.type;
+        try {
+          const a = await assets.upload(f, type ? { type } : undefined);
+          added.push({ id: a.id, name: f.name.slice(0, 120), type: a.contentType, size: a.sizeBytes, at: Date.now(), by: "def" });
+        } catch (e) { failed.push(e && e.code); }
       }
+      try {
+        if (added.length) {
+          // Read the list again after the uploads, so a file added meanwhile (from another device, or by Claude) is kept.
+          const cur = items.get(id) || {};
+          const files = [...(Array.isArray(cur.files) ? cur.files : []), ...added];
+          items.set(id, { ...cur, files }); render();
+          await write(id, { files });
+        }
+        if (!failed.length) flab.textContent = "+ Add files or screenshots";
+        else {
+          const c = failed[0], why = c === "too_large" ? "too big (20 MB at most)" : c === "unsupported_type" ? "not a kind of file accepted" : "not added";
+          flab.textContent = (picked.length > 1 ? failed.length + " of " + picked.length + " " : "") + why + ". Tap to try again";
+        }
+      } catch (e) { flab.textContent = "Not added. Tap to try again"; }
     });
     const ta = el.querySelector("textarea");
     let timer = null;

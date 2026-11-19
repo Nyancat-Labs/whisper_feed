@@ -8,6 +8,23 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 19 November 2026 — Results from 1c18b40, board page
+
+- Passed: T1 (About), T3 ('Default'), T5 (home-network message on Add
+  source: 73 closed), T6 (Edit and Preview: 116 closed), T10 (Sign out and
+  pill buttons: 15 closed). Waiting for real events: T2 (breaking news),
+  T4 (a new Cyber photo post), T7 (feeds empty three updates running);
+  T8 and T9 optional, not tried.
+- New: 119, the board's upload takes one file at a time. Fixed on the board
+  page itself (files/work-board.html, published as version 10): the picker
+  takes several, they upload in turn, and failures are counted, not fatal.
+- New: 120, the backup message looks out of place. Cause: Backup, Sources,
+  Categories and Library use Material's plain SnackbarHost (near-square,
+  default colours) while the feed uses FeedSnackbarHost; and the message
+  lists both file names over three lines. For batch 7.
+- 118 set to Fix by the owner: batch 7 with 117 and 120.
+- Screenshots saved to archive/screenshots/2026-11-19-22*.
+
 ## 19 November 2026 — Batch 6, preview 1c18b40
 
 - **115** `BreakingAlert`: title is `contentTitle` (was `displayTitle`,
