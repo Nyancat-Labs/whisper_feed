@@ -26,8 +26,10 @@ and Google Play builds on two other devices.
 - T3 (113): "As in Settings" too long for its button: becomes "Default".
 - T7 note: Edit on broken feeds and a feed preview: new sheet 116, to
   decide (Szept 240). 111 and 112: owner picked Fix.
-- Batch 6 (Szept 241): 45, 73, 111, 112, 113 label, 115; 114 and 116 if
-  picked.
+- Owner, later the same evening: Fix on 114, 115 and 116, so batch 6 is 45,
+  73, 111, 112, 113 label, 114, 115, 116 (Szept 241). Testing of 73 and 76
+  waits until there's a home address or a French source (Szept 242); 76
+  set to Later, 73 back to Fix for the Add source part.
 
 ## 19 November 2026 — Batch 5, preview 3896ca3
 
