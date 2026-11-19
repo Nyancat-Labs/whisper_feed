@@ -44,8 +44,12 @@ and Google Play builds on two other devices.
   Security Guru's feed is valid and current but the site refuses Whisper
   (403); the card wrongly said "stopped publishing". New sheet 117 (ignore
   anything after the closing tag; honest 403 wording; readable error names)
-  and 118 (seven old-style spinners to Expressive's loading indicator), both
-  to decide.
+  and 118 (seven old-style spinners to Expressive's loading indicator).
+  Owner put 117 on Fix: the user must be told plainly when a site blocks
+  reading apps ("This site blocks reading apps. Its feed exists…"), on Feeds
+  that stopped working and on Add source; never pretend to be a browser.
+  "Open articles: Browser" can't help (the block stops the headlines
+  arriving). An email to IT Security Guru is drafted on the card, not sent.
 - Board and Szept (owner): the owner works on the board only; Szept
   entries renamed "Board N – …", one per open card (eight new "test"
   entries for the cards in preview), and Szept numbers removed from 17
