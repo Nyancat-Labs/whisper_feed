@@ -18,6 +18,7 @@
 
 package com.saulhdev.feeder.ui.pages
 
+import com.saulhdev.feeder.manager.sync.greader.isHomeNetworkHost
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import com.saulhdev.feeder.data.FeedLibrary
@@ -380,7 +381,12 @@ fun SearchResult(
                 SearchFailure.Unreachable -> stringResource(
                     R.string.add_feed_unreachable,
                     hostOf(error.url),
-                ) to stringResource(R.string.add_feed_unreachable_hint)
+                ) to stringResource(
+                    // An address at home fails because Android blocks it,
+                    // not because of the connection (sheet 73).
+                    if (isHomeNetworkHost(hostOf(error.url))) R.string.add_feed_home_network_hint
+                    else R.string.add_feed_unreachable_hint
+                )
                 SearchFailure.NotFound -> stringResource(R.string.failed_to_parse, error.url) to
                     stringResource(R.string.add_feed_not_found_hint)
             }

@@ -17,6 +17,7 @@
  */
 package com.saulhdev.feeder.manager.sync.greader
 
+import java.util.concurrent.TimeUnit
 import java.util.Locale
 import com.saulhdev.feeder.manager.bookmarks.allowingPrivateNetworks
 import com.saulhdev.feeder.utils.HttpIdentity.asFeedReader
@@ -128,7 +129,13 @@ class GoogleReaderApi(
      * password goes nowhere new.
      */
     private fun postSignIn(url: HttpUrl, body: FormBody): AuthResult {
-        val signInClient = client.newBuilder().followRedirects(false).followSslRedirects(false).build()
+        // A whole-call limit as well as the per-read ones: a server that
+        // answers a byte at a time never trips a read timeout, and one such
+        // sign-in could hold a sync until its eight minutes ran out (sheet 112).
+        val signInClient = client.newBuilder()
+            .followRedirects(false).followSslRedirects(false)
+            .callTimeout(SIGN_IN_TIMEOUT_S, TimeUnit.SECONDS)
+            .build()
         var target = url
         repeat(MAX_SIGN_IN_REDIRECTS + 1) {
             signInClient.newCall(Request.Builder().url(target).post(body).build()).execute().use { r ->
@@ -552,3 +559,6 @@ private const val MAX_SIGN_IN_REDIRECTS = 3
 /** Same scheme, host and port: a redirect the password may follow. */
 internal fun sameServer(from: HttpUrl, to: HttpUrl): Boolean =
     to.scheme == from.scheme && to.host.equals(from.host, ignoreCase = true) && to.port == from.port
+
+/** The longest a sign-in may take from start to end, in seconds (sheet 112). */
+internal const val SIGN_IN_TIMEOUT_S = 60L

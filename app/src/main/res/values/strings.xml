@@ -33,8 +33,8 @@
     <string name="choice_open_reader">Reader</string>
     <string name="choice_open_browser">Browser</string>
     <string name="source_open_mode">Open articles</string>
-    <string name="source_open_mode_summary">For this source only. "As in Settings" follows Settings → Reading.</string>
-    <string name="source_open_as_settings">As in Settings</string>
+    <string name="source_open_mode_summary">For this source only. Default follows Settings → Reading.</string>
+    <string name="source_open_as_settings">Default</string>
     <string name="choice_read_keep">Keep</string>
     <string name="choice_read_fade">Fade</string>
     <string name="choice_read_hide">Hide</string>
@@ -281,6 +281,8 @@
     <string name="add_feed_offline_hint">Connect to Wi-Fi or mobile data, then search again.</string>
     <string name="add_feed_unreachable">Couldn\'t reach %1$s</string>
     <string name="add_feed_unreachable_hint">Check your connection and the address, then search again.</string>
+    <string name="add_feed_home_network_hint">Android blocks apps from reaching addresses on your home network. Use the feed\'s public address instead, if it has one.</string>
+    <string name="broken_home_network">This address is on your home network, which Android blocks apps from reaching. Use the feed\'s public address instead, if it has one.</string>
     <string name="add_feed_filed">Saved under %1$s</string>
     <string name="add_feed_done">Done</string>
     <string name="edit_rss">Edit Feed Item</string>

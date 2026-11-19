@@ -18,6 +18,7 @@
 
 package com.saulhdev.feeder.utils.extensions
 
+import com.saulhdev.feeder.utils.MarkdownLite
 import android.util.Log
 import com.rometools.modules.mediarss.MediaEntryModule
 import com.rometools.modules.mediarss.MediaModule
@@ -233,7 +234,8 @@ fun SyndEntry.contentText(): String {
             description?.value
     }
 
-    val result = HtmlToPlainTextConverter().convert(possiblyHtml ?: "")
+    // Markdown's marks (![…](…), **, ```) are not text to show on a card.
+    val result = HtmlToPlainTextConverter().convert(MarkdownLite.htmlIfMarkdown(possiblyHtml) ?: "")
 
     // Description consists of at least one image, avoid opening browser for this item
     return when {
@@ -252,16 +254,18 @@ fun SyndFeed.plainTitle(): String = convertAtomContentToPlainText(titleEx, title
 fun SyndEntry.plainTitle(): String = convertAtomContentToPlainText(titleEx, title)
 
 fun SyndEntry.contentHtml(): String? {
+    // A feed that writes Markdown rather than HTML is converted here, before
+    // anything looks for a picture or draws the text (sheet 45).
     contents?.minByOrNull {
         when (it.type) {
             "xhtml", "html" -> 0
             else -> 1
         }
     }?.let {
-        return it.value
+        return MarkdownLite.htmlIfMarkdown(it.value)
     }
 
-    return description?.value
+    return MarkdownLite.htmlIfMarkdown(description?.value)
 }
 
 fun SyndEntry.mediaDescription(): String? {

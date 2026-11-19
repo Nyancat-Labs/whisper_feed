@@ -1,5 +1,6 @@
 package com.saulhdev.feeder.manager.sync
 
+import android.os.SystemClock
 import com.saulhdev.feeder.data.db.NeoFeedDb
 import com.saulhdev.feeder.utils.backgroundMobileDataBlocked
 import com.saulhdev.feeder.utils.skipForBlockedData
@@ -196,6 +197,12 @@ class FeedSyncer(val context: Context, workerParams: WorkerParameters) :
         val queued = syncMutex.isLocked
         // Where the account sync got to, for a run stopped before it can say.
         val trace = StepTrace()
+        // Both clocks, to say how much of a long run the phone slept through:
+        // the time limit below counts only time awake, the step times above
+        // count all of it, and one night's run read "sign-in 3788s" for what
+        // was mostly sleep (sheet 112).
+        val sinceBoot = SystemClock.elapsedRealtime()
+        val awake = SystemClock.uptimeMillis()
         // Counted from here: what this run cost in data. See SyncResult.bytes.
         val receivedBefore = receivedBytes()
 
@@ -274,7 +281,16 @@ class FeedSyncer(val context: Context, workerParams: WorkerParameters) :
                 }
             }
             if (done == null) {
-                SyncLog.finished(applicationContext, run, withTrace(OUT_OF_TIME_OUTCOME, trace))
+                val asleep = asleepMinutes(
+                    SystemClock.elapsedRealtime() - sinceBoot,
+                    SystemClock.uptimeMillis() - awake,
+                )
+                SyncLog.finished(
+                    applicationContext,
+                    run,
+                    withTrace(OUT_OF_TIME_OUTCOME, trace) +
+                        (if (asleep > 0) "; phone asleep for $asleep min of it" else ""),
+                )
                 // Retried soon for the syncs nobody asked for, which pick up
                 // where this stopped. A forced one would start again from the
                 // top, so it is left there.
@@ -543,6 +559,9 @@ const val OUT_OF_TIME_OUTCOME = "stopped: eight minutes up, progress kept"
  * stopped in matching after 380s". The stop comes first, so the line still
  * starts with what the hold and the pick-up look for; see skipAfterCutOff.
  */
+/** Whole minutes a run spent with the phone asleep: total time less awake time. */
+fun asleepMinutes(totalMs: Long, awakeMs: Long): Long = ((totalMs - awakeMs) / 60_000L).coerceAtLeast(0L)
+
 fun withTrace(stopped: String, trace: StepTrace): String =
     trace.describe()?.let { "$stopped; $it" } ?: stopped
 

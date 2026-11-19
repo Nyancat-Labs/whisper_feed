@@ -143,6 +143,10 @@ private val HOME_ADDRESS = Regex(
     RegexOption.IGNORE_CASE,
 )
 
+/** Whether [host] is itself a home-network address (a feed or server at home). */
+fun isHomeNetworkHost(host: String?): Boolean =
+    host != null && HOME_ADDRESS.matchEntire(host.trim().trim('[', ']')) != null
+
 internal fun mentionsHomeNetwork(message: String?): Boolean =
     message != null && HOME_ADDRESS.containsMatchIn(message)
 

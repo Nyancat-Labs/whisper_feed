@@ -17,6 +17,7 @@
  */
 package com.saulhdev.feeder.ui.pages
 
+import com.saulhdev.feeder.manager.sync.greader.isHomeNetworkHost
 import androidx.compose.ui.platform.LocalContext
 import com.saulhdev.feeder.utils.extensions.launchView
 import com.saulhdev.feeder.ui.icons.phosphor.Browser
@@ -155,6 +156,17 @@ private fun BrokenRow(
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.error,
             )
+
+            // A feed at home fails because Android blocks it; say so rather
+            // than leave the reader to look for a fault (sheet 73).
+            if (isHomeNetworkHost(feed.url.host)) {
+                Spacer(Modifier.height(6.dp))
+                Text(
+                    text = stringResource(R.string.broken_home_network),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
 
             Spacer(Modifier.height(12.dp))
 

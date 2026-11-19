@@ -373,8 +373,18 @@ internal suspend fun syncFeeds(
                                     lastSync = Clock.System.now(),
                                 )
                                 // And forget any run of failures: whatever was
-                                // wrong is not wrong now.
-                                feedsRepo.clearFailures(feed.id)
+                                // wrong is not wrong now. Unless the feed came
+                                // back with nothing in it at all: that answers,
+                                // but a feed that has moved or been emptied
+                                // looks exactly like this, and seven of the
+                                // owner's did so for days without being listed
+                                // anywhere (sheet 111). Counted as a failure, so
+                                // it reaches Feeds that stopped working.
+                                if (fetched is FeedFetchResult.Parsed && fetched.itemsInFeed == 0) {
+                                    feedsRepo.recordFailure(feed.id)
+                                } else {
+                                    feedsRepo.clearFailures(feed.id)
+                                }
                                 feedTimes.add(feed.title to System.currentTimeMillis() - fetchStarted)
                             } catch (e: CancellationException) {
                                 // Not a failure, and this catch used to treat
@@ -640,7 +650,10 @@ private suspend fun syncFeed(
     FeedDigest.write(context, feedSql.id, digest)
     // New to Whisper, not merely changed: an article seen before keeps the
     // time it was first synced, and only this run's have this one.
-    return FeedFetchResult.Parsed(articles.count { (article, _) -> article.firstSyncedTime == downloadTime })
+    return FeedFetchResult.Parsed(
+        articles.count { (article, _) -> article.firstSyncedTime == downloadTime },
+        itemsInFeed = items?.size ?: 0,
+    )
 }
 
 /** How one feed's fetch went. */
@@ -652,7 +665,8 @@ internal sealed interface FeedFetchResult {
     data object Identical : FeedFetchResult
 
     /** Read and stored; [newArticles] of its articles were new to Whisper. */
-    data class Parsed(val newArticles: Int) : FeedFetchResult
+    /** [itemsInFeed]: how many entries the feed held at all, new or not. */
+    data class Parsed(val newArticles: Int, val itemsInFeed: Int = -1) : FeedFetchResult
 }
 
 /**

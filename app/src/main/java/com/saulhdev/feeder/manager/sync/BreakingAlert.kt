@@ -48,6 +48,7 @@ import com.saulhdev.feeder.ui.overlay.clusterStories
 object BreakingAlert {
 
     const val DAILY_CAP = 3
+    const val PER_UPDATE = 1
     private const val CHANNEL_ID = "breakingNews"
     private const val STATE = "breaking_alert"
     private const val KEY_TOLD = "told"
@@ -100,13 +101,18 @@ object BreakingAlert {
         val today = nowMs / DAY_MS
         val count = if (state.getLong(KEY_DAY, -1) == today) state.getInt(KEY_COUNT, 0) else 0
         val told = state.getStringSet(KEY_TOLD, emptySet()).orEmpty()
-        val stories = newStories(items, clusters, told, DAILY_CAP - count)
+        // One per update, so a day's three arrive spread out rather than all
+        // in the same minute (sheet 115).
+        val stories = newStories(items, clusters, told, minOf(PER_UPDATE, DAILY_CAP - count))
         stories.forEach { post(context, it) }
-        // Every article now in a story counts as told, whether or not today's
-        // allowance reached it: tomorrow, yesterday's story is not news. Only
-        // what is still clustered is kept, so the set does not grow for ever.
+        // Told: what was told before and is still a story, plus every article
+        // of the story just sent. A story left waiting by the one-per-update
+        // limit stays untold, so the next update can send it; one that stops
+        // being a story drops out, so the set does not grow for ever.
+        val sentLeads = stories.map { it.lead.id }.toSet()
+        val sent = clusters.filterValues { it.leadId in sentLeads }.keys
         state.edit {
-            putStringSet(KEY_TOLD, clusters.keys)
+            putStringSet(KEY_TOLD, told.filter { it in clusters }.toSet() + sent)
             putLong(KEY_DAY, today)
             putInt(KEY_COUNT, count + stories.size)
         }
@@ -135,7 +141,10 @@ object BreakingAlert {
         val text = context.getString(R.string.breaking_notification_text, story.sources, story.lead.feedTitle)
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
-            .setContentTitle(story.lead.displayTitle)
+            // The story's own headline. displayTitle is the source's name
+            // with " [RSS]" after it, which is what the first build showed
+            // (owner's screenshot, 19 November; sheet 115).
+            .setContentTitle(story.lead.contentTitle)
             .setContentText(text)
             .setStyle(NotificationCompat.BigTextStyle().bigText(text))
             .setContentIntent(pending)
