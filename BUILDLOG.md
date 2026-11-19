@@ -8,6 +8,39 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 19 November 2026 — Batch 4, preview f801bc3
+
+- **About** (33-35, 37-39, 61): Contact us is an intro line and three
+  joined icon rows (Email us, Report a bug on GitHub, Report a problem,
+  which opens Help's Report a problem page); the Website row went (the
+  header pill has it). Version line "Version 1.0.5-f801bc3 (build 6)".
+  Ko-fi button "Chip in on Ko-fi"; "Built on" heading. 37 was already in
+  the code (same container colour), only needed testing.
+- **Sources** (25, 26, 29, 60): push-pin for Pin everywhere (sources, the
+  article's Pinned line and its menu); each list is one joined group (the
+  list has no spacing of its own now; rows sit SEGMENT_GAP apart, other
+  items carry 4dp above and below); bottom padding 104 (88 only touched the
+  + button). New Sort button (Sort by, Order, ticks) and the ⋮ menu as a
+  shared `GroupedMenu` in three named groups with icons; pencil for Rename
+  in Manage categories.
+- **Small** (20, 23, 107, 110): "Launcher page background"; file icons on
+  Import from bookmarks; Open website on Feeds that stopped working (the
+  feed's own site home page, `siteHome`); Your reading moved to Your data
+  with a "Forget what Whisper has learned" row that opens the Learned page.
+- **Help → Launcher page** (57): Lawnchair merged PR 7399 into 16-dev on
+  24 October (nightlies only; latest named release 15 Beta 3, April). The
+  page leads with "On Lawnchair 16, or a nightly from 24 October 2026 on",
+  then the four debug steps under "On an older Lawnchair".
+- **Icons**: EnvelopeSimple, PushPin, FileArrowDown/Up, LinkBreak,
+  LockSimpleOpen, PencilSimple, Copy, from @phosphor-icons/core 2.1.1 (MIT,
+  already credited), drawn with `addPathNodes`.
+- **Tests**: 1349 passing (new `Batch4Test`); two older source checks
+  updated to follow the change (the 104dp gap; the Email row's new shape).
+  Lint clean. Preview signed with the release key (fingerprint checked),
+  sent to the owner; steps T1-T10 on the sheet; Szept 154-167, 169, 229
+  done, 230 is the owner's testing.
+- Not tested on a phone yet.
+
 ## 18 November 2026 — Results from 43ee0b0
 
 - T1-T5 pass: install and version, Material's refresh indicator (106), the

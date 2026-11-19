@@ -9,6 +9,21 @@ Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 Unreleased
 ----------
 
+- **Sources, tidied**: a push-pin instead of the asterisk for pinning,
+  the list drawn as one joined group like Settings, room above the + button
+  for the last row, a Sort button of its own, and the ⋮ menu in three
+  named groups with an icon on every entry.
+- **Feeds that stopped working** have an Open website button, to see
+  whether the site is still there.
+- **About**: Contact us is three rows (Email us, Report a bug on GitHub,
+  Report a problem), the version reads "Version 1.0.6 (build 7)", and the
+  Ko-fi button says so.
+- **Your reading** moves to Your data, which also gets a way to forget what
+  Whisper has learned.
+- **Lawnchair 16** lists Whisper as a feed without the debug menu; Help →
+  Launcher page explains both ways.
+- "Overlay background opacity" is now **Launcher page background**, and
+  importing shows file icons rather than clouds.
 - **Forget one source, or several**, under What Whisper has learned:
   the bin now clears what Whisper counted as well as More and Less, so a
   faded source stops being faded. Long-press to pick several. Faded sources

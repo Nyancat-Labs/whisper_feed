@@ -4,28 +4,29 @@ For a new Claude Code session picking up from the first one (late September to
 17 October 2026). The repository is the record; this note covers what isn't
 obvious from it.
 
-## Where we are (15 November 2026)
+## Where we are (19 November 2026)
 
 Start here after a /clear. CLAUDE.md has the working rules; this is state.
 
-- **Preview 43ee0b0** tested 18 November: T1-T5 pass (106, 88, 91, 108
-  closed), T6-T7 not tested. Nothing is waiting for a build.
-- **Szept** holds every open job (project Whisper, ids 130, 146-197), each
-  with priority, slot and plan; every open sheet card's reply carries its
-  Szept number. At the start of a session: `list_questions`, then the
-  sheet, then Szept.
-- **Next for Claude:** batch 4 (Sources, Import, About, Help: sheet 23,
-  25, 26, 29, 33-39, 57, 60, 61, 107; Szept 154-167), planned for 21 Nov.
-  Then batch 5 (reader 52, 71, 76, 45), 80, 73 (28 Nov), translations
-  (5 Dec), release 1.0.6 (12 Dec).
-- **Weblate (Szept 130, urgent, trial ends 22 Nov):** the owner unlocks the
-  project, adds French under App, then replies to Weblate Care (ticket
-  2015248) that a language is added; Claude drafts the reply, asking to
-  extend the trial if approval might run past the 22nd.
-- **Feed library:** Joho no Todai added (English in tech.opml, Japanese in
-  japan.opml); reply sent. Sheet 108 can close once it ships.
-- **Open on the sheet for the owner:** 110 (move 'Your reading' to Your
-  data? Szept 229), 85 (Later). 107 is on Fix, in batch 4.
+- **Preview f801bc3** (batch 4) is with the owner: steps T1-T10 on the
+  sheet (`t012-*`), Szept 230. Sheet 20, 23, 25, 26, 29, 33-39, 57, 60,
+  61, 107, 110 are in preview.
+- **Signing key** is in this container at `/root/whisper-signing/` (owner
+  asked to keep it, 18 November), `keystore.properties` points at it. A new
+  container needs both files uploaded again.
+- **Szept** holds every open job (project Whisper), each with priority, slot
+  and plan; every open sheet card's reply carries its Szept number. At the
+  start of a session: `list_questions`, then the sheet, then Szept.
+- **Next for Claude:** batch 5 (reader 52, 71, 76, 45), 80, 73 (28 Nov),
+  then translations and Reset all settings (5 Dec), release 1.0.6 (12 Dec).
+- **Weblate:** French added, Plurals component gone (plurals now in
+  strings.xml, 693 strings), licence GPL-3.0-or-later, Libre approval
+  pending; trial ends 22 Nov (Szept 215). After approval: push to GitHub,
+  hooks, then unlock once Claude's translations are in.
+- **Lawnchair** merged the whitelist (their PR 7399) into 16-dev on 24
+  October: nightlies have it, no named release yet. Help → Launcher page
+  shows both ways since batch 4.
+- **Open on the sheet for the owner:** the T1-T10 steps; 85 (Later).
 - **archive/** (gitignored, this container only) holds the owner's
   screenshots; the sheet's asset store has the same files.
 

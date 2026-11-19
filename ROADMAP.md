@@ -231,7 +231,7 @@ which is private; here they are "a user". Item numbers are the sheet's.
   the phone on USB.
 - **Long-press an article for a preview** (67): **review batch 3**, with
   the card menu (58) (owner, 5 November).
-- **Reset all settings** (68), review batch 4.
+- **Reset all settings** (68): planned for 5 December (Szept 178).
 - **Open paywalled sources through an archive** (69): **after 1.0.6**
   (owner, 5 November). archive.org only, never archive.today (Play's
   rules on getting round paywalls). An "Open archived copy" action in the
@@ -283,8 +283,9 @@ which is private; here they are "a user". Item numbers are the sheet's.
 - **GitHub Sponsors** (owner, 4–5 November): Nyancat Labs has its own
   profile; it is now in `.github/FUNDING.yml` and the README beside Ko-fi.
   The owner's personal account (defsix) has one too, to be filled in at the
-  weekend; whether Whisper links to it as well is the owner's call. In the
-  app's About page with item 38, batch 4.
+  weekend; whether Whisper links to it as well is the owner's call. Batch 4
+  renamed About's button to 'Chip in on Ko-fi' (item 38); a Sponsors button
+  joins it once Nyancat Labs' profile is approved.
 
 **Ways of working**
 
@@ -1290,11 +1291,6 @@ or an explicit note saying why it is exempt.
 
 ### 8. Ship it
 
-- **The Lawnchair whitelist PR** — **accepted (owner, 27 October 2026).** Help →
-  Launcher page to be updated in review batch 4 once the Lawnchair version
-  carrying it is known. Worth doing, and no longer the
-  gate it was recorded as: see "What this is now". The app is usable without
-  ever touching a launcher.
 - **Play and F-Droid together**, decided 27 September 2026, rather than the
   staged GitHub → F-Droid → Play in `docs/brand/ASSET_SPEC.md` §8. The repo is
   `Nyancat-Labs/whisper_feed` (first `defsix/076feed`, renamed, then moved
