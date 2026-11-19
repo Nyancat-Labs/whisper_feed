@@ -40,6 +40,11 @@ and Google Play builds on two other devices.
   sent to the owner; steps T1-T10 on the sheet; Szept 154-167, 169, 229
   done, 230 is the owner's testing.
 - Not tested on a phone yet.
+- Owner's diagnostics from 43ee0b0 (19 November, archive/board-files):
+  new sheet 111 (seven feeds return under 1 KB and no articles every time,
+  never flagged; Szept 232) and 112 (the 08:11 sync "reached sign-in
+  3788s"; Szept 233). Darknet – Hacking Tools has failed 303 times since
+  2 November: a ready case for Open website (T7).
 
 ## 18 November 2026 — Results from 43ee0b0
 
