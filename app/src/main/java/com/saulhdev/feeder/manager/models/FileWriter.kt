@@ -47,7 +47,7 @@ suspend fun writeOutputStream(
                                         title = escape(feed.title),
                                         type = "rss",
                                         xmlUrl = escape(feed.url.toString())
-                                    ) {}
+                                    ) { whisperSettings(feed) }
                                 }
                             } else {
                                 outline(title = escape(tag)) {
@@ -56,7 +56,7 @@ suspend fun writeOutputStream(
                                             title = escape(feed.title),
                                             type = "rss",
                                             xmlUrl = escape(feed.url.toString())
-                                        ) {}
+                                        ) { whisperSettings(feed) }
                                     }
                                 }
                             }
@@ -168,6 +168,24 @@ class Opml : TagWithText("opml") {
     suspend fun head(init: suspend Head.() -> Unit) = initTag(Head(), init)
     suspend fun body(init: suspend Body.() -> Unit) = initTag(Body(), init)
 }
+
+/**
+ * A source's own settings, as attributes of its outline (sheet 114). OPML
+ * allows any attribute and other readers ignore what they do not know, so the
+ * file still imports anywhere; Whisper reads them back on restore. Only what
+ * differs from a new source's defaults is written.
+ */
+internal fun Outline.whisperSettings(feed: Feed) {
+    if (feed.fullTextByDefault) attributes[ATTR_FULL_TEXT] = "true"
+    if (!feed.showInAll) attributes[ATTR_SHOW_IN_ALL] = "false"
+    if (!feed.isEnabled) attributes[ATTR_ENABLED] = "false"
+    if (feed.openMode.isNotEmpty()) attributes[ATTR_OPEN_MODE] = escape(feed.openMode)
+}
+
+internal const val ATTR_FULL_TEXT = "whisperFullText"
+internal const val ATTR_SHOW_IN_ALL = "whisperShowInAll"
+internal const val ATTR_ENABLED = "whisperEnabled"
+internal const val ATTR_OPEN_MODE = "whisperOpenMode"
 
 class Head : TagWithText("head") {
     suspend fun title(init: suspend Title.() -> Unit) = initTag(Title(), init)

@@ -33,6 +33,10 @@
     <string name="choice_open_reader">Reader</string>
     <string name="choice_open_browser">Browser</string>
     <string name="source_open_mode">Open articles</string>
+    <string name="source_preview">Preview this feed</string>
+    <string name="source_preview_found">%1$s · %2$d articles in the feed</string>
+    <string name="source_preview_not_feed">No feed at that address. It may have moved: Open website on Feeds that stopped working shows the site.</string>
+    <string name="source_preview_unreachable">Couldn\'t reach that address. Check your connection and the address.</string>
     <string name="source_open_mode_summary">For this source only. Default follows Settings → Reading.</string>
     <string name="source_open_as_settings">Default</string>
     <string name="choice_read_keep">Keep</string>
@@ -697,6 +701,7 @@
     <string name="broken_nothing">No feed could be found at that site. It may have stopped publishing one.</string>
     <string name="broken_forget">Stop warning me about this</string>
     <string name="broken_open_website">Open website</string>
+    <string name="broken_edit">Edit this source</string>
     <string name="pref_import_bookmarks">Import from bookmarks</string>
     <string name="pref_import_bookmarks_summary">Give Whisper your bookmark folders and it finds the feeds</string>
     <string name="import_explanation">Export your bookmarks from any browser and choose the file here. Whisper reads it on this phone and looks up the feeds itself \u2014 nothing is uploaded anywhere.</string>

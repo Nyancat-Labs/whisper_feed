@@ -17,6 +17,9 @@
  */
 package com.saulhdev.feeder.ui.pages
 
+import com.saulhdev.feeder.ui.icons.phosphor.PencilSimple
+import com.saulhdev.feeder.ui.navigation.NavRoute
+import com.saulhdev.feeder.ui.navigation.LocalNavController
 import com.saulhdev.feeder.manager.sync.greader.isHomeNetworkHost
 import androidx.compose.ui.platform.LocalContext
 import com.saulhdev.feeder.utils.extensions.launchView
@@ -253,6 +256,16 @@ private fun BrokenRow(
                 icon = Phosphor.Browser,
                 modifier = Modifier.fillMaxWidth(),
                 onClick = { context.launchView(siteHome(feed.url)) },
+            )
+            // Having seen the site, change the address here rather than hunt
+            // for the source in the list (owner, 19 November; sheet 116).
+            Spacer(Modifier.height(10.dp))
+            val navController = LocalNavController.current
+            OutlinedActionButton(
+                text = stringResource(R.string.broken_edit),
+                icon = Phosphor.PencilSimple,
+                modifier = Modifier.fillMaxWidth(),
+                onClick = { navController.navigate(NavRoute.SourceEdit(feed.id)) },
             )
             Spacer(Modifier.height(10.dp))
             OutlinedActionButton(

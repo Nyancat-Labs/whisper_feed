@@ -79,7 +79,15 @@ class OPMLParser(private val opmlToDb: ParserToDatabase<Feed>) : ContentHandler 
                     val feed = Feed(
                         title = feedTitle,
                         tag = if (tagStack.isNotEmpty()) tagStack.peek() else "",
-                        url = sloppyLinkToStrictURL(atts?.getValue("xmlurl") ?: "")
+                        url = sloppyLinkToStrictURL(atts?.getValue("xmlurl") ?: ""),
+                        // Whisper's own per-source settings, when the file
+                        // came from a Whisper backup (sheet 114). Absent,
+                        // a source gets the defaults, as before.
+                        fullTextByDefault = attribute(atts, ATTR_FULL_TEXT) == "true",
+                        showInAll = attribute(atts, ATTR_SHOW_IN_ALL) != "false",
+                        isEnabled = attribute(atts, ATTR_ENABLED) != "false",
+                        openMode = attribute(atts, ATTR_OPEN_MODE)
+                            ?.takeIf { it == "reader" || it == "browser" }.orEmpty(),
                     )
 
                     feeds.add(feed)
@@ -144,3 +152,13 @@ internal fun escapingBareAmpersands(input: InputStream): InputStream {
 /** An `&` not already starting a named, decimal or hexadecimal entity. */
 private val BARE_AMPERSAND =
     Regex("&(?!(?:#[0-9]+|#[xX][0-9a-fA-F]+|[A-Za-z][A-Za-z0-9]*);)")
+
+/** An attribute by name, ignoring case, as the rest of this parser reads them. */
+private fun attribute(atts: org.xml.sax.Attributes?, name: String): String? {
+    if (atts == null) return null
+    for (i in 0 until atts.length) {
+        val local = atts.getLocalName(i).ifEmpty { atts.getQName(i) }
+        if (local.equals(name, ignoreCase = true)) return atts.getValue(i)
+    }
+    return null
+}

@@ -18,6 +18,12 @@
 
 package com.saulhdev.feeder.viewmodels
 
+import com.saulhdev.feeder.manager.sync.greader.isHomeNetworkHost
+import com.saulhdev.feeder.manager.models.FeedParser
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import androidx.lifecycle.viewModelScope
 import com.saulhdev.feeder.data.db.models.Feed
 import com.saulhdev.feeder.data.entity.SourceEditViewState
@@ -139,4 +145,46 @@ class SourceEditViewModel : NeoViewModel() {
         SharingStarted.Lazily,
         SourceEditViewState()
     )
+
+    /**
+     * What an address gives, before it is saved: the feed's name and its
+     * newest headlines, or why there is nothing (owner, 19 November; sheet 116).
+     * Fetched as Add source fetches, read no further than a sync would.
+     */
+    private val _preview = MutableStateFlow<FeedPreview?>(null)
+    val preview: StateFlow<FeedPreview?> = _preview
+
+    fun preview(address: String) {
+        _preview.value = FeedPreview.Loading
+        viewModelScope.launch(Dispatchers.IO) {
+            val url = runCatching { sloppyLinkToStrictURL(address.trim()) }.getOrNull()
+            _preview.value = when {
+                url == null -> FeedPreview.Failed(FeedPreview.Why.NotAFeed)
+                isHomeNetworkHost(url.host) -> FeedPreview.Failed(FeedPreview.Why.HomeNetwork)
+                else -> try {
+                    val feed = FeedParser().parseFeedUrl(url)
+                    val titles = feed?.items.orEmpty().mapNotNull { it.title?.trim()?.takeIf(String::isNotEmpty) }
+                    if (feed == null) FeedPreview.Failed(FeedPreview.Why.NotAFeed)
+                    else FeedPreview.Found(feed.title.orEmpty(), titles.take(3), feed.items.orEmpty().size)
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    val io = generateSequence<Throwable>(e) { it.cause }.any { it is java.io.IOException }
+                    FeedPreview.Failed(if (io) FeedPreview.Why.Unreachable else FeedPreview.Why.NotAFeed)
+                }
+            }
+        }
+    }
+
+    fun clearPreview() {
+        _preview.value = null
+    }
+}
+
+/** The result of Preview on a source's page. */
+sealed interface FeedPreview {
+    data object Loading : FeedPreview
+    data class Found(val title: String, val headlines: List<String>, val count: Int) : FeedPreview
+    data class Failed(val why: Why) : FeedPreview
+    enum class Why { NotAFeed, Unreachable, HomeNetwork }
 }

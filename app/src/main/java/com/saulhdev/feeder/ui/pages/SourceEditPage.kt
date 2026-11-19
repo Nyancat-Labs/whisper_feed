@@ -18,6 +18,9 @@
 
 package com.saulhdev.feeder.ui.pages
 
+import androidx.compose.material3.LinearProgressIndicator
+import com.saulhdev.feeder.ui.icons.phosphor.MagnifyingGlass
+import com.saulhdev.feeder.viewmodels.FeedPreview
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import com.saulhdev.feeder.ui.components.BasePreference
 import com.saulhdev.feeder.ui.components.SegmentedTabButton
@@ -102,6 +105,7 @@ fun SourceEditPage(
 ) {
     val title = stringResource(id = R.string.edit_rss)
     val viewState by viewModel.viewState.collectAsState()
+    val preview by viewModel.preview.collectAsState()
     // Every category already in use, so one can be picked rather than retyped.
     val sourcesViewModel: SourceListViewModel = koinNeoViewModel()
     val sourcesState by sourcesViewModel.state.collectAsState()
@@ -219,6 +223,8 @@ fun SourceEditPage(
                 newTag = newTag,
                 onNewTagChange = { newTag = it },
                 fullTextForAll = fullTextForAll,
+                preview = preview,
+                onPreview = { viewModel.preview(editState.value.url) },
             )
         }
     }
@@ -256,6 +262,8 @@ fun SourceEditView(
     newTag: String = "",
     onNewTagChange: (String) -> Unit = {},
     fullTextForAll: Boolean = false,
+    preview: FeedPreview? = null,
+    onPreview: (() -> Unit)? = null,
 ) {
     val (focusTitle, focusTag) = createRefs()
     val focusManager = LocalFocusManager.current
@@ -297,6 +305,52 @@ fun SourceEditView(
                         focusManager.clearFocus()
                     },
             )
+        }
+        // Whether the address is the right feed, before saving it: its name
+        // and newest headlines, or why there is nothing (sheet 116).
+        if (onPreview != null) item {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                OutlinedActionButton(
+                    text = stringResource(R.string.source_preview),
+                    icon = Phosphor.MagnifyingGlass,
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = preview != FeedPreview.Loading && editState.value.url.isNotBlank(),
+                    onClick = onPreview,
+                )
+                when (val p = preview) {
+                    null -> Unit
+                    FeedPreview.Loading -> LinearProgressIndicator(
+                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+                    )
+                    is FeedPreview.Found -> Column(modifier = Modifier.padding(top = 8.dp)) {
+                        Text(
+                            text = stringResource(R.string.source_preview_found, p.title.ifBlank { "—" }, p.count),
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                        p.headlines.forEach { headline ->
+                            Text(
+                                text = "• $headline",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 2,
+                            )
+                        }
+                    }
+                    is FeedPreview.Failed -> Text(
+                        text = stringResource(
+                            when (p.why) {
+                                FeedPreview.Why.NotAFeed -> R.string.source_preview_not_feed
+                                FeedPreview.Why.Unreachable -> R.string.source_preview_unreachable
+                                FeedPreview.Why.HomeNetwork -> R.string.add_feed_home_network_hint
+                            }
+                        ),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(top = 8.dp),
+                    )
+                }
+            }
         }
         item {
             OutlinedTextField(

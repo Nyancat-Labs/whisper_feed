@@ -18,6 +18,7 @@
 
 package com.saulhdev.feeder.ui.navigation
 
+import com.saulhdev.feeder.ui.pages.SourceEditPage
 import com.saulhdev.feeder.ui.pages.SettingsSectionPage
 import com.saulhdev.feeder.ui.pages.SettingsSection
 import androidx.compose.animation.fadeIn
@@ -129,6 +130,9 @@ fun NavigationManager(
             composable<NavRoute.SourceAdd> {
                 SourceAddPage(query = it.toRoute<NavRoute.SourceAdd>().query)
             }
+            composable<NavRoute.SourceEdit> {
+                SourceEditPage(it.toRoute<NavRoute.SourceEdit>().id) { navController.popBackStack() }
+            }
             composable<NavRoute.Categories> { CategoryListPage() }
             composable<NavRoute.Learned> { LearnedPage() }
             composable<NavRoute.Account> { AccountPage() }
@@ -214,6 +218,10 @@ open class NavRoute {
     @Serializable
     /** [query]: a name or address to look for straight away, or nothing. */
     data class SourceAdd(val query: String = "") : NavRoute()
+
+    /** One source's own page, from outside the Sources list (sheet 116). */
+    @Serializable
+    data class SourceEdit(val id: Long = -1) : NavRoute()
 
     @Serializable
     data object Categories : NavRoute()
