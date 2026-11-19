@@ -96,6 +96,7 @@ import com.saulhdev.feeder.ui.theme.codeBlockStyle
 import com.saulhdev.feeder.ui.theme.codeInlineStyle
 import com.saulhdev.feeder.ui.theme.linkTextStyle
 import com.saulhdev.feeder.ui.theme.LocalDimens
+import androidx.compose.foundation.layout.aspectRatio
 import org.jsoup.Jsoup
 import org.jsoup.internal.StringUtil
 import org.jsoup.nodes.Element
@@ -164,7 +165,9 @@ fun LazyListScope.htmlFormattedText(
         .body()
         .let { body ->
             restoreLazyImages(body)
+            dropRelatedBlocks(body, baseUrl)
             dropFurnitureLines(body)
+            dropEmptySlots(body)
             stripRepeatedTitle(body, articleTitle)
             ensureLeadImage(body, leadImageUrl)
             dropRepeatedImages(body)
@@ -551,7 +554,9 @@ fun readerBody(
 ): ReaderBody {
     val body = Jsoup.parse(inputStream, null, baseUrl).body()
     restoreLazyImages(body)
+    dropRelatedBlocks(body, baseUrl)
     dropFurnitureLines(body)
+    dropEmptySlots(body)
     stripRepeatedTitle(body, articleTitle)
     stripBylineNoise(body, author)
     val card = usableImageUrl(leadImageUrl?.trim())
@@ -647,6 +652,115 @@ private val STRAY_CREDIT = Regex(
  * "Sign up for free access to this post" stays: on a gated story it is what
  * says why the text stops.
  */
+/**
+ * The width over height a picture's own `width` and `height` say, if they
+ * both do and the shape is a believable one; otherwise null (sheet 71).
+ */
+internal fun statedAspectRatio(img: Element): Float? {
+    val w = img.attr("width").trim().removeSuffix("px").toFloatOrNull() ?: return null
+    val h = img.attr("height").trim().removeSuffix("px").toFloatOrNull() ?: return null
+    if (w < MIN_STATED_PX || h < MIN_STATED_PX) return null
+    return (w / h).takeIf { it in 0.1f..10f }
+}
+
+/** Below this a stated size is a tracking pixel or a placeholder, not a shape. */
+private const val MIN_STATED_PX = 16f
+
+/**
+ * Takes out containers left empty: advertisement slots whose ads never came,
+ * spacers, emptied embeds. Their margins stayed, which is where Bored Panda's
+ * uneven gaps came from (sheet 71). Only containers with no text and nothing
+ * to show; a lone picture, video or frame keeps its box.
+ */
+internal fun dropEmptySlots(body: Element) {
+    body.select("div, aside, section, ins, figure, p, span")
+        .reversed()
+        .filter { it.parent() != null && it.text().isBlank() && it.selectFirst(SHOWABLE) == null }
+        .forEach { it.remove() }
+}
+
+private const val SHOWABLE =
+    "img, picture, video, iframe, svg, audio, canvas, table, hr, br, object, embed, source"
+
+/**
+ * Takes out "related articles" blocks the page kept inside the article
+ * (sheet 76: BFMTV's "Sur le même sujet", Le Figaro's "Lire aussi").
+ *
+ * By heading, in every language the app speaks: the heading goes, and with it
+ * what follows as long as that is only links to other articles and their
+ * pictures. And by shape: a paragraph that opens "Lire aussi :" or "Read
+ * more:" and is otherwise one link; and an article that opens with a
+ * paragraph that is nothing but a link to another page on the same site.
+ */
+internal fun dropRelatedBlocks(body: Element, baseUrl: String) {
+    body.select("h1, h2, h3, h4, h5, h6, p, div, span, strong")
+        .filter { it.parent() != null && isTextLine(it) && RELATED_HEADING.matches(cleanHeading(it.text())) }
+        .forEach { heading ->
+            if (heading.parent() == null) return@forEach
+            // The heading may sit alone in a wrapper; work from the outermost
+            // element that holds nothing else.
+            var top = heading
+            while (top.parent() != null && top.parent() !== body &&
+                top.parent()!!.text().trim() == top.text().trim()
+            ) top = top.parent()!!
+            var next = top.nextElementSibling()
+            while (next != null && isOnlyLinks(next)) {
+                val after = next.nextElementSibling()
+                next.remove()
+                next = after
+            }
+            top.remove()
+        }
+    body.select("p, div, li")
+        .filter { el ->
+            val links = el.select("a[href]")
+            el.parent() != null && links.size == 1 &&
+                el.children().none { it.isBlock } &&
+                INLINE_RELATED.containsMatchIn(el.text()) &&
+                el.text().length - links.first()!!.text().length < 40
+        }
+        .forEach { it.remove() }
+    val host = siteHost(baseUrl)
+    val first = body.children().firstOrNull { it.text().isNotBlank() }
+    if (host != null && first != null && first.tagName() in setOf("p", "div")) {
+        val links = first.select("a[href]")
+        val only = links.singleOrNull()
+        if (only != null && siteHost(only.absUrl("href")) == host &&
+            first.text().trim() == only.text().trim() &&
+            first.selectFirst("img, picture, video") == null
+        ) first.remove()
+    }
+}
+
+private fun siteHost(url: String): String? =
+    runCatching { java.net.URL(url).host.removePrefix("www.") }.getOrNull()?.takeIf { it.isNotBlank() }
+
+private fun cleanHeading(text: String): String =
+    text.replace(' ', ' ').trim().trimEnd(':', '：', '.', '…').trim()
+
+/** Only links (and their pictures): a list of other articles, not prose. */
+private fun isOnlyLinks(element: Element): Boolean {
+    val text = element.text().replace(' ', ' ').trim()
+    val links = element.select("a[href]")
+    if (links.isEmpty()) return text.isBlank() && element.selectFirst("img, picture") != null
+    val linked = links.sumOf { it.text().trim().length }
+    // Durations ("2:31") and dates beside the headlines are allowed for.
+    return text.isEmpty() || linked >= text.length * 0.7
+}
+
+private val RELATED_HEADING = Regex(
+    """(?i)(?:sur le même sujet|à lire aussi|a lire aussi|lire aussi|à lire également|""" +
+        """read more|read also|related|related (?:articles|stories|content|coverage|reading)|see also|""" +
+        """more on this(?: story)?|lesen sie auch|mehr zum thema|das könnte sie auch interessieren|""" +
+        """leggi anche|potrebbe interessarti|lee también|te puede interesar|""" +
+        """leia também|leia mais|veja também|czytaj też|czytaj także|zobacz też|zobacz także)""",
+)
+
+private val INLINE_RELATED = Regex(
+    """(?i)^\s*(?:à lire aussi|a lire aussi|lire aussi|read more|read also|related|see also|lesen sie auch|""" +
+        """leggi anche|lee también|leia também|leia mais|czytaj też|czytaj także)\s*[:：>»-]""",
+)
+
 internal fun dropFurnitureLines(body: Element) {
     body.select("*")
         .filter { isTextLine(it) && it.selectFirst("img, picture, figure, video") == null }
@@ -1387,6 +1501,7 @@ private fun TextComposer.handleImage(
     baseUrl: String,
 ) {
     val imageCandidates = getImageSource(baseUrl, element)
+    val stated = statedAspectRatio(element)
     if (imageCandidates.hasImage) {
         // Some sites are silly and insert formatting in alt text
         val alt = stripHtml(element.attr("alt"))
@@ -1470,17 +1585,25 @@ private fun TextComposer.handleImage(
                                     .placeholder(imagePlaceholder)
                                     .error(imagePlaceholder)
                                     .scale(Scale.FIT)
-                                    .size(imageWidth)
+                                    // By width only: a square limit squeezed a tall
+                                    // picture (a column of Reddit comments) to fit
+                                    // the width as height (sheet 71).
+                                    .size(coil.size.Size(coil.size.Dimension(imageWidth), coil.size.Dimension.Undefined))
                                     .precision(Precision.INEXACT)
                                     .tag(ImageSurface::class.java, ImageSurface.Article)
                                     .build(),
-                                contentScale = ContentScale.FillWidth,
+                                // The shape the page states, when it states one:
+                                // the space is right before the picture arrives,
+                                // nothing jumps, and Fit never cuts it (sheet 71).
+                                contentScale = if (stated != null) ContentScale.Fit else ContentScale.FillWidth,
                                 contentDescription = alt,
                                 onSuccess = { state ->
                                     decodedWidth = state.painter.intrinsicSize.width
                                         .takeIf { it.isFinite() }?.roundToInt() ?: 0
                                 },
-                                modifier = Modifier.articleImageWidth(decodedWidth, imageWidth)
+                                modifier = Modifier
+                                    .articleImageWidth(decodedWidth, imageWidth)
+                                    .then(if (stated != null) Modifier.aspectRatio(stated) else Modifier)
                             )
                             }
                         }

@@ -108,6 +108,7 @@ fun settingsRows(prefs: FeedPreferences, section: SettingsSection, debugging: Bo
         )
         SettingsSection.FEED -> listOf(
             prefs.breakingNews,
+            prefs.breakingAlerts,
             prefs.dimSkipped,
             prefs.removeDuplicates,
             prefs.blockedWords,

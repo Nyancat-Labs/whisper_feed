@@ -1,5 +1,6 @@
 package com.saulhdev.feeder.manager.sync
 
+import com.saulhdev.feeder.data.db.NeoFeedDb
 import com.saulhdev.feeder.utils.backgroundMobileDataBlocked
 import com.saulhdev.feeder.utils.skipForBlockedData
 import com.saulhdev.feeder.utils.skipAfterCutOff
@@ -319,6 +320,19 @@ class FeedSyncer(val context: Context, workerParams: WorkerParameters) :
         // A notice that syncing had stopped is taken back by the sync that
         // proves it has started again.
         if (success) {
+            // A new breaking story, if the reader asked to be told (sheet 80).
+            try {
+                val db: NeoFeedDb by inject(NeoFeedDb::class.java)
+                BreakingAlert.check(
+                    applicationContext,
+                    prefs.breakingAlerts.getValue(),
+                    db.feedArticleDao().loadAllEnabledFeedItems(BREAKING_ALERT_WINDOW, true),
+                )
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.w(TAG, "Could not check for breaking news", e)
+            }
             try {
                 SyncWatchdog.clearIfCurrent(applicationContext, sources, prefs)
             } catch (e: CancellationException) {
@@ -514,6 +528,9 @@ const val SYNC_TIME_BUDGET_MS = 8 * 60_000L
 const val BACKGROUND_FEEDS_BUDGET_MS = 4 * 60_000L
 
 /** When a run's feeds stop being started: four minutes on in the background, never otherwise. */
+/** Enough of the newest articles to cover the twelve hours a story is looked for in. */
+private const val BREAKING_ALERT_WINDOW = 1500
+
 fun backgroundFeedDeadline(background: Boolean, nowMs: Long = System.currentTimeMillis()): Long? =
     if (background) nowMs + BACKGROUND_FEEDS_BUDGET_MS else null
 

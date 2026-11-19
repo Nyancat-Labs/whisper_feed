@@ -99,7 +99,7 @@ fun SyndEntry.asItem(baseUrl: URL, feedAuthor: Author? = null): Item {
         return Item(
             id = relativeLinkIntoAbsoluteOrNull(baseUrl, this.uri),
             url = linkToHtml(baseUrl),
-            title = plainTitle(),
+            title = headline(plainTitle(), contentText),
             content_text = contentText,
             content_html = contentHtml(),
             summary = contentText.take(200),
@@ -114,6 +114,26 @@ fun SyndEntry.asItem(baseUrl: URL, feedAuthor: Author? = null): Item {
         throw t
     }
 }
+
+/**
+ * The title, unless it is only a picture's file name ("!IMG20261020165835.jpg",
+ * "PXL_20261101_101500.jpg"): then the start of the post's own text, if it
+ * has any (sheet 45).
+ */
+internal fun headline(title: String, text: String): String {
+    if (!looksLikeFileName(title)) return title
+    val firstLine = text.lineSequence().map { it.trim() }.firstOrNull { it.isNotEmpty() } ?: return title
+    return if (firstLine.length <= MAX_HEADLINE) firstLine else firstLine.take(MAX_HEADLINE - 1).trimEnd() + "…"
+}
+
+private const val MAX_HEADLINE = 120
+
+private val FILE_NAME = Regex(
+    """^[!_\-\s]*([A-Za-z]{2,5}[_\-]?\d{6,}[\w\-]*|[\w\-]+)\.(jpe?g|png|gif|webp|heic|avif|mp4|mov)$""",
+    RegexOption.IGNORE_CASE,
+)
+
+internal fun looksLikeFileName(title: String): Boolean = FILE_NAME.matches(title.trim())
 
 fun String.orIfBlank(block: () -> String): String =
     when (this.isBlank()) {
@@ -324,7 +344,10 @@ private fun MediaEntryModule.findThumbnailCandidates(): Sequence<ThumbnailCandid
 }
 
 private fun SyndEnclosure.findThumbnailCandidate(): ThumbnailCandidate? {
-    if (type?.startsWith("image/") == true) {
+    // Some photo feeds attach the picture with no type, or a generic one, and
+    // only the address says it is a photo (sheet 45).
+    val untyped = type.isNullOrBlank() || type == "application/octet-stream"
+    if (type?.startsWith("image/") == true || (untyped && url != null && pointsToImage(url))) {
         url?.let { url ->
             return ThumbnailCandidate(width = null, height = null, url = url)
         }
@@ -338,6 +361,9 @@ private fun MediaGroup.findThumbnailCandidates(): Sequence<ThumbnailCandidate> =
             yield(thumbnailCandidate)
         }
     }
+    // The pictures in the group, not only its thumbnails: a photo post that
+    // groups its sizes had no picture at all (sheet 45).
+    contents?.forEach { content -> yieldAll(content.findThumbnailCandidates()) }
 }
 
 private fun Thumbnail.findThumbnailCandidate(): ThumbnailCandidate? {
@@ -387,7 +413,8 @@ private fun pointsToImage(url: String): Boolean {
                 u.path.endsWith(".jpeg", ignoreCase = true) ||
                 u.path.endsWith(".gif", ignoreCase = true) ||
                 u.path.endsWith(".png", ignoreCase = true) ||
-                u.path.endsWith(".webp", ignoreCase = true)
+                u.path.endsWith(".webp", ignoreCase = true) ||
+                u.path.endsWith(".avif", ignoreCase = true)
     } catch (_: Exception) {
         false
     }

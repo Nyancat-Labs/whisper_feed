@@ -432,6 +432,16 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
      * reader's own categories are a judgement already made rather than one
      * guessed at here.
      */
+    /** A notification for each new breaking story (sheet 80). See BreakingAlert. */
+    var breakingAlerts = BooleanPref(
+        titleId = R.string.pref_breaking_alerts,
+        summaryId = R.string.pref_breaking_alerts_summary,
+        icon = Phosphor.Megaphone,
+        key = BREAKING_ALERTS,
+        dataStore = dataStore,
+        defaultValue = false
+    )
+
     var breakingNews = BooleanPref(
         titleId = R.string.pref_breaking_news,
         summaryId = R.string.pref_breaking_news_summary,
@@ -1349,6 +1359,7 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
         val LEARNED = stringKey("pref_learned")
         val STATISTICS = stringKey("pref_statistics")
         val FORGET_LEARNED = stringKey("pref_forget_learned")
+        val BREAKING_ALERTS = booleanKey("pref_breaking_alerts")
         val ACCOUNT = stringKey("pref_account")
         val BACKUP_FOLDER = stringKey("pref_backup_folder")
         val BACKUP_LAST_RUN = stringKey("pref_backup_last_run")

@@ -136,9 +136,9 @@ fun problemFrom(cause: Throwable?): AccountProblem {
 
 /** A private IPv4 range, loopback, link-local, or a home-network name. */
 private val HOME_ADDRESS = Regex(
-    """(?<![\d.])(10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|""" +
+    """(?<![\w.])(10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|""" +
         """172\.(1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}|127\.\d{1,3}\.\d{1,3}\.\d{1,3}|""" +
-        """169\.254\.\d{1,3}\.\d{1,3})(?![\d])|""" +
+        """169\.254\.\d{1,3}\.\d{1,3})(?![\w.])|""" +
         """[a-z0-9-]+\.(local|lan|home\.arpa|internal)\b""",
     RegexOption.IGNORE_CASE,
 )

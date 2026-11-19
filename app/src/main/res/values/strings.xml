@@ -347,6 +347,11 @@
     <string name="why_saved">You saved it</string>
     <string name="why_pinned">You pinned it</string>
     <string name="pref_breaking_news">Highlight breaking news</string>
+    <string name="pref_breaking_alerts">Notify me of breaking news</string>
+    <string name="pref_breaking_alerts_summary">One notification for each new breaking story from your News sources, at most 3 a day. It comes with the background update, not the moment a story breaks.</string>
+    <string name="breaking_channel">Breaking news</string>
+    <string name="breaking_channel_description">A new story several of your News sources are covering</string>
+    <string name="breaking_notification_text">Covered by %1$d of your sources, including %2$s</string>
     <string name="pref_breaking_news_summary">When several of your News sources cover the same story within a few hours, give it the largest card. Uses sources filed under a News category only.</string>
     <string name="why_breaking">Several sources are covering this story</string>
     <string name="pref_dim_skipped">Fade sources you skip</string>
