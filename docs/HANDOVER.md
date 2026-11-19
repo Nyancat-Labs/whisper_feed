@@ -8,10 +8,9 @@ obvious from it.
 
 Start here after a /clear. CLAUDE.md has the working rules; this is state.
 
-- **Preview 3896ca3** (batches 4 and 5) is with the owner: steps `t012-*`
-  (batch 4) and `t013-*` (batch 5) on the sheet, Szept 230. In preview:
-  20, 23, 25, 26, 29, 33-39, 57, 60, 61, 107, 110 and 45, 52, 71, 73, 76,
-  80, 113. To decide: 111, 112, 114.
+- **Preview 1c18b40** (batch 6) is with the owner: steps `t014-*` on the
+  sheet. In preview: 15, 45, 73, 111, 112, 114, 115, 116. On Later: 76
+  (test when there's a French source), 93 (optional separate environment).
 - **Signing key** is in this container at `/root/whisper-signing/` (owner
   asked to keep it, 18 November), `keystore.properties` points at it. A new
   container needs both files uploaded again.

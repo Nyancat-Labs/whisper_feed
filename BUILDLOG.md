@@ -8,6 +8,36 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 19 November 2026 — Batch 6, preview 1c18b40
+
+- **115** `BreakingAlert`: title is `contentTitle` (was `displayTitle`,
+  which is source + " [RSS]"); at most one per update (`PER_UPDATE`); only
+  the sent story is marked told, so one held back comes later.
+- **113** "As in Settings" is "Default".
+- **45** `MarkdownLite`: content with no HTML but `<br>` and a clear
+  Markdown mark is converted in `contentHtml()` and `contentText()`, before
+  the picture search. Checked on the real Cyberspace feed (its post pages
+  build the text with JavaScript, so the reader used the feed's text) and
+  on last batch's 12 articles: identical.
+- **73** `isHomeNetworkHost`: Add source's unreachable message and a line on
+  Feeds that stopped working for feeds at home addresses.
+- **111** A parsed feed with no items counts as a failure
+  (`Parsed.itemsInFeed`), so it reaches Feeds that stopped working.
+- **112** The step times use the wall clock, the eight-minute budget counts
+  awake time only; an out-of-time run now adds "phone asleep for N min of
+  it". Sign-in has a 60 s `callTimeout`.
+- **114** OPML backups write `whisperFullText`, `whisperShowInAll`,
+  `whisperEnabled`, `whisperOpenMode` when not default; the parser reads
+  them back; existing sources keep their own settings on restore.
+- **116** `NavRoute.SourceEdit`; "Edit this source" on broken feeds;
+  "Preview this feed" on the source page (name, count, three headlines, or
+  why not).
+- **15** Sign out outlined in the normal colour (reverses review 63's red,
+  which the dark theme draws pink); dialog buttons are pills.
+- Tests 1373 passing (`Batch6Test`, 12). `CountWordsTest` caught a plain
+  "%d articles" (now a plural); `ReviewFixesTest` updated for Sign out.
+  Preview signed; steps T1-T10 (`t014-*`). Not tested on a phone yet.
+
 ## 19 November 2026 — Results from 3896ca3 (batches 4 and 5)
 
 - Passed and closed: batch 4 all ten steps (20, 23, 25, 26, 29, 33-39, 57,

@@ -9,6 +9,15 @@ Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 Unreleased
 ----------
 
+- **Feeds written in Markdown** (Cyberspace, for one) show their pictures,
+  bold text and ASCII art properly.
+- **Feeds that stopped working** can be edited from there, and a source's
+  page can preview its feed before you save a new address. Feeds that keep
+  coming back empty are listed there too.
+- **Backups keep each source's own settings**: full text, Show in All,
+  switched off and Open articles.
+- Breaking-news notifications carry the story's headline and arrive one at
+  a time.
 - **Open articles per source**: each source can open in the reader or the
   browser, whatever the setting for the rest.
 - **Breaking-news notifications**, off unless you turn them on: one for each
