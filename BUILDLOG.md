@@ -38,6 +38,14 @@ and Google Play builds on two other devices.
   no crashes or errors; 126 sources (Darknet unsubscribed after the Open
   website test); 2 failing (IT Security Guru 403, Coolsmartphone timeouts);
   Ireland: BreakingNews still empty every fetch, which 1c18b40 will list.
+- Owner's checks, evening: Darknet's feed is valid but WP Rocket appends a
+  `<script>` after `</rss>`, so the strict parser rejects it (303 failures;
+  Add source "No feed found"); "ah0" was an R8-shrunk exception name. IT
+  Security Guru's feed is valid and current but the site refuses Whisper
+  (403); the card wrongly said "stopped publishing". New sheet 117 (ignore
+  anything after the closing tag; honest 403 wording; readable error names)
+  and 118 (seven old-style spinners to Expressive's loading indicator), both
+  to decide.
 - Board and Szept (owner): the owner works on the board only; Szept
   entries renamed "Board N – …", one per open card (eight new "test"
   entries for the cards in preview), and Szept numbers removed from 17
