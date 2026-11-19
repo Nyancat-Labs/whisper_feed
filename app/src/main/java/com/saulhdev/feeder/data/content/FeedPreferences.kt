@@ -57,6 +57,7 @@ import com.saulhdev.feeder.ui.icons.phosphor.CaretUp
 import com.saulhdev.feeder.ui.icons.phosphor.Clock
 import com.saulhdev.feeder.ui.icons.phosphor.ArrowCounterClockwise
 import com.saulhdev.feeder.ui.icons.phosphor.CloudArrowDown
+import com.saulhdev.feeder.ui.icons.phosphor.FileArrowDown
 import com.saulhdev.feeder.ui.icons.phosphor.CloudArrowUp
 import com.saulhdev.feeder.utils.READ_KEEP
 import com.saulhdev.feeder.utils.READ_HIDE
@@ -689,7 +690,8 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
     var importBookmarks = StringPref(
         titleId = R.string.pref_import_bookmarks,
         summaryId = R.string.pref_import_bookmarks_summary,
-        icon = Phosphor.CloudArrowDown,
+        // A file, not a cloud: nothing leaves the phone (review 23).
+        icon = Phosphor.FileArrowDown,
         key = IMPORT_BOOKMARKS,
         dataStore = dataStore,
         route = NavRoute.BookmarkImport
