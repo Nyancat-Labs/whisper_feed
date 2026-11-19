@@ -67,6 +67,12 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.foundation.layout.height
 import com.saulhdev.feeder.ui.components.LinkItem
+import com.saulhdev.feeder.ui.components.BasePreference
+import com.saulhdev.feeder.ui.components.PreferenceIcon
+import com.saulhdev.feeder.ui.icons.phosphor.EnvelopeSimple
+import com.saulhdev.feeder.ui.navigation.LocalNavController
+import com.saulhdev.feeder.ui.navigation.NavRoute
+import com.saulhdev.feeder.ui.navigation.SettingsSectionName
 import com.saulhdev.feeder.ui.components.PagePreference
 import com.saulhdev.feeder.ui.components.PreferenceGroupHeading
 import com.saulhdev.feeder.ui.components.ViewWithActionBar
@@ -91,6 +97,7 @@ import org.koin.compose.koinInject
 fun AboutPage() {
     val title = stringResource(id = R.string.title_about)
     val context = LocalContext.current
+    val navController = LocalNavController.current
     val isGitHubInstall = remember { UpdateCheckWorker.isGitHubInstall(context) }
     ViewWithActionBar(
         title = title,
@@ -160,8 +167,13 @@ fun AboutPage() {
                         supportingContent = {
                             Column {
                                 Text(
-                                    text = stringResource(id = R.string.app_version) + ": "
-                                            + BuildConfig.VERSION_NAME + " ( Build " + BuildConfig.VERSION_CODE + " )",
+                                    // "Version 1.0.5-2e413f0 (build 6)": no colon, no
+                                    // spaces inside the brackets (review 35).
+                                    text = stringResource(
+                                        R.string.about_version_line,
+                                        BuildConfig.VERSION_NAME,
+                                        BuildConfig.VERSION_CODE,
+                                    ),
                                     style = MaterialTheme.typography.titleSmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -213,37 +225,35 @@ fun AboutPage() {
             item {
                 PreferenceGroupHeading(heading = stringResource(id = R.string.about_contact), insideMargin = true)
             }
+            // The intro line, then three rows in the same joined group as
+            // Settings, each with an icon (review 61). The Website row went:
+            // the header already has the nyancatlabs.com pill (review 33).
+            // Rows in one group also end the uneven gaps of the old plain
+            // text (review 34).
             item {
-                Card(
-                    shape = MaterialTheme.shapes.large,
-                    // The container every list group uses; these two were a
-                    // lighter tint than the rows beside them (review 37).
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                ) {
-                    Text(
-                        text = stringResource(R.string.about_contact_summary),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp),
-                    )
-                    contactRows.forEach { row ->
-                        ListItem(
-                            modifier = Modifier.clickable { context.launchView(row.url) },
-                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                            overlineContent = { Text(stringResource(row.labelResId)) },
-                            headlineContent = {
-                                Text(
-                                    text = row.shown,
-                                    color = MaterialTheme.colorScheme.primary,
-                                )
-                            },
-                        )
-                    }
-                }
+                Text(
+                    text = stringResource(R.string.about_contact_summary),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 4.dp),
+                )
+            }
+            itemsIndexed(contactRows) { i, row ->
+                BasePreference(
+                    titleId = row.titleId,
+                    summary = row.summary ?: stringResource(row.summaryId),
+                    index = i,
+                    groupSize = contactRows.size,
+                    startWidget = {
+                        PreferenceIcon(icon = row.icon, contentDescription = null)
+                    },
+                    onClick = {
+                        when {
+                            row.route != null -> navController.navigate(row.route)
+                            row.url != null -> context.launchView(row.url)
+                        }
+                    },
+                )
             }
             // Only for a copy installed from GitHub by hand. Play and F-Droid
             // say when there is an update; see UpdateCheck.
@@ -291,7 +301,10 @@ fun AboutPage() {
                         Spacer(modifier = Modifier.height(12.dp))
                         LinkItem(
                             icon = Phosphor.HeartStraight,
-                            label = stringResource(R.string.about_support),
+                            // Says what the tap does and where it goes; the
+                            // heading above already says "Support Whisper"
+                            // (review 38).
+                            label = stringResource(R.string.about_support_button),
                             url = SUPPORT_URL,
                         )
                     }
@@ -375,15 +388,36 @@ private fun UpdateCheckRows(prefs: FeedPreferences = koinInject()) {
 /** Where to reach Nyancat Labs. The address is the one on nyancatlabs.com and in the Play listing. */
 internal const val CONTACT_EMAIL = "hej@nyancatlabs.com"
 
-private data class ContactRow(@StringRes val labelResId: Int, val shown: String, val url: String)
+private data class ContactRow(
+    @StringRes val titleId: Int,
+    val icon: ImageVector,
+    /** Shown under the title as it is (the address), or else [summaryId]. */
+    val summary: String? = null,
+    @StringRes val summaryId: Int = -1,
+    val url: String? = null,
+    val route: NavRoute? = null,
+)
 
 private val contactRows = listOf(
-    ContactRow(R.string.about_contact_email, CONTACT_EMAIL, "mailto:$CONTACT_EMAIL"),
-    ContactRow(R.string.about_contact_website, "nyancatlabs.com", "https://nyancatlabs.com"),
     ContactRow(
-        R.string.about_contact_issues,
-        "github.com/Nyancat-Labs/whisper_feed/issues",
-        "https://github.com/Nyancat-Labs/whisper_feed/issues",
+        titleId = R.string.about_contact_email,
+        icon = Phosphor.EnvelopeSimple,
+        summary = CONTACT_EMAIL,
+        url = "mailto:$CONTACT_EMAIL",
+    ),
+    ContactRow(
+        titleId = R.string.about_contact_issues,
+        icon = Phosphor.GithubLogo,
+        summaryId = R.string.about_contact_issues_summary,
+        url = "https://github.com/Nyancat-Labs/whisper_feed/issues",
+    ),
+    // The same page as Help → Report a problem: a report with the
+    // diagnostics attached, by email or saved to Downloads.
+    ContactRow(
+        titleId = R.string.report_problem,
+        icon = Phosphor.Megaphone,
+        summaryId = R.string.about_contact_report_summary,
+        route = NavRoute.SettingsSection(SettingsSectionName.DIAGNOSTICS),
     ),
 )
 

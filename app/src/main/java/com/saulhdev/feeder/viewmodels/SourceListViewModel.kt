@@ -1,5 +1,11 @@
 package com.saulhdev.feeder.viewmodels
 
+import androidx.compose.ui.graphics.vector.ImageVector
+import com.saulhdev.feeder.ui.icons.Phosphor
+import com.saulhdev.feeder.ui.icons.phosphor.TextAa
+import com.saulhdev.feeder.ui.icons.phosphor.Hash
+import com.saulhdev.feeder.ui.icons.phosphor.Plus
+import com.saulhdev.feeder.ui.icons.phosphor.Clock
 import androidx.annotation.StringRes
 import com.saulhdev.feeder.R
 import androidx.lifecycle.viewModelScope
@@ -613,13 +619,17 @@ data class SourceListState(
  * something that is not on a Feed: when its newest article arrived. That lives
  * in the Article table, so it is handed in.
  */
-enum class SourceSort(@StringRes val labelId: Int) {
-    Title(R.string.sort_by_title) {
+enum class SourceSort(
+    @StringRes val labelId: Int,
+    /** Every choice in the Sort menu has one (review 60). */
+    val icon: ImageVector,
+) {
+    Title(R.string.sort_by_title, Phosphor.TextAa) {
         override fun comparator(latestPosts: Map<Long, Long>) =
             compareBy(String.CASE_INSENSITIVE_ORDER, Feed::title)
     },
 
-    Category(R.string.sort_by_category) {
+    Category(R.string.sort_by_category, Phosphor.Hash) {
         override fun comparator(latestPosts: Map<Long, Long>) =
             compareBy(String.CASE_INSENSITIVE_ORDER) { feed: Feed ->
                 feed.tags.firstOrNull().orEmpty()
@@ -637,7 +647,7 @@ enum class SourceSort(@StringRes val labelId: Int) {
      * them rather than all at the same moment. And undoing a removal
      * re-inserts under a fresh id, so a restored source counts as newly added.
      */
-    Added(R.string.sort_by_added) {
+    Added(R.string.sort_by_added, Phosphor.Plus) {
         override fun comparator(latestPosts: Map<Long, Long>) = compareBy(Feed::id)
     },
 
@@ -656,7 +666,7 @@ enum class SourceSort(@StringRes val labelId: Int) {
      * A feed with no articles at all sorts as zero — before everything —
      * which is right: it is the quietest of the lot, and usually broken.
      */
-    LatestPost(R.string.sort_by_latest_post) {
+    LatestPost(R.string.sort_by_latest_post, Phosphor.Clock) {
         override fun comparator(latestPosts: Map<Long, Long>) =
             compareBy { feed: Feed -> latestPosts[feed.id] ?: 0L }
     },

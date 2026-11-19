@@ -184,7 +184,7 @@
     <string name="about_whisper_team">Whisper</string>
     <string name="about_whisper_author" translatable="false">Nyancat Labs</string>
     <string name="about_whisper_role">Developer</string>
-    <string name="about_team">Built on Neo Feed, and on HomeFeeder before it</string>
+    <string name="about_team">Built on</string>
     <string name="about_developer" translatable="false">Saul Henriquez</string>
     <string name="about_developer2" translatable="false">Antonios Hazim</string>
     <string name="about_build_information">Build info</string>
@@ -215,14 +215,17 @@
     <string name="update_channel">New versions</string>
     <string name="update_channel_description">When a newer Whisper is on GitHub. Only for copies installed from GitHub.</string>
     <string name="about_contact_summary">Questions, a feed that will not load, or something that looks wrong: write to us. Every message is read.</string>
-    <string name="about_contact_email">Email</string>
-    <string name="about_contact_website">Website</string>
-    <string name="about_contact_issues">Bug reports on GitHub</string>
+    <string name="about_contact_email">Email us</string>
+    <string name="about_contact_issues">Report a bug on GitHub</string>
+    <string name="about_contact_issues_summary">Opens Whisper\'s issues page</string>
+    <string name="about_contact_report_summary">Send a report with diagnostics attached, by email or saved to Downloads</string>
     <string name="about_summary">Version, contact us and licences</string>
     <string name="about_support">Support Whisper</string>
+    <string name="about_support_button">Chip in on Ko-fi</string>
+    <string name="about_version_line">Version %1$s (build %2$d)</string>
     <string name="about_support_summary">Whisper is free, has no adverts and collects nothing. If it has earned it, you can chip in — nothing in the app changes either way.</string>
     <string name="pref_cat_overlay">Appearance</string>
-    <string name="pref_transparency">Overlay background opacity</string>
+    <string name="pref_transparency">Launcher page background</string>
     <string name="pref_dynamic_color">Material You colours</string>
     <string name="pref_dynamic_color_summary">Follow the wallpaper instead of the Whisper palette</string>
     <string name="pref_ovr_theme">Theme</string>
@@ -474,6 +477,8 @@
     <string name="learned_group_empty_hide">Hide nothing learned yet (%1$d)</string>
     <string name="learned_nothing_yet">Nothing learned yet</string>
     <string name="learned_reset_all">Forget everything</string>
+    <string name="pref_forget_learned">Forget what Whisper has learned</string>
+    <string name="pref_forget_learned_summary">Opens What Whisper has learned, where you can forget one source or everything</string>
     <plurals name="covered_by_sources">
         <item quantity="one">Covered by %1$d source</item>
         <item quantity="other">Covered by %1$d sources</item>
@@ -539,6 +544,11 @@
     <string name="action_open_article">Open article</string>
     <string name="sort_ascending">Ascending</string>
     <string name="sort_descending">Descending</string>
+    <string name="sources_sort">Sort by</string>
+    <string name="sources_order">Order</string>
+    <string name="sources_menu_organise">Organise</string>
+    <string name="sources_menu_check">Check your feeds</string>
+    <string name="sources_menu_import_export">Import and export</string>
     <string name="sort_newest_first">Newest first</string>
     <string name="sort_oldest_first">Oldest first</string>
     <string name="sort_a_to_z">A–Z</string>
@@ -562,7 +572,7 @@
     <string name="settings_sources">Sources</string>
     <string name="settings_sources_summary">Your sources, the feed library and importing</string>
     <string name="settings_fetching_summary">How often, how far back, Wi-Fi and full text</string>
-    <string name="settings_data_summary">Sync account and backups</string>
+    <string name="settings_data_summary">Sync account, backups and your reading</string>
     <string name="settings_help_summary">The tour, the launcher page and reporting a problem</string>
     <string name="settings_diagnostics_summary">Send a report, save one to Downloads, or turn on detailed logs</string>
     <string name="pref_cat_feed">Your feed</string>
@@ -615,7 +625,9 @@
     <string name="launcher_none_installed">No launcher that supports this was found on this phone. Lawnchair is the one this has been tested with.</string>
     <string name="launcher_step_debug">Open your app drawer, tap the search field, and type <b>/lawnchairdebug</b>. Nothing appears to happen — that is expected.</string>
     <string name="launcher_step_menu">Open Lawnchair\'s settings. A build icon has appeared in the overflow area; tap it to reach the <b>Debug menu</b>.</string>
-    <string name="launcher_step_whitelist">Turn on <b>Ignore feed whitelist</b>. Lawnchair keeps a fixed list of apps allowed to be the feed, and Whisper is not on it yet.</string>
+    <string name="launcher_step_whitelist">Turn on <b>Ignore feed whitelist</b>. Lawnchair keeps a fixed list of apps allowed to be the feed, and Whisper is only on it from Lawnchair 16.</string>
+    <string name="launcher_new_heading">On Lawnchair 16, or a nightly build from 24 October 2026 on</string>
+    <string name="launcher_old_heading">On an older Lawnchair</string>
     <string name="launcher_step_pick">Go to <b>Home screen settings → Feed provider</b> and choose <b>Whisper</b>.</string>
     <string name="launcher_open">Open launcher settings</string>
     <string name="launcher_permission_title">Display over other apps</string>
@@ -673,6 +685,7 @@
     <string name="broken_unchanged">The site still lists the address you have, so something else is wrong \u2014 the server may be down, or blocking.</string>
     <string name="broken_nothing">No feed could be found at that site. It may have stopped publishing one.</string>
     <string name="broken_forget">Stop warning me about this</string>
+    <string name="broken_open_website">Open website</string>
     <string name="pref_import_bookmarks">Import from bookmarks</string>
     <string name="pref_import_bookmarks_summary">Give Whisper your bookmark folders and it finds the feeds</string>
     <string name="import_explanation">Export your bookmarks from any browser and choose the file here. Whisper reads it on this phone and looks up the feeds itself \u2014 nothing is uploaded anywhere.</string>

@@ -119,6 +119,13 @@ fun LauncherPage() {
                     )
                 }
             } else {
+                // Lawnchair took Whisper onto its feed whitelist (their pull
+                // request 7399, merged 24 October 2026 for Lawnchair 16), so
+                // the simple way leads; the debug-menu way stays for older
+                // versions, which is still every named release so far (card 57).
+                item { StepsHeading(R.string.launcher_new_heading) }
+                itemsIndexedSteps(listOf(R.string.launcher_step_pick))
+                item { StepsHeading(R.string.launcher_old_heading) }
                 itemsIndexedSteps(
                     listOf(
                         R.string.launcher_step_debug,
@@ -186,6 +193,16 @@ fun LauncherPage() {
 }
 
 /** The numbered steps, which are the whole point of the screen. */
+@Composable
+private fun StepsHeading(textId: Int) {
+    Text(
+        text = stringResource(textId),
+        style = MaterialTheme.typography.titleMedium,
+        color = MaterialTheme.colorScheme.onSurface,
+        modifier = Modifier.padding(top = 8.dp),
+    )
+}
+
 private fun LazyListScope.itemsIndexedSteps(steps: List<Int>) {
     itemsIndexed(steps) { index, stringId ->
         Row(verticalAlignment = Alignment.Top) {

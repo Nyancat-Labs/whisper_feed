@@ -51,7 +51,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.Box
-import com.saulhdev.feeder.ui.icons.phosphor.Asterisk
+import com.saulhdev.feeder.ui.icons.phosphor.PushPin
+import com.saulhdev.feeder.ui.theme.groupItemShape
 import com.saulhdev.feeder.ui.icons.phosphor.EyeSlash
 import com.saulhdev.feeder.ui.icons.phosphor.WifiHigh
 import com.saulhdev.feeder.data.db.models.Feed
@@ -89,6 +90,13 @@ fun SourceItem(
      * the rest of the address.
      */
     showAddress: Boolean = false,
+    /**
+     * Its place in a joined group of sources, as on Settings (review 29):
+     * large corners only at the top of the first and the bottom of the last.
+     * A lone row (the default) keeps all four.
+     */
+    index: Int = 0,
+    groupSize: Int = 1,
 ) {
     val extend = onExtendSelection ?: onLongClick
     val (isEnabled, enable) = remember(source.isEnabled) {
@@ -114,7 +122,7 @@ fun SourceItem(
     ListItem(
         modifier = modifier
             .fillMaxWidth()
-            .clip(MaterialTheme.shapes.large)
+            .clip(if (groupSize > 1) groupItemShape(index, groupSize - 1) else MaterialTheme.shapes.large)
             .combinedClickable(
                 onClick = { if (selectionMode) onLongClick(source) else onClick(source) },
                 onLongClick = { if (selectionMode) extend(source) else onLongClick(source) },
@@ -192,12 +200,12 @@ fun SourceItem(
                         // reader says otherwise. One mark for one idea is
                         // worth more than two prettier ones.
                         //
-                        // There is no filled asterisk to pair with the outline
-                        // the way a heart has, so the pinned state is a filled
-                        // container behind it rather than a heavier glyph. A
-                        // tint change alone would be the only difference
-                        // between the two states, which is colour carrying
-                        // meaning on its own.
+                        // A push-pin, not the asterisk it was: you had to ask
+                        // what the asterisk meant (review 25). The article
+                        // card's "Pinned" line and its menu use the same pin.
+                        // The pinned state is a filled container behind the
+                        // glyph rather than a heavier glyph, so the two states
+                        // differ in more than colour alone.
                         IconButton(onClick = { onPin(source) }) {
                             Box(
                                 contentAlignment = Alignment.Center,
@@ -210,7 +218,7 @@ fun SourceItem(
                                     ),
                             ) {
                                 Icon(
-                                    imageVector = Phosphor.Asterisk,
+                                    imageVector = Phosphor.PushPin,
                                     contentDescription = stringResource(
                                         if (pinned) R.string.source_unpin
                                         else R.string.source_pin

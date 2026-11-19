@@ -114,7 +114,6 @@ fun settingsRows(prefs: FeedPreferences, section: SettingsSection, debugging: Bo
             prefs.glanceEnabled,
             prefs.glancePlaceName,
             prefs.learned,
-            prefs.statistics,
         )
         SettingsSection.READING -> listOf(
             prefs.articleOpenMode,
@@ -137,9 +136,14 @@ fun settingsRows(prefs: FeedPreferences, section: SettingsSection, debugging: Bo
             prefs.fullTextForAllFeeds,
             prefs.fullTextOnMobile,
         )
+        // Your reading is figures about what you read, so it is data; what
+        // Whisper has learned steers the feed, so it stays under Your feed,
+        // with a way to it from here (owner, 19 November, sheet 110).
         SettingsSection.DATA -> listOf(
             prefs.account,
             prefs.backupFolder,
+            prefs.statistics,
+            prefs.forgetLearned,
         )
         // The reader's rows; the diagnostics are one row away, on their own
         // page, so the three of them stop crowding the list (owner, 21 October).

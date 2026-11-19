@@ -17,6 +17,9 @@
  */
 package com.saulhdev.feeder.ui.pages
 
+import androidx.compose.ui.platform.LocalContext
+import com.saulhdev.feeder.utils.extensions.launchView
+import com.saulhdev.feeder.ui.icons.phosphor.Browser
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -228,6 +231,17 @@ private fun BrokenRow(
             // reader has simply stopped wanting it — and until now the only
             // way out was to leave this screen and hunt for the source in the
             // main list.
+            // The site itself, to see whether it is still there before
+            // deciding (owner, 14 November, sheet 107). Its home page, not
+            // the feed's address, which would only show code.
+            Spacer(Modifier.height(10.dp))
+            val context = LocalContext.current
+            OutlinedActionButton(
+                text = stringResource(R.string.broken_open_website),
+                icon = Phosphor.Browser,
+                modifier = Modifier.fillMaxWidth(),
+                onClick = { context.launchView(siteHome(feed.url)) },
+            )
             Spacer(Modifier.height(10.dp))
             OutlinedActionButton(
                 text = stringResource(R.string.broken_delete),
@@ -240,3 +254,7 @@ private fun BrokenRow(
         }
     }
 }
+
+/** "https://example.com/feed.xml" → "https://example.com/". */
+internal fun siteHome(feedUrl: java.net.URL): String =
+    feedUrl.protocol + "://" + feedUrl.host + (if (feedUrl.port != -1) ":" + feedUrl.port else "") + "/"

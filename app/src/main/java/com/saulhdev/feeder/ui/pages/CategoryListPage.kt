@@ -52,7 +52,7 @@ import androidx.compose.ui.unit.dp
 import com.saulhdev.feeder.R
 import com.saulhdev.feeder.ui.components.ViewWithActionBar
 import com.saulhdev.feeder.ui.icons.Phosphor
-import com.saulhdev.feeder.ui.icons.phosphor.PaintRoller
+import com.saulhdev.feeder.ui.icons.phosphor.PencilSimple
 import com.saulhdev.feeder.ui.icons.phosphor.TrashSimple
 import com.saulhdev.feeder.utils.extensions.koinNeoViewModel
 import com.saulhdev.feeder.viewmodels.SourceListViewModel
@@ -134,7 +134,7 @@ fun CategoryListPage(
                     trailingContent = {
                         androidx.compose.foundation.layout.Row {
                             IconButton(onClick = { renaming = tag }) {
-                                Icon(Phosphor.PaintRoller, stringResource(R.string.category_rename))
+                                Icon(Phosphor.PencilSimple, stringResource(R.string.category_rename))
                             }
                             IconButton(onClick = { viewModel.deleteTag(tag) }) {
                                 Icon(Phosphor.TrashSimple, stringResource(R.string.category_delete))

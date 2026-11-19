@@ -18,6 +18,7 @@
 package com.saulhdev.feeder.data.content
 
 import com.saulhdev.feeder.ui.navigation.SettingsSectionName
+import com.saulhdev.feeder.ui.icons.phosphor.TrashSimple
 import com.saulhdev.feeder.ui.icons.phosphor.Play
 import android.content.Context
 import android.widget.Toast
@@ -641,6 +642,20 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
     )
 
     /** What the reader's own reading looks like, from what is already stored. */
+    /**
+     * The same page as [learned], from Your data: someone clearing what the
+     * app holds about their reading looks there first (owner, 19 November,
+     * sheet 110). It opens the page rather than forgetting in one tap.
+     */
+    var forgetLearned = StringPref(
+        titleId = R.string.pref_forget_learned,
+        summaryId = R.string.pref_forget_learned_summary,
+        icon = Phosphor.TrashSimple,
+        key = FORGET_LEARNED,
+        dataStore = dataStore,
+        route = NavRoute.Learned
+    )
+
     var statistics = StringPref(
         titleId = R.string.pref_statistics,
         summaryId = R.string.pref_statistics_summary,
@@ -1323,6 +1338,7 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
         val MARK_READ_ON_SCROLL = floatKey("pref_mark_read_dwell_seconds")
         val LEARNED = stringKey("pref_learned")
         val STATISTICS = stringKey("pref_statistics")
+        val FORGET_LEARNED = stringKey("pref_forget_learned")
         val ACCOUNT = stringKey("pref_account")
         val BACKUP_FOLDER = stringKey("pref_backup_folder")
         val BACKUP_LAST_RUN = stringKey("pref_backup_last_run")

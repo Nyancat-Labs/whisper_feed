@@ -73,7 +73,7 @@ import com.saulhdev.feeder.R
 import com.saulhdev.feeder.data.db.models.FeedItem
 import com.saulhdev.feeder.ui.components.SaveButton
 import com.saulhdev.feeder.ui.icons.Phosphor
-import com.saulhdev.feeder.ui.icons.phosphor.Asterisk
+import com.saulhdev.feeder.ui.icons.phosphor.PushPin
 import com.saulhdev.feeder.ui.icons.phosphor.Megaphone
 import com.saulhdev.feeder.utils.LAYOUT_CARDS
 import com.saulhdev.feeder.utils.LAYOUT_LIST_PICTURES
@@ -1049,7 +1049,7 @@ private fun PinnedLine(
 ) {
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
         Icon(
-            imageVector = Phosphor.Asterisk,
+            imageVector = Phosphor.PushPin,
             contentDescription = null,
             tint = color,
             modifier = Modifier.size(13.dp),

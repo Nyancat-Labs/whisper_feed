@@ -56,7 +56,7 @@ import androidx.compose.ui.unit.dp
 import com.saulhdev.feeder.R
 import com.saulhdev.feeder.ui.icons.Phosphor
 import com.saulhdev.feeder.ui.icons.phosphor.DotsThreeVertical
-import com.saulhdev.feeder.ui.icons.phosphor.Asterisk
+import com.saulhdev.feeder.ui.icons.phosphor.PushPin
 import com.saulhdev.feeder.ui.icons.phosphor.EyeSlash
 import com.saulhdev.feeder.ui.icons.phosphor.ThumbsDown
 import com.saulhdev.feeder.ui.icons.phosphor.Info
@@ -149,7 +149,7 @@ fun ArticleOverflowMenu(
                         MenuChoice(if (saved) R.string.action_unsave else R.string.action_save, drawable = R.drawable.ic_whisper_save) { save(!saved) }
                     },
                     MenuChoice(R.string.share, Phosphor.ShareNetwork) { onShare() },
-                    MenuChoice(if (pinned) R.string.unpin_article else R.string.pin_article, Phosphor.Asterisk) { onPin(!pinned) },
+                    MenuChoice(if (pinned) R.string.unpin_article else R.string.pin_article, Phosphor.PushPin) { onPin(!pinned) },
                 ))
                 add(listOf(
                     MenuChoice(R.string.more_like_this, Phosphor.Sparkle) { onMoreLikeThis() },

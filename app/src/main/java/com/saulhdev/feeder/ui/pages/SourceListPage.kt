@@ -18,6 +18,17 @@
 
 package com.saulhdev.feeder.ui.pages
 
+import com.saulhdev.feeder.ui.components.GroupedMenu
+import com.saulhdev.feeder.ui.components.GroupedMenuEntry
+import com.saulhdev.feeder.ui.components.GroupedMenuSection
+import com.saulhdev.feeder.ui.icons.phosphor.Copy
+import com.saulhdev.feeder.ui.icons.phosphor.LinkBreak
+import com.saulhdev.feeder.ui.icons.phosphor.LockSimpleOpen
+import com.saulhdev.feeder.ui.icons.phosphor.FileArrowDown
+import com.saulhdev.feeder.ui.icons.phosphor.FileArrowUp
+import com.saulhdev.feeder.ui.icons.phosphor.Check
+import com.saulhdev.feeder.ui.icons.phosphor.Sort
+import com.saulhdev.feeder.ui.icons.phosphor.DotsThreeVertical
 import com.saulhdev.feeder.ui.components.categoryChipColors
 import com.saulhdev.feeder.ui.components.categoryChipShape
 import androidx.compose.ui.text.style.TextAlign
@@ -50,7 +61,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.layout.Box
+import com.saulhdev.feeder.ui.theme.SEGMENT_GAP
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -136,11 +150,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import com.saulhdev.feeder.data.db.models.Feed
-import com.saulhdev.feeder.ui.icons.phosphor.Check
-import com.saulhdev.feeder.ui.icons.phosphor.Sort
 import com.saulhdev.feeder.ui.icons.phosphor.ArrowCounterClockwise
 import com.saulhdev.feeder.ui.icons.phosphor.BracketsSquare
-import com.saulhdev.feeder.ui.icons.phosphor.DotsThreeVertical
 import com.saulhdev.feeder.ui.icons.phosphor.Filtered
 import com.saulhdev.feeder.ui.icons.phosphor.Graph
 import com.saulhdev.feeder.ui.icons.phosphor.ListDashes
@@ -456,195 +467,95 @@ fun SourceListPage(
                             onDisable = { viewModel.setSelectedEnabled(false) },
                             onFullText = viewModel::setSelectedFullText,
                             onClearArticles = viewModel::clearSelectedArticles,
-                        ) else OverflowMenu {
-                            DropdownMenuItem(
-                                leadingIcon = {
-                                    Icon(
-                                        Phosphor.Hash,
-                                        contentDescription = stringResource(R.string.manage_categories),
-                                    )
-                                },
-                                onClick = {
-                                    hideMenu()
-                                    navController.navigate(NavRoute.Categories)
-                                },
-                                text = { Text(stringResource(R.string.manage_categories)) },
+                        ) else {
+                            // Sort gets a button of its own, and the ⋮ menu
+                            // is Expressive's, in three named groups with an
+                            // icon on every entry (review 60). The sort block
+                            // used to sit in the middle of the ⋮ menu, with an
+                            // icon on the chosen row only.
+                            GroupedMenu(
+                                icon = Phosphor.Sort,
+                                description = R.string.sources_sort,
+                                sections = listOf(
+                                    GroupedMenuSection(
+                                        labelId = R.string.sources_sort,
+                                        entries = SourceSort.entries.map { option ->
+                                            GroupedMenuEntry(
+                                                textId = option.labelId,
+                                                icon = option.icon,
+                                                chosen = option == sort,
+                                                trailingIcon = if (option == sort) Phosphor.Check else null,
+                                            ) { if (option != sort) viewModel.setSort(option) }
+                                        },
+                                    ),
+                                    // Choosing the current sort again reversed
+                                    // it, which nothing on screen said; the
+                                    // order is a choice of its own now.
+                                    GroupedMenuSection(
+                                        labelId = R.string.sources_order,
+                                        entries = listOf(true, false).map { up ->
+                                            GroupedMenuEntry(
+                                                textId = if (up) R.string.sort_ascending else R.string.sort_descending,
+                                                icon = if (up) Phosphor.SortAscending else Phosphor.SortDescending,
+                                                chosen = up == ascending,
+                                                trailingIcon = if (up == ascending) Phosphor.Check else null,
+                                            ) { if (up != ascending) viewModel.setSort(sort) }
+                                        },
+                                    ),
+                                ),
                             )
-                            DropdownMenuItem(
-                                leadingIcon = {
-                                    Icon(
-                                        Phosphor.Filtered,
-                                        contentDescription = stringResource(R.string.sources_find_duplicates),
-                                    )
-                                },
-                                onClick = {
-                                    hideMenu()
-                                    viewModel.setDuplicatesOnly(true)
-                                },
-                                text = { Text(stringResource(R.string.sources_find_duplicates)) },
-                            )
-                            DropdownMenuItem(
-                                leadingIcon = {
-                                    Icon(
-                                        Phosphor.Graph,
-                                        contentDescription = stringResource(
-                                            R.string.sources_find_same_site
-                                        ),
-                                    )
-                                },
-                                onClick = {
-                                    hideMenu()
-                                    viewModel.setSameSiteOnly()
-                                },
-                                text = { Text(stringResource(R.string.sources_find_same_site)) },
-                            )
-                            // The two repair tools, moved off the settings
-                            // screen. They are maintenance on this list
-                            // rather than preferences about it, and the
-                            // moment anybody wants either is while looking at
-                            // the list — which is here, not two screens away
-                            // under a heading about sources in general.
-                            DropdownMenuItem(
-                                leadingIcon = {
-                                    Icon(
-                                        Phosphor.ArrowCounterClockwise,
-                                        contentDescription = stringResource(
-                                            R.string.pref_broken_feeds
-                                        ),
-                                    )
-                                },
-                                onClick = {
-                                    hideMenu()
-                                    navController.navigate(NavRoute.BrokenFeeds)
-                                },
-                                text = { Text(stringResource(R.string.pref_broken_feeds)) },
-                            )
-                            DropdownMenuItem(
-                                leadingIcon = {
-                                    Icon(
-                                        Phosphor.Prohibit,
-                                        contentDescription = stringResource(
-                                            R.string.pref_insecure_feeds
-                                        ),
-                                    )
-                                },
-                                onClick = {
-                                    hideMenu()
-                                    navController.navigate(NavRoute.InsecureFeeds)
-                                },
-                                text = { Text(stringResource(R.string.pref_insecure_feeds)) },
-                            )
-                            HorizontalDivider()
-                            // Only the chosen row carries an arrow, and the
-                            // arrow is the direction rather than a tick. Every
-                            // row used to show a sort glyph whether or not it
-                            // was in use, which made four identical-looking
-                            // icons and told the reader nothing about which
-                            // order they were actually in.
-                            SourceSort.entries.forEach { option ->
-                                val chosen = option == sort
-                                DropdownMenuItem(
-                                    leadingIcon = {
-                                        if (chosen) {
-                                            Icon(
-                                                imageVector = if (ascending) {
-                                                    Phosphor.SortAscending
-                                                } else {
-                                                    Phosphor.SortDescending
-                                                },
-                                                contentDescription = stringResource(
-                                                    if (ascending) R.string.sort_ascending
-                                                    else R.string.sort_descending
-                                                ),
-                                            )
-                                        }
-                                    },
-                                    // Left open on the chosen row: tapping it
-                                    // reverses the order, and closing the menu
-                                    // would hide the arrow that just changed —
-                                    // the only feedback the action has.
-                                    onClick = {
-                                        if (!chosen) hideMenu()
-                                        viewModel.setSort(option)
-                                    },
-                                    text = {
-                                        Text(
-                                            text = stringResource(option.labelId),
-                                            color = if (chosen) {
-                                                MaterialTheme.colorScheme.primary
-                                            } else {
-                                                MaterialTheme.colorScheme.onSurface
+                            GroupedMenu(
+                                icon = Phosphor.DotsThreeVertical,
+                                description = R.string.more_options,
+                                sections = listOf(
+                                    GroupedMenuSection(
+                                        labelId = R.string.sources_menu_organise,
+                                        entries = listOf(
+                                            GroupedMenuEntry(R.string.manage_categories, Phosphor.Hash) {
+                                                navController.navigate(NavRoute.Categories)
                                             },
-                                        )
-                                    },
-                                )
-                            }
-                            HorizontalDivider()
-                            DropdownMenuItem(
-                                leadingIcon = {
-                                    Icon(
-                                        Phosphor.CloudArrowDown,
-                                        contentDescription = stringResource(id = R.string.sources_import_opml),
-                                    )
-                                },
-                                onClick = {
-                                    hideMenu()
-                                    opmlImporter.launch(
-                                        arrayOf(
-                                            "text/plain",
-                                            "text/xml",
-                                            "text/opml",
-                                            "*/*"
-                                        )
-                                    )
-                                },
-                                text = { Text(text = stringResource(id = R.string.sources_import_opml)) }
-                            )
-                            DropdownMenuItem(
-                                leadingIcon = {
-                                    Icon(
-                                        Phosphor.CloudArrowUp,
-                                        contentDescription = stringResource(id = R.string.sources_export_opml),
-                                    )
-                                },
-                                onClick = {
-                                    hideMenu()
-                                    opmlExporter.launch("whisper-${localTime}.opml")
-                                },
-                                text = { Text(text = stringResource(id = R.string.sources_export_opml)) }
-                            )
-                            DropdownMenuItem(
-                                leadingIcon = {
-                                    Icon(
-                                        Phosphor.Bookmarks,
-                                        contentDescription = stringResource(id = R.string.sources_import_bookmarks),
-                                    )
-                                },
-                                onClick = {
-                                    hideMenu()
-                                    bookmarksImporter.launch(
-                                        arrayOf(
-                                            "text/plain",
-                                            "text/xml",
-                                            "text/bkm",
-                                            "*/*"
-                                        )
-                                    )
-                                },
-                                text = { Text(text = stringResource(id = R.string.sources_import_bookmarks)) }
-                            )
-                            DropdownMenuItem(
-                                leadingIcon = {
-                                    Icon(
-                                        Phosphor.BookBookmark,
-                                        contentDescription = stringResource(id = R.string.sources_export_bookmarks),
-                                    )
-                                },
-                                onClick = {
-                                    hideMenu()
-                                    bookmarksExporter.launch("NF-${localTime}.bkm")
-                                },
-                                text = { Text(text = stringResource(id = R.string.sources_export_bookmarks)) }
+                                        ),
+                                    ),
+                                    // The repair tools: maintenance on this
+                                    // list, so they live with it rather than
+                                    // in Settings.
+                                    GroupedMenuSection(
+                                        labelId = R.string.sources_menu_check,
+                                        entries = listOf(
+                                            GroupedMenuEntry(R.string.sources_find_duplicates, Phosphor.Copy) {
+                                                viewModel.setDuplicatesOnly(true)
+                                            },
+                                            GroupedMenuEntry(R.string.sources_find_same_site, Phosphor.Graph) {
+                                                viewModel.setSameSiteOnly()
+                                            },
+                                            GroupedMenuEntry(R.string.pref_broken_feeds, Phosphor.LinkBreak) {
+                                                navController.navigate(NavRoute.BrokenFeeds)
+                                            },
+                                            GroupedMenuEntry(R.string.pref_insecure_feeds, Phosphor.LockSimpleOpen) {
+                                                navController.navigate(NavRoute.InsecureFeeds)
+                                            },
+                                        ),
+                                    ),
+                                    // Files, not clouds: nothing here leaves
+                                    // the phone.
+                                    GroupedMenuSection(
+                                        labelId = R.string.sources_menu_import_export,
+                                        entries = listOf(
+                                            GroupedMenuEntry(R.string.sources_import_opml, Phosphor.FileArrowDown) {
+                                                opmlImporter.launch(arrayOf("text/plain", "text/xml", "text/opml", "*/*"))
+                                            },
+                                            GroupedMenuEntry(R.string.sources_export_opml, Phosphor.FileArrowUp) {
+                                                opmlExporter.launch("whisper-${localTime}.opml")
+                                            },
+                                            GroupedMenuEntry(R.string.sources_import_bookmarks, Phosphor.Bookmarks) {
+                                                bookmarksImporter.launch(arrayOf("text/plain", "text/xml", "text/bkm", "*/*"))
+                                            },
+                                            GroupedMenuEntry(R.string.sources_export_bookmarks, Phosphor.BookBookmark) {
+                                                bookmarksExporter.launch("NF-${localTime}.bkm")
+                                            },
+                                        ),
+                                    ),
+                                ),
                             )
                         }
                     }
@@ -658,11 +569,18 @@ fun SourceListPage(
                             top = paddingValues.calculateTopPadding(),
                             // Clear of the gesture bar and of the add button
                             // over the list's end (design audit, 21 October).
-                            bottom = paddingValues.calculateBottomPadding() + 88.dp,
+                            // The button is 56 high and sits 32 up (the
+                            // scaffold's 16 and its own 16), so 88 only just
+                            // touched it; 104 leaves a gap above it (review 26).
+                            bottom = paddingValues.calculateBottomPadding() + 104.dp,
                         ),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        // No spacing from the list itself: each source list is
+                        // one joined group, like Settings (review 29), so the
+                        // rows sit SEGMENT_GAP apart and everything else
+                        // carries its own 4 above and below (spaced, below).
+                        verticalArrangement = Arrangement.spacedBy(0.dp),
                     ) {
-                        item {
+                        spaced {
                             // The search field stays put while a selection is
                             // running. It used to be replaced by the selection
                             // bar, which hid a filter that was still in force
@@ -700,7 +618,7 @@ fun SourceListPage(
                             )
                         }
                         if (!duplicatesOnly && duplicateCount > 0) {
-                            item(key = "duplicates-found") {
+                            spaced(key = "duplicates-found") {
                                 DuplicatesFound(
                                     count = duplicateCount,
                                     onReview = { viewModel.setDuplicatesOnly(true) },
@@ -708,7 +626,7 @@ fun SourceListPage(
                             }
                         }
                         if (duplicatesOnly) {
-                            item {
+                            spaced {
                                 DuplicatesBanner(
                                     sameSite = sameSite,
                                     groupCount = sameSiteGroupCount,
@@ -721,7 +639,7 @@ fun SourceListPage(
                                 )
                             }
                         } else if (state.allTags.isNotEmpty()) {
-                            item {
+                            spaced {
                                 // Categories exist in the database and on a
                                 // screen two taps away; nothing on the list
                                 // itself said which ones there were. Searching
@@ -754,7 +672,7 @@ fun SourceListPage(
                                 // A set with one member left is no longer a
                                 // set: the reader has already resolved it.
                                 if (members.size < 2) return@forEach
-                                item(key = "group-${group.label}-${group.ids.first()}") {
+                                spaced(key = "group-${group.label}-${group.ids.first()}") {
                                     PreferenceGroupHeading(
                                         heading = pluralStringResource(
                                             R.plurals.sources_duplicate_group,
@@ -765,10 +683,12 @@ fun SourceListPage(
                                         insideMargin = true,
                                     )
                                 }
-                                items(members, key = { it.id }) { item ->
+                                itemsIndexed(members, key = { _, it -> it.id }) { i, item ->
                                     SourceItem(
-                                        modifier = Modifier.animateItem(),
+                                        modifier = Modifier.animateItem().groupRowPadding(i, members.size),
                                         source = item,
+                                        index = i,
+                                        groupSize = members.size,
                                         showAddress = true,
                                         selectionMode = selection.isNotEmpty(),
                                         selected = item.id in selection,
@@ -794,7 +714,7 @@ fun SourceListPage(
                                     )
                                 }
                             }
-                            item { Spacer(modifier = Modifier.height(64.dp)) }
+                            spaced { Spacer(modifier = Modifier.height(64.dp)) }
                             return@LazyColumn
                         }
 
@@ -803,7 +723,7 @@ fun SourceListPage(
                         // October). The Add screen takes a name as well as
                         // an address; see FeedNameSearch.
                         if (query.isNotBlank() && state.enabledSources.isEmpty() && state.disabledSources.isEmpty()) {
-                            item(key = "not-found") {
+                            spaced(key = "not-found") {
                                 NoSourceFound(
                                     query = query.trim(),
                                     onFind = { navController.navigate(NavRoute.SourceAdd(query.trim())) },
@@ -814,13 +734,15 @@ fun SourceListPage(
                         // A heading over nothing was tolerable when the list
                         // was only ever searched; with a category chip it is
                         // routine for one of the two sections to be empty.
-                        if (state.enabledSources.isNotEmpty()) item {
+                        if (state.enabledSources.isNotEmpty()) spaced {
                             PreferenceGroupHeading(heading = stringResource(id = R.string.enabled), insideMargin = true)
                         }
-                        items(state.enabledSources, key = { it.id }) { item ->
+                        itemsIndexed(state.enabledSources, key = { _, it -> it.id }) { i, item ->
                             SourceItem(
-                                modifier = Modifier.animateItem(),
+                                modifier = Modifier.animateItem().groupRowPadding(i, state.enabledSources.size),
                                 source = item,
+                                index = i,
+                                groupSize = state.enabledSources.size,
                                 selectionMode = selection.isNotEmpty(),
                                 selected = item.id in selection,
                                 onLongClick = { viewModel.toggleSelected(it.id) },
@@ -859,13 +781,15 @@ fun SourceListPage(
                                 }
                             )
                         }
-                        if (state.disabledSources.isNotEmpty()) item {
+                        if (state.disabledSources.isNotEmpty()) spaced {
                             PreferenceGroupHeading(heading = stringResource(id = R.string.disabled), insideMargin = true)
                         }
-                        items(state.disabledSources, key = { it.id }) { item ->
+                        itemsIndexed(state.disabledSources, key = { _, it -> it.id }) { i, item ->
                             SourceItem(
-                                modifier = Modifier.animateItem(),
+                                modifier = Modifier.animateItem().groupRowPadding(i, state.disabledSources.size),
                                 source = item,
+                                index = i,
+                                groupSize = state.disabledSources.size,
                                 selectionMode = selection.isNotEmpty(),
                                 selected = item.id in selection,
                                 onLongClick = { viewModel.toggleSelected(it.id) },
@@ -889,7 +813,7 @@ fun SourceListPage(
                                 }
                             )
                         }
-                        item {
+                        spaced {
                             Spacer(modifier = Modifier.height(64.dp))
                         }
                     }
@@ -913,6 +837,20 @@ fun SourceListPage(
         }
     )
 }
+
+/**
+ * An item that is not a source row: the search field, a heading, a banner.
+ * The list has no spacing of its own (so a group's rows can sit SEGMENT_GAP
+ * apart), so these carry 4 above and below, which makes the old 8 between them.
+ */
+private fun LazyListScope.spaced(key: Any? = null, content: @Composable () -> Unit) =
+    item(key = key) { Box(Modifier.padding(vertical = 4.dp)) { content() } }
+
+/** A source row in its group: 4 before the first and after the last, SEGMENT_GAP between. */
+private fun Modifier.groupRowPadding(index: Int, size: Int) = padding(
+    top = if (index == 0) 4.dp else 0.dp,
+    bottom = if (index == size - 1) 4.dp else SEGMENT_GAP,
+)
 
 /** How long a source can go without a successful sync before it is flagged. */
 private const val STALE_AFTER_MS = 3L * 24 * 60 * 60 * 1000

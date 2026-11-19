@@ -56,7 +56,8 @@ import com.saulhdev.feeder.ui.components.ActionButton
 import com.saulhdev.feeder.ui.components.OutlinedActionButton
 import com.saulhdev.feeder.ui.components.ViewWithActionBar
 import com.saulhdev.feeder.ui.icons.Phosphor
-import com.saulhdev.feeder.ui.icons.phosphor.CloudArrowDown
+import com.saulhdev.feeder.ui.icons.phosphor.FileArrowDown
+import com.saulhdev.feeder.ui.icons.phosphor.MagnifyingGlass
 import com.saulhdev.feeder.ui.icons.phosphor.Plus
 import com.saulhdev.feeder.ui.navigation.LocalNavController
 import com.saulhdev.feeder.utils.extensions.koinNeoViewModel
@@ -126,7 +127,9 @@ fun BookmarkImportPage(
                     item {
                         ActionButton(
                             text = stringResource(R.string.import_choose_file),
-                            icon = Phosphor.CloudArrowDown,
+                            // A file, not a cloud: nothing leaves the phone
+                            // (review 23).
+                            icon = Phosphor.FileArrowDown,
                             modifier = Modifier.fillMaxWidth(),
                             onClick = {
                                 pickFile.launch(arrayOf("text/html", "text/plain", "*/*"))
@@ -154,7 +157,7 @@ fun BookmarkImportPage(
                     item {
                         ActionButton(
                             text = stringResource(R.string.import_scan),
-                            icon = Phosphor.CloudArrowDown,
+                            icon = Phosphor.MagnifyingGlass,
                             enabled = chosenFolders.isNotEmpty(),
                             modifier = Modifier
                                 .fillMaxWidth()
