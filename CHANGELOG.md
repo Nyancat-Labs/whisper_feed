@@ -9,6 +9,13 @@ Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 Unreleased
 ----------
 
+- **Feeds with stray code after their end** (Darknet, for one) are read,
+  as browsers read them, instead of being reported as broken.
+- **Sites that turn reading apps away** are named as such, on Feeds that
+  stopped working and on Add source, with a button to open the feed in your
+  browser and check for yourself.
+- The new Material loading indicator everywhere, and the same rounded
+  message box on every screen; the backup message is shorter.
 - **Feeds written in Markdown** (Cyberspace, for one) show their pictures,
   bold text and ASCII art properly.
 - **Feeds that stopped working** can be edited from there, and a source's

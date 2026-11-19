@@ -108,13 +108,10 @@ The owner is using the preview on the Pixel 10 for a week before release.
   Expressive overhaul (§19e), where type weights are decided together. Note
   for then: Inter is bundled at Regular, Medium and Bold only, so "bolder"
   is a full step unless SemiBold is added.
-- [ ] **Batch 7 (board 117, 118, 120)**, agreed 19 November. 117: ignore
-  anything after a feed's closing tag (Darknet), 'This site blocks reading
-  apps' wording with an Open feed in browser check (IT Security Guru), and
-  readable error names in diagnostics; its test starts with adding
-  darknet.org.uk back. 118: Expressive loading indicator in the seven places
-  with the old spinner. 120: Whisper's rounded message box on Backup,
-  Sources, Categories and Library, and a shorter backup message.
+- [x] **Batch 7 (board 117, 118, 120)**, preview 6a97e06, 19 November:
+  feeds with junk after their end, sites that block apps, readable error
+  names, the Expressive loading indicator, one message box. Waiting for the
+  owner's test.
 - [ ] **December 2026: check F-Droid's download numbers** (owner, 28
   October). F-Droid publishes weekly download requests, not installs, at
   fdroid.gitlab.io/metrics (grote.gitlab.io/fdroid-metrics-distilled sums

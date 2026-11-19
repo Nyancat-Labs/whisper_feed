@@ -8,6 +8,40 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 19 November 2026 — Batch 7, preview 6a97e06
+
+- **117, Darknet.** `FeedParser.parseRssAtom` now reads the body as bytes
+  and, only when the strict read fails, retries with everything after the
+  last `</rss>`, `</feed>` or `</rdf:RDF>` cut (`withoutTrailingJunk`, the
+  bytes read as Latin-1 so positions are byte positions). Covers sync, Add
+  source, discovery and the https check, which all come through here.
+- **117, IT Security Guru.** A 403 means the site turns apps away.
+  `SearchFeedViewModel` notes a 403 on the typed address or a declared feed
+  link (not on guessed paths) and, if nothing else is found, reports
+  `SearchFailure.BlocksApps`; Add source shows the explanation, the 'To
+  check' line and Open feed in browser. Feeds that stopped working reads the
+  feed's own history (`FeedHistory.refusesApps`: the latest fetch with a
+  network was 'failed 403') and shows the same, in place of Look for the new
+  address, which would be refused too. Wording: 'Its feed exists (Open
+  website shows it)' became 'The feed is probably fine', since Open website
+  shows the home page; told the owner on the card.
+- **117, diagnostics.** `errorKind` walks the cause chain: timed out,
+  address not found, connection refused, secure connection failed, not a
+  readable feed; Java's own class names otherwise; never an R8 name.
+  SyncResultTest's expectation moved from 'SocketTimeoutException' to
+  'timed out'.
+- **118.** `ui/components/Loading.kt`: `WhisperLoading`, Expressive's
+  `LoadingIndicator`, 48dp or 24dp inline. All nine
+  CircularProgressIndicators replaced; a test keeps them out.
+- **120.** Backup, Sources, Categories and Feed library use
+  `FeedSnackbarHost`. 'Backed up: your sources, settings and saved articles'
+  without file names; BackupMessageTest updated (it still requires the word
+  settings, the reason the names were added).
+- Tests: 1380 pass (Batch7Test, 7 new), lint clean. Not run: the real-feed
+  check, since the parser change only acts on a feed that already fails.
+  Preview signed with the release key (D4:54…B1:64). Board: T1–T7 of build
+  15, cards 117, 118, 120 to preview.
+
 ## 19 November 2026 — Results from 1c18b40, board page
 
 - Passed: T1 (About), T3 ('Default'), T5 (home-network message on Add
