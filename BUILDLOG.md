@@ -8,6 +8,27 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 19 November 2026 — Results from 3896ca3 (batches 4 and 5)
+
+- Passed and closed: batch 4 all ten steps (20, 23, 25, 26, 29, 33-39, 57,
+  60, 61, 107, 110 done), and 52, 71, 80, 113 from batch 5.
+- T5 (45) problem: Cyberspace (cyberspace.online) sends **Markdown** as
+  its content, so its picture is a Markdown image line and its ASCII art a
+  code block that loses its spacing. Batch 6: convert Markdown content.
+- 115 (owner's card): breaking notifications work (three came), but the
+  title was the source ("Irish Independent [RSS]"): `BreakingAlert` used
+  `FeedItem.displayTitle`, which is source + " [RSS]", instead of
+  `contentTitle`. All three came in one update. Batch 6: headline as
+  title, at most one per update.
+- 73: tested on Add source, which the change did not cover (account
+  sign-in only). Batch 6 extends it. 76 and 73 stay in preview (T6, T8 not
+  tested).
+- T3 (113): "As in Settings" too long for its button: becomes "Default".
+- T7 note: Edit on broken feeds and a feed preview: new sheet 116, to
+  decide (Szept 240). 111 and 112: owner picked Fix.
+- Batch 6 (Szept 241): 45, 73, 111, 112, 113 label, 115; 114 and 116 if
+  picked.
+
 ## 19 November 2026 — Batch 5, preview 3896ca3
 
 Started the same day as batch 4, at the owner's request, so the owner tests
