@@ -17,6 +17,8 @@
  */
 package com.saulhdev.feeder.ui.pages
 
+import com.saulhdev.feeder.ui.components.WhisperLoading
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
@@ -30,7 +32,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -164,13 +165,12 @@ fun WhisperSplash(
                     else colorResource(R.color.whisper_slate),
                 )
                 Spacer(Modifier.height(56.dp))
-                CircularProgressIndicator(
+                WhisperLoading(
                     // Cobalt is legible on the light ground but sits close to
                     // the dark one; sky is the mark's own top blade.
                     color = if (dark) colorResource(R.color.whisper_sky)
                     else WhisperCobalt,
-                    strokeWidth = 3.dp,
-                    modifier = Modifier.size(34.dp),
+                    size = 40.dp,
                 )
             }
         }

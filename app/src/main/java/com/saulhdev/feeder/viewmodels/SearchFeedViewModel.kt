@@ -64,8 +64,12 @@ class SearchFeedViewModel(
     fun searchForFeeds(url: URL): Flow<SearchResult> = flow {
         val seen = mutableSetOf<String>()
         var unreachable = false
+        // A feed the site refused to hand over (403): the address typed or
+        // one the page declares. Not the guessed paths, which a site may
+        // refuse for reasons of its own (sheet 117).
+        var refused: URL? = null
 
-        suspend fun tryUrl(candidate: URL): SearchResult? {
+        suspend fun tryUrl(candidate: URL, mayBeRefused: Boolean = true): SearchResult? {
             if (!seen.add(normalizeFeedUrl(candidate))) return null
             return try {
                 feedParser.parseFeedUrl(candidate)?.let { feed ->
@@ -79,6 +83,7 @@ class SearchFeedViewModel(
                 }
             } catch (t: Throwable) {
                 unreachable = isNetworkFailure(t)
+                if (mayBeRefused && refused == null && refusesApps(t)) refused = candidate
                 null
             }
         }
@@ -119,7 +124,7 @@ class SearchFeedViewModel(
 
         // 3. Where feeds conventionally live.
         for (candidate in candidateFeedUrls(url)) {
-            tryUrl(candidate)?.let {
+            tryUrl(candidate, mayBeRefused = false)?.let {
                 found = true
                 emit(it)
             }
@@ -129,6 +134,19 @@ class SearchFeedViewModel(
         // Nothing anywhere. One failure for the address the user gave, rather
         // than one per candidate — a wall of errors for paths they never typed
         // says nothing useful.
+        refused?.let {
+            Log.d(TAG, "The site refused the feed")
+            emit(
+                SearchResult(
+                    title = FAILED_TO_PARSE_PLACEHOLDER,
+                    url = it.toString(),
+                    description = "",
+                    isError = true,
+                    failure = SearchFailure.BlocksApps,
+                )
+            )
+            return@flow
+        }
         Log.d(TAG, "No feed found at or under the address given")
         emit(
             SearchResult(
@@ -202,7 +220,17 @@ data class SearchResult(
 ) : Parcelable
 
 /** Why a search came back empty, so the reader is told the right thing. */
-enum class SearchFailure { NotFound, Unreachable, Offline }
+enum class SearchFailure { NotFound, Unreachable, Offline, BlocksApps }
+
+/**
+ * Whether [t] is a site refusing to serve the feed to an app (403), which
+ * browsers it lets in. Whisper says so and never poses as a browser to get
+ * round it (owner, 19 November; sheet 117).
+ */
+internal fun refusesApps(t: Throwable): Boolean =
+    generateSequence(t) { it.cause }.take(8).any {
+        (it as? com.saulhdev.feeder.utils.HttpStatusException)?.code == 403
+    }
 
 /**
  * Whether [t] means no answer came back at all, rather than an answer that

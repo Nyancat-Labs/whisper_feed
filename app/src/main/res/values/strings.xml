@@ -407,7 +407,7 @@
     <string name="backup_none">No folder chosen yet</string>
     <string name="backup_never">Not backed up yet</string>
     <string name="backup_last">Last backed up %1$s</string>
-    <string name="backup_written">Backed up. Subscriptions saved as %1$s, settings as %2$s</string>
+    <string name="backup_written">Backed up: your sources, settings and saved articles</string>
     <string name="backup_written_sources_only">Subscriptions saved as %1$s. Your settings could not be written.</string>
     <plurals name="backup_restored">
         <item quantity="one">Added %1$d source</item>
@@ -699,6 +699,10 @@
     <string name="broken_unchanged">The site still lists the address you have, so something else is wrong \u2014 the server may be down, or blocking.</string>
     <string name="broken_nothing">No feed could be found at that site. It may have stopped publishing one.</string>
     <string name="broken_forget">Stop warning me about this</string>
+    <string name="blocks_apps_explanation">This site blocks reading apps. The feed is probably fine, but the site doesn\'t let apps like Whisper fetch it. You can ask the site to allow reading apps, or read it in your browser.</string>
+    <string name="blocks_apps_check">To check: tap Open feed in browser. If the browser opens or downloads it, the feed is fine and the site is blocking apps.</string>
+    <string name="open_feed_in_browser">Open feed in browser</string>
+    <string name="add_feed_blocks_apps">Couldn\'t get the feed from %1$s</string>
     <string name="broken_open_website">Open website</string>
     <string name="broken_edit">Edit this source</string>
     <string name="pref_import_bookmarks">Import from bookmarks</string>

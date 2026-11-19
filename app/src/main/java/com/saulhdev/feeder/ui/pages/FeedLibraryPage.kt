@@ -17,6 +17,7 @@
  */
 package com.saulhdev.feeder.ui.pages
 
+import com.saulhdev.feeder.ui.components.FeedSnackbarHost
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -31,7 +32,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -110,7 +110,7 @@ fun FeedLibraryPage() {
         largeTitle = true,
         showBackButton = true,
         onBackAction = if (open != null) ({ open = null }) else null,
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+        snackbarHost = { FeedSnackbarHost(snackbarHostState) },
     ) { padding ->
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),

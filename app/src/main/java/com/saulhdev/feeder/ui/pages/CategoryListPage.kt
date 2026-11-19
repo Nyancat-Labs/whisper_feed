@@ -17,6 +17,7 @@
  */
 package com.saulhdev.feeder.ui.pages
 
+import com.saulhdev.feeder.ui.components.FeedSnackbarHost
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,7 +34,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -108,7 +108,7 @@ fun CategoryListPage(
     ViewWithActionBar(
         title = stringResource(R.string.manage_categories),
         largeTitle = true,
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+        snackbarHost = { FeedSnackbarHost(snackbarHostState) },
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),

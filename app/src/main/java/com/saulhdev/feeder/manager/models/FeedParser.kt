@@ -324,24 +324,54 @@ class FeedParser {
     @Throws(FeedParsingError::class)
     internal suspend fun parseRssAtom(baseUrl: URL, responseBody: ResponseBody, findIcon: Boolean = true): JsonFeed {
         try {
-            responseBody.byteStream().use { bs ->
-                val feed = XmlReader(bs, true, responseBody.contentType()?.charset()?.name()).use {
-                    SyndFeedInput()
-                        .apply {
-                            isPreserveWireFeed = true
-                        }
-                        .build(it)
-                }
-                return feed.asFeed(baseUrl = baseUrl) { siteUrl ->
-                    if (findIcon) getFeedIconAtUrl(siteUrl) else null
-                }
+            val charset = responseBody.contentType()?.charset()?.name()
+            val bytes = responseBody.bytes()
+            val feed = try {
+                readSyndFeed(bytes, charset)
+            } catch (first: Exception) {
+                // Darknet (sheet 117): a WordPress caching plugin writes a
+                // <script> after </rss>, so the strict parser rejects a feed
+                // that is otherwise fine, and browsers, which are lenient,
+                // show it. Only on a failure, and only cutting what comes
+                // after the feed's own end, so a sound feed is never touched.
+                val cut = withoutTrailingJunk(bytes) ?: throw first
+                readSyndFeed(cut, charset)
+            }
+            return feed.asFeed(baseUrl = baseUrl) { siteUrl ->
+                if (findIcon) getFeedIconAtUrl(siteUrl) else null
             }
         } catch (t: Throwable) {
             throw FeedParsingError(baseUrl, t)
         }
     }
 
+    private fun readSyndFeed(bytes: ByteArray, charset: String?) =
+        XmlReader(bytes.inputStream(), true, charset).use {
+            SyndFeedInput()
+                .apply {
+                    isPreserveWireFeed = true
+                }
+                .build(it)
+        }
+
     class FeedParsingError(val url: URL, e: Throwable) : Exception(e.message, e)
+}
+
+private val FEED_END = Regex("""</\s*(?:rss|feed|rdf:RDF)\s*>""", RegexOption.IGNORE_CASE)
+
+/**
+ * [bytes] cut just after the feed's closing tag (rss, Atom's feed, or RSS
+ * 1.0's rdf:RDF), or null when nothing but white space follows it, or no
+ * closing tag is found. Read as Latin-1, which maps every byte to one
+ * character, so the position found is the byte position whatever the feed's
+ * own encoding (UTF-16 feeds aside, which have no such tag in ASCII and are
+ * left alone).
+ */
+internal fun withoutTrailingJunk(bytes: ByteArray): ByteArray? {
+    val text = String(bytes, Charsets.ISO_8859_1)
+    val end = FEED_END.findAll(text).lastOrNull()?.range?.last?.plus(1) ?: return null
+    if (text.substring(end).isBlank()) return null
+    return bytes.copyOfRange(0, end)
 }
 
 /** Whether a password written into a feed's address may answer this challenge. */

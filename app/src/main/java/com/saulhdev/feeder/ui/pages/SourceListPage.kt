@@ -18,6 +18,7 @@
 
 package com.saulhdev.feeder.ui.pages
 
+import com.saulhdev.feeder.ui.components.FeedSnackbarHost
 import com.saulhdev.feeder.ui.components.GroupedMenu
 import com.saulhdev.feeder.ui.components.GroupedMenuEntry
 import com.saulhdev.feeder.ui.components.GroupedMenuSection
@@ -79,7 +80,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -427,7 +427,7 @@ fun SourceListPage(
                     backIcon = if (selecting) Phosphor.X else Phosphor.ArrowLeft,
                     backDescription = if (selecting) R.string.sources_clear_selection else R.string.go_back,
                     onBackAction = if (selecting) viewModel::clearSelection else null,
-                    snackbarHost = { SnackbarHost(snackbarHostState) },
+                    snackbarHost = { FeedSnackbarHost(snackbarHostState) },
                     floatingActionButton = {
                         // Adding a source in the middle of picking sources to
                         // act on is not a thing anyone is doing, and the FAB

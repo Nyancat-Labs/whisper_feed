@@ -17,6 +17,9 @@
  */
 package com.saulhdev.feeder.ui.pages
 
+import com.saulhdev.feeder.ui.components.WhisperLoading
+import com.saulhdev.feeder.ui.components.INLINE_LOADING
+
 import com.saulhdev.feeder.ui.icons.phosphor.PencilSimple
 import com.saulhdev.feeder.ui.navigation.NavRoute
 import com.saulhdev.feeder.ui.navigation.LocalNavController
@@ -35,13 +38,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import com.saulhdev.feeder.utils.FeedHistory
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -171,11 +175,41 @@ private fun BrokenRow(
                 )
             }
 
+            // A site that turns apps away (sheet 117). Looking for a new
+            // address would be turned away too and end in "may have stopped
+            // publishing", which is wrong: the feed is there. Say what is
+            // happening, and give the reader the way to see it themselves.
+            val context = LocalContext.current
+            val refused = remember(feed.id, feed.consecutiveFailures) {
+                FeedHistory.refusesApps(FeedHistory.read(context, feed.id))
+            }
+            if (refused) {
+                Spacer(Modifier.height(6.dp))
+                Text(
+                    text = stringResource(R.string.blocks_apps_explanation),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                Spacer(Modifier.height(6.dp))
+                Text(
+                    text = stringResource(R.string.blocks_apps_check),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Spacer(Modifier.height(12.dp))
+                ActionButton(
+                    text = stringResource(R.string.open_feed_in_browser),
+                    icon = Phosphor.Browser,
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { context.launchView(feed.url.toString()) },
+                )
+            }
+
             Spacer(Modifier.height(12.dp))
 
-            when (state) {
+            if (!refused) when (state) {
                 Recovery.Looking -> Row(verticalAlignment = Alignment.CenterVertically) {
-                    CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
+                    WhisperLoading(size = INLINE_LOADING)
                     Spacer(Modifier.height(0.dp))
                     Text(
                         text = "  " + stringResource(R.string.broken_looking),
@@ -249,8 +283,7 @@ private fun BrokenRow(
             // The site itself, to see whether it is still there before
             // deciding (owner, 14 November, sheet 107). Its home page, not
             // the feed's address, which would only show code.
-            Spacer(Modifier.height(10.dp))
-            val context = LocalContext.current
+            if (!refused) Spacer(Modifier.height(10.dp))
             OutlinedActionButton(
                 text = stringResource(R.string.broken_open_website),
                 icon = Phosphor.Browser,

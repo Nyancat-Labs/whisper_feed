@@ -17,6 +17,7 @@
  */
 package com.saulhdev.feeder.ui.pages
 
+import com.saulhdev.feeder.ui.components.FeedSnackbarHost
 import android.net.Uri
 import com.saulhdev.feeder.ui.icons.phosphor.UploadSimple
 import com.saulhdev.feeder.ui.icons.phosphor.DownloadSimple
@@ -39,7 +40,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Icon
@@ -233,7 +233,7 @@ fun BackupPage(
         title = stringResource(R.string.pref_backup),
         largeTitle = true,
         showBackButton = true,
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+        snackbarHost = { FeedSnackbarHost(snackbarHostState) },
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
@@ -506,15 +506,15 @@ private fun report(
 ) {
     show(
         when (result) {
-            // Both names, because a backup is two files and naming only the
-            // OPML left readers of this screen believing their settings were
-            // not included — the paragraph above says two files, and the
-            // confirmation said one.
+            // Says what was kept, not the file names: three lines of names
+            // read as clutter (owner, 19 November; sheet 120). It still says
+            // settings, because naming only the OPML once left readers
+            // believing their settings were not included.
             is BackupStore.Result.Written ->
                 if (result.settingsName != null && !result.savedWritten) {
                     context.getString(R.string.backup_written_no_saved)
                 } else if (result.settingsName != null) {
-                    context.getString(R.string.backup_written, result.name, result.settingsName)
+                    context.getString(R.string.backup_written)
                 } else {
                     context.getString(R.string.backup_written_sources_only, result.name)
                 }

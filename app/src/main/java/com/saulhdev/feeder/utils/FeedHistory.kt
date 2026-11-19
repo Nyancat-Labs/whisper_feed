@@ -77,6 +77,15 @@ object FeedHistory {
         FeedHistoryCodec.decode(prefs(context).getString(feedId.toString(), null).orEmpty())
     }.getOrDefault(emptyList())
 
+    /**
+     * Whether the feed's latest answer was a refusal (403): the site turns
+     * apps away while it lets browsers in (sheet 117). Fetches with no
+     * network are passed over: they say nothing about the site.
+     */
+    fun refusesApps(fetches: List<FeedFetch>): Boolean =
+        fetches.firstOrNull { it.kind != FetchKind.NoNetwork }
+            ?.let { it.kind == FetchKind.Failed && it.detail == "403" } == true
+
     /** Drops feeds that no longer exist. */
     fun keepOnly(context: Context, feedIds: Set<Long>) {
         runCatching {

@@ -65,7 +65,8 @@ class SyncResultTest {
     fun `a broken run names the kind of error and nothing else`() {
         val broken = SyncResult.broken(SocketTimeoutException("timeout reaching https://example.com/feed"))
         assertFalse(broken.ok)
-        assertEquals("failed: SocketTimeoutException", syncOutcome(broken))
+        // In words since sheet 117.
+        assertEquals("failed: timed out", syncOutcome(broken))
         assertFalse(syncOutcome(broken).contains("example.com"))
         assertEquals("IllegalStateException", errorKind(IllegalStateException("at https://x.test/a")))
     }

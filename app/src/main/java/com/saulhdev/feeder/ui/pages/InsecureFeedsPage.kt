@@ -17,6 +17,9 @@
  */
 package com.saulhdev.feeder.ui.pages
 
+import com.saulhdev.feeder.ui.components.WhisperLoading
+import com.saulhdev.feeder.ui.components.INLINE_LOADING
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -28,7 +31,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -140,10 +142,7 @@ fun InsecureFeedsPage(
                         if (busy) {
                             Spacer(Modifier.height(10.dp))
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(18.dp),
-                                    strokeWidth = 2.dp,
-                                )
+                                WhisperLoading(size = INLINE_LOADING)
                                 Text(
                                     text = "  " + stringResource(
                                         R.string.insecure_checking_progress,
@@ -199,7 +198,7 @@ private fun InsecureRow(
 
             when (state) {
                 Upgrade.Checking -> Row(verticalAlignment = Alignment.CenterVertically) {
-                    CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
+                    WhisperLoading(size = INLINE_LOADING)
                     Text(
                         text = "  " + stringResource(R.string.insecure_checking),
                         style = MaterialTheme.typography.bodyMedium,

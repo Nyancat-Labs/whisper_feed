@@ -17,6 +17,8 @@
  */
 package com.saulhdev.feeder.ui.pages
 
+import com.saulhdev.feeder.ui.components.WhisperLoading
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.ui.Alignment
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -29,7 +31,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -377,7 +378,7 @@ fun AccountPage(
 
             if (state.busy) {
                 item {
-                    CircularProgressIndicator(modifier = Modifier.padding(vertical = 8.dp))
+                    WhisperLoading(modifier = Modifier.padding(vertical = 8.dp))
                 }
             }
 

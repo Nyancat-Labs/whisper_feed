@@ -37,10 +37,12 @@ class BackupMessageTest {
     }
 
     @Test
-    fun `the confirmation has a place for both file names`() {
+    fun `the confirmation says the settings were kept, without file names`() {
+        // Sheet 120: three lines of file names read as clutter. The settings
+        // are still named, the reason the names were added in the first place.
         val written = string("backup_written")
-        assertTrue("the OPML name is missing", written.contains("%1\$s"))
-        assertTrue("the settings name is missing", written.contains("%2\$s"))
+        assertTrue("settings are no longer mentioned", written.contains("settings"))
+        assertTrue("file names are back", !written.contains("%1\$s"))
     }
 
     @Test

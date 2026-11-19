@@ -85,11 +85,34 @@ data class SyncResult(
 /**
  * The name of what went wrong, safe for a report that is sent to the
  * developer: the class, with no message. A message can carry an address.
- * A refused download says why in words, since a release build shortens
- * class names to three letters.
+ * A refused download says why in words, and so does a timeout, a bad
+ * address, a refused or insecure connection and a feed that won't parse,
+ * since a release build shortens the app's class names to three letters.
  */
-fun errorKind(error: Throwable): String =
-    (error as? DownloadRefused)?.kind ?: error::class.java.simpleName.ifBlank { "error" }
+fun errorKind(error: Throwable): String {
+    // The causes too: a feed that won't parse arrives wrapped in the
+    // parser's own error, whose shortened name ("ah0") told nobody anything
+    // (sheet 117).
+    val chain = generateSequence(error) { it.cause }.take(8).toList()
+    chain.firstNotNullOfOrNull { (it as? DownloadRefused)?.kind }?.let { return it }
+    for (e in chain) {
+        when (e) {
+            is java.net.SocketTimeoutException -> return "timed out"
+            is java.net.UnknownHostException -> return "address not found"
+            is java.net.ConnectException -> return "connection refused"
+            is javax.net.ssl.SSLException -> return "secure connection failed"
+            is com.rometools.rome.io.FeedException,
+            is org.xml.sax.SAXException,
+            -> return "not a readable feed"
+        }
+    }
+    // Java's own classes keep their names in a release build; the app's
+    // and its libraries' do not, so those say only what kind of trouble.
+    chain.firstOrNull { it.javaClass.name.startsWith("java.") }?.let {
+        return it.javaClass.simpleName.ifBlank { "error" }
+    }
+    return if (chain.any { it is java.io.IOException }) "network error" else "error"
+}
 
 /**
  * The history's outcome for a finished run.

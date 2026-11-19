@@ -18,6 +18,8 @@
 
 package com.saulhdev.feeder.ui.pages
 
+import com.saulhdev.feeder.ui.components.WhisperLoading
+
 import com.saulhdev.feeder.manager.sync.greader.isHomeNetworkHost
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
@@ -37,7 +39,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -97,6 +98,9 @@ import com.saulhdev.feeder.utils.extensions.safeSemantics
 import com.saulhdev.feeder.ui.components.ViewWithActionBar
 import com.saulhdev.feeder.ui.navigation.LocalNavController
 import com.saulhdev.feeder.ui.icons.Phosphor
+import com.saulhdev.feeder.ui.icons.phosphor.Browser
+import com.saulhdev.feeder.ui.components.OutlinedActionButton
+import com.saulhdev.feeder.utils.extensions.launchView
 import com.saulhdev.feeder.ui.icons.phosphor.Check
 import com.saulhdev.feeder.ui.icons.phosphor.Info
 import com.saulhdev.feeder.utils.sloppyLinkToStrictURLNoThrows
@@ -389,10 +393,26 @@ fun SearchResult(
                 )
                 SearchFailure.NotFound -> stringResource(R.string.failed_to_parse, error.url) to
                     stringResource(R.string.add_feed_not_found_hint)
+                // The site turns apps away but lets browsers in (sheet 117):
+                // say so, and offer the reader the way to see it for themselves.
+                SearchFailure.BlocksApps -> stringResource(R.string.add_feed_blocks_apps, hostOf(error.url)) to
+                    stringResource(R.string.blocks_apps_explanation) + "\n\n" +
+                    stringResource(R.string.blocks_apps_check)
             }
+            val context = LocalContext.current
             ErrorResultView(
                 title = title,
                 description = description,
+                action = if (error.failure != SearchFailure.BlocksApps) null else {
+                    {
+                        OutlinedActionButton(
+                            text = stringResource(R.string.open_feed_in_browser),
+                            icon = Phosphor.Browser,
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = { context.launchView(error.url) },
+                        )
+                    }
+                },
             )
         }
     }
@@ -426,7 +446,7 @@ fun SearchingIndicator() {
                 testTag = "searchingIndicator"
             }
     ) {
-        CircularProgressIndicator()
+        WhisperLoading()
     }
 }
 
@@ -648,6 +668,7 @@ private fun CategoryPicker(
 fun ErrorResultView(
     title: String,
     description: String,
+    action: (@Composable () -> Unit)? = null,
 ) {
     Card(
         modifier = Modifier
@@ -673,6 +694,10 @@ fun ErrorResultView(
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
+            }
+            if (action != null) {
+                Spacer(Modifier.height(8.dp))
+                action()
             }
         }
     }
