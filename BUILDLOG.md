@@ -8,6 +8,14 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 19 November 2026 — Release date
+
+- Agreed with the owner: 1.0.6 the weekend of 28 November, after this
+  weekend's last checks and a week on the preview; translations to 1.0.7
+  unless ready. The owner confirmed the refresh indicator no longer jumps
+  and the top Settings page behaves; those old tests were already off the
+  board. Szept 179, 180 and 236 moved to 28 November.
+
 ## 19 November 2026 — Results from f580c5f
 
 - T1 and T2 of build 16 passed (23:02): 121 closed. The owner's 'Still

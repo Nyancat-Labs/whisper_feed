@@ -79,6 +79,12 @@ layout; the four layouts are what the user chooses between. Both exist now.
 Agreed 19 October 2026. In CHANGELOG.md under Unreleased as each lands.
 The owner is using the preview on the Pixel 10 for a week before release.
 
+**Release plan (owner, 19 November):** this weekend (21-22 November) the
+last open checks (breaking-news notification, Markdown photo posts, feeds
+that keep coming back empty), then a week on the preview, then release the
+weekend of 28 November. Translations (board 56) go in 1.0.7 unless Weblate
+is ready in time.
+
 - [x] **Reader fixes from the real-feed check**: the headline once, lazily
   loaded and noscript-only pictures, xkcd, stray credits, furniture labels,
   articles split around adverts (Ars, Wired), srcset addresses with commas.
