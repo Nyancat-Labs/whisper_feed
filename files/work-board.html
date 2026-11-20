@@ -85,6 +85,11 @@ textarea{min-height:38px;resize:vertical}
 .reply b{color:var(--accent);font-weight:600}
 button:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
+.latest{margin:10px 0 0;font-size:14px;color:var(--fg);background:var(--accent-soft);border-radius:10px;padding:8px 12px}
+.latest code{font-family:var(--mono);font-size:13px;color:var(--accent)}
+.find{margin-top:12px}
+.find input{font:inherit;font-size:15px;width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--fg);padding:10px 16px}
+.find input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .add{margin-top:28px;background:var(--surface);border:1px dashed var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px}
 .add h3{margin:0;font-size:15px;font-weight:600}
 .add .go{align-self:flex-start;font:inherit;font-weight:600;font-size:14px;border:0;border-radius:999px;padding:9px 18px;background:var(--accent);color:var(--bg);cursor:pointer}
@@ -105,6 +110,8 @@ button:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px soli
     <p>Everything found while testing. Pick Fix, Later or Drop on each issue, and answer where there's a question. Each preview build gets its own steps under Build tests: work through them in order. When every test for an issue passes, the issue closes by itself. Press Question on any card to ask Claude about it; the answer appears on the card.</p>
     <div class="tally" id="tally"></div>
     <div class="saved" id="stamp" style="margin-top:8px"></div>
+    <p class="latest" id="latest" hidden></p>
+    <div class="find"><input type="search" id="search" placeholder="Search cards, or a number" aria-label="Search every card" autocomplete="off"></div>
   </header>
   <nav role="tablist" id="tabs">
     <button role="tab" data-tab="decide">To decide<span class="c" id="c-decide"></span></button>
@@ -138,6 +145,18 @@ button:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px soli
   const FINISHED = new Set(["done", "drop", "merged"]);
   const openBuilds = new Set();
   let showFinished = false;
+  // Search (owner, 20 November): every card, any tab, finished ones too.
+  let query = "";
+  const SEARCHED = ["title", "detail", "suggest", "more", "reply", "note", "area", "build", "fixNote"];
+  function matches(it) {
+    if (!query) return true;
+    const q = query.replace(/^#/, "");
+    if (/^\d+$/.test(q) && it.kind === "issue") return it.n === Number(q) || SEARCHED.some((k) => String(it[k] || "").toLowerCase().includes(q));
+    if (/^t\d+$/.test(q) && isTest(it)) return "t" + it.n === q;
+    const words = q.split(/\s+/).filter(Boolean);
+    const text = SEARCHED.map((k) => String(it[k] || "")).join(" ").toLowerCase();
+    return words.every((w) => text.includes(w));
+  }
   const chains = new Map();
   let db = null, assets = null, writable = true, tab = "decide", pending = false, loaded = false;
   const FILE_TYPES = { md: "text/markdown", csv: "text/csv", json: "application/json", txt: "text/plain", log: "text/plain", pdf: "application/pdf",
@@ -365,7 +384,8 @@ button:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px soli
     const all = [...items.entries()];
     let shown;
     let finished = 0;
-    if (tab === "check") shown = all.filter(([, it]) => isTest(it));
+    if (query) shown = all.filter(([, it]) => it.status !== "merged" && matches(it));
+    else if (tab === "check") shown = all.filter(([, it]) => isTest(it));
     else if (tab === "all") {
       const issues = all.filter(([, it]) => it.kind === "issue");
       finished = issues.filter(([, it]) => FINISHED.has(it.status)).length;
@@ -379,7 +399,7 @@ button:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px soli
     if (!loaded) { list.innerHTML = '<p class="empty">Loading the list…</p>'; }
     else if (!shown.length) {
       const p = document.createElement("p"); p.className = "empty";
-      p.textContent = tab === "decide" ? "Nothing left to decide. Claude can start on the fixes."
+      p.textContent = query ? "Nothing matches \u201c" + query + "\u201d." : tab === "decide" ? "Nothing left to decide. Claude can start on the fixes."
         : tab === "verify" ? "Nothing to check yet. Fixes appear here when they reach a preview build." : "Nothing here yet.";
       list.appendChild(p);
     } else {
@@ -389,7 +409,7 @@ button:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px soli
         const h = document.createElement("h2"); h.textContent = area;
         const g = document.createElement("div"); g.className = "group";
         // A build whose every step passed folds to one line.
-        const allPassed = tab === "check" && rows.every(([, it]) => it.status === "pass");
+        const allPassed = !query && tab === "check" && rows.every(([, it]) => it.status === "pass");
         if (allPassed) {
           const open = openBuilds.has(area);
           const fold = document.createElement("button");
@@ -407,7 +427,7 @@ button:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px soli
         list.append(h, g);
       }
     }
-    if (loaded && tab === "all" && finished) {
+    if (loaded && !query && tab === "all" && finished) {
       const t = document.createElement("button");
       t.type = "button"; t.className = "more-btn"; t.style.marginTop = "20px";
       t.setAttribute("aria-expanded", String(showFinished));
@@ -415,13 +435,23 @@ button:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px soli
       t.addEventListener("click", () => { showFinished = !showFinished; render(); });
       list.appendChild(t);
     }
-    $("add").hidden = tab === "check" || tab === "verify";
+    $("add").hidden = !!query || tab === "check" || tab === "verify";
     for (const b of $("tabs").children) b.setAttribute("aria-selected", String(b.dataset.tab === tab));
     updateCounts();
   }
 
   function updateCounts() {
     const all = [...items.values()];
+    // The newest build's own steps say which build it is (owner, 20 November:
+    // testing on the build before caused a false 'still wrong').
+    const newest = all.filter((i) => i.kind === "test" && i.build).sort((a, b) => (b.seq || 0) - (a.seq || 0))[0];
+    const lt = $("latest");
+    lt.hidden = !loaded || !newest;
+    if (newest && lt.dataset.build !== newest.build) {
+      lt.dataset.build = newest.build; lt.textContent = "Latest preview: ";
+      const c = document.createElement("code"); c.textContent = newest.build;
+      lt.append(c, ". Install it before testing: Settings \u2192 About should end in " + newest.build + ".");
+    }
     const issues = all.filter((i) => i.kind === "issue" && i.status !== "merged");
     const by = (s) => issues.filter((i) => (i.status || "open") === s).length;
     const toDecide = issues.filter(isOpenIssue).length;
@@ -441,6 +471,11 @@ button:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px soli
       const s = document.createElement("span"); const b = document.createElement("b"); b.textContent = n; s.append(b, " " + label); t.appendChild(s);
     }
   }
+
+  $("search").addEventListener("input", (e) => {
+    query = e.target.value.trim().toLowerCase();
+    render();
+  });
 
   $("tabs").addEventListener("click", (e) => {
     const b = e.target.closest("button[data-tab]"); if (!b) return;

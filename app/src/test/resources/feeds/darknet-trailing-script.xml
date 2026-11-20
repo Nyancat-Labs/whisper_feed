@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+	<title>Darknet – Hacking Tools, Hacker News &#38; Cyber Security</title>
+	<link>https://www.darknet.org.uk/</link>
+	<description>Don&#039;t Learn to Hack – Hack to Learn</description>
+	<item>
+		<title>httpx – ProjectDiscovery&#8217;s HTTP Toolkit for Probing Live Hosts</title>
+		<link>https://www.darknet.org.uk/2026/11/httpx/</link>
+		<dc:creator><![CDATA[Darknet]]></dc:creator>
+		<pubDate>Wed, 18 Nov 2026 09:00:00 +0000</pubDate>
+		<description><![CDATA[A fast HTTP toolkit.]]></description>
+		<content:encoded><![CDATA[<p>A fast HTTP toolkit.</p>]]></content:encoded>
+	</item>
+	<item>
+		<title>Phone Phreaking – The Blind Teenager Who Whistled Free Calls</title>
+		<link>https://www.darknet.org.uk/2026/11/phreaking/</link>
+		<pubDate>Mon, 16 Nov 2026 09:00:00 +0000</pubDate>
+		<description><![CDATA[History.]]></description>
+	</item>
+</channel>
+</rss>
+<script type="speculationrules">{"prefetch":[{"source":"document","where":{"href_matches":"/*"}}]}</script>
