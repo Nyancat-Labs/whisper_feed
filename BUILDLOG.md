@@ -8,6 +8,11 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 20 November 2026 — Reset all settings confirmed
+
+- Owner, in chat: reset and restore from the settings backup passed. T1
+  and T2 of build 17 passed; card 68 closed. Gate left: empty feeds (T7/14).
+
 ## 20 November 2026 — Breaking news confirmed
 
 - Owner's screenshots, 07:08 (archive/screenshots/2026-11-20-0708-…): two
