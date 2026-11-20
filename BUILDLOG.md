@@ -8,6 +8,13 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 20 November 2026 — Card 123, preview 6945d78
+
+- Owner (screenshot 10:06): What to restore should start with everything
+  ticked. Settings was unticked on purpose (it replaces rather than adds);
+  now all three start ticked, the 'Replaces the settings on this phone'
+  note stays. 1384 pass, lint clean. Board build 18.
+
 ## 20 November 2026 — Reset all settings confirmed
 
 - Owner, in chat: reset and restore from the settings backup passed. T1
