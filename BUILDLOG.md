@@ -8,6 +8,16 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 20 November 2026 — Cards 124 and 125, preview b304b23
+
+- 124: the welcome screen's restore line now names saved articles, which a
+  restore from there brings back with sources and settings.
+- 125 (owner's screenshot 10:23): the loading indicator sat at the left on
+  the Account page. Centred there and on the weather-place search with
+  fillMaxWidth + wrapContentWidth; the inline ones stay beside their text.
+- 1386 pass, lint clean (one test of mine cut its text short at the first
+  ')\n'; fixed to read a fixed span). Board build 19.
+
 ## 20 November 2026 — Card 123, preview 6945d78
 
 - Owner (screenshot 10:06): What to restore should start with everything
