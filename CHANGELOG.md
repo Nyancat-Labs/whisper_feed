@@ -9,6 +9,8 @@ Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 Unreleased
 ----------
 
+- A clearer sort icon, and Feeds that stopped working says when a feed
+  answers but is empty.
 - **Reset all settings** in Help, for when you can't find your way back:
   it asks first, and leaves your sources, saved articles and what Whisper
   has learned alone.

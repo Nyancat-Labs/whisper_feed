@@ -8,6 +8,18 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 20 November 2026 — Cards 127 and 128, preview 8c226e5
+
+- 127: the sort button's icon was a home-made 'SortAz' mark whose letters
+  were unreadable at 24dp. Phosphor arrows-down-up (MIT, core 2.1.1) in all
+  four places (Sources, Sort and filter sheet, two Settings rows).
+  ReviewBatch2Test's pinned name updated.
+- 128: Quartz's card said 'server may be down, or blocking' after Look for
+  a new address, but it answers with an empty feed. An empty parse is now
+  recorded as Failed 'empty feed' (was New '0'), FeedHistory.cameBackEmpty
+  reads it, and Feeds that stopped working says the feed is empty.
+- 1388 pass, lint clean. Board build 20.
+
 ## 20 November 2026 — Last release check passed
 
 - T7 of build 14 passed: Quartz returned an empty feed (under 1 KB, no
