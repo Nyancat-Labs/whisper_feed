@@ -8,6 +8,12 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 20 November 2026 — Release date set
+
+- Owner: two days of heavy testing, release Sunday night, 22 November. Code
+  freeze from Saturday evening. Szept 179 moved to 22 November with the
+  split of work.
+
 ## 20 November 2026 — Card 129, preview 2caca82
 
 - 127 and 128 closed (build 20 passed; Quartz recovered before its new

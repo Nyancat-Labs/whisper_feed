@@ -79,6 +79,11 @@ layout; the four layouts are what the user chooses between. Both exist now.
 Agreed 19 October 2026. In CHANGELOG.md under Unreleased as each lands.
 The owner is using the preview on the Pixel 10 for a week before release.
 
+**Release date (owner, 20 November): Sunday night, 22 November.** Heavy
+testing Friday and Saturday, code freeze from Saturday evening (blockers
+only), release work Sunday afternoon, upload and GitHub release Sunday
+evening.
+
 **Release plan (owner, 19-20 November):** release once the gating checks
 pass on the phone (breaking-news notification, feeds that keep coming back
 empty, Reset all settings) and after a solid day or two of use, not
