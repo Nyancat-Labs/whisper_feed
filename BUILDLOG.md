@@ -8,6 +8,19 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 20 November 2026 — Card 129, preview 2caca82
+
+- 127 and 128 closed (build 20 passed; Quartz recovered before its new
+  wording could show, covered by the empty-feed sample).
+- 129 (owner's screenshot 13:37): the Nyancat Labs mark on About was cut off
+  at the top right: the art fills its square and the row crops to a circle.
+  docs/ICONS.md found it at once (one file, one use). Rebuilt the 192 px
+  webp from docs/brand/nyancat_labs/symbol_transparent_1024.png at 79% on
+  the brand navy (10, 31, 74), so every drawn pixel is inside 90% of the
+  circle's radius. Lossless, 11 KB.
+- First preview made with scripts/preview.sh: 1398 pass in verify mode,
+  signed with the release key. Board build 21.
+
 ## 20 November 2026 — Workflow tools
 
 - Board (version 12): a search box over every card in every tab, finished
