@@ -8,6 +8,13 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 20 November 2026 — Release gate narrowed
+
+- Owner: Cyberspace is an unusual feed, so its photo check (T4 of build 14)
+  is optional; and a day or two of heavy testing can replace the week.
+  Gate: breaking news (T2/14), empty feeds (T7/14), Reset all settings
+  (T2/17). Target still 28 November, earlier if those pass.
+
 ## 19 November 2026 — Card 68, preview 8afd9fc
 
 - `manager/backup/SettingsReset.kt`: removes every DataStore key not in

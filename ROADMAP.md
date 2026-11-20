@@ -79,10 +79,11 @@ layout; the four layouts are what the user chooses between. Both exist now.
 Agreed 19 October 2026. In CHANGELOG.md under Unreleased as each lands.
 The owner is using the preview on the Pixel 10 for a week before release.
 
-**Release plan (owner, 19 November):** this weekend (21-22 November) the
-last open checks (breaking-news notification, Markdown photo posts, feeds
-that keep coming back empty), then a week on the preview, then release the
-weekend of 28 November. Translations (board 56) go in 1.0.7 unless Weblate
+**Release plan (owner, 19-20 November):** release once the gating checks
+pass on the phone (breaking-news notification, feeds that keep coming back
+empty, Reset all settings) and after a solid day or two of use, not
+necessarily a full week. Target the weekend of 28 November, earlier if
+they pass. Markdown photo posts (Cyberspace) are optional: an unusual feed. Translations (board 56) go in 1.0.7 unless Weblate
 is ready in time.
 
 - [x] **Reader fixes from the real-feed check**: the headline once, lazily
