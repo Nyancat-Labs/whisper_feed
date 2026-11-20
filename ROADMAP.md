@@ -214,6 +214,9 @@ is ready in time.
   sources), for the notifications and the feed's breaking card alike.
   Step 2, once step 1 has run on real news: decide whether a 'How often'
   choice (Fewer / Usual / More) is still wanted. Not a raw number.
+- [ ] **Diagnostics: 'new 0 <1 KB' on feeds that hold articles** (20
+  November): Carryology, Gigaom and others show a size under 1 KB on a fetch
+  that parsed fine. Find out what the byte count is measuring there.
 
 ## Asked for by users, and other valid points (recorded 1 November 2026)
 

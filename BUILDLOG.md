@@ -8,6 +8,19 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 20 November 2026 — Last release check passed
+
+- T7 of build 14 passed: Quartz returned an empty feed (under 1 KB, no
+  items) at 10:04, 10:24, 11:04 and 11:22 and is listed under Feeds that
+  stopped working (owner's screenshot 11:40, diagnostics 11:41 in
+  archive/board-files). Card 111 closed. My first guess in chat (a
+  Cloudflare block, from what a server here gets) was wrong.
+- Open question for after 1.0.6: Carryology, Everyday Carry, Gigaom,
+  Inoreader blog, Ireland: BreakingNews, TreeHugger, Tech Travel Geeks and
+  076 log 'new 0 <1 KB' yet aren't counted as failing, so they held items.
+  A 304 would log 'unchanged', so the small size isn't that; unexplained.
+- Every release check has now passed on the phone.
+
 ## 20 November 2026 — Board read, late morning
 
 - Passed: build 18 (restore all ticked) and build 19 T1 and T3 (centred
