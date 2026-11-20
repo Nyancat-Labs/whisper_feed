@@ -849,7 +849,7 @@
     </plurals>
     <string name="backup_nothing_found">No backup was found in that folder</string>
     <string name="starter_returning_title">Used Whisper before?</string>
-    <string name="starter_returning_body">If you have a backup folder, this is the moment to use it — your sources and settings come back exactly as they were.</string>
+    <string name="starter_returning_body">If you have a backup folder, this is the moment to use it: your sources, saved articles and settings come back exactly as they were.</string>
     <string name="starter_restore">Restore from a backup</string>
     <string name="starter_restoring">Restoring…</string>
     <plurals name="suggestion_reason">

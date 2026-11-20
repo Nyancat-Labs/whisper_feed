@@ -74,4 +74,18 @@ class ResetSettingsTest {
         val page = File("src/main/java/com/saulhdev/feeder/ui/pages/BackupPage.kt").readText()
         assertTrue(page.contains("mutableStateOf(BackupStore.Part.entries.toSet())"))
     }
+
+    @Test
+    fun `the welcome screen says saved articles come back too`() {
+        val strings = File("src/main/res/values/strings.xml").readText()
+        assertTrue(strings.contains("your sources, saved articles and settings come back"))
+    }
+
+    @Test
+    fun `a loading indicator on its own line is centred`() {
+        for (f in listOf("AccountPage.kt", "GlanceLocationPage.kt")) {
+            val page = File("src/main/java/com/saulhdev/feeder/ui/pages/$f").readText()
+            assertTrue(f, page.substringAfter("WhisperLoading(").take(300).contains("wrapContentWidth(Alignment.CenterHorizontally)"))
+        }
+    }
 }

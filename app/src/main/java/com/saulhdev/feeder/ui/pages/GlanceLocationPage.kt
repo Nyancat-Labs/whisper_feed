@@ -17,6 +17,10 @@
  */
 package com.saulhdev.feeder.ui.pages
 
+import androidx.compose.ui.Alignment
+
+import androidx.compose.foundation.layout.wrapContentWidth
+
 import com.saulhdev.feeder.ui.components.WhisperLoading
 
 import androidx.compose.foundation.layout.Column
@@ -112,7 +116,12 @@ fun GlanceLocationPage(
             )
 
             if (searching) {
-                WhisperLoading(modifier = Modifier.padding(16.dp))
+                WhisperLoading(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentWidth(Alignment.CenterHorizontally)
+                        .padding(16.dp),
+                )
             }
 
             LazyColumn(contentPadding = PaddingValues(vertical = 12.dp)) {

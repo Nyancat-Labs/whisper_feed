@@ -17,6 +17,8 @@
  */
 package com.saulhdev.feeder.ui.pages
 
+import androidx.compose.foundation.layout.wrapContentWidth
+
 import com.saulhdev.feeder.ui.components.WhisperLoading
 
 import androidx.compose.foundation.layout.Arrangement
@@ -378,7 +380,14 @@ fun AccountPage(
 
             if (state.busy) {
                 item {
-                    WhisperLoading(modifier = Modifier.padding(vertical = 8.dp))
+                    // Centred, as a loading indicator on its own is everywhere else
+                    // (owner's screenshot, 20 November).
+                    WhisperLoading(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentWidth(Alignment.CenterHorizontally)
+                            .padding(vertical = 8.dp),
+                    )
                 }
             }
 
