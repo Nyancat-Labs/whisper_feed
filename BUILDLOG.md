@@ -8,6 +8,15 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 20 November 2026 — Board read, late morning
+
+- Passed: build 18 (restore all ticked) and build 19 T1 and T3 (centred
+  indicator); 123, 124, 125 closed. 114 closed by the owner. 12 and 18
+  dropped (Szept 182, 183 cancelled).
+- 112: the owner asked about any issues since; the 19 November 22:44
+  diagnostics show 14 syncs with sign-in at 0.1-0.4 s. Answered on the card.
+- Release gate left: empty feeds (T7 of build 14).
+
 ## 20 November 2026 — Card 126 raised
 
 - Owner: should the number of sources that makes a story breaking be
