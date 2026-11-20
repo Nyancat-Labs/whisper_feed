@@ -334,6 +334,7 @@ more languages.
 | [`UPSTREAM_NOTES.md`](UPSTREAM_NOTES.md) | How the launcher integration actually works |
 | [`CHANGELOG.md`](CHANGELOG.md) | Release history |
 | [`ATTRIBUTION.md`](ATTRIBUTION.md) | Upstream copyright and credits |
+| [`docs/ICONS.md`](docs/ICONS.md) | Every icon and image, where it came from, and every place it is used (`scripts/icon-index.py` writes it) |
 | [`docs/SYNC_SERVER_FRESHRSS.md`](docs/SYNC_SERVER_FRESHRSS.md) | Running your own FreshRSS server to sync with |
 | [`docs/FRESHRSS_TEST_SERVER.md`](docs/FRESHRSS_TEST_SERVER.md) | Standing up a server to test sync against |
 | [`docs/LAWNCHAIR_WHITELIST.md`](docs/LAWNCHAIR_WHITELIST.md) | The request to add Whisper to Lawnchair's feed list |

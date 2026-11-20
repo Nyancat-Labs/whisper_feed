@@ -8,6 +8,23 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 20 November 2026 — Icon and image index
+
+- Owner: keep track of where every asset is used, so changing one (the pin,
+  say) means knowing all its places. `scripts/icon-index.py` writes
+  `docs/ICONS.md`: 83 icons and 38 images, each with its file, its source
+  and every file:line that uses it. IconIndexTest fails when the index and
+  the code part ways (icons, images, and which files use each).
+- Source check against @phosphor-icons/core 2.1.1, 1.4.9 and 1.4.1 (npm,
+  unpacked in the scratchpad): 24 icons are exact Phosphor drawings (the
+  ones added since are 2.1.1; most inherited ones 1.4.x), 56 are named after
+  Phosphor icons but redrawn (e.g. X merges two arcs), and 3 aren't
+  Phosphor: Filter, Filtered and the old SortAz 'Sort'.
+- Unused: Filter, Filtered, HeartStraightFill, Nut, Sort, SubtractSquare,
+  TelegramLogo. Deleting them was refused by the session's permission check
+  (seven, where the owner had approved six); left in place and asked.
+- No app change, so no preview. 1390 pass, lint clean.
+
 ## 20 November 2026 — Cards 127 and 128, preview 8c226e5
 
 - 127: the sort button's icon was a home-made 'SortAz' mark whose letters
