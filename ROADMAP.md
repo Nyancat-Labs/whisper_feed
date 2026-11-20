@@ -205,6 +205,16 @@ is ready in time.
 
 ---
 
+## After 1.0.6
+
+- [ ] **Breaking news scales with your list (board 126, owner 20 November).**
+  Today a story is breaking at a fixed 3 News sources in 12 hours
+  (Clustering.MIN_SOURCES), so a long News list fires far more often than a
+  short one. Step 1: automatic, max(3, 1 in 10 of the reader's News
+  sources), for the notifications and the feed's breaking card alike.
+  Step 2, once step 1 has run on real news: decide whether a 'How often'
+  choice (Fewer / Usual / More) is still wanted. Not a raw number.
+
 ## Asked for by users, and other valid points (recorded 1 November 2026)
 
 Kept here so none is forgotten. People are named only on the review sheet,

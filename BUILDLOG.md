@@ -16,6 +16,8 @@ and Google Play builds on two other devices.
   board for after 1.0.6: scale to max(3, 1 in 10 News sources), plus a
   Fewer / Usual / More choice; not a raw number. Screenshot of a third alert
   (10:43) saved.
+- Owner: on the roadmap, automatic first, a user choice possibly later.
+  Card 126 set to Later; ROADMAP 'After 1.0.6' section added.
 
 ## 20 November 2026 — Cards 124 and 125, preview b304b23
 
