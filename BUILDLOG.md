@@ -8,6 +8,14 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 20 November 2026 — Breaking news confirmed
+
+- Owner's screenshots, 07:08 (archive/screenshots/2026-11-20-0708-…): two
+  breaking-news notifications overnight, headline as title, 'Covered by 3 /
+  6 of your sources, including …', about two hours apart. T2 of build 14
+  passed; card 115 closed. Gate left: empty feeds (T7/14), Reset all
+  settings (T2/17).
+
 ## 20 November 2026 — Release gate narrowed
 
 - Owner: Cyberspace is an unusual feed, so its photo check (T4 of build 14)
