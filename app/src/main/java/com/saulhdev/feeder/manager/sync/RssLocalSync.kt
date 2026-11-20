@@ -361,8 +361,15 @@ internal suspend fun syncFeeds(
                                             identicalFeeds.incrementAndGet()
                                             FeedFetch(at, FetchKind.Same, bytes = counter.bytes)
                                         }
+                                        // An empty feed is recorded as what it is, so the
+                                        // report and Feeds that stopped working can say so
+                                        // rather than "new 0" (Quartz, 20 November).
                                         is FeedFetchResult.Parsed ->
-                                            FeedFetch(at, FetchKind.New, "${fetched.newArticles}", counter.bytes)
+                                            if (fetched.itemsInFeed == 0) {
+                                                FeedFetch(at, FetchKind.Failed, FeedHistory.EMPTY, counter.bytes)
+                                            } else {
+                                                FeedFetch(at, FetchKind.New, "${fetched.newArticles}", counter.bytes)
+                                            }
                                     },
                                 )
 

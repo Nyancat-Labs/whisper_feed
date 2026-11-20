@@ -109,4 +109,25 @@ class Batch7Test {
         assertTrue(vm.contains("refusesApps(e) -> FeedPreview.Why.BlocksApps"))
         assertTrue(source("ui/pages/SourceEditPage.kt").contains("onAddressChanged = { viewModel.clearPreview() }"))
     }
+
+    // 127
+    @Test
+    fun `sort is two arrows, no tiny letters`() {
+        for (f in listOf("ui/pages/SourceListPage.kt", "ui/pages/SortFilterSheet.kt", "data/content/FeedPreferences.kt")) {
+            val text = source(f)
+            assertFalse(f, text.contains("Phosphor.Sort,"))
+            assertTrue(f, text.contains("Phosphor.ArrowsDownUp"))
+        }
+    }
+
+    // 128
+    @Test
+    fun `an empty feed is recorded and named as empty`() {
+        val empty = FeedFetch(6, FetchKind.Failed, FeedHistory.EMPTY)
+        assertTrue(FeedHistory.cameBackEmpty(listOf(FeedFetch(7, FetchKind.NoNetwork), empty)))
+        assertFalse(FeedHistory.cameBackEmpty(listOf(FeedFetch(7, FetchKind.New, "0"), empty)))
+        assertFalse(FeedHistory.refusesApps(listOf(empty)))
+        assertTrue(source("manager/sync/RssLocalSync.kt").contains("FeedFetch(at, FetchKind.Failed, FeedHistory.EMPTY, counter.bytes)"))
+        assertTrue(source("ui/pages/BrokenFeedsPage.kt").contains("if (empty) R.string.broken_empty_unchanged else R.string.broken_unchanged"))
+    }
 }

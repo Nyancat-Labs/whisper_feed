@@ -86,6 +86,14 @@ object FeedHistory {
         fetches.firstOrNull { it.kind != FetchKind.NoNetwork }
             ?.let { it.kind == FetchKind.Failed && it.detail == "403" } == true
 
+    /** The detail of a fetch that worked but held no articles at all. */
+    const val EMPTY = "empty feed"
+
+    /** Whether the feed's latest answer was a feed with nothing in it. */
+    fun cameBackEmpty(fetches: List<FeedFetch>): Boolean =
+        fetches.firstOrNull { it.kind != FetchKind.NoNetwork }
+            ?.let { it.kind == FetchKind.Failed && it.detail == EMPTY } == true
+
     /** Drops feeds that no longer exist. */
     fun keepOnly(context: Context, feedIds: Set<Long>) {
         runCatching {

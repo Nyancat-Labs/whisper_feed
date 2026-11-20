@@ -48,7 +48,7 @@ class ReviewBatch2Test {
     @Test
     fun `every section has an icon and a card, open or closed`() {
         val sheet = source("ui/pages/SortFilterSheet.kt")
-        listOf("Phosphor.Sort,", "Phosphor.Article,", "Phosphor.Rss,", "Phosphor.Hash,", "Phosphor.ThumbsDown,", "Phosphor.CheckCircle,")
+        listOf("Phosphor.ArrowsDownUp,", "Phosphor.Article,", "Phosphor.Rss,", "Phosphor.Hash,", "Phosphor.ThumbsDown,", "Phosphor.CheckCircle,")
             .forEach { assertTrue(it, sheet.contains(it)) }
         val block = source("ui/components/Block.kt")
         assertFalse("closed sections were bare", block.contains("Color.Transparent"))

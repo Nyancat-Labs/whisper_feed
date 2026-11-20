@@ -180,8 +180,18 @@ private fun BrokenRow(
             // publishing", which is wrong: the feed is there. Say what is
             // happening, and give the reader the way to see it themselves.
             val context = LocalContext.current
-            val refused = remember(feed.id, feed.consecutiveFailures) {
-                FeedHistory.refusesApps(FeedHistory.read(context, feed.id))
+            val history = remember(feed.id, feed.consecutiveFailures) { FeedHistory.read(context, feed.id) }
+            val refused = FeedHistory.refusesApps(history)
+            // Answers, but with nothing in it (Quartz, 20 November): "the
+            // server may be down, or blocking" was wrong for that.
+            val empty = FeedHistory.cameBackEmpty(history)
+            if (empty) {
+                Spacer(Modifier.height(6.dp))
+                Text(
+                    text = stringResource(R.string.broken_empty),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
             }
             if (refused) {
                 Spacer(Modifier.height(6.dp))
@@ -239,7 +249,7 @@ private fun BrokenRow(
                 }
 
                 Recovery.Unchanged -> Text(
-                    text = stringResource(R.string.broken_unchanged),
+                    text = stringResource(if (empty) R.string.broken_empty_unchanged else R.string.broken_unchanged),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

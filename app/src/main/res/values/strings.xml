@@ -701,6 +701,8 @@
     <string name="broken_already_subscribed">That address belongs to another source you already follow, so this one cannot be moved to it. Deleting this entry is the tidy way out.</string>
     <string name="broken_delete">Unsubscribe from this source</string>
     <string name="broken_unchanged">The site still lists the address you have, so something else is wrong \u2014 the server may be down, or blocking.</string>
+    <string name="broken_empty">The feed answers, but has no articles in it.</string>
+    <string name="broken_empty_unchanged">The site still lists this address, but the feed there is empty. The site may have stopped filling it: Open website shows whether it still publishes.</string>
     <string name="broken_nothing">No feed could be found at that site. It may have stopped publishing one.</string>
     <string name="broken_forget">Stop warning me about this</string>
     <string name="blocks_apps_explanation">This site blocks reading apps. The feed is probably fine, but the site doesn\'t let apps like Whisper fetch it. You can ask the site to allow reading apps, or read it in your browser.</string>

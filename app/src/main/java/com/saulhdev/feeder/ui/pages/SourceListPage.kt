@@ -28,7 +28,7 @@ import com.saulhdev.feeder.ui.icons.phosphor.LockSimpleOpen
 import com.saulhdev.feeder.ui.icons.phosphor.FileArrowDown
 import com.saulhdev.feeder.ui.icons.phosphor.FileArrowUp
 import com.saulhdev.feeder.ui.icons.phosphor.Check
-import com.saulhdev.feeder.ui.icons.phosphor.Sort
+import com.saulhdev.feeder.ui.icons.phosphor.ArrowsDownUp
 import com.saulhdev.feeder.ui.icons.phosphor.DotsThreeVertical
 import com.saulhdev.feeder.ui.components.categoryChipColors
 import com.saulhdev.feeder.ui.components.categoryChipShape
@@ -472,7 +472,7 @@ fun SourceListPage(
                             // used to sit in the middle of the ⋮ menu, with an
                             // icon on the chosen row only.
                             GroupedMenu(
-                                icon = Phosphor.Sort,
+                                icon = Phosphor.ArrowsDownUp,
                                 description = R.string.sources_sort,
                                 sections = listOf(
                                     GroupedMenuSection(

@@ -67,7 +67,7 @@ import com.saulhdev.feeder.ui.components.ChoiceButtons
 import com.saulhdev.feeder.ui.icons.phosphor.Article
 import com.saulhdev.feeder.ui.icons.phosphor.Hash
 import com.saulhdev.feeder.ui.icons.phosphor.Rss
-import com.saulhdev.feeder.ui.icons.phosphor.Sort
+import com.saulhdev.feeder.ui.icons.phosphor.ArrowsDownUp
 import com.saulhdev.feeder.viewmodels.markReadChoices
 import java.text.NumberFormat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -196,7 +196,7 @@ fun SortFilterSheet(
             item {
                 ExpandableItemsBlock(
                     heading = stringResource(id = R.string.sorting_order),
-                    icon = Phosphor.Sort,
+                    icon = Phosphor.ArrowsDownUp,
                     preExpanded = true,
                 ) {
                     // Two button groups, what to sort by and which way, in

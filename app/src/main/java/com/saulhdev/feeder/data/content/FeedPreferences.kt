@@ -88,7 +88,7 @@ import com.saulhdev.feeder.ui.icons.phosphor.BookOpenUser
 import com.saulhdev.feeder.ui.icons.phosphor.Graph
 import com.saulhdev.feeder.ui.icons.phosphor.Hash
 import com.saulhdev.feeder.ui.icons.phosphor.Info
-import com.saulhdev.feeder.ui.icons.phosphor.Sort
+import com.saulhdev.feeder.ui.icons.phosphor.ArrowsDownUp
 import com.saulhdev.feeder.ui.icons.phosphor.Sparkle
 import com.saulhdev.feeder.ui.icons.phosphor.Plus
 import com.saulhdev.feeder.ui.icons.phosphor.Megaphone
@@ -1269,7 +1269,7 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
      */
     var sourcesSort = StringPref(
         titleId = R.string.sorting_order,
-        icon = Phosphor.Sort,
+        icon = Phosphor.ArrowsDownUp,
         key = SOURCES_SORT,
         dataStore = dataStore,
         defaultValue = "Title",
@@ -1278,7 +1278,7 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
     /** Which way round that order runs. */
     var sourcesSortAsc = BooleanPref(
         titleId = R.string.sort_ascending,
-        icon = Phosphor.Sort,
+        icon = Phosphor.ArrowsDownUp,
         key = SOURCES_SORT_ASC,
         dataStore = dataStore,
         defaultValue = true,
