@@ -8,6 +8,33 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 20 November 2026 — Workflow tools
+
+- Board (version 12): a search box over every card in every tab, finished
+  ones too (words, or a number); and a 'Latest preview' line taken from the
+  newest build's steps. Tried headless with sample cards before publishing.
+- `scripts/preview.sh`: picture tests, unit tests and lint, assemblePreview,
+  apksigner check against the release key's SHA-256, copy to out/preview.
+- `scripts/diag-summary.py`: failing, empty and flaky feeds, slow and
+  stopped syncs, and what changed since an earlier report. Tried on the
+  19 and 20 November reports.
+- `app/src/test/resources/feeds` + FeedFixturesTest: Darknet's trailing
+  script, Quartz's empty feed, Cyberspace's Markdown, IT Security Guru's
+  403. The Quartz body wasn't kept, so its sample is the shape the parser
+  saw, said so in the README there.
+- Picture tests: Roborazzi 1.77.0 (22 October), test-only, plus
+  ui-test-junit4 and ui-test-manifest (debug only), and
+  unitTests.isIncludeAndroidResources. PictureTest draws the icon sheet (all
+  76), the sort button and the blocks-apps message light and dark;
+  references in app/src/test/screenshots. A first draft that pictured my own
+  copy of the Account page's layout was dropped: it tested nothing real.
+  The sheet shows Phosphor's sort-ascending arrow points down: their
+  convention, not a mix-up.
+- Owned up: HANDOVER says no new icons without asking; ArrowsDownUp (127)
+  was added on 'can we fix that?' without naming it first.
+- 1398 pass in verify mode, lint clean. README badge and Building section,
+  HANDOVER and ROADMAP updated.
+
 ## 20 November 2026 — Icon and image index
 
 - Owner: keep track of where every asset is used, so changing one (the pin,

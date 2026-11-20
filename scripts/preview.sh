@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# One command for a preview build (20 November 2026): the full tests and
-# lint, the signed preview, a check that it's signed with the release key,
+# One command for a preview build (20 November 2026): the full tests, the
+# picture tests and lint, the signed preview, a check that it's signed with the release key,
 # and a copy in out/preview/. Stops at the first thing that fails.
 #
 #   scripts/preview.sh
@@ -23,8 +23,11 @@ fi
 [ -f keystore.properties ] || { echo "keystore.properties is missing: the preview would be unsigned." >&2; exit 1; }
 
 hash=$(git rev-parse --short HEAD)
-echo "== Tests and lint ($hash)"
-./gradlew -q :app:testDebugUnitTest :app:lintDebug
+echo "== Tests, pictures and lint ($hash)"
+# verifyRoborazziDebug runs every unit test, and fails if a picture test
+# no longer matches its saved picture (src/test/screenshots). After a change
+# to how something looks that you meant: ./gradlew recordRoborazziDebug.
+./gradlew -q :app:verifyRoborazziDebug :app:lintDebug
 python3 -I - <<'EOF'
 import glob, xml.etree.ElementTree as E
 t = f = 0

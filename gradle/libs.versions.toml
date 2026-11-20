@@ -40,6 +40,7 @@ tagsoup = "1.2.1"
 test = "1.7.0"
 test-rules = "1.7.0"
 robolectric = "4.17"
+roborazzi = "1.77.0"
 test-ext = "1.3.0"
 threetenabp = "1.4.9"
 work-runtime-ktx = "2.11.2"
@@ -84,6 +85,10 @@ room-paging = { group = "androidx.room", name = "room-paging", version.ref = "ro
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
+roborazzi = { group = "io.github.takahirom.roborazzi", name = "roborazzi", version.ref = "roborazzi" }
+roborazzi-compose = { group = "io.github.takahirom.roborazzi", name = "roborazzi-compose", version.ref = "roborazzi" }
+compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 
 security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "security-crypto" }
 
@@ -137,4 +142,5 @@ kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 

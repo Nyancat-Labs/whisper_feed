@@ -13,7 +13,7 @@ disagree.
 [![Licence: GPL v3](https://img.shields.io/badge/licence-GPL--3.0-blue)](LICENSE)
 ![Version 1.0.5](https://img.shields.io/badge/version-1.0.5-informational)
 ![Android 8.0+](https://img.shields.io/badge/Android-8.0%2B-brightgreen)
-![Tests](https://img.shields.io/badge/tests-1343%20passing-success)
+![Tests](https://img.shields.io/badge/tests-1398%20passing-success)
 ![No trackers](https://img.shields.io/badge/trackers-none-success)
 
 <a href="https://play.google.com/store/apps/details?id=com.nyancatlabs.whisper"><img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play" height="80"></a>
@@ -279,6 +279,20 @@ Three build types:
 | `assembleRelease` | Minified and **unsigned**, on purpose. Signing is a local step with a key that never comes near this repository. |
 
 The APK lands in `app/build/outputs/apk/<type>/`.
+
+Helpers in `scripts/` (20 November 2026):
+
+| Script | What it does |
+|---|---|
+| `scripts/preview.sh` | Tests, picture tests and lint, then the signed preview, a check that it's signed with the release key, and a copy in `out/preview/` |
+| `scripts/diag-summary.py <report> [earlier]` | What matters in a diagnostics report: failing and empty feeds, slow or stopped syncs, what changed since an earlier report |
+| `scripts/icon-index.py` | Rewrites `docs/ICONS.md`, every icon and image and where each is used |
+
+Picture tests (Roborazzi) keep reference images in `app/src/test/screenshots`:
+`./gradlew verifyRoborazziDebug` fails when one changes;
+`./gradlew recordRoborazziDebug` saves new ones after a change you meant.
+Feeds that once broke Whisper are kept as samples in
+`app/src/test/resources/feeds` (see its README).
 
 `app/debug.keystore` is committed deliberately. It is the standard Android
 debug key — `android` / `androiddebugkey`, the same credentials every SDK

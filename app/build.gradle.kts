@@ -52,6 +52,8 @@ plugins {
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
+    // Picture tests of screens, drawn on the computer (20 November 2026).
+    alias(libs.plugins.roborazzi)
 }
 
 allprojects {
@@ -264,6 +266,12 @@ android {
         aidl = true
     }
 
+    // Robolectric draws with the app's real resources (fonts, colours), so
+    // the picture tests show what the phone shows.
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+    }
+
     packaging {
         // Rome's artefact carries copies of its own jars as plain files.
         // Nothing reads them; they were 265 KB of dead weight in the APK
@@ -429,6 +437,12 @@ dependencies {
     testImplementation(libs.koin.test)
     testImplementation(libs.coroutines.test)
     testImplementation(libs.robolectric)
+    // Picture tests: test-only, nothing of these reaches the app.
+    testImplementation(libs.roborazzi)
+    testImplementation(libs.roborazzi.compose)
+    testImplementation(platform(libs.compose.bom))
+    testImplementation(libs.compose.ui.test.junit4)
+    debugImplementation(libs.compose.ui.test.manifest)
     testImplementation(libs.work.testing)
 
     //Libs
@@ -445,4 +459,11 @@ dependencies {
     testImplementation(libs.test.runner)
     testImplementation(libs.test.rules)
     testImplementation(libs.test.ext)
+}
+
+// The picture tests' reference images live with the code, so a change to how
+// a screen looks shows up in review. Record: ./gradlew recordRoborazziDebug;
+// check: ./gradlew verifyRoborazziDebug.
+roborazzi {
+    outputDir.set(file("src/test/screenshots"))
 }

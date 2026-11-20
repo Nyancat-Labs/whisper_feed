@@ -214,6 +214,10 @@ is ready in time.
   sources), for the notifications and the feed's breaking card alike.
   Step 2, once step 1 has run on real news: decide whether a 'How often'
   choice (Fewer / Usual / More) is still wanted. Not a raw number.
+- [ ] **More picture tests** (started 20 November with Roborazzi: the icon
+  sheet, the sort button, the blocks-apps message). Next: whole screens,
+  which need their view models faked: Sources, Feeds that stopped working,
+  the feed's cards in each layout, light and dark.
 - [ ] **Diagnostics: 'new 0 <1 KB' on feeds that hold articles** (20
   November): Carryology, Gigaom and others show a size under 1 KB on a fetch
   that parsed fine. Find out what the byte count is measuring there.

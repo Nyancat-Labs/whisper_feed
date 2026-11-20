@@ -60,6 +60,15 @@ Neo Feed).
 - **Commits:** no model names in messages or pushed files. Update the README
   test-count badge when the test count changes.
 - **Writing:** release notes and replies should sound human, with little bold.
+- **Tools (20 November 2026):** `scripts/preview.sh` builds a checked,
+  signed preview; `scripts/diag-summary.py` reads a diagnostics report
+  before any guessing; `docs/ICONS.md` (`scripts/icon-index.py`) says where
+  every icon and image is used; picture tests in `app/src/test/screenshots`;
+  problem feeds in `app/src/test/resources/feeds`. The board has a search
+  box and shows the latest preview build at the top.
+- **Tests check behaviour, not wording of the code.** Source-text tests
+  broke on harmless renames twice on 20 November; replace them as they're
+  touched.
 - **Tags:** pushing tags is refused (403). The owner creates tags in GitHub's
   release page, targeting main.
 - **The review sheet** (from 27 October 2026):
