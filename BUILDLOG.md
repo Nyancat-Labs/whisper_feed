@@ -8,6 +8,15 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 20 November 2026 — Card 126 raised
+
+- Owner: should the number of sources that makes a story breaking be
+  adjustable, since more News subscriptions means more alerts? Today it is
+  Clustering.MIN_SOURCES = 3 within WINDOW_MS (12 h), fixed. Proposed on the
+  board for after 1.0.6: scale to max(3, 1 in 10 News sources), plus a
+  Fewer / Usual / More choice; not a raw number. Screenshot of a third alert
+  (10:43) saved.
+
 ## 20 November 2026 — Cards 124 and 125, preview b304b23
 
 - 124: the welcome screen's restore line now names saved articles, which a
