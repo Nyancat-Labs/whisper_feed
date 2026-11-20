@@ -83,7 +83,6 @@ import com.saulhdev.feeder.ui.icons.phosphor.EyeSlash
 import com.saulhdev.feeder.ui.icons.phosphor.BracketsSquare
 import com.saulhdev.feeder.ui.icons.phosphor.GithubLogo
 import com.saulhdev.feeder.ui.icons.phosphor.Megaphone
-import com.saulhdev.feeder.ui.icons.phosphor.TelegramLogo
 import com.saulhdev.feeder.utils.UpdateCheck
 import com.saulhdev.feeder.manager.update.UpdateCheckWorker
 import com.saulhdev.feeder.data.content.FeedPreferences

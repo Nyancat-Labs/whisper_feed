@@ -150,7 +150,6 @@ import androidx.compose.ui.Alignment
 import com.saulhdev.feeder.data.db.models.Feed
 import com.saulhdev.feeder.ui.icons.phosphor.ArrowCounterClockwise
 import com.saulhdev.feeder.ui.icons.phosphor.BracketsSquare
-import com.saulhdev.feeder.ui.icons.phosphor.Filtered
 import com.saulhdev.feeder.ui.icons.phosphor.Graph
 import com.saulhdev.feeder.ui.icons.phosphor.ListDashes
 import com.saulhdev.feeder.ui.icons.phosphor.Power

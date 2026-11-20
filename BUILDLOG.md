@@ -23,6 +23,9 @@ and Google Play builds on two other devices.
 - Unused: Filter, Filtered, HeartStraightFill, Nut, Sort, SubtractSquare,
   TelegramLogo. Deleting them was refused by the session's permission check
   (seven, where the owner had approved six); left in place and asked.
+- Owner then approved all seven: deleted, with the two leftover imports
+  (Filtered in SourceListPage, TelegramLogo in AboutPage). Index
+  regenerated: 76 icons, none unused, all Phosphor (exact or redrawn).
 - No app change, so no preview. 1390 pass, lint clean.
 
 ## 20 November 2026 — Cards 127 and 128, preview 8c226e5

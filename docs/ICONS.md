@@ -25,7 +25,7 @@ compares each drawing number for number with Phosphor's, in every weight.
 - File: `ArrowCounterClockwise.kt`
 - Source: Phosphor, redrawn: named after a Phosphor icon but not an exact copy of 1.4.x or 2.1.1
 - Used in (7):
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:933`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:932`
   - `app/src/main/java/com/saulhdev/feeder/ui/pages/BackupPage.kt:380`
   - `app/src/main/java/com/saulhdev/feeder/ui/pages/SuggestionsPage.kt:120`
   - `app/src/main/java/com/saulhdev/feeder/ui/pages/LearnedPage.kt:182`
@@ -40,7 +40,7 @@ compares each drawing number for number with Phosphor's, in every weight.
   - `app/src/main/java/com/saulhdev/feeder/ui/components/FeedSearchBar.kt:100`
   - `app/src/main/java/com/saulhdev/feeder/ui/components/SourceFilterBar.kt:84`
   - `app/src/main/java/com/saulhdev/feeder/ui/components/ViewWithActionBar.kt:111`
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:427`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:426`
   - `app/src/main/java/com/saulhdev/feeder/ui/pages/LearnedPage.kt:105`
 
 ### Phosphor.ArrowSquareOut
@@ -66,7 +66,7 @@ compares each drawing number for number with Phosphor's, in every weight.
 - File: `ArrowsDownUp.kt`
 - Source: Phosphor 2.1.1 arrows-down-up (regular), exact
 - Used in (4):
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:475`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:474`
   - `app/src/main/java/com/saulhdev/feeder/ui/pages/SortFilterSheet.kt:199`
   - `app/src/main/java/com/saulhdev/feeder/data/content/FeedPreferences.kt:1272`
   - `app/src/main/java/com/saulhdev/feeder/data/content/FeedPreferences.kt:1281`
@@ -89,7 +89,7 @@ compares each drawing number for number with Phosphor's, in every weight.
 - File: `BookBookmark.kt`
 - Source: Phosphor, redrawn: named after a Phosphor icon but not an exact copy of 1.4.x or 2.1.1
 - Used in (3):
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:551`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:550`
   - `app/src/main/java/com/saulhdev/feeder/data/content/FeedPreferences.kt:685`
   - `app/src/main/java/com/saulhdev/feeder/data/content/FeedPreferences.kt:848`
 
@@ -105,13 +105,13 @@ compares each drawing number for number with Phosphor's, in every weight.
 - File: `Bookmarks.kt`
 - Source: Phosphor, redrawn: named after a Phosphor icon but not an exact copy of 1.4.x or 2.1.1
 - Used in (1):
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:548`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:547`
 
 ### Phosphor.BracketsSquare
 - File: `BracketsSquare.kt`
 - Source: Phosphor 2.1.1 brackets-square (regular), exact
 - Used in (2):
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:923`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:922`
   - `app/src/main/java/com/saulhdev/feeder/data/content/FeedPreferences.kt:728`
 
 ### Phosphor.Browser
@@ -122,7 +122,7 @@ compares each drawing number for number with Phosphor's, in every weight.
   - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceAddPage.kt:410`
   - `app/src/main/java/com/saulhdev/feeder/ui/pages/BrokenFeedsPage.kt:212`
   - `app/src/main/java/com/saulhdev/feeder/ui/pages/BrokenFeedsPage.kt:299`
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/AboutPage.kt:473`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/AboutPage.kt:472`
   - `app/src/main/java/com/saulhdev/feeder/data/content/FeedPreferences.kt:344`
 
 ### Phosphor.Bug
@@ -158,10 +158,10 @@ compares each drawing number for number with Phosphor's, in every weight.
 - Source: Phosphor 1.4.9 check-duotone (duotone), exact
 - Used in (15):
   - `app/src/main/java/com/saulhdev/feeder/ui/overlay/CategoryChipRow.kt:123`
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:485`
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:499`
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:895`
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:999`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:484`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:498`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:894`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:998`
   - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceEditPage.kt:187`
   - `app/src/main/java/com/saulhdev/feeder/ui/pages/AccountPage.kt:277`
   - `app/src/main/java/com/saulhdev/feeder/ui/pages/AccountPage.kt:363`
@@ -229,7 +229,7 @@ compares each drawing number for number with Phosphor's, in every weight.
 - File: `Copy.kt`
 - Source: Phosphor 2.1.1 copy (regular), exact
 - Used in (1):
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:523`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:522`
 
 ### Phosphor.Copyleft
 - File: `Copyleft.kt`
@@ -243,7 +243,7 @@ compares each drawing number for number with Phosphor's, in every weight.
 - Used in (3):
   - `app/src/main/java/com/saulhdev/feeder/ui/components/OverflowMenu.kt:76`
   - `app/src/main/java/com/saulhdev/feeder/ui/overlay/ArticleMenu.kt:133`
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:506`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:505`
 
 ### Phosphor.DownloadSimple
 - File: `DownloadSimple.kt`
@@ -256,7 +256,7 @@ compares each drawing number for number with Phosphor's, in every weight.
 - File: `EnvelopeSimple.kt`
 - Source: Phosphor 2.1.1 envelope-simple (regular), exact
 - Used in (1):
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/AboutPage.kt:404`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/AboutPage.kt:403`
 
 ### Phosphor.EyeSlash
 - File: `EyeSlash.kt`
@@ -265,7 +265,7 @@ compares each drawing number for number with Phosphor's, in every weight.
   - `app/src/main/java/com/saulhdev/feeder/ui/overlay/ArticleMenu.kt:166`
   - `app/src/main/java/com/saulhdev/feeder/ui/pages/LearnedPage.kt:285`
   - `app/src/main/java/com/saulhdev/feeder/ui/pages/LearnedPage.kt:332`
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/AboutPage.kt:463`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/AboutPage.kt:462`
   - `app/src/main/java/com/saulhdev/feeder/data/content/FeedPreferences.kt:468`
   - `app/src/main/java/com/saulhdev/feeder/data/content/FeedPreferences.kt:808`
   - `app/src/main/java/com/saulhdev/feeder/data/content/FeedPreferences.kt:822`
@@ -275,7 +275,7 @@ compares each drawing number for number with Phosphor's, in every weight.
 - File: `FileArrowDown.kt`
 - Source: Phosphor 2.1.1 file-arrow-down (regular), exact
 - Used in (3):
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:542`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:541`
   - `app/src/main/java/com/saulhdev/feeder/ui/pages/BookmarkImportPage.kt:132`
   - `app/src/main/java/com/saulhdev/feeder/data/content/FeedPreferences.kt:706`
 
@@ -283,17 +283,7 @@ compares each drawing number for number with Phosphor's, in every weight.
 - File: `FileArrowUp.kt`
 - Source: Phosphor 2.1.1 file-arrow-up (regular), exact
 - Used in (1):
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:545`
-
-### Phosphor.Filter
-- File: `Filter.kt`
-- Source: **not Phosphor**: no Phosphor icon of that name or drawing
-- Used in: nowhere
-
-### Phosphor.Filtered
-- File: `Filtered.kt`
-- Source: **not Phosphor**: no Phosphor icon of that name or drawing
-- Used in: nowhere
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:544`
 
 ### Phosphor.Folder
 - File: `Folder.kt`
@@ -322,8 +312,8 @@ compares each drawing number for number with Phosphor's, in every weight.
 - File: `GithubLogo.kt`
 - Source: Phosphor 1.4.9 github-logo (regular), exact
 - Used in (5):
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/AboutPage.kt:410`
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/AboutPage.kt:452`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/AboutPage.kt:409`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/AboutPage.kt:451`
   - `app/src/main/java/com/saulhdev/feeder/data/content/FeedPreferences.kt:1208`
   - `app/src/main/java/com/saulhdev/feeder/data/content/FeedPreferences.kt:1217`
   - `app/src/main/java/com/saulhdev/feeder/data/content/FeedPreferences.kt:1225`
@@ -332,7 +322,7 @@ compares each drawing number for number with Phosphor's, in every weight.
 - File: `Graph.kt`
 - Source: Phosphor, redrawn: named after a Phosphor icon but not an exact copy of 1.4.x or 2.1.1
 - Used in (3):
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:526`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:525`
   - `app/src/main/java/com/saulhdev/feeder/data/content/FeedPreferences.kt:641`
   - `app/src/main/java/com/saulhdev/feeder/data/content/FeedPreferences.kt:675`
 
@@ -340,10 +330,10 @@ compares each drawing number for number with Phosphor's, in every weight.
 - File: `Hash.kt`
 - Source: Phosphor, redrawn: named after a Phosphor icon but not an exact copy of 1.4.x or 2.1.1
 - Used in (9):
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:512`
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:884`
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:901`
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:906`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:511`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:883`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:900`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:905`
   - `app/src/main/java/com/saulhdev/feeder/ui/pages/SortFilterSheet.kt:279`
   - `app/src/main/java/com/saulhdev/feeder/viewmodels/SourceListViewModel.kt:632`
   - `app/src/main/java/com/saulhdev/feeder/data/content/FeedPreferences.kt:932`
@@ -354,12 +344,7 @@ compares each drawing number for number with Phosphor's, in every weight.
 - File: `HeartStraight.kt`
 - Source: Phosphor 1.4.9 heart-straight (regular), exact
 - Used in (1):
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/AboutPage.kt:303`
-
-### Phosphor.HeartStraightFill
-- File: `HeartStraightFill.kt`
-- Source: Phosphor, redrawn: named after a Phosphor icon but not an exact copy of 1.4.x or 2.1.1
-- Used in: nowhere
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/AboutPage.kt:302`
 
 ### Phosphor.Info
 - File: `Info.kt`
@@ -370,7 +355,7 @@ compares each drawing number for number with Phosphor's, in every weight.
   - `app/src/main/java/com/saulhdev/feeder/ui/pages/BackupPage.kt:288`
   - `app/src/main/java/com/saulhdev/feeder/ui/pages/LauncherPage.kt:178`
   - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceAddPage.kt:497`
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/AboutPage.kt:468`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/AboutPage.kt:467`
   - `app/src/main/java/com/saulhdev/feeder/data/content/FeedPreferences.kt:585`
   - `app/src/main/java/com/saulhdev/feeder/data/content/FeedPreferences.kt:593`
   - `app/src/main/java/com/saulhdev/feeder/data/content/FeedPreferences.kt:609`
@@ -391,7 +376,7 @@ compares each drawing number for number with Phosphor's, in every weight.
 - File: `LinkBreak.kt`
 - Source: Phosphor 2.1.1 link-break (regular), exact
 - Used in (1):
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:529`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:528`
 
 ### Phosphor.ListChecks
 - File: `ListChecks.kt`
@@ -404,14 +389,14 @@ compares each drawing number for number with Phosphor's, in every weight.
 - Source: Phosphor, redrawn: named after a Phosphor icon but not an exact copy of 1.4.x or 2.1.1
 - Used in (3):
   - `app/src/main/java/com/saulhdev/feeder/ui/navigation/PageItem.kt:41`
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:928`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:927`
   - `app/src/main/java/com/saulhdev/feeder/data/content/FeedPreferences.kt:211`
 
 ### Phosphor.LockSimpleOpen
 - File: `LockSimpleOpen.kt`
 - Source: Phosphor 2.1.1 lock-simple-open (regular), exact
 - Used in (1):
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:532`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:531`
 
 ### Phosphor.MagnifyingGlass
 - File: `MagnifyingGlass.kt`
@@ -435,7 +420,7 @@ compares each drawing number for number with Phosphor's, in every weight.
 - Source: Phosphor, redrawn: named after a Phosphor icon but not an exact copy of 1.4.x or 2.1.1
 - Used in (7):
   - `app/src/main/java/com/saulhdev/feeder/ui/overlay/ArticleCard.kt:1089`
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/AboutPage.kt:418`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/AboutPage.kt:417`
   - `app/src/main/java/com/saulhdev/feeder/data/content/FeedPreferences.kt:441`
   - `app/src/main/java/com/saulhdev/feeder/data/content/FeedPreferences.kt:450`
   - `app/src/main/java/com/saulhdev/feeder/data/content/FeedPreferences.kt:973`
@@ -453,11 +438,6 @@ compares each drawing number for number with Phosphor's, in every weight.
 - Source: Phosphor, redrawn: named after a Phosphor icon but not an exact copy of 1.4.x or 2.1.1
 - Used in (1):
   - `app/src/main/java/com/saulhdev/feeder/ui/pages/SettingsSection.kt:78`
-
-### Phosphor.Nut
-- File: `Nut.kt`
-- Source: Phosphor, redrawn: named after a Phosphor icon but not an exact copy of 1.4.x or 2.1.1
-- Used in: nowhere
 
 ### Phosphor.PaintRoller
 - File: `PaintRoller.kt`
@@ -484,7 +464,7 @@ compares each drawing number for number with Phosphor's, in every weight.
 - File: `Plus.kt`
 - Source: Phosphor 2.1.1 plus (regular), exact
 - Used in (7):
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:453`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:452`
   - `app/src/main/java/com/saulhdev/feeder/ui/pages/SuggestionsPage.kt:185`
   - `app/src/main/java/com/saulhdev/feeder/ui/pages/FeedLibraryPage.kt:158`
   - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceEditPage.kt:526`
@@ -496,7 +476,7 @@ compares each drawing number for number with Phosphor's, in every weight.
 - File: `Power.kt`
 - Source: Phosphor, redrawn: named after a Phosphor icon but not an exact copy of 1.4.x or 2.1.1
 - Used in (3):
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:912`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:911`
   - `app/src/main/java/com/saulhdev/feeder/ui/pages/AccountPage.kt:179`
   - `app/src/main/java/com/saulhdev/feeder/data/content/FeedPreferences.kt:886`
 
@@ -506,7 +486,7 @@ compares each drawing number for number with Phosphor's, in every weight.
 - Used in (6):
   - `app/src/main/java/com/saulhdev/feeder/ui/overlay/ArticleMenu.kt:156`
   - `app/src/main/java/com/saulhdev/feeder/ui/overlay/ArticleMenu.kt:163`
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:917`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:916`
   - `app/src/main/java/com/saulhdev/feeder/ui/pages/SuggestionsPage.kt:191`
   - `app/src/main/java/com/saulhdev/feeder/data/content/FeedPreferences.kt:695`
   - `app/src/main/java/com/saulhdev/feeder/data/content/FeedPreferences.kt:922`
@@ -548,22 +528,17 @@ compares each drawing number for number with Phosphor's, in every weight.
   - `app/src/main/java/com/saulhdev/feeder/ui/overlay/FeedScaffold.kt:346`
   - `app/src/main/java/com/saulhdev/feeder/ui/pages/ArticleListPage.kt:507`
 
-### Phosphor.Sort
-- File: `Sort.kt`
-- Source: **not Phosphor**: no Phosphor icon of that name or drawing
-- Used in: nowhere
-
 ### Phosphor.SortAscending
 - File: `SortAscending.kt`
 - Source: Phosphor, redrawn: named after a Phosphor icon but not an exact copy of 1.4.x or 2.1.1
 - Used in (1):
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:497`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:496`
 
 ### Phosphor.SortDescending
 - File: `SortDescending.kt`
 - Source: Phosphor, redrawn: named after a Phosphor icon but not an exact copy of 1.4.x or 2.1.1
 - Used in (1):
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:497`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:496`
 
 ### Phosphor.Sparkle
 - File: `Sparkle.kt`
@@ -584,21 +559,11 @@ compares each drawing number for number with Phosphor's, in every weight.
 - Used in (1):
   - `app/src/main/java/com/saulhdev/feeder/data/content/FeedPreferences.kt:912`
 
-### Phosphor.SubtractSquare
-- File: `SubtractSquare.kt`
-- Source: Phosphor, redrawn: named after a Phosphor icon but not an exact copy of 1.4.x or 2.1.1
-- Used in: nowhere
-
 ### Phosphor.Swatches
 - File: `Swatches.kt`
 - Source: Phosphor, redrawn: named after a Phosphor icon but not an exact copy of 1.4.x or 2.1.1
 - Used in (1):
   - `app/src/main/java/com/saulhdev/feeder/data/content/FeedPreferences.kt:188`
-
-### Phosphor.TelegramLogo
-- File: `TelegramLogo.kt`
-- Source: Phosphor, redrawn: named after a Phosphor icon but not an exact copy of 1.4.x or 2.1.1
-- Used in: nowhere
 
 ### Phosphor.TextAa
 - File: `TextAa.kt`
@@ -619,7 +584,7 @@ compares each drawing number for number with Phosphor's, in every weight.
 - File: `TrashSimple.kt`
 - Source: Phosphor 2.1.1 trash-simple (regular), exact
 - Used in (7):
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:888`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:887`
   - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceEditPage.kt:179`
   - `app/src/main/java/com/saulhdev/feeder/ui/pages/LearnedPage.kt:292`
   - `app/src/main/java/com/saulhdev/feeder/ui/pages/BlockedWordsPage.kt:181`
@@ -654,8 +619,8 @@ compares each drawing number for number with Phosphor's, in every weight.
   - `app/src/main/java/com/saulhdev/feeder/ui/components/FeedSearchBar.kt:133`
   - `app/src/main/java/com/saulhdev/feeder/ui/components/SourceFilterBar.kt:111`
   - `app/src/main/java/com/saulhdev/feeder/ui/overlay/ActiveFilters.kt:157`
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:427`
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:608`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:426`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/SourceListPage.kt:607`
   - `app/src/main/java/com/saulhdev/feeder/ui/pages/LearnedPage.kt:105`
 
 ## Images (app/src/main/res)
@@ -820,7 +785,7 @@ name says otherwise. Each density folder holds a copy of the same image.
 ### drawable/nyancat_labs_symbol
 - Files: `drawable-nodpi/nyancat_labs_symbol.webp`
 - Used in (1):
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/AboutPage.kt:512`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/AboutPage.kt:511`
 
 ### drawable/onboarding_bg_dark
 - Files: `drawable-nodpi/onboarding_bg_dark.png`
@@ -850,7 +815,7 @@ name says otherwise. Each density folder holds a copy of the same image.
 ### mipmap/ic_launcher
 - Files: `mipmap-anydpi/ic_launcher.xml`
 - Used in (2):
-  - `app/src/main/java/com/saulhdev/feeder/ui/pages/AboutPage.kt:138`
+  - `app/src/main/java/com/saulhdev/feeder/ui/pages/AboutPage.kt:137`
   - `app/src/main/AndroidManifest.xml:104`
 
 ### mipmap/ic_launcher_foreground
