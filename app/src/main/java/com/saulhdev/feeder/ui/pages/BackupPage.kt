@@ -155,7 +155,10 @@ fun BackupPage(
     // type (owner, 25 October).
     var restoring by remember { mutableStateOf(false) }
     var restoreParts by remember {
-        mutableStateOf(setOf(BackupStore.Part.SOURCES, BackupStore.Part.SAVED))
+        // All three ticked to begin with (owner, 20 November): a restore is
+        // usually a new phone, or after Reset all settings, and wants the
+        // whole backup. Settings still says it replaces, and can be unticked.
+        mutableStateOf(BackupStore.Part.entries.toSet())
     }
 
     val chooseRestoreFolder = rememberLauncherForActivityResult(
@@ -458,8 +461,8 @@ private fun RestoreDialog(
                 listOf(
                     Triple(BackupStore.Part.SOURCES, R.string.backup_part_sources, null),
                     Triple(BackupStore.Part.SAVED, R.string.backup_part_saved, null),
-                    // Unticked to begin with: the other two add, this one
-                    // replaces how the phone is set up.
+                    // Ticked like the others; its note says it replaces
+                    // how the phone is set up rather than adding to it.
                     Triple(BackupStore.Part.SETTINGS, R.string.backup_part_settings, R.string.backup_part_settings_note),
                 ).forEach { (part, label, note) ->
                     Row(

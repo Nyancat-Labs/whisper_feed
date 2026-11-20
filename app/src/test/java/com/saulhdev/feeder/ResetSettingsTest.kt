@@ -68,4 +68,10 @@ class ResetSettingsTest {
         assertTrue(src.first.substringAfter("SettingsSection.HELP -> listOf(").substringBefore(")").contains("prefs.resetSettings"))
         assertTrue(src.second.contains("confirmId = R.string.pref_reset_settings_confirm"))
     }
+
+    @Test
+    fun `restore starts with everything ticked`() {
+        val page = File("src/main/java/com/saulhdev/feeder/ui/pages/BackupPage.kt").readText()
+        assertTrue(page.contains("mutableStateOf(BackupStore.Part.entries.toSet())"))
+    }
 }
