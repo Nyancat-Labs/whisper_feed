@@ -8,6 +8,14 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 21 November 2026 — Card 130 for after 1.0.6
+
+- Owner's screenshot of another reader's Settings (archive/screenshots
+  2026-11-21-1044): search, groups, coloured icon circles. Today Whisper's
+  top Settings is one group of seven, no search, one tint. Card 130 (Later)
+  and ROADMAP: search first, then three groups, then one theme-role tint per
+  group.
+
 ## 20 November 2026 — Release date set
 
 - Owner: two days of heavy testing, release Sunday night, 22 November. Code

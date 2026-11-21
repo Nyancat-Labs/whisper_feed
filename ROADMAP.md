@@ -219,6 +219,11 @@ is ready in time.
   sources), for the notifications and the feed's breaking card alike.
   Step 2, once step 1 has run on real news: decide whether a 'How often'
   choice (Fewer / Usual / More) is still wanted. Not a raw number.
+- [ ] **Settings: search, groups, tinted icons (board 130, owner 21
+  November).** A search box over every setting's name and description,
+  opening its page; the seven sections split into three groups; one tint
+  per group from the theme's colour roles, so dynamic colour and dark mode
+  still rule. Search first.
 - [ ] **More picture tests** (started 20 November with Roborazzi: the icon
   sheet, the sort button, the blocks-apps message). Next: whole screens,
   which need their view models faked: Sources, Feeds that stopped working,
