@@ -215,7 +215,7 @@ is ready in time.
 
 ## After 1.0.6
 
-- **New store screenshots** (132): phone and tablet, once the design update is finished (owner, 22 November), so one shoot shows the final look. The owner takes them from a list, Claude frames them and adds them to fastlane, the owner uploads to Play.
+- **New store screenshots** (132): phone and tablet, once the Material 3 Expressive overhaul (§19e) is finished (owner, 22 November), so one shoot shows the final look. The owner takes them from a list, Claude frames them and adds them to fastlane, the owner uploads to Play.
 
 - **What's new after an update** (131): a one-off card at the top of the feed, 3-5 lines from the store notes (`changelogs/<build>.txt`), a link to the full changelog, an ×. Once per version, not on a fresh install. Aim for 1.0.7, so the translations are announced.
 
@@ -2203,6 +2203,8 @@ the cache limits and the private-network interceptor in one place, so the
 migration has somewhere to land instead of being spread across call sites.
 
 #### 19e. Material 3 Expressive — after the store listing, not before
+
+**Then (owner, 22 November):** new store screenshots, phone and tablet (board 132).
 
 Recommendation: **after launch**, and the version numbers decide it rather
 than taste.
