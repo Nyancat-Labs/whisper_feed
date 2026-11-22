@@ -161,20 +161,15 @@ Store text and screenshots are in `fastlane/metadata/android/en-US/`.
 
 ## Unreleased on main (the next release)
 
-Release when the owner says so; there's no rush.
+1.0.6 (build 7) went out on 22 November 2026: Play (in review, then live),
+GitHub v1.0.6 (tag on 3a108b2), F-Droid from the tag. Nothing unreleased
+yet. Next is 1.0.7 with the translations (board 56).
 
 **After releasing the translations:** remind the owner to email the user
 in France who asked for them (his email of 27 October is in the hej@
 inbox). He has agreed (28 October) to check the French: invite him to
-Weblate once it is set up, and send him the French preview before 1.0.6
+Weblate once it is set up, and send him the French preview before 1.0.7
 ships, so his corrections go into the release.
-
-- A stale "Syncing" notification is taken down (`clearStaleSyncNotice`).
-- Tour highlight boxes stay inside the screen.
-- Settings → Show summaries (off keeps picture and headline).
-- Settings → Article times: "2h", "14:32", or both.
-- New F-Droid screenshots and short description (F-Droid shows them from the
-  next build). Play's short description was changed in the console on 16 Oct.
 
 `CHANGELOG.md` "Unreleased" has the wording. Store changelogs go in
 `fastlane/metadata/android/en-US/changelogs/<versionCode>.txt`.

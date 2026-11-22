@@ -74,7 +74,10 @@ layout; the four layouts are what the user chooses between. Both exist now.
 
 ---
 
-## Next release: 1.0.6
+## Released: 1.0.6 (22 November 2026)
+
+**Out:** Play in review from 18:40 (live on approval), GitHub v1.0.6 at
+18:42, F-Droid follows the tag. Still to do: the fdroidserver checks.
 
 Agreed 19 October 2026. In CHANGELOG.md under Unreleased as each lands.
 The owner is using the preview on the Pixel 10 for a week before release.
@@ -529,7 +532,7 @@ items below can ride in it alongside what is already on main.
    main for 1.0.6, awaiting the owner's test.** (6), in one database change
    (version 28).
 4. ~~**Comments link**~~ — **built 20 October 2026, on main for 1.0.6.** (5)
-   (a reader; see *Next release: 1.0.6*).
+   (a reader; see *Released: 1.0.6*).
 5. ~~**Auto-scroll**~~ — **parked 21 October 2026** by the owner, whose
    idea it was: it does not fit how Whisper is used (phone, launcher panel,
    by thumb), nobody else has asked, and it has to be fenced off from the

@@ -21,6 +21,8 @@ fdroidserver installed in this new container (asked the owner). Still the
 owner's: the Play upload and the GitHub release v1.0.6.
 Play: uploaded and sent for review at 18:40; one warning, native debug
 symbols (harmless, on the roadmap); supported devices unchanged.
+GitHub: v1.0.6 published 18:42 by the owner, tag on 3a108b2, with
+`Whisper_1.0.6.apk`; GitHub's digest matches the checksum in the notes.
 
 ## 21 November 2026 — Card 130 for after 1.0.6
 
