@@ -8,6 +8,35 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 22 November 2026 — Dependabot updates; Android SDK in the new container
+
+**The five Dependabot updates** (pull requests 7 to 11, open since 9
+November) went in by version number rather than by merging, because the
+pull requests predate the picture-test (Roborazzi) lines and would have
+removed them. AGP 9.5.1, Gradle 9.9.0, Kotlin 2.4.21 with KSP 2.3.14,
+coroutines 1.11, serialization 1.13, the AndroidX group (Material 3
+1.5.0-rc01, Room 2.8.5, WorkManager 2.12, DataStore 1.3, Navigation 2.10.2,
+splash screen 1.2) and jsoup 1.24.1. The new wrapper jar matches gradle.org's
+SHA-256. Full suite before and after: 1,398 passing, picture tests and lint
+clean; the signed release APK carries the release key (d454…b164). AGP went
+first on purpose: the startup profile's Baseline Profile plugin has to match
+it. Dependabot was capped at five open pull requests, so it had stopped
+suggesting anything new.
+
+**New container.** No Android SDK and no `/dev/kvm`. The SDK is now in
+`/opt/android-sdk` (command-line tools, platform-tools, build-tools 37;
+Gradle fetched platform 37 itself). Maven Central answered 429 for some
+large files from this network, Robolectric's android-all jars included, so
+`~/.gradle/init.d/central-mirror.gradle.kts` (container only, not in the
+repo) reads Central through Google's mirror, and points Robolectric there
+too. Without KVM there is no emulator, so the startup profile will be
+recorded on the owner's Pixel over USB (Szept 409).
+
+**GitHub.** Nine issues had no reply, the oldest from 18 October. Replies
+are drafted for the owner to post (Szept 413). The issue templates still
+point at Neo Feed (Szept 411). A weekly Szept reminder now covers new
+issues and pull requests.
+
 ## 22 November 2026 — Board numbers on Szept items (Szept 408)
 
 The 19 open Szept items that started as review-board cards now carry
