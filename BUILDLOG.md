@@ -8,6 +8,17 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 22 November 2026 — Work moves from the review board to Szept
+
+Owner's choice: Szept is Whisper's work board from now on; build tests are
+one "Test build <hash>" item per preview (not one per step); the old review
+sheet is frozen (banner, Add form hidden, version 13), not deleted. Every
+open card already had its Szept item, so nothing needed importing; three
+stale Szept test items closed (cards 112, 119, 129 were done). Full export
+of the board's 188 records in `archive/board-files/2026-11-22-board-export/`.
+CLAUDE.md, docs/HANDOVER.md (new *Work tracking*, current state refreshed)
+and the last line of `scripts/preview.sh` updated. App code unchanged.
+
 ## 22 November 2026 — Weblate check
 
 Libre hosting still pending; trial extended to 7 December, so nothing was

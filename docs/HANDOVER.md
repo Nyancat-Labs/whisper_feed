@@ -4,33 +4,30 @@ For a new Claude Code session picking up from the first one (late September to
 17 October 2026). The repository is the record; this note covers what isn't
 obvious from it.
 
-## Where we are (19 November 2026)
+## Where we are (22 November 2026)
 
 Start here after a /clear. CLAUDE.md has the working rules; this is state.
 
-- **Preview 1c18b40** (batch 6) is with the owner: steps `t014-*` on the
-  sheet. In preview: 15, 45, 73, 111, 112, 114, 115, 116. On Later: 76
-  (test when there's a French source), 93 (optional separate environment).
+- **1.0.6 (build 7) released 22 November:** Play in review (live on
+  approval), GitHub v1.0.6 on 3a108b2, F-Droid follows the tag. No
+  preview is out for testing.
 - **Signing key** is in this container at `/root/whisper-signing/` (owner
   asked to keep it, 18 November), `keystore.properties` points at it. A new
   container needs both files uploaded again.
-- **Szept** mirrors the sheet behind the scenes (owner, 19 November): each
-  open card's entry starts "Board N – ", and no Szept numbers appear on the
-  sheet. The owner works on the sheet only. At the start of a session:
-  `list_questions`, then the sheet, then bring Szept in step.
-- **Next for Claude:** batch 6 from the owner's results and 111/112/114 if
-  picked, then Reset all settings (68) and the startup profile (66), then
-  translations once text stops changing, then release 1.0.6.
-- **Weblate:** French added, Plurals component gone (plurals now in
-  strings.xml, 693 strings), licence GPL-3.0-or-later, Libre approval
-  pending; trial ends 22 Nov (Szept 215). After approval: push to GitHub,
-  hooks, then unlock once Claude's translations are in.
+- **Szept** is the one list since 22 November (see *Work tracking* below).
+  At the start of a session: `list_questions`, then
+  `project_summary("Whisper")`. The old review sheet is frozen history.
+- **Next for Claude:** the translations for 1.0.7 (board 56) when the
+  owner says go; then the startup profile (66).
+- **Weblate:** Libre approval still pending; trial extended to 7 December.
+  Licence GPL-3.0-or-later on both components, App updated from GitHub and
+  locked (22 November). After approval: push to GitHub, hooks, then unlock
+  once Claude's translations are in (Szept 215, check 28 November).
 - **Lawnchair** merged the whitelist (their PR 7399) into 16-dev on 24
   October: nightlies have it, no named release yet. Help → Launcher page
   shows both ways since batch 4.
-- **Open on the sheet for the owner:** the T1-T10 steps; 85 (Later).
 - **archive/** (gitignored, this container only) holds the owner's
-  screenshots; the sheet's asset store has the same files.
+  screenshots and the board export.
 
 ## The app
 
@@ -56,7 +53,7 @@ Neo Feed).
   titles are fine. Headlines, links and IDs are not (`ReportPrivacyTest`).
 - **Never commit `keystore.properties` or the `.p12`.**
 - **No user's name or address in the repository.** It is public. "A
-  reader" in files; names only on the private review sheet.
+  reader" in files; names only in Szept (private).
 - **Commits:** no model names in messages or pushed files. Update the README
   test-count badge when the test count changes.
 - **Writing:** release notes and replies should sound human, with little bold.
@@ -64,72 +61,35 @@ Neo Feed).
   signed preview; `scripts/diag-summary.py` reads a diagnostics report
   before any guessing; `docs/ICONS.md` (`scripts/icon-index.py`) says where
   every icon and image is used; picture tests in `app/src/test/screenshots`;
-  problem feeds in `app/src/test/resources/feeds`. The board has a search
+  problem feeds in `app/src/test/resources/feeds`. The old board had a search
   box and shows the latest preview build at the top.
 - **Tests check behaviour, not wording of the code.** Source-text tests
   broke on harmless renames twice on 20 November; replace them as they're
   touched.
 - **Tags:** pushing tags is refused (403). The owner creates tags in GitHub's
   release page, targeting main.
-- **The review sheet** (from 27 October 2026):
-  https://claude.ai/artifact/ErrU1RDxYbTrd6nU2rowRk holds every issue found
-  while testing previews, and the owner's decisions. Read it with the
-  ArtifactData tool (collection `items`) before starting fixes; add new
-  issues there rather than starting another list. Each issue has a `status`:
-  `open` (owner to decide), `fix`, `later`, `drop`, `merged` (see
-  `mergedInto`), then `preview` once a fix is in a preview build (set
-  `build` to the commit and, if useful, `fixNote`), and `done` when the
-  owner taps Works. Still wrong sends it back to `fix` with a note.
-  Test-checklist rows are `kind: "check"`.
-  **Every preview sent to the owner gets build tests** (owner, 27 October):
-  `kind: "test"`, doc id `t<seq>-<nn>`, with `seq` (one more than the last
-  build's), `build`, `n` (the order to do them in), `area` naming the build,
-  `title`, `detail` starting "You should see:", `issues` (the issue numbers
-  it proves) and `status` (`open`, `pass`, `problem`, `untested`). The page
-  closes an issue in `preview` once every test naming it passes.
-  Two slips to avoid (5 November): a fixed issue goes to `preview`, never
-  straight to `done`, or the To check tab is empty; and a new test starts
-  as `open`, never `untested`, which the page shows as already answered
-  ("Not tested").
-  **Clearing down (18 November):** once a build's steps are all settled (or
-  replaced by a later build), move its test cards to the `archive`
-  collection (same database, same doc ids; the page never reads it), so the
-  Build tests tab shows only the current build. Undo: copy back to `items`.
-  Finished issues stay in `items`: the All issues tab hides them already,
-  and the page numbers new issues from the highest `n` in `items`.
-
-**The board from 11 November 2026** (same features as the owner's Homelab
-board; page source in `files/work-board.html`, published with
-`capabilities: {"db": {}, "assets": {}}`):
-
-- **Question.** Any card can have `status: "question"`: the owner pressed
-  Question. At the start of a session answer those first, in `reply`, then
-  set the status back to what `askedFrom` holds (`open` if it is missing),
-  so the card gets its buttons back. On this board a question can be asked
-  on a card that is in preview or done, which is why it is not always
-  `open`.
-- **`reply` is the only field of Claude's the card always shows.** Put every
-  answer there. `fixNote` shows only on preview and done cards; text in any
-  other new field is invisible to the owner.
-- **`files`**: a list of `{id, name, type, size, at, by}`, `by` being `def`
-  or `claude`. Append only.
-- **New attachments.** At the start of each session open every attachment
-  the owner added (`by: "def"`): Artifact tool, `action: read`, the board
-  url, `path: <asset id>`. Look at it, and save a copy in
-  `archive/screenshots/` (anything that is not an image:
-  `archive/board-files/`) named `YYYY-MM-DD-HHMM-what-it-shows.ext`.
-- **Files sent in chat** are files too: save them to the same folders in
-  the same turn.
-- **Attaching something yourself**: Artifact tool with `asset: true`, the
-  board url and `file_path`; then append the entry with `by: "claude"` to
-  the item's `files`.
-- **`archive/` is gitignored.** The repository is public and screenshots
-  show the owner's phone. It lives in the container only, so it does not
-  survive a new container: the board's asset store is the lasting copy.
-- **Never overwrite a `note`.** It is the owner's field.
-- **Undo the upgrade**: republish the previous page version with
-  `capabilities: {"db": {}}`. Uploaded files stay in the asset store until
-  deleted.
+- **Work tracking is in Szept (from 22 November 2026, owner).** The review
+  sheet (https://claude.ai/artifact/ErrU1RDxYbTrd6nU2rowRk, page source
+  `files/work-board.html`) is **frozen**: read-only history of issues 1-132
+  and build tests up to build 21, with a banner saying so. Don't write to
+  it. A full export is in `archive/board-files/2026-11-22-board-export/`
+  (container only). Old card numbers ("board 56") are still used as names
+  in Szept titles, ROADMAP and BUILDLOG; new items take no board number.
+- **Issues** are Szept items in project Whisper: Claude's fixes `kind:
+  claude`, the owner's jobs `mine`, choices `decide` (Yes / No / Later),
+  ideas on the Later list. Answer the owner's notes and questions with
+  `add_comment_reply`; finish with `complete_reminder` (done / tested /
+  not tested / undo).
+- **Build tests: one item per preview build** (owner, 22 November): a
+  `mine` item titled "Test build <hash> – <what's in it>", the numbered
+  steps in `detail`, each with "You should see: …", T1 always "About ends
+  in <hash>". The owner ticks it Done when every step passes; a step that
+  fails comes back as a comment (with a screenshot), and Claude opens a fix
+  item from it. Close the build item when a newer build replaces it.
+- **Screenshots** the owner sends (chat or Szept) are saved to
+  `archive/screenshots/`, other files to `archive/board-files/`, named
+  `YYYY-MM-DD-HHMM-what-it-shows.ext`. `archive/` is gitignored: the repo
+  is public and screenshots show the owner's phone.
 
 ## Release signing
 

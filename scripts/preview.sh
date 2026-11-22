@@ -8,7 +8,7 @@
 # Needs: a clean, committed tree (the build is named after the commit),
 # ANDROID_HOME (defaults to /opt/android-sdk), and keystore.properties
 # pointing at the release key. What it doesn't do: send the file, write the
-# board's test steps, or Szept; those are by hand, from its last lines.
+# build's test item in Szept; those are by hand, from its last lines.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -49,4 +49,4 @@ fi
 mkdir -p out/preview
 cp "$apk" out/preview/
 echo "== Ready: out/preview/$(basename "$apk")"
-echo "Next: send it, add the build's steps to the board (T1: About ends in $hash), Szept, BUILDLOG."
+echo "Next: send it, add a Szept item \"Test build $hash\" with the steps (T1: About ends in $hash), BUILDLOG."
