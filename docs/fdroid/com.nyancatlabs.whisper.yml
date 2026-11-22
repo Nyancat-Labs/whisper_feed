@@ -14,14 +14,14 @@ RepoType: git
 Repo: https://github.com/Nyancat-Labs/whisper_feed.git
 
 Builds:
-  - versionName: 1.0.5
-    versionCode: 6
-    commit: 93b9d697cbe5d1b2063a3b4fbc8d4079b8fa2cf6
+  - versionName: 1.0.6
+    versionCode: 7
+    commit: 3a108b2655feddda66714e391d5989394095ba68
     subdir: app
     gradle:
       - yes
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
-CurrentVersion: 1.0.5
-CurrentVersionCode: 6
+CurrentVersion: 1.0.6
+CurrentVersionCode: 7
