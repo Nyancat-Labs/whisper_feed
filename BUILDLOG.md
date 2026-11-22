@@ -8,6 +8,13 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 22 November 2026 — Board numbers on Szept items (Szept 408)
+
+The 19 open Szept items that started as review-board cards now carry
+`legacy_ref` WH-i<nnn> (three digits, e.g. board 56 → WH-i056), so each
+can be traced back to its card in the frozen sheet. The new Szept connector
+has the field; the earlier session's didn't. App code unchanged.
+
 ## 22 November 2026 — Work moves from the review board to Szept
 
 Owner's choice: Szept is Whisper's work board from now on; build tests are
