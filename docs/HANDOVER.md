@@ -17,8 +17,20 @@ Start here after a /clear. CLAUDE.md has the working rules; this is state.
 - **Szept** is the one list since 22 November (see *Work tracking* below).
   At the start of a session: `list_questions`, then
   `project_summary("Whisper")`. The old review sheet is frozen history.
-- **Next for Claude:** the translations for 1.0.7 (board 56) when the
-  owner says go; then the startup profile (66).
+- **Next for Claude:** the startup profile (66, Szept 177), paused at
+  "may I add the Baseline Profile plugin and module?" (owner: continue
+  later). The profile is recorded on the owner's Pixel over USB, as this
+  container has no `/dev/kvm`. Translations (56, Szept 176) wait for
+  Weblate's approval (owner, 22 November).
+- **Build setup in a new container:** Android SDK in `/opt/android-sdk`
+  (cmdline-tools, platform-tools, build-tools 37; `local.properties` has
+  `sdk.dir`). Maven Central answers 429 for big files from this network:
+  `~/.gradle/init.d/central-mirror.gradle.kts` reads it through Google's
+  mirror (`maven-central.storage-download.googleapis.com`) and sets
+  `robolectric.dependency.repo.url` to the same. Without it, Robolectric's
+  15 test classes fail. Neither lives in the repo; see BUILDLOG 22 November.
+- **GitHub:** all nine issues answered 22 November; weekly check is
+  Szept 418. Issue templates still say Neo Feed (Szept 411).
 - **Weblate:** Libre approval still pending; trial extended to 7 December.
   Licence GPL-3.0-or-later on both components, App updated from GitHub and
   locked (22 November). After approval: push to GitHub, hooks, then unlock
