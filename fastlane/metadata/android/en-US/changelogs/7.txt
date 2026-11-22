@@ -1,0 +1,5 @@
+- Breaking news: an optional alert when several of your News sources cover the same story.
+- Sources tidied: pin, sort and a grouped menu. Long-press an article for a preview.
+- Feeds that stopped working say why (empty, blocked, home network) and can be edited there.
+- Backups keep saved articles and each source's settings. Reset all settings in Help.
+- Cleaner reader, Markdown feeds, new loading indicator, and many fixes.

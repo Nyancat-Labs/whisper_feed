@@ -86,8 +86,8 @@ android {
         // com.nyancatlabs.whisper has never been published, so there is no version
         // history to preserve and nothing to keep monotonic against — 1.9.0
         // would have claimed eight earlier releases that do not exist.
-        versionCode = 6
-        versionName = "1.0.5"
+        versionCode = 7
+        versionName = "1.0.6"
 
         // Developer-only screens and buttons, such as sending a test sync
         // notice: on in debug and preview builds, off in the store builds.

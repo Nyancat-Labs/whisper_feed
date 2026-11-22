@@ -255,7 +255,7 @@ which is private; here they are "a user". Item numbers are the sheet's.
   player that brings tracking with it (YouTube's does); plain video and
   audio files can play with Android's own player. A full podcast app
   (queues, downloads) is out of scope.
-- **Translations**: in 1.0.6, see *Translations*. A French user reviews the
+- **Translations**: in 1.0.7 (moved from 1.0.6, owner, 20 November), see *Translations*. A French user reviews the
   French.
 - **"Related articles" left in the reader** (76): French sites keep
   "Sur le même sujet" and linked "à lire aussi" headlines. Review batch 5:

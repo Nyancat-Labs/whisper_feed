@@ -9,6 +9,11 @@ Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 Unreleased
 ----------
 
+Nothing yet.
+
+1.0.6 — 22 November 2026
+------------------------
+
 - A clearer sort icon, and Feeds that stopped working says when a feed
   answers but is empty.
 - **Reset all settings** in Help, for when you can't find your way back:
