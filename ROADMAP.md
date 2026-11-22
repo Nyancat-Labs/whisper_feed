@@ -215,6 +215,8 @@ is ready in time.
 
 ## After 1.0.6
 
+- **What's new after an update** (131): a one-off card at the top of the feed, 3-5 lines from the store notes (`changelogs/<build>.txt`), a link to the full changelog, an ×. Once per version, not on a fresh install. Aim for 1.0.7, so the translations are announced.
+
 - **Native debug symbols for Play** (22 November): Play warns that the bundle has native code without a symbol file. The code is only two AndroidX libraries (graphics path, DataStore counter), so it is harmless; adding `ndk.debugSymbolLevel` to the release build would quieten it and make any crash in them readable.
 
 - [ ] **Breaking news scales with your list (board 126, owner 20 November).**

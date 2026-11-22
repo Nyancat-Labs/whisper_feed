@@ -23,6 +23,11 @@ Play: uploaded and sent for review at 18:40; one warning, native debug
 symbols (harmless, on the roadmap); supported devices unchanged.
 GitHub: v1.0.6 published 18:42 by the owner, tag on 3a108b2, with
 `Whisper_1.0.6.apk`; GitHub's digest matches the checksum in the notes.
+F-Droid checks (fdroidserver 2.4.5, in a scratchpad venv): scanner on the
+source at 3a108b2 (which also strips the signing config and the wrapper),
+0 problems; scanner on the APK, clean. lint's 'News'/'Reading' category
+warnings came from my bare local setup: both are in fdroiddata's list.
+Not done: building the stripped copy. Card 131 (What's new card) added.
 
 ## 21 November 2026 — Card 130 for after 1.0.6
 
