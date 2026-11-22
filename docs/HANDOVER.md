@@ -72,9 +72,12 @@ Neo Feed).
   sheet (https://claude.ai/artifact/ErrU1RDxYbTrd6nU2rowRk, page source
   `files/work-board.html`) is **frozen**: read-only history of issues 1-132
   and build tests up to build 21, with a banner saying so. Don't write to
-  it. A full export is in `archive/board-files/2026-11-22-board-export/`
+  it. A full export is in `archive/files/2026-11-22-board-export/`
   (container only). Old card numbers ("board 56") are still used as names
-  in Szept titles, ROADMAP and BUILDLOG; new items take no board number.
+  in Szept titles, ROADMAP and BUILDLOG (and as `legacy_ref` WH-i<nnn>);
+  new items take no board number. ROADMAP holds plans and ideas: Szept
+  writes the open items into its "Open in Szept" block nightly, so never
+  hand-copy them.
 - **Issues** are Szept items in project Whisper: Claude's fixes `kind:
   claude`, the owner's jobs `mine`, choices `decide` (Yes / No / Later),
   ideas on the Later list. Answer the owner's notes and questions with
@@ -85,9 +88,9 @@ Neo Feed).
   steps in `detail`, each with "You should see: …", T1 always "About ends
   in <hash>". The owner ticks it Done when every step passes; a step that
   fails comes back as a comment (with a screenshot), and Claude opens a fix
-  item from it. Close the build item when a newer build replaces it.
+  item from it. Tag `build-test`, area the build. Close the build item when a newer build replaces it.
 - **Screenshots** the owner sends (chat or Szept) are saved to
-  `archive/screenshots/`, other files to `archive/board-files/`, named
+  `archive/screenshots/`, other files to `archive/files/`, named
   `YYYY-MM-DD-HHMM-what-it-shows.ext`. `archive/` is gitignored: the repo
   is public and screenshots show the owner's phone.
 
