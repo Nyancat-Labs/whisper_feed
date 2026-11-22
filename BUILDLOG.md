@@ -8,6 +8,15 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 22 November 2026 — Weblate check
+
+Libre hosting still pending; trial extended to 7 December, so nothing was
+lost tonight. Found and fixed with the owner: both components said "GPL
+v3.0 only" (one first set to LGPL by a slip, then corrected) and are now
+GPL-3.0-or-later like the repo; App was 60 commits behind GitHub, updated
+by rebase; App was unlocked though the plan says locked until the seven
+translations land, so locked. Szept reminder moved to Saturday 28 November.
+
 ## 22 November 2026 — Release 1.0.6 (build 7)
 
 Board read first: nothing open blocks the release (translations and the

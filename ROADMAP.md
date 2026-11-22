@@ -3392,7 +3392,15 @@ into the Glossary, mark Claude's strings as needing review, add the store
 listing (`fastlane/metadata/android/*`) as a component, and point About's
 "Report a translation mistake" at the project.
 
-- [ ] **After Libre approval (trial ends 22 November):** set up push to
+**22 November 2026 (owner, guided here):** still "Pending approval", but
+the trial is extended: scheduled removal 7 December 2026. Both components'
+licence corrected from "GPL v3.0 only" to GPL-3.0-or-later (the repo's).
+App updated from GitHub by rebase (60 commits in, Weblate's 2 French
+commits kept on top, unpushed), and **locked again**: it had been found
+unlocked. Next check Saturday 28 November; email Weblate support if still
+pending.
+
+- [ ] **After Libre approval (removal date 7 December):** set up push to
   GitHub and repository hooks, then unlock for translators with the steps
   above (Szept #215).
 
