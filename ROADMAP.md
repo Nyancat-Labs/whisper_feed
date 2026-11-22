@@ -76,7 +76,7 @@ layout; the four layouts are what the user chooses between. Both exist now.
 
 ## Released: 1.0.6 (22 November 2026)
 
-**Out:** Play in review from 18:40 (live on approval), GitHub v1.0.6 at
+**Out:** Play in review from 18:40 (quick checks passed) (live on approval), GitHub v1.0.6 at
 18:42, F-Droid follows the tag. Still to do: the fdroidserver checks.
 
 Agreed 19 October 2026. In CHANGELOG.md under Unreleased as each lands.
@@ -214,6 +214,8 @@ is ready in time.
 ---
 
 ## After 1.0.6
+
+- **New store screenshots** (132): phone and tablet, showing the 1.0.6 look; best after the 1.0.7 translations. The owner takes them from a list, Claude frames them and adds them to fastlane, the owner uploads to Play.
 
 - **What's new after an update** (131): a one-off card at the top of the feed, 3-5 lines from the store notes (`changelogs/<build>.txt`), a link to the full changelog, an ×. Once per version, not on a fresh install. Aim for 1.0.7, so the translations are announced.
 
