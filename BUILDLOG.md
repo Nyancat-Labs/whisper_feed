@@ -19,6 +19,8 @@ suite, picture tests and lint: 1,398 passing. Signed AAB and APK built from
 metadata points at 3a108b2. Not done: the fdroidserver checks, which need
 fdroidserver installed in this new container (asked the owner). Still the
 owner's: the Play upload and the GitHub release v1.0.6.
+Play: uploaded and sent for review at 18:40; one warning, native debug
+symbols (harmless, on the roadmap); supported devices unchanged.
 
 ## 21 November 2026 — Card 130 for after 1.0.6
 

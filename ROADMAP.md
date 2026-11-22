@@ -212,6 +212,8 @@ is ready in time.
 
 ## After 1.0.6
 
+- **Native debug symbols for Play** (22 November): Play warns that the bundle has native code without a symbol file. The code is only two AndroidX libraries (graphics path, DataStore counter), so it is harmless; adding `ndk.debugSymbolLevel` to the release build would quieten it and make any crash in them readable.
+
 - [ ] **Breaking news scales with your list (board 126, owner 20 November).**
   Today a story is breaking at a fixed 3 News sources in 12 hours
   (Clustering.MIN_SOURCES), so a long News list fires far more often than a
