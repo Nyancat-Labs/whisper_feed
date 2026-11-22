@@ -8,6 +8,18 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 22 November 2026 — Release 1.0.6 (build 7)
+
+Board read first: nothing open blocks the release (translations and the
+startup profile are after 1.0.6; the Cyberspace photos were optional).
+Version 1.0.6, build 7; CHANGELOG dated; Play notes in
+`fastlane/.../changelogs/7.txt` (428 characters, under Play's 500). Full
+suite, picture tests and lint: 1,398 passing. Signed AAB and APK built from
+3a108b2 and checked: release key (SHA-256 d454…b164), versionCode 7. F-Droid
+metadata points at 3a108b2. Not done: the fdroidserver checks, which need
+fdroidserver installed in this new container (asked the owner). Still the
+owner's: the Play upload and the GitHub release v1.0.6.
+
 ## 21 November 2026 — Card 130 for after 1.0.6
 
 - Owner's screenshot of another reader's Settings (archive/screenshots
