@@ -8,6 +8,23 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 23 November 2026 — Second Dependabot round; 1.0.6 live on Play
+
+Dependabot opened six more pull requests overnight. Applied 16 to 20:
+AGP 9.5.2, Gradle 9.9.2 (distribution SHA-256 matches gradle.org),
+Robolectric 4.18.1, Roborazzi 1.79.0, actions/setup-java 6.3.0 (commit
+checked against the v6.3.0 tag). Full suite 1,398 passing, picture tests
+and lint clean, signed release APK on the release key. Closed 15 with a
+comment: the Compose BOM it offered brings Compose UI 1.14.0-alpha01, which
+needs compileSdk 37.2, and Material 3 1.6.0-alpha01; Whisper ships stable
+libraries only. Yesterday's five pull requests closed themselves once main
+had their versions. CI on main is green again (run 560); the 429 on 222a699
+was Maven Central throttling, not the code (Szept 419 keeps the CI fix open).
+
+Play published 1.0.6 on 23 November. The Play Console still shows the 5
+November trader-status notice; the declaration was sent on 8 November and
+the owner will check it was approved (Szept 436).
+
 ## 22 November 2026 — Dependabot updates; Android SDK in the new container
 
 **The five Dependabot updates** (pull requests 7 to 11, open since 9
