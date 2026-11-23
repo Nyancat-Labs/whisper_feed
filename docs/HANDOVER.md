@@ -8,8 +8,8 @@ obvious from it.
 
 Start here after a /clear. CLAUDE.md has the working rules; this is state.
 
-- **1.0.6 (build 7) released 22 November:** Play in review (live on
-  approval), GitHub v1.0.6 on 3a108b2, F-Droid follows the tag. No
+- **1.0.6 (build 7) released 22 November:** live on Play since 23
+  November, GitHub v1.0.6 on 3a108b2, F-Droid follows the tag. No
   preview is out for testing.
 - **Signing key** is in this container at `/root/whisper-signing/` (owner
   asked to keep it, 18 November), `keystore.properties` points at it. A new
@@ -48,9 +48,9 @@ Nyancat Labs. Repo `Nyancat-Labs/whisper_feed`; the old name `defsix/076feed`
 redirects. Kotlin source still lives under `com.saulhdev.feeder` (a fork of
 Neo Feed).
 
-- **Google Play:** live since 15 Oct, version 1.0.4 (versionCode 5).
+- **Google Play:** live since 15 Oct, version 1.0.6 (versionCode 7) since 23 Nov.
 - **F-Droid:** live since 16 Oct, https://f-droid.org/packages/com.nyancatlabs.whisper/
-- **GitHub Releases:** v1.0.3 and v1.0.4.
+- **GitHub Releases:** v1.0.0 to v1.0.6.
 
 ## How we work
 
