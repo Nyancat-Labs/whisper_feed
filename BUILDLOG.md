@@ -20,6 +20,8 @@ feed in the article's place (`backFromLoneArticle`). The real fix (reading
 inside the panel) and In-app/Browser (Lawnchair's side) stay on #470.
 `LoneArticleBackTest`, 2 tests. Test build d6c6eb9 (Szept 471): 5 of 5 passed.
 
+Preview 32d2b16 sent (Szept 472). 1420 tests, lint and picture tests pass.
+
 ## 24 November 2026 — A source can opt out of full articles (Szept 463)
 
 Owner's note on test build da08e45: with Settings → Fetching → "Fetch full
