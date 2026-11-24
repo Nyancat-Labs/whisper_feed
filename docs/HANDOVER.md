@@ -24,8 +24,10 @@ Start here after a /clear. CLAUDE.md has the working rules; this is state.
   `app/src/main/generated/baselineProfiles/` and compare the numbers. The
   Fade bug (Szept 447) waits on the reader's answer and Test build
   7254a64. Translations (56, Szept 176) wait for Weblate's approval.
-- **Preview 9d14297** (no "[IMG]" summaries, Szept 452) sent 24 November;
-  test item Szept 456.
+- **Preview 9d14297** (no "[IMG]" summaries, Szept 452) passed on the
+  Pixel, 24 November (Szept 456). **Next preview:** the Szept items tagged
+  `next-preview` (457 stale feed anchor, 437 edge-to-edge, 414 chinanews),
+  planned for 5 December, plus the startup profile if recorded by then.
 - **Build setup in a new container:** the "076" environment's setup script
   does all of this since 24 November. Android SDK in `/opt/android-sdk`
   (cmdline-tools, platform-tools, build-tools 37; `local.properties` has
