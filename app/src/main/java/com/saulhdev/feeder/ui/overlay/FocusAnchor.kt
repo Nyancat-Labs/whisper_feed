@@ -21,6 +21,10 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import com.saulhdev.feeder.data.db.models.FeedItem
 
 /**
@@ -46,6 +50,15 @@ import com.saulhdev.feeder.data.db.models.FeedItem
  * `scrollToItem` rather than an animated scroll. The list underneath has just
  * been replaced wholesale; animating through hundreds of cards that are not
  * the ones the reader was looking at is motion that means nothing.
+ *
+ * ## Once per change, not once per visit
+ *
+ * The anchor outlives its use: the view model keeps it so the way back out
+ * can land on it too. A LaunchedEffect runs again whenever the feed comes
+ * back into composition, as it does on the way back from Settings, so the
+ * feed jumped to the source's article long after the reader had scrolled
+ * away from it (Szept 457). The change last applied is saved with the
+ * screen's state, and the same change is not applied twice.
  */
 @Composable
 fun AnchorFeedOnFocusChange(
@@ -58,8 +71,12 @@ fun AnchorFeedOnFocusChange(
     /** Day headings above the articles, which move every article down. */
     breaks: List<DayBreak> = emptyList(),
 ) {
+    var applied by rememberSaveable { mutableStateOf<String?>(null) }
     LaunchedEffect(appliedFocus, anchorId) {
         val id = anchorId ?: return@LaunchedEffect
+        val change = anchorChangeKey(appliedFocus, id)
+        if (change == applied) return@LaunchedEffect
+        applied = change
         val position = articles.indexOfFirst { it.id == id }
         // Not in this list at all — the article that started the detour can be
         // filtered out of the feed being returned to, by a category chip or by
@@ -69,3 +86,7 @@ fun AnchorFeedOnFocusChange(
         if (isGrid) gridState.scrollToItem(index) else listState.scrollToItem(index)
     }
 }
+
+/** One narrowing and the article it started from; see AnchorFeedOnFocusChange. */
+internal fun anchorChangeKey(appliedFocus: String?, anchorId: String): String =
+    "${appliedFocus.orEmpty()}\u0000$anchorId"

@@ -8,6 +8,33 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 24 November 2026 — Next-preview batch (Szept 457, 437, 414)
+
+**457, feed jumped back to an old article.** Found on Test build 9d14297:
+open a source, back out, scroll to the top, go to Settings and back, and the
+feed sat on the source's article again. The anchor that lands both edges of a
+narrowing on the tapped article (`FocusAnchor.kt`) is kept in the view model
+on purpose, and its LaunchedEffect ran again every time the feed came back
+into composition. The change last applied is now saved with the screen's
+state and not applied twice. `FocusAnchorOnceTest` (Robolectric, with
+StateRestorationTester for the trip to Settings) fails on the old code with
+exactly the owner's symptom and passes now. The launcher page shares the code.
+
+**437, Play's edge-to-edge warnings: nothing of ours.** dexdump over the
+9d14297 APK, retraced with its mapping: every call to
+`Window.setStatusBarColor`, `setNavigationBarColor` and the cutout mode is in
+androidx.activity (`EdgeToEdgeApi26/29/35`, i.e. `enableEdgeToEdge` itself)
+or Compose (`Api28Impl`, dialogs). Our theme attributes (`statusBarColor`
+and friends in `styles.xml`) are not API calls, so Play does not count them,
+and they only act on Android 8 to 14, where the launcher page's window needs
+its transparent bars. Left as they are; no device here to check those versions.
+
+**414, chinanews blank areas: not reproduced.** The feed now links
+www.chinanews.com.cn pages; the real-feed check over five of them (the app's
+parser, clean-up, Readability and reader) gives full text, the one picture
+and no flags. The reporter's m.chinanews.com link is a JavaScript shell and now
+redirects in a loop. Needs the reporter to say whether it still happens.
+
 ## 24 November 2026 — "[IMG]" no longer shown as a card's summary (Szept 452)
 
 The owner's "duplicate post" on Test build 7254a64 was two different
