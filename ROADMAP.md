@@ -487,9 +487,12 @@ the way.
   articles" toggle still prefetches during sync; the reader no longer depends
   on it.
 - ~~**Compact rows lost their save button whenever they had a thumbnail.**~~
-- **Coming back from the browser lands on the home screen.** The in-app reader
-  does *not* have this problem — it returns to the feed correctly — so the
-  in-app mode is the answer and the browser is the path that cannot be fixed. Half of this is
+- **Coming back from the browser lands on the home screen.** *Corrected 24
+  November 2026 (owner, on a Pixel 10):* the in-app reader has the same
+  problem when the article is opened from the panel; it only returns to a
+  feed when the app was already open (for example after Settings), and then
+  it is the app's feed, not the panel's. See *Back from an article lands on
+  the home screen*. Half of this is
   fixed — the workspace no longer shows *before* the browser — but the return
   cannot be fixed from this side, and the reason is in Lawnchair rather than
   here. A fullscreen browser stops the launcher;
