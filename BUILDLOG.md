@@ -35,6 +35,8 @@ parser, clean-up, Readability and reader) gives full text, the one picture
 and no flags. The reporter's m.chinanews.com link is a JavaScript shell and now
 redirects in a loop. Needs the reporter to say whether it still happens.
 
+Preview 9df8901 sent (Szept 460): 1407 tests, lint and picture tests pass.
+
 ## 24 November 2026 — "[IMG]" no longer shown as a card's summary (Szept 452)
 
 The owner's "duplicate post" on Test build 7254a64 was two different
