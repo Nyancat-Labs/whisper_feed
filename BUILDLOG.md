@@ -23,6 +23,10 @@ browser trips. On a source's page, Browser now has the arrow-out icon and
 In-app the browser one. OPML backups keep `tab`. `InAppTabTest`, 6 tests
 (Robolectric, with a fake Custom Tabs browser). Icon index regenerated.
 
+Preview da08e45 sent (Szept 463, replacing the untested 9df8901, Szept 460):
+In-app, Back to top in Mosaic and the feed anchor fix. 1415 tests, lint and
+picture tests pass.
+
 ## 24 November 2026 — Back to top in Mosaic; Swetha's second email
 
 Swetha confirmed she had used Reset in the Filters sheet, so 7254a64's fix
