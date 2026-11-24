@@ -14,7 +14,9 @@ import com.saulhdev.feeder.ui.overlay.LocalTimeFormat
 import androidx.core.net.toUri
 import com.saulhdev.feeder.utils.usableImageUrl
 import androidx.activity.compose.BackHandler
-import androidx.activity.compose.LocalActivity
+import androidx.navigation.NavController
+import com.saulhdev.feeder.ui.navigation.LocalNavController
+import com.saulhdev.feeder.ui.navigation.NavRoute
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -103,7 +105,6 @@ fun ArticlePage(
     val timeFormat = LocalTimeFormat.current
     val prefs: FeedPreferences = koinInject()
     val textSize by prefs.readerTextSize.asState()
-    val activity = LocalActivity.current
 
     val state by viewModel.articleState.collectAsState(initial = null)
 
@@ -171,14 +172,15 @@ fun ArticlePage(
     }
     val feedTitle by remember(appName) { derivedStateOf { state?.source?.title ?: appName } }
 
-    // Opened on its own, from the launcher panel's link, back leaves the app
-    // and returns to the launcher the reader came from, not to Whisper's feed.
-    // This asked a navigation controller made here and attached to nothing,
-    // whose answer was therefore always "nothing to go back to", so it
-    // finished every time: the right result, reached by the wrong question
-    // (design audit 7). Said plainly now. Inside the feed's two panes
-    // [onDismiss] is set and the panes handle back.
-    BackHandler(onDismiss == null) { activity?.finish() }
+    // Opened on its own, from the launcher panel, back goes to Whisper's own
+    // feed. It used to finish the activity to return to the panel, but the
+    // panel is gone by then: the article stopped Lawnchair, and Lawnchair
+    // snaps to the home screen when it comes back (ROADMAP, *Back from an
+    // article lands on the home screen*), so the reader was dropped on the
+    // desktop (Szept 470). Inside the feed's two panes [onDismiss] is set and
+    // the panes handle back.
+    val navController = LocalNavController.current
+    BackHandler(onDismiss == null) { backFromLoneArticle(navController) }
 
     // From the configuration rather than from Locale.getDefault(), which
     // Compose cannot observe: change the phone's language and every date on
@@ -477,5 +479,19 @@ private fun Modifier.bleed(margin: Dp): Modifier = layout { measurable, constrai
 fun NotFoundView() {
     Column(modifier = Modifier.padding(16.dp)) {
         Text(text = stringResource(id = R.string.article_not_found))
+    }
+}
+
+/**
+ * Back from an article opened on its own (from the launcher panel): to the
+ * feed beneath it when there is one, otherwise to a fresh feed in its place.
+ */
+internal fun backFromLoneArticle(navController: NavController) {
+    if (navController.previousBackStackEntry != null) {
+        navController.popBackStack()
+    } else {
+        navController.navigate(NavRoute.Main()) {
+            popUpTo<NavRoute.ArticleView> { inclusive = true }
+        }
     }
 }

@@ -3363,8 +3363,10 @@ so back works, and the browser in the app, where back already works.
 - An existing install keeps the app setting it has; the panel setting starts
   at its default.
 
-Placed last because it affects only readers who use the panel. Until then the
-answer for them is to read from the app, where back works.
+Placed last because it affects only readers who use the panel. *24 November
+2026:* in the meantime Back from a panel article goes to Whisper's own feed
+rather than closing the app, so the reader no longer lands on the desktop
+(Szept 470); the in-panel reader is still the real fix.
 
 ## Translations — later, and whole (seventh in the order)
 

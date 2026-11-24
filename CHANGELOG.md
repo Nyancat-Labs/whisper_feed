@@ -18,6 +18,8 @@ Unreleased
   opened a source from; it stays where you left it.
 - The Back to top arrow now appears in the Mosaic layout too. Reported by a
   reader.
+- Back from an article opened on the launcher page now goes to Whisper's
+  feed instead of dropping you on the home screen.
 - **Leave one source out of full articles.** With "Fetch full articles for
   every feed" on, a source's own switch is no longer greyed out: switch it
   off to skip that source.

@@ -8,6 +8,18 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 24 November 2026 — Back from a panel article goes to Whisper's feed (Szept 470)
+
+Owner's test on the Pixel 10: Reader opened from the launcher panel, then
+Back, lands on the home screen; after visiting Settings first it returned to
+the app's feed. The cause was ours as much as Lawnchair's: `ArticlePage`,
+opened on its own, finished the activity on Back to return to the panel, but
+the panel is gone by then (Lawnchair snaps home when it resumes). Back now
+goes to Whisper's feed: the one beneath when there is one, otherwise a fresh
+feed in the article's place (`backFromLoneArticle`). The real fix (reading
+inside the panel) and In-app/Browser (Lawnchair's side) stay on #470.
+`LoneArticleBackTest`, 2 tests. Test build d6c6eb9 (Szept 471): 5 of 5 passed.
+
 ## 24 November 2026 — A source can opt out of full articles (Szept 463)
 
 Owner's note on test build da08e45: with Settings → Fetching → "Fetch full
