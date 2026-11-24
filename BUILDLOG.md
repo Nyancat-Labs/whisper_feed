@@ -8,6 +8,21 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 24 November 2026 — Open articles with: In-app (Custom Tabs, Szept 461)
+
+Owner's choice: three choices, not Browser changed. New mode `tab`
+(`FeedPreferences.OPEN_MODE_TAB`) beside `reader` and `browser`, in Settings
+→ Reading and per source; `browser` kept its meaning, so nobody's setting
+changed. `Context.openOutside` opens a Custom Tab (androidx.browser, already a
+dependency; title shown, share on, system colours) or, when no installed
+browser offers Custom Tabs, the browser app as before, with the same scheme
+allowlist as `launchView`. From the launcher page it starts a new task. The
+manifest now queries for `CustomTabsService`, which Android 11 and later need
+to see such a browser. The browser read timer counts tab trips as it counts
+browser trips. On a source's page, Browser now has the arrow-out icon and
+In-app the browser one. OPML backups keep `tab`. `InAppTabTest`, 6 tests
+(Robolectric, with a fake Custom Tabs browser). Icon index regenerated.
+
 ## 24 November 2026 — Back to top in Mosaic; Swetha's second email
 
 Swetha confirmed she had used Reset in the Filters sheet, so 7254a64's fix

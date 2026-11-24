@@ -15,6 +15,8 @@ import android.util.Log
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.browser.customtabs.CustomTabsClient
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
 import com.google.android.material.color.DynamicColors
 import com.saulhdev.feeder.R
@@ -82,6 +84,37 @@ fun Context.launchView(url: String): Boolean {
     }
     val uri = runCatching { url.toUri() }.getOrNull() ?: return false
     safeStartActivity(Intent(Intent.ACTION_VIEW, uri))
+    return true
+}
+
+/**
+ * Opens an article's page outside the reader, as [mode] says: in a browser
+ * tab inside Whisper ([FeedPreferences.OPEN_MODE_TAB], Custom Tabs), or in
+ * the browser app.
+ *
+ * A Custom Tab is the browser's own page over Whisper, with its logins and
+ * blockers and a close button straight back; not a WebView of ours. When no
+ * installed browser offers Custom Tabs, the page goes to the browser app, as
+ * before. Same scheme allowlist as [launchView].
+ */
+fun Context.openOutside(url: String, mode: String): Boolean {
+    if (mode != FeedPreferences.OPEN_MODE_TAB || CustomTabsClient.getPackageName(this, null) == null) {
+        return launchView(url)
+    }
+    if (!isViewable(url)) {
+        Log.w("Context", "Refusing to open: ${schemeOf(url)}")
+        return false
+    }
+    val uri = runCatching { url.toUri() }.getOrNull() ?: return false
+    val tab = CustomTabsIntent.Builder()
+        .setShowTitle(true)
+        .setShareState(CustomTabsIntent.SHARE_STATE_ON)
+        .setColorScheme(CustomTabsIntent.COLOR_SCHEME_SYSTEM)
+        .build()
+    // From the launcher page there is no Activity to put the tab on top of.
+    if (this !is Activity) tab.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    tab.intent.data = uri
+    safeStartActivity(tab.intent)
     return true
 }
 

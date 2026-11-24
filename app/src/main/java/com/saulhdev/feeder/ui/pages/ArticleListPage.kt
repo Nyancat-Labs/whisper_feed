@@ -113,7 +113,7 @@ import com.saulhdev.feeder.data.db.models.FeedItem
 import com.saulhdev.feeder.utils.extensions.koinNeoViewModel
 import com.saulhdev.feeder.utils.newSinceSeen
 import com.saulhdev.feeder.ui.overlay.FeedEndReturn
-import com.saulhdev.feeder.utils.extensions.launchView
+import com.saulhdev.feeder.utils.extensions.openOutside
 import com.saulhdev.feeder.manager.sync.SyncRestClient
 import com.saulhdev.feeder.ui.components.HeaderToggleAction
 import com.saulhdev.feeder.ui.components.OverflowMenu
@@ -670,13 +670,14 @@ fun ArticleListPage(
                                             index = index,
                                             onClick = {
                                                 viewModel.markOpened(item.id)
-                                                if (FeedPreferences.openModeFor(item.feed.openMode, openMode) == FeedPreferences.OPEN_MODE_BROWSER) {
+                                                val mode = FeedPreferences.openModeFor(item.feed.openMode, openMode)
+                                                if (FeedPreferences.opensOutside(mode)) {
                                                     // Whisper is about to stop
                                                     // being on screen, so the
                                                     // only clock left is how
                                                     // long until it is again.
                                                     BrowserReadTimer.left(item.id)
-                                                    context.launchView(item.link)
+                                                    context.openOutside(item.link, mode)
                                                 } else {
                                                     scope.launch {
                                                         paneNavigator.navigateTo(
@@ -747,13 +748,14 @@ fun ArticleListPage(
                                             onPin = { viewModel.setPinned(item.id, it) },
                                             onClick = {
                                                 viewModel.markOpened(item.id)
-                                                if (FeedPreferences.openModeFor(item.feed.openMode, openMode) == FeedPreferences.OPEN_MODE_BROWSER) {
+                                                val mode = FeedPreferences.openModeFor(item.feed.openMode, openMode)
+                                                if (FeedPreferences.opensOutside(mode)) {
                                                     // Whisper is about to stop
                                                     // being on screen, so the
                                                     // only clock left is how
                                                     // long until it is again.
                                                     BrowserReadTimer.left(item.id)
-                                                    context.launchView(item.link)
+                                                    context.openOutside(item.link, mode)
                                                 } else {
                                                     scope.launch {
                                                         paneNavigator.navigateTo(

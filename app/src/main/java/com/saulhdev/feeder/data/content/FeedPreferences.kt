@@ -347,9 +347,14 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
         defaultValue = OPEN_MODE_READER,
         entries = mapOf(
             OPEN_MODE_READER to context.getString(R.string.article_open_reader),
+            OPEN_MODE_TAB to context.getString(R.string.article_open_tab),
             OPEN_MODE_BROWSER to context.getString(R.string.article_open_browser),
         ),
-        buttons = mapOf(OPEN_MODE_READER to R.string.choice_open_reader, OPEN_MODE_BROWSER to R.string.choice_open_browser),
+        buttons = mapOf(
+            OPEN_MODE_READER to R.string.choice_open_reader,
+            OPEN_MODE_TAB to R.string.choice_open_tab,
+            OPEN_MODE_BROWSER to R.string.choice_open_browser,
+        ),
     )
 
     /**
@@ -1367,13 +1372,22 @@ class FeedPreferences private constructor(val context: Context) : KoinComponent 
 
         /** Hand the article's URL to the device's default browser. */
         const val OPEN_MODE_BROWSER = "browser"
+        /**
+         * The browser's page in a tab inside Whisper (Custom Tabs), rather
+         * than switching to the browser app. Asked for by a reader, 24 November
+         * (Szept 461); "browser" kept its meaning, so nobody's choice changed.
+         */
+        const val OPEN_MODE_TAB = "tab"
+
+        /** Whether [mode] opens the page outside the reader: a tab or the browser app. */
+        fun opensOutside(mode: String): Boolean = mode == OPEN_MODE_BROWSER || mode == OPEN_MODE_TAB
 
         /**
          * How one article opens: its source's own choice if it has one,
          * otherwise the setting for all of them (sheet 113).
          */
         fun openModeFor(sourceMode: String, settingMode: String): String =
-            if (sourceMode == OPEN_MODE_READER || sourceMode == OPEN_MODE_BROWSER) sourceMode
+            if (sourceMode == OPEN_MODE_READER || sourceMode == OPEN_MODE_BROWSER || sourceMode == OPEN_MODE_TAB) sourceMode
             else settingMode
         val REMOVE_DUPLICATES = booleanKey("pref_remove_duplicates")
         val VOLUME_KEY_SCROLL = booleanKey("pref_volume_key_scroll")

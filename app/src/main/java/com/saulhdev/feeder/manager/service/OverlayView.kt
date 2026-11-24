@@ -40,7 +40,7 @@ import com.saulhdev.feeder.ui.overlay.gateLog
 import com.saulhdev.feeder.ui.overlay.LocalFeedVisible
 import com.saulhdev.feeder.utils.BrowserReadTimer
 import com.saulhdev.feeder.utils.FrameWatch
-import com.saulhdev.feeder.utils.extensions.launchView
+import com.saulhdev.feeder.utils.extensions.openOutside
 import com.saulhdev.feeder.utils.LAYOUT_CARDS
 import com.saulhdev.feeder.utils.extensions.safeShareIntent
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -614,11 +614,11 @@ class OverlayView(val context: Context) :
         syncScope.launch { viewModel.markOpened(item.id) }
         launchKeepingPanel {
             val mode = FeedPreferences.openModeFor(item.feed.openMode, prefs.articleOpenMode.getValue())
-            if (mode == FeedPreferences.OPEN_MODE_BROWSER) {
+            if (FeedPreferences.opensOutside(mode)) {
                 // No lifecycle to tick against once the browser is in front,
                 // so the trip away is the measurement. See BrowserReadTimer.
                 BrowserReadTimer.left(item.id)
-                context.launchView(item.link)
+                context.openOutside(item.link, mode)
             } else {
                 context.safeStartActivity(
                     MainActivity.navigateIntent(context, "${Routes.ARTICLE_VIEW}/${item.id}")

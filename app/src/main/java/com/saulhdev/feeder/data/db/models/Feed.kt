@@ -136,7 +136,9 @@ data class Feed(
 
     /**
      * How this source's articles open: "" follows Settings, otherwise
-     * [com.saulhdev.feeder.data.content.FeedPreferences.OPEN_MODE_READER] or
+     * [com.saulhdev.feeder.data.content.FeedPreferences.OPEN_MODE_READER],
+     * [com.saulhdev.feeder.data.content.FeedPreferences.OPEN_MODE_TAB] (a
+     * browser tab inside Whisper) or
      * [com.saulhdev.feeder.data.content.FeedPreferences.OPEN_MODE_BROWSER].
      * For a paid newsletter that needs the browser where the reader is signed
      * in, with everything else in the reader (asked by a user, 19 November;

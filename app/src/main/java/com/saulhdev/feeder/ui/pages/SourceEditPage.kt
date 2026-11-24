@@ -27,6 +27,7 @@ import com.saulhdev.feeder.ui.components.BasePreference
 import com.saulhdev.feeder.ui.components.SegmentedTabButton
 import com.saulhdev.feeder.ui.icons.phosphor.GearSix
 import com.saulhdev.feeder.ui.icons.phosphor.Article
+import com.saulhdev.feeder.ui.icons.phosphor.ArrowSquareOut
 import com.saulhdev.feeder.ui.icons.phosphor.Browser
 import com.saulhdev.feeder.ui.theme.SEGMENT_GAP
 import androidx.compose.foundation.layout.Arrangement
@@ -456,7 +457,9 @@ fun SourceEditView(
                         val choices = listOf(
                             Triple("", R.string.source_open_as_settings, Phosphor.GearSix),
                             Triple(FeedPreferences.OPEN_MODE_READER, R.string.choice_open_reader, Phosphor.Article),
-                            Triple(FeedPreferences.OPEN_MODE_BROWSER, R.string.choice_open_browser, Phosphor.Browser),
+                            Triple(FeedPreferences.OPEN_MODE_TAB, R.string.choice_open_tab, Phosphor.Browser),
+                            // Out of Whisper, into the browser app.
+                            Triple(FeedPreferences.OPEN_MODE_BROWSER, R.string.choice_open_browser, Phosphor.ArrowSquareOut),
                         )
                         choices.forEachIndexed { i, (mode, label, icon) ->
                             SegmentedTabButton(

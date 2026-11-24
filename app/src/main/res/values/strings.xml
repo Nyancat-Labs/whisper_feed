@@ -32,6 +32,7 @@
     <string name="choice_time_both">Both</string>
     <string name="choice_open_reader">Reader</string>
     <string name="choice_open_browser">Browser</string>
+    <string name="choice_open_tab">In-app</string>
     <string name="source_open_mode">Open articles</string>
     <string name="source_preview">Preview this feed</string>
     <string name="source_preview_not_feed">No feed at that address. It may have moved: Open website on Feeds that stopped working shows the site.</string>
@@ -261,6 +262,7 @@
     <string name="pref_article_open_mode">Open articles with</string>
     <string name="article_open_reader">Built-in reader</string>
     <string name="article_open_browser">Default browser</string>
+    <string name="article_open_tab">Browser tab inside Whisper</string>
     <string name="article_open_original">Open original in browser</string>
     <string name="pref_export_diagnostics">Export diagnostics</string>
     <string name="pref_export_diagnostics_summary">Save a log and device report to Downloads</string>

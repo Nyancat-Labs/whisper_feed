@@ -87,7 +87,7 @@ class OPMLParser(private val opmlToDb: ParserToDatabase<Feed>) : ContentHandler 
                         showInAll = attribute(atts, ATTR_SHOW_IN_ALL) != "false",
                         isEnabled = attribute(atts, ATTR_ENABLED) != "false",
                         openMode = attribute(atts, ATTR_OPEN_MODE)
-                            ?.takeIf { it == "reader" || it == "browser" }.orEmpty(),
+                            ?.takeIf { it == "reader" || it == "browser" || it == "tab" }.orEmpty(),
                     )
 
                     feeds.add(feed)

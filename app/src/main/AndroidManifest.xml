@@ -82,6 +82,10 @@
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.HOME" />
         </intent>
+        <!-- Finding a browser that offers Custom Tabs (Open articles with: In-app). -->
+        <intent>
+            <action android:name="android.support.customtabs.action.CustomTabsService" />
+        </intent>
         <!-- Opening an article link, and sending the diagnostics report. -->
         <intent>
             <action android:name="android.intent.action.VIEW" />
