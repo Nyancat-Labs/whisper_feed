@@ -20,6 +20,7 @@ Unreleased
   reader.
 - Back from an article opened on the launcher page now goes to Whisper's
   feed instead of dropping you on the home screen.
+- Opening an article no longer flashes the one you read before it.
 - **Leave one source out of full articles.** With "Fetch full articles for
   every feed" on, a source's own switch is no longer greyed out: switch it
   off to skip that source.

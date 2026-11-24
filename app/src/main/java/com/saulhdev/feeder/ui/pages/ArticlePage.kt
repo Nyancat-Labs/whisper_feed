@@ -35,6 +35,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import com.saulhdev.feeder.viewmodels.ArticlePageState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -106,7 +108,13 @@ fun ArticlePage(
     val prefs: FeedPreferences = koinInject()
     val textSize by prefs.readerTextSize.asState()
 
-    val state by viewModel.articleState.collectAsState(initial = null)
+    // One view model serves every article, so for a moment after each tap it
+    // still holds the article read before. Shown only once it is the one
+    // asked for: opened from the launcher panel, with no slide to hide it,
+    // the previous article flashed up before the new one (Szept 472).
+    val loaded = viewModel.articleState.collectAsState(initial = null)
+    val currentId by rememberUpdatedState(articleId)
+    val state by remember { derivedStateOf { loaded.value.ifFor(currentId) } }
 
     // Times the read. Counts forward only while this screen is resumed, so
     // closing the app or locking the phone mid-article stops it rather than
@@ -495,3 +503,7 @@ internal fun backFromLoneArticle(navController: NavController) {
         }
     }
 }
+
+/** This page state, but only when it holds the article [id]. */
+internal fun ArticlePageState?.ifFor(id: String) =
+    this?.takeIf { it.article?.uuid == id }

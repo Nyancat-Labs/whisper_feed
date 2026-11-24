@@ -22,6 +22,14 @@ inside the panel) and In-app/Browser (Lawnchair's side) stay on #470.
 
 Preview 32d2b16 sent (Szept 472). 1420 tests, lint and picture tests pass.
 
+Owner's test of 32d2b16: Reader from the panel now returns to the app's feed
+(no swipe back to the panel, which is acceptable); In-app and Browser
+unchanged as expected. New: opening the next article from the panel flashed
+the previous one first. One `ArticleViewModel` serves every article, and its
+state still held the last article until the database flow caught up; inside
+the app the slide hid it. `ArticlePage` now shows state only when it belongs
+to the article asked for (`ifFor`). One more test in `LoneArticleBackTest`.
+
 ## 24 November 2026 — A source can opt out of full articles (Szept 463)
 
 Owner's note on test build da08e45: with Settings → Fetching → "Fetch full

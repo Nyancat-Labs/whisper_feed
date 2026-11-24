@@ -9,7 +9,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.saulhdev.feeder.ui.navigation.NavRoute
+import com.saulhdev.feeder.data.db.models.Article
 import com.saulhdev.feeder.ui.pages.backFromLoneArticle
+import com.saulhdev.feeder.ui.pages.ifFor
+import com.saulhdev.feeder.viewmodels.ArticlePageState
+import java.io.File
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -61,5 +65,16 @@ class LoneArticleBackTest {
             assertTrue(onFeed())
             assertFalse(nav.previousBackStackEntry != null)
         }
+    }
+
+    /** Szept 472: the next article opened from the panel flashed the one read before. */
+    @Test
+    fun `the reader shows only the article it was asked for`() {
+        val previous = ArticlePageState(article = Article(uuid = "a1", title = "Read before"))
+        assertEquals(null, previous.ifFor("a2"))
+        assertEquals(previous, previous.ifFor("a1"))
+        assertEquals(null, null.ifFor("a1"))
+        val page = File("src/main/java/com/saulhdev/feeder/ui/pages/ArticlePage.kt").readText()
+        assertTrue(page.contains("derivedStateOf { loaded.value.ifFor(currentId) }"))
     }
 }
