@@ -43,8 +43,9 @@ Start here after a /clear. CLAUDE.md has the working rules; this is state.
 - **Lawnchair** merged the whitelist (their PR 7399) into 16-dev on 24
   October: nightlies have it, no named release yet. Help → Launcher page
   shows both ways since batch 4.
-- **archive/** (gitignored, this container only) holds the owner's
-  screenshots and the board export.
+- **archive/** (gitignored) lasts only as long as one container: the board
+  export and earlier screenshots are gone. Files that must last go on Szept
+  items (Szept 455).
 
 ## The app
 
@@ -106,10 +107,15 @@ Neo Feed).
   in <hash>". The owner ticks it Done when every step passes; a step that
   fails comes back as a comment (with a screenshot), and Claude opens a fix
   item from it. Tag `build-test`, area the build. Close the build item when a newer build replaces it.
-- **Screenshots** the owner sends (chat or Szept) are saved to
-  `archive/screenshots/`, other files to `archive/files/`, named
-  `YYYY-MM-DD-HHMM-what-it-shows.ext`. `archive/` is gitignored: the repo
-  is public and screenshots show the owner's phone.
+- **Files** (Szept 455, 24 November): the owner attaches screenshots and
+  files to the Szept item they belong to; Claude opens them with
+  `get_file`. Drafts Claude writes (emails, replies) go in the item's notes
+  or a comment. Files sent in the chat are also saved to
+  `archive/screenshots/` or `archive/files/`, named
+  `YYYY-MM-DD-HHMM-what-it-shows.ext`, but that is for the session only:
+  `archive/` is gitignored (the repo is public and screenshots show the
+  owner's phone), so it is gone with the container. Szept's connector can
+  read files but not upload them.
 
 ## Release signing
 

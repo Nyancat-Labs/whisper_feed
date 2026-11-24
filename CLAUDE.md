@@ -19,7 +19,7 @@ Project: Whisper. What it is: an Android RSS reader that shows why it placed eac
 - ROADMAP.md: plans, context and ideas (open items live in Szept). BUILDLOG.md: dated entries of what was done and why.
 - Read all three at the start of each session and summarise where we left off in 2-3 lines. Update them after each completed step.
 - Commit after each working step with a short, clear message. Keep secrets out of code and logs (.env, listed in .gitignore).
-- Screenshots and files I send are files too: save each into archive/screenshots/ (non-images: archive/files/) named YYYY-MM-DD-HHMM-what-it-shows.ext.
+- Files that must last live on Szept, not in archive/ (Szept 455): archive/ is gitignored and vanishes with each cloud container. I attach screenshots and files to the relevant Szept item (Claude reads them with get_file); drafts Claude writes for me (emails, replies) go in that item's notes or a comment. Claude has no upload tool, so files I send in the chat get saved to archive/screenshots/ (non-images: archive/files/), named YYYY-MM-DD-HHMM-what-it-shows.ext, for this session only; Claude says so if one matters later.
 
 ## Szept (my one list for everything still to do)
 Szept (the Szept connector, one page per project) holds every open decision, job of mine, job of yours, part to buy and reminder, across all projects. Szept project for this repo: "Whisper".
