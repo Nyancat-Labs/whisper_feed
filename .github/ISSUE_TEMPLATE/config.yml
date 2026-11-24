@@ -1,14 +1,8 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Translate Neo Feed
-    url: https://hosted.weblate.org/engage/neo-feed/
-    about: Help translate Neo Feed to your language on Weblate
-  - name: Matrix Community
-    url: https://matrix.to/#/#neo-launcher:matrix.org
-    about: 'Join our Matrix community group!'
-  - name: Telegram Community
-    url: https://t.me/neo_launcher
-    about: 'Join our Telegram community group!'
-  - name: Discussions
-    url: https://github.com/NeoApplications/Neo-Feed/discussions
-    about: View discussions or start one yourself. But be aware that our Telegram & Matrix groups are the preferred way for discussions.
+  - name: Questions and ideas to talk over
+    url: https://github.com/Nyancat-Labs/whisper_feed/discussions
+    about: Ask a question or start a discussion.
+  - name: Email
+    url: https://github.com/Nyancat-Labs/whisper_feed#privacy-and-terms
+    about: "hej@nyancatlabs.com, for anything you would rather not post in public."

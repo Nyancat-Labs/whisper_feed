@@ -1,19 +1,19 @@
 name: Bug Report
-description: Report a bug in Neo Feed's functionality
+description: Report a bug in Whisper
 title: "[Bug] "
 body:
   - type: markdown
     attributes:
       value: |
-        **README: Before You Submit Your Issue**
-        - Issues are not a place to go ask support questions or start discussions.
-        - Please ask support questions in our [Telegram](https://t.me/neo_launcher) or [Matrix](https://matrix.to/#/#neo-launcher:matrix.org) groups or start discussions on the [discussions page](https://github.com/NeoApplications/Neo-Feed/discussions).
+        **Before you submit**
+        - Issues are for bugs and feature requests. For questions, start a [discussion](https://github.com/Nyancat-Labs/whisper_feed/discussions) or email hej@nyancatlabs.com.
+        - Please search [open](https://github.com/Nyancat-Labs/whisper_feed/issues) and [closed](https://github.com/Nyancat-Labs/whisper_feed/issues?q=is%3Aissue+is%3Aclosed) issues first.
   - type: checkboxes
     attributes:
       label: Guidelines
       description: Please ensure you've completed all of the following.
       options:
-        - label: I have searched the issue tracker for [open](https://github.com/NeoApplications/Neo-Feed/issues) and [closed](https://github.com/NeoApplications/Neo-Feed/issues?q=is%3Aissue+is%3Aclosed) issues that are similar to the feature request I want to file, without success.
+        - label: I have searched the [open](https://github.com/Nyancat-Labs/whisper_feed/issues) and [closed](https://github.com/Nyancat-Labs/whisper_feed/issues?q=is%3Aissue+is%3Aclosed) issues for one like this, without success.
           required: true
         - label: I'm on the latest version.
           required: true
@@ -40,37 +40,37 @@ body:
       required: true
   - type: input
     attributes:
-      label: Neo Feed's Version
-      description: Enter the version name on which the bug occurs.
-      placeholder: 1.0.0
+      label: Whisper version
+      description: Settings → About shows it (for example 1.0.6).
+      placeholder: 1.0.6
     validations:
       required: true
   - type: dropdown
     attributes:
       label: Installation Source
-      description: Where did you install Neo Feed from?
+      description: Where did you install Whisper from?
       options:
-        - Official F-Droid repo
-        - IzzyOnDroid's repo
-        - Github/Codeberg/Gitlab releases
+        - Google Play
+        - F-Droid
+        - GitHub releases
         - Other…
     validations:
       required: true
   - type: input
     attributes:
       label: 'Last Known Working Version'
-      description: What is the last version of Neo Feed this worked on? (If Any)
+      description: The last version of Whisper this worked on, if any.
       placeholder: 1.0.0
   - type: textarea
     attributes:
       label: Relevant information
       description: |
-        Feel free to add any other context or media about the feature request here.
+        Anything else that helps: screenshots, the feed's address, or a diagnostics report (Settings → Export diagnostics).
       value: |
         - Device:
         - Android Version:
-        - ROM: (AOSP, CalyxOS, MIUI, GOS…)
-        - Launcher: (Neo Launcher, Lawnchair…)
+        - ROM: (Pixel, One UI, HyperOS, GrapheneOS…)
+        - Launcher, if you use Whisper beside your home screen: (Lawnchair…)
   - type: markdown
     attributes:
       value: |
