@@ -134,7 +134,10 @@ class HtmlToPlainTextConverter : ContentHandler {
         // Ensure whitespace
         ensureSpace(text)
 
-        lastImageAlt = attributes.getValue("", "alt").orEmpty().ifBlank { "IMG" }
+        // A picture with no alt text has nothing to say: GSMArena's review
+        // descriptions are only <img alt="">, and showed "[IMG]" on the card
+        // (Szept 452). A real alt, as xkcd's, still stands in for the text.
+        attributes.getValue("", "alt")?.trim()?.takeIf { it.isNotEmpty() }?.let { lastImageAlt = it }
     }
 
     private fun startOl(text: StringBuilder?) {

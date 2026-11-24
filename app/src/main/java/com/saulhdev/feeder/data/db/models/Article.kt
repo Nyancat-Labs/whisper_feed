@@ -312,7 +312,9 @@ data class Article constructor(
             plainTitle = plainTitle,
             title = plainTitle,
             plainSnippet = summary,
-            description = description.ifEmpty { this.description },
+            // "[IMG]" and "<image>" were stored for image-only descriptions
+            // before Szept 452; an empty one now clears them when re-parsed.
+            description = description.ifEmpty { this.description.takeUnless { it in OLD_IMAGE_MARKERS }.orEmpty() },
             // Checked on the way in, so a feed that writes its image paths
             // with one slash stops storing pictures that can never load.
             imageUrl = usableImageUrl(absoluteImage),
@@ -473,3 +475,6 @@ internal fun authorName(raw: String?): String? {
 
 /** `address (Name)`, as RSS 2.0 writes an author. */
 private val RSS_AUTHOR = Regex("""^\S+@\S+\s*\((.+)\)$""")
+
+/** What image-only descriptions were stored as before Szept 452. */
+internal val OLD_IMAGE_MARKERS = setOf("[IMG]", "<image>")

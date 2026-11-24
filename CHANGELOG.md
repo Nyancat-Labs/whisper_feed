@@ -12,6 +12,8 @@ Unreleased
 - **Fade stays Fade.** Reset in the filter sheet used to put "Articles
   you've read" back to Keep. It now only undoes a Hide set in the sheet and
   leaves Keep or Fade from Settings alone. Reported by a reader.
+- Articles whose feed sends only a picture (GSMArena's reviews) no longer
+  show "[IMG]" as their summary.
 
 1.0.6 — 22 November 2026
 ------------------------

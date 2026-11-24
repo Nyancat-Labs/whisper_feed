@@ -8,6 +8,22 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 24 November 2026 — "[IMG]" no longer shown as a card's summary (Szept 452)
+
+The owner's "duplicate post" on Test build 7254a64 was two different
+GSMArena articles sharing a photo. The real glitch: the review's card read
+"[IMG]". GSMArena's review descriptions are only `<img alt="">` and an empty
+paragraph. `HtmlToPlainTextConverter` (from Feeder) writes `[alt]` when a
+document is only a picture, which suits xkcd, and made a blank alt "IMG".
+Now a blank alt gives no text, so the card shows no summary line. Rome's
+`"<image>"` fallback for image-only descriptions went too: Feeder used it to
+steer opening, nothing in Whisper reads it, and it would have shown as text.
+Articles stored with either marker lose it when their feed is parsed again;
+the rest age out within the week. `ImageOnlySummaryTest`, 4 tests.
+
+Szept's connector can now open attached files (`get_file`), so screenshots
+on Szept items no longer need sending in the session.
+
 ## 24 November 2026 — Startup profile set up (board 66)
 
 Whisper had only its libraries' baseline profiles. New `:baselineprofile`

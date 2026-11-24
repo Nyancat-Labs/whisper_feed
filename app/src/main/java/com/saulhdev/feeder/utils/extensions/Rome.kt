@@ -235,15 +235,10 @@ fun SyndEntry.contentText(): String {
     }
 
     // Markdown's marks (![…](…), **, ```) are not text to show on a card.
-    val result = HtmlToPlainTextConverter().convert(MarkdownLite.htmlIfMarkdown(possiblyHtml) ?: "")
-
-    // Description consists of at least one image, avoid opening browser for this item
-    return when {
-        result.isBlank() && possiblyHtml?.contains("img") == true ->
-            "<image>"
-
-        else -> result
-    }
+    // An image-only description gives no text: the card then shows no summary.
+    // (Feeder returned "<image>" here to steer its own opening; nothing in
+    // Whisper reads it, and it showed as text, Szept 452.)
+    return HtmlToPlainTextConverter().convert(MarkdownLite.htmlIfMarkdown(possiblyHtml) ?: "")
 }
 
 private fun convertAtomContentToPlainText(content: SyndContent?, fallback: String?): String {
