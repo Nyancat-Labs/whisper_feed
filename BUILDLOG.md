@@ -8,6 +8,20 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 24 November 2026 — CI mirror, issue templates, Fade fix; preview 7254a64
+
+**CI** reads Maven Central through Google's mirror (`.github/ci/`, copied
+into `~/.gradle/init.d` by the workflow), after runs 558 and 567 failed on
+429s; run 569 green. **Issue templates** are Whisper's own (Neo Feed's
+tracker, Telegram, Matrix and Weblate links gone). **A reader's email**
+(archive/files, 24 November): on 1.0.6 "Articles you've read: Fade" kept
+going back to Keep. One cause found and fixed: the filter sheet's Reset set
+it to the default; `readVisibilityAfterReset` now undoes only the sheet's
+Hide. Three new tests, 1,401 passing. Whether that is her only cause waits
+on her answer (Szept 447). `scripts/preview.sh` now takes a 7-character
+hash, as the build stamps it: git's plain `--short` had grown to 8 and the
+script looked for an APK that didn't exist. Preview 7254a64 sent for testing.
+
 ## 23 November 2026 — Second Dependabot round; 1.0.6 live on Play
 
 Dependabot opened six more pull requests overnight. Applied 16 to 20:
