@@ -306,9 +306,6 @@ fun ArticleListPage(
     val listEnd = rememberFeedEndSpace { listState.layoutInfo.viewportSize.height }
     val gridEnd = rememberFeedEndSpace { gridState.layoutInfo.viewportSize.height }
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
-    val showFAB by remember { derivedStateOf { listState.firstVisibleItemIndex > 4 } }
-    // Only on the way back up (review 83); see rememberScrollingUp.
-    val scrollingUp by rememberScrollingUp { listState.firstVisibleItemIndex to listState.firstVisibleItemScrollOffset }
 
     // Volume keys, when the reader has turned them on. Whichever container the
     // layout is using is the one that moves; asking both would fight.
@@ -327,6 +324,19 @@ fun ArticleListPage(
     val feedWidthDp = if (articleOpenBeside) FEED_BESIDE_ARTICLE_DP else windowWidthDp
     val columns = feedColumns(layout, feedWidthDp)
     val isGridLayout = columns > 1
+    // Whichever container is on screen: Mosaic scrolls the grid, and watching
+    // only the list kept Back to top from ever appearing there (reader email,
+    // 24 November). The launcher page's FeedScaffold already did this.
+    val showFAB by remember(isGridLayout) {
+        derivedStateOf {
+            if (isGridLayout) gridState.firstVisibleItemIndex > 4 else listState.firstVisibleItemIndex > 4
+        }
+    }
+    // Only on the way back up (review 83); see rememberScrollingUp.
+    val scrollingUp by rememberScrollingUp {
+        if (isGridLayout) gridState.firstVisibleItemIndex to gridState.firstVisibleItemScrollOffset
+        else listState.firstVisibleItemIndex to listState.firstVisibleItemScrollOffset
+    }
     // The two containers keep separate positions, so switching between them
     // - opening an article narrows the feed to one column - carries the place
     // across rather than jumping back to the top.
@@ -563,7 +573,8 @@ fun ArticleListPage(
                                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                                     onClick = {
                                         scope.launch {
-                                            listState.animateScrollToItem(0)
+                                            if (isGridLayout) gridState.animateScrollToItem(0)
+                                            else listState.animateScrollToItem(0)
                                         }
                                     },
                                 ) {

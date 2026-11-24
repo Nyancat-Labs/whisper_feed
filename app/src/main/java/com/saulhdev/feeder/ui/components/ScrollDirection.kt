@@ -22,6 +22,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 
 /**
@@ -35,9 +36,12 @@ import androidx.compose.runtime.snapshotFlow
 @Composable
 fun rememberScrollingUp(position: () -> Pair<Int, Int>): State<Boolean> {
     val up = remember { mutableStateOf(false) }
+    // The latest [position], not the first: a feed that changes container
+    // (list to Mosaic's grid) passes a new one, and the effect outlives it.
+    val current = rememberUpdatedState(position)
     LaunchedEffect(Unit) {
-        var last = position()
-        snapshotFlow(position).collect { now ->
+        var last = current.value()
+        snapshotFlow { current.value() }.collect { now ->
             if (now != last) {
                 up.value = isTowardsTop(last, now)
                 last = now

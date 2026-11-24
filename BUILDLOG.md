@@ -8,6 +8,22 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 24 November 2026 — Back to top in Mosaic; Swetha's second email
+
+Swetha confirmed she had used Reset in the Filters sheet, so 7254a64's fix
+(Szept 447) is the cause she hit. She also found no Back to top arrow in
+Mosaic. In the app's feed, ArticleListPage watched and scrolled only the
+list; Mosaic scrolls the staggered grid, so the arrow never appeared there.
+The launcher page's FeedScaffold already chose by container. Now both do,
+and `rememberScrollingUp` reads the latest position function
+(`rememberUpdatedState`): it had kept the first one, so a feed that changes
+container would have kept watching the old one. `MosaicBackToTopTest` fails
+on the old helper and passes now.
+
+She clarified her first request: an in-app browser tab (Custom Tabs), not
+the reader. Browser mode opens Chrome itself (`launchView`, a plain
+ACTION_VIEW). Decision for the owner.
+
 ## 24 November 2026 — Next-preview batch (Szept 457, 437, 414)
 
 **457, feed jumped back to an old article.** Found on Test build 9d14297:

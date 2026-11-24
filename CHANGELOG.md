@@ -16,6 +16,8 @@ Unreleased
   show "[IMG]" as their summary.
 - Coming back from Settings no longer jumps the feed to an article you once
   opened a source from; it stays where you left it.
+- The Back to top arrow now appears in the Mosaic layout too. Reported by a
+  reader.
 
 1.0.6 — 22 November 2026
 ------------------------
