@@ -51,6 +51,7 @@ import com.saulhdev.feeder.ui.icons.phosphor.ArrowUUpLeft
 import com.saulhdev.feeder.ui.icons.phosphor.Check
 import com.saulhdev.feeder.ui.icons.phosphor.CheckCircle
 import com.saulhdev.feeder.utils.READ_HIDE
+import com.saulhdev.feeder.utils.readVisibilityAfterReset
 import com.saulhdev.feeder.utils.readVisibilityOnShow
 import com.saulhdev.feeder.utils.extensions.koinNeoViewModel
 import com.saulhdev.feeder.viewmodels.MarkReadRange
@@ -145,7 +146,15 @@ fun SortFilterSheet(
                         sortAscPrefVar = prefs.sortingAsc.defaultValue
                         sourcesPrefVar = prefs.sourcesFilter.defaultValue
                         tagsPrefVar = prefs.tagsFilter.defaultValue
-                        readVisibilityPrefVar = prefs.readVisibility.defaultValue
+                        // Undoes the sheet's Hide, never a Keep or Fade set
+                        // in Settings: see readVisibilityAfterReset.
+                        val afterReset = readVisibilityAfterReset(
+                            prefs.readVisibility.getValue(),
+                            prefs.readVisibilityBeforeHide.getValue(),
+                        )
+                        if (afterReset != prefs.readVisibility.getValue()) {
+                            readVisibilityPrefVar = afterReset
+                        }
                         onDismiss()
                     }
                     ActionButton(

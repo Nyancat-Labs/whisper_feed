@@ -100,6 +100,17 @@ fun getReadVisibility(context: Context): Map<String, String> {
 fun readVisibilityOnShow(remembered: String): String =
     remembered.takeIf { it == READ_KEEP || it == READ_DIM } ?: READ_KEEP
 
+/**
+ * What the filter sheet's Reset leaves "Articles you've read" at.
+ *
+ * Reset clears the sheet's filters, and hiding read articles is one of them,
+ * so a Hide set there is undone. Keep or Fade is chosen in Settings, not in
+ * the sheet, and Reset leaves it alone. It used to set the default, Keep,
+ * which quietly undid a Fade (reported by a reader on 1.0.6).
+ */
+fun readVisibilityAfterReset(current: String, remembered: String): String =
+    if (current == READ_HIDE) readVisibilityOnShow(remembered) else current
+
 fun getFeedLayouts(context: Context): Map<String, String> {
     return mapOf(
         LAYOUT_CARDS to context.resources.getString(R.string.layout_cards),
