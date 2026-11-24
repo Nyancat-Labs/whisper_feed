@@ -156,7 +156,9 @@ for distribution.
   downloaded at once and kept, readable offline, until you remove it
 - Pinning, and full article text fetched per-feed or globally, and kept for
   reading offline
-- A reader and an in-app browser, matched to each other
+- A reader and an in-app browser, matched to each other; articles open in
+  the reader, a browser tab inside Whisper, or the browser app, for all
+  sources or one at a time
 
 **Phones and tablets**
 - On a tablet the feed spreads into columns sized to the screen — two, three or
