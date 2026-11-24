@@ -8,6 +8,24 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 24 November 2026 — Startup profile set up (board 66)
+
+Whisper had only its libraries' baseline profiles. New `:baselineprofile`
+module (com.android.test, Baseline Profile plugin 1.5.0, UiAutomator 2.4.1):
+a generator that goes through a fresh install's first run (Get started, the
+starter feeds, Skip the tour), waits for articles, scrolls the feed, opens
+an article and the Filters sheet; and a benchmark of cold start and
+scrolling, with and without the profile. The app gets the plugin
+(`mergeIntoMain`, no generation during a build, so nothing needs a phone to
+build) and profileinstaller, which applies the profile on installs outside
+Play. The builds used for recording (`nonMinified*`, `benchmark*`) install
+as `com.nyancatlabs.whisper.profile`, so recording can never replace or
+wipe the preview or the Play app on the same phone; signed with the release
+key when `keystore.properties` exists, otherwise the debug key (checked
+both). No emulator here (no `/dev/kvm`), so the journeys are untried on a
+device: the first recording on the Pixel will show whether the selectors
+hold. 1,401 tests, lint and the preview build pass.
+
 ## 24 November 2026 — CI mirror, issue templates, Fade fix; preview 7254a64
 
 **CI** reads Maven Central through Google's mirror (`.github/ci/`, copied

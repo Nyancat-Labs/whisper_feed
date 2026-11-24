@@ -17,11 +17,13 @@ Start here after a /clear. CLAUDE.md has the working rules; this is state.
 - **Szept** is the one list since 22 November (see *Work tracking* below).
   At the start of a session: `list_questions`, then
   `project_summary("Whisper")`. The old review sheet is frozen history.
-- **Next for Claude:** the startup profile (66, Szept 177), paused at
-  "may I add the Baseline Profile plugin and module?" (owner: continue
-  later). The profile is recorded on the owner's Pixel over USB, as this
-  container has no `/dev/kvm`. Translations (56, Szept 176) wait for
-  Weblate's approval (owner, 22 November).
+- **Next for Claude:** the startup profile (66, Szept 177) is set up
+  (24 November): `:baselineprofile` module, plugin, profileinstaller. It
+  waits for the owner to record it on the Pixel from the laptop (commands
+  in `baselineprofile/build.gradle.kts` and the Szept item); then commit
+  `app/src/main/generated/baselineProfiles/` and compare the numbers. The
+  Fade bug (Szept 447) waits on the reader's answer and Test build
+  7254a64. Translations (56, Szept 176) wait for Weblate's approval.
 - **Build setup in a new container:** Android SDK in `/opt/android-sdk`
   (cmdline-tools, platform-tools, build-tools 37; `local.properties` has
   `sdk.dir`). Maven Central answers 429 for big files from this network:

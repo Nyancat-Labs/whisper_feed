@@ -54,6 +54,10 @@ plugins {
     alias(libs.plugins.ksp)
     // Picture tests of screens, drawn on the computer (20 November 2026).
     alias(libs.plugins.roborazzi)
+    // Whisper's own startup profile (board 66): recorded on a phone by
+    // :baselineprofile, committed under src/main/generated, packed into every
+    // build. Nothing here needs a phone to build.
+    alias(libs.plugins.baselineprofile)
 }
 
 allprojects {
@@ -345,6 +349,13 @@ val copyDocs = tasks.register<CopyDocsTask>("copyDocsToAssets") {
 
 androidComponents {
     onVariants { variant ->
+        // The builds the profile is recorded with (the plugin's nonMinified*
+        // and benchmark* types) install as their own app, so recording can
+        // never replace, or wipe, the preview or the Play version on the phone.
+        val type = variant.buildType.orEmpty()
+        if (type.startsWith("nonMinified") || type.startsWith("benchmark")) {
+            variant.applicationId.set("com.nyancatlabs.whisper.profile")
+        }
         variant.sources.assets?.addGeneratedSourceDirectory(copyDocs, CopyDocsTask::outputDir)
         variant.outputs.forEach { output ->
             val versionName = output.versionName.get()
@@ -357,7 +368,19 @@ kotlin {
     jvmToolchain(libs.versions.jvmVersion.get().toInt())
 }
 
+baselineProfile {
+    // One profile for every build (release, preview, F-Droid's), kept in
+    // src/main/generated/baselineProfiles and committed. Recording is by
+    // hand, on a phone: ./gradlew :app:generateReleaseBaselineProfile
+    mergeIntoMain = true
+    automaticGenerationDuringBuild = false
+}
+
 dependencies {
+    // Applies the startup profile on phones that install outside Play
+    // (F-Droid, GitHub), where nothing else would.
+    implementation(libs.profileinstaller)
+    baselineProfile(project(":baselineprofile"))
     // No fileTree over app/libs: a jar dropped in that folder would be built
     // into the app without appearing in the dependency list.
     implementation(project(":google-gsa"))

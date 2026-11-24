@@ -276,7 +276,11 @@ which is private; here they are "a user". Item numbers are the sheet's.
 - **Startup and scrolling profile** (66): Whisper ships only its libraries'
   baseline profiles. Record its own (start, scroll the feed, open an
   article, filter sheet) and measure before and after. Needs a laptop with
-  the phone on USB.
+  the phone on USB. **Set up 24 November:** the `:baselineprofile` module
+  (journeys, generator, start-up and scroll benchmark), the plugin and
+  profileinstaller in the app. Recording installs its own app,
+  `com.nyancatlabs.whisper.profile`, never the preview or Play's. Waiting
+  for the owner's first recording on the Pixel (Szept 177).
 - **Long-press an article for a preview** (67): **review batch 3**, with
   the card menu (58) (owner, 5 November).
 - **Reset all settings** (68): planned for 5 December (Szept 178).
