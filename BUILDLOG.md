@@ -28,6 +28,8 @@ Test build da08e45 (Szept 463): 7 of 8 passed. T8 (launcher page: closing the
 tab lands on the home screen, not the panel) is the known limitation,
 ROADMAP item 10.
 
+Preview d6c6eb9 sent (Szept 471). 1418 tests, lint and picture tests pass.
+
 ## 24 November 2026 — Open articles with: In-app (Custom Tabs, Szept 461)
 
 Owner's choice: three choices, not Browser changed. New mode `tab`
