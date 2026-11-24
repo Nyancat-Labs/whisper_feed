@@ -177,6 +177,7 @@ class Opml : TagWithText("opml") {
  */
 internal fun Outline.whisperSettings(feed: Feed) {
     if (feed.fullTextByDefault) attributes[ATTR_FULL_TEXT] = "true"
+    if (feed.fullTextOff) attributes[ATTR_FULL_TEXT] = "false"
     if (!feed.showInAll) attributes[ATTR_SHOW_IN_ALL] = "false"
     if (!feed.isEnabled) attributes[ATTR_ENABLED] = "false"
     if (feed.openMode.isNotEmpty()) attributes[ATTR_OPEN_MODE] = escape(feed.openMode)

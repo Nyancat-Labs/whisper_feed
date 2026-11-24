@@ -479,7 +479,7 @@ interface FeedArticleDao {
         SELECT Article.uuid, Article.link FROM Article
         JOIN Feeds f ON Article.feedId = f.id
         WHERE Article.bookmarked = 1
-           OR ((:allFeeds OR f.fullTextByDefault = 1)
+           OR (f.fullTextOff = 0 AND (:allFeeds OR f.fullTextByDefault = 1)
                AND Article.readAt = 0 AND Article.primarySortTime > :since)
         ORDER BY Article.bookmarked DESC, Article.primarySortTime DESC
         """

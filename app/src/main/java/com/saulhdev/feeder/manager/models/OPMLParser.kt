@@ -84,6 +84,7 @@ class OPMLParser(private val opmlToDb: ParserToDatabase<Feed>) : ContentHandler 
                         // came from a Whisper backup (sheet 114). Absent,
                         // a source gets the defaults, as before.
                         fullTextByDefault = attribute(atts, ATTR_FULL_TEXT) == "true",
+                        fullTextOff = attribute(atts, ATTR_FULL_TEXT) == "false",
                         showInAll = attribute(atts, ATTR_SHOW_IN_ALL) != "false",
                         isEnabled = attribute(atts, ATTR_ENABLED) != "false",
                         openMode = attribute(atts, ATTR_OPEN_MODE)

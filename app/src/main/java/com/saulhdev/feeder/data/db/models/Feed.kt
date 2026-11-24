@@ -146,7 +146,29 @@ data class Feed(
      */
     @ColumnInfo(defaultValue = "")
     val openMode: String = "",
+
+    /**
+     * This source skips full-article fetching even while Settings turns it on
+     * for every feed. Without it the source's switch sat greyed out once the
+     * global one was on, so one heavy or paywalled site could not be left
+     * out (Szept 463). Only set while it means something: switching a
+     * source off with the global switch off clears [fullTextByDefault] and
+     * leaves this false, so the two are never both true.
+     */
+    @ColumnInfo(defaultValue = "0")
+    val fullTextOff: Boolean = false,
 ) {
+    /** Whether syncing downloads this source's whole articles. */
+    fun fetchesFullText(allFeeds: Boolean): Boolean = !fullTextOff && (allFeeds || fullTextByDefault)
+
+    /**
+     * This source with its full-text switch turned [on] or off, given whether
+     * Settings fetches full text for every feed ([allFeeds]). Off only records
+     * an opt-out when the global switch is on, where it changes something.
+     */
+    fun withFullText(on: Boolean, allFeeds: Boolean): Feed =
+        copy(fullTextByDefault = on, fullTextOff = !on && allFeeds)
+
     /**
      * The feed's categories.
      *

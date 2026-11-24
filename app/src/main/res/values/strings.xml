@@ -528,7 +528,7 @@
     <string name="pref_full_text_all_feeds_summary">Download the whole article while syncing, for every source at once. Individual sources can still be set on their own.</string>
     <string name="pref_full_text_on_mobile">Download full articles on mobile data</string>
     <string name="pref_full_text_on_mobile_summary">When off, full articles are downloaded in advance only on Wi-Fi. An article you open still loads straight away on any network.</string>
-    <string name="fetch_full_articles_all_feeds_on">On for every feed in Settings</string>
+    <string name="fetch_full_articles_all_feeds_on">On for every feed in Settings. Switch off to leave this source out.</string>
     <string name="fetch_full_articles_summary">Download the whole article while syncing, so it is ready offline. The reader fetches it on demand either way.</string>
     <string name="article_not_found">Local article not found</string>
     <string name="on_date" translatable="false">%1$s</string>

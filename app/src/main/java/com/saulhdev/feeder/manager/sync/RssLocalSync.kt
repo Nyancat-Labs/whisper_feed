@@ -323,7 +323,7 @@ internal suspend fun syncFeeds(
                 val gate = Semaphore(MAX_CONCURRENT_FEEDS)
                 val jobs = feedsToFetch.map { feed ->
                     needFullTextSync = needFullTextSync ||
-                            feed.fullTextByDefault || fullTextForAll
+                            feed.fetchesFullText(fullTextForAll)
                     launch(coroutineContext) {
                         gate.withPermit {
                             val fetchStarted = System.currentTimeMillis()

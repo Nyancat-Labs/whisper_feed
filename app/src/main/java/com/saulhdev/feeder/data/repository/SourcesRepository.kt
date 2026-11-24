@@ -448,9 +448,10 @@ class SourcesRepository(db: NeoFeedDb) {
      * visits to twenty editors is not a feature.
      */
     suspend fun setFullTextByDefault(ids: Collection<Long>, enabled: Boolean) = withContext(jcc) {
+        val allFeeds = prefs.fullTextForAllFeeds.getValue()
         val feeds = feedsDao.loadAllFeeds()
-            .filter { it.id in ids && it.fullTextByDefault != enabled }
-            .map { it.copy(fullTextByDefault = enabled) }
+            .filter { it.id in ids }
+            .mapNotNull { old -> old.withFullText(enabled, allFeeds).takeIf { it != old } }
         if (feeds.isNotEmpty()) feedsDao.updateAll(feeds)
     }
 

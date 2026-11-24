@@ -8,6 +8,26 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 24 November 2026 — A source can opt out of full articles (Szept 463)
+
+Owner's note on test build da08e45: with Settings → Fetching → "Fetch full
+articles for every feed" on, each source's own switch was greyed out, so one
+source could not be left out. New column `Feeds.fullTextOff` (database 32,
+`MIGRATION_31_32`, default 0). The switch now shows what the source actually
+does (`Feed.fetchesFullText`) and always works: off with the global switch on
+records the opt-out, off with it off just clears the source's own choice
+(`Feed.withFullText`), so the two flags are never both set. Sync and the
+prefetch query honour it; saved articles are still fetched. The
+`ArticleIdWithLink` view needs no change because an opted-out source never has
+`fullTextByDefault`. The bulk action on the Sources list follows the same
+rule. OPML backups write `whisperFullText="false"` for an opt-out. Summary
+text: "On for every feed in Settings. Switch off to leave this source out."
+`FullTextOptOutTest`, 3 tests; the migration test covers 31 → 32.
+
+Test build da08e45 (Szept 463): 7 of 8 passed. T8 (launcher page: closing the
+tab lands on the home screen, not the panel) is the known limitation,
+ROADMAP item 10.
+
 ## 24 November 2026 — Open articles with: In-app (Custom Tabs, Szept 461)
 
 Owner's choice: three choices, not Browser changed. New mode `tab`

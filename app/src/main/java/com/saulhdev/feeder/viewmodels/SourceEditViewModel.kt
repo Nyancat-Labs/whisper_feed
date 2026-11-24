@@ -100,6 +100,7 @@ class SourceEditViewModel : NeoViewModel() {
         val feedId = _feedId.replayCache.firstOrNull() ?: -1L
         val currentFeed = repository.loadFeedById(feedId) ?: return
         val needsResync = currentFeed.fullTextByDefault != state.fullTextByDefault
+                || currentFeed.fullTextOff != state.fullTextOff
                 || currentFeed.isEnabled != state.isEnabled
 
         val saved = repository.updateSource(
@@ -108,6 +109,7 @@ class SourceEditViewModel : NeoViewModel() {
                 url = sloppyLinkToStrictURL(state.url),
                 tag = state.tag,
                 fullTextByDefault = state.fullTextByDefault,
+                fullTextOff = state.fullTextOff,
                 isEnabled = state.isEnabled,
                 showInAll = state.showInAll,
                 openMode = state.openMode,
@@ -140,6 +142,7 @@ class SourceEditViewModel : NeoViewModel() {
             url = feed.url.toString(),
             tag = feed.tag,
             fullTextByDefault = feed.fullTextByDefault,
+            fullTextOff = feed.fullTextOff,
             isEnabled = feed.isEnabled,
             showInAll = feed.showInAll,
             openMode = feed.openMode,

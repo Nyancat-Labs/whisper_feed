@@ -27,6 +27,8 @@ data class SourceEditViewState(
     val url: String = "",
     val tag: String = "",
     val fullTextByDefault: Boolean = true,
+    /** Skips full text even while Settings fetches it for every feed (Szept 463). */
+    val fullTextOff: Boolean = false,
     val isEnabled: Boolean = true,
     val showInAll: Boolean = true,
     /** "" follows Settings; otherwise reader or browser (sheet 113). */

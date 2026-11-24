@@ -52,7 +52,7 @@ const val ID_ALL: Long = -1L
         Suggestion::class,
         ReadingTally::class,
     ],
-    version = 31,
+    version = 32,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(
@@ -233,6 +233,7 @@ abstract class NeoFeedDb : RoomDatabase() {
 }
 
 val allMigrations = arrayOf(
+    MIGRATION_31_32,
     MIGRATION_30_31,
     MIGRATION_29_30,
     MIGRATION_28_29,
@@ -260,6 +261,14 @@ val allMigrations = arrayOf(
     MIGRATION_12_13,
     MIGRATION_13_14,
 )
+
+@Suppress("ClassName")
+object MIGRATION_31_32 : Migration(31, 32) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // No source has opted out of fetching full articles yet.
+        db.execSQL("ALTER TABLE Feeds ADD COLUMN fullTextOff INTEGER NOT NULL DEFAULT 0")
+    }
+}
 
 @Suppress("ClassName")
 object MIGRATION_30_31 : Migration(30, 31) {

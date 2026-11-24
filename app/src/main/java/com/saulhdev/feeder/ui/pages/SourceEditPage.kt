@@ -133,6 +133,7 @@ fun SourceEditPage(
                     url = freshFeed.url.toString(),
                     tag = freshFeed.tag,
                     fullTextByDefault = freshFeed.fullTextByDefault,
+                    fullTextOff = freshFeed.fullTextOff,
                     isEnabled = freshFeed.isEnabled,
                     showInAll = freshFeed.showInAll,
                     openMode = freshFeed.openMode,
@@ -401,14 +402,18 @@ fun SourceEditView(
             // pushed off the bottom of the screen by it.
             ComposeSwitchView(
                 titleId = R.string.fetch_full_articles_by_default,
-                // When the global switch is on this one cannot change anything,
-                // so it says why rather than sitting there looking broken.
+                // Shows what this source actually does. With the global switch
+                // on it was greyed out and could not leave one source out;
+                // now switching it off records an opt-out (Szept 463).
                 summaryId = if (fullTextForAll) R.string.fetch_full_articles_all_feeds_on
                 else R.string.fetch_full_articles_summary,
-                isChecked = fullTextForAll || editState.value.fullTextByDefault,
-                isEnabled = !fullTextForAll,
+                isChecked = !editState.value.fullTextOff &&
+                        (fullTextForAll || editState.value.fullTextByDefault),
                 onCheckedChange = {
-                    editState.value = editState.value.copy(fullTextByDefault = it)
+                    editState.value = editState.value.copy(
+                        fullTextByDefault = it,
+                        fullTextOff = !it && fullTextForAll,
+                    )
                     onEdited()
                 },
                 index = 0,
