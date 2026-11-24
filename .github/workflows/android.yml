@@ -30,6 +30,12 @@ jobs:
           java-version: 21
           distribution: 'temurin'
           cache: gradle
+      # Maven Central throttles (429) some large files from GitHub's runners,
+      # so read it through Google's mirror. CI only; see the script.
+      - name: Maven Central through Google's mirror
+        run: |
+          mkdir -p ~/.gradle/init.d
+          cp .github/ci/central-mirror.gradle.kts ~/.gradle/init.d/
       - name: Unit tests
         run: ./gradlew :app:testDebugUnitTest
       - name: Lint
