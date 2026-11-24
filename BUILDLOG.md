@@ -21,6 +21,16 @@ steer opening, nothing in Whisper reads it, and it would have shown as text.
 Articles stored with either marker lose it when their feed is parsed again;
 the rest age out within the week. `ImageOnlySummaryTest`, 4 tests.
 
+Preview 9d14297 sent (Szept 456): 1405 tests, lint and picture tests pass,
+signed with the release key. Stored "[IMG]" summaries only clear when the
+feed brings something new, since an unchanged feed is not parsed again.
+
+This environment ("076") now has a setup script: it runs
+`scripts/cloud-setup.sh` and copies `.github/ci/central-mirror.gradle.kts`
+into `~/.gradle/init.d/`, so new sessions can build straight away. The reply
+to Swetha was recovered from the last session's transcript and is in Szept
+449's notes, since `archive/` did not survive the container (Szept 455).
+
 Szept's connector can now open attached files (`get_file`), so screenshots
 on Szept items no longer need sending in the session.
 

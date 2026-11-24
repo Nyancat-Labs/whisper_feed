@@ -24,7 +24,10 @@ Start here after a /clear. CLAUDE.md has the working rules; this is state.
   `app/src/main/generated/baselineProfiles/` and compare the numbers. The
   Fade bug (Szept 447) waits on the reader's answer and Test build
   7254a64. Translations (56, Szept 176) wait for Weblate's approval.
-- **Build setup in a new container:** Android SDK in `/opt/android-sdk`
+- **Preview 9d14297** (no "[IMG]" summaries, Szept 452) sent 24 November;
+  test item Szept 456.
+- **Build setup in a new container:** the "076" environment's setup script
+  does all of this since 24 November. Android SDK in `/opt/android-sdk`
   (cmdline-tools, platform-tools, build-tools 37; `local.properties` has
   `sdk.dir`). Maven Central answers 429 for big files from this network:
   `~/.gradle/init.d/central-mirror.gradle.kts` reads it through Google's
