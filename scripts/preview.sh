@@ -22,7 +22,7 @@ if [ -n "$(git status --porcelain -- app)" ]; then
 fi
 [ -f keystore.properties ] || { echo "keystore.properties is missing: the preview would be unsigned." >&2; exit 1; }
 
-hash=$(git rev-parse --short HEAD)
+hash=$(git rev-parse --short=7 HEAD)  # 7, as app/build.gradle.kts stamps it; plain --short grows with the repo
 echo "== Tests, pictures and lint ($hash)"
 # verifyRoborazziDebug runs every unit test, and fails if a picture test
 # no longer matches its saved picture (src/test/screenshots). After a change
