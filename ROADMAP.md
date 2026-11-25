@@ -76,8 +76,9 @@ layout; the four layouts are what the user chooses between. Both exist now.
 
 ## Released: 1.0.6 (22 November 2026)
 
-**Out:** Play in review from 18:40 (quick checks passed) (live on approval), GitHub v1.0.6 at
-18:42, F-Droid follows the tag. Still to do: the fdroidserver checks.
+**Out:** Play live (confirmed 25 November: the owner's Play-installed Sony Xperia
+updated to it), GitHub v1.0.6 at 18:42 on 22 November, F-Droid follows the tag.
+Still to do: the fdroidserver checks.
 
 Agreed 19 October 2026. In CHANGELOG.md under Unreleased as each lands.
 The owner is using the preview on the Pixel 10 for a week before release.
