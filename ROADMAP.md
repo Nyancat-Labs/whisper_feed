@@ -101,7 +101,8 @@ Translations move to 1.0.8; they wait on Weblate (Szept 215) either way.
 
 **Out:** Play live (confirmed 25 November: the owner's Play-installed Sony Xperia
 updated to it), GitHub v1.0.6 at 18:42 on 22 November, F-Droid follows the tag.
-Still to do: the fdroidserver checks.
+fdroidserver checks: clean for 1.0.6 (scanner, source and APK) and again on
+main before 1.0.7 (25 November: lint, rewritemeta, scanner, keyless build).
 
 Agreed 19 October 2026. In CHANGELOG.md under Unreleased as each lands.
 The owner is using the preview on the Pixel 10 for a week before release.

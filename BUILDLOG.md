@@ -8,6 +8,21 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 25 November 2026 — F-Droid checks on the 1.0.7 candidate
+
+fdroidserver 2.4.6 in a scratchpad venv, on main at 3892171 (what 1.0.7 will
+be, bar the version bump). `fdroid lint` on the metadata with fdroiddata's
+117 categories: clean. `fdroid rewritemeta`: no changes. On a fresh clone,
+`remove_signing_keys` then `scan_source`: 0 problems. The stripped copy built
+without keys (`assembleRelease`, as F-Droid does; the step not done for 1.0.6):
+builds. `scan_binary` on that APK: 0 problems. Repeat after the version bump
+on Sunday only if the bump touches more than the version lines.
+
+GitHub #3 (Chrizzle, 25 November): confirmed he wants one category at a time,
+and that a selected category can sit off the end of the row. Szept 503
+(decide, 5 December): tap and long-press, or a setting; aim 1.0.8. It
+replaces 415, cancelled by accident.
+
 ## 25 November 2026 — Mosaic: sync anchors on the tile being looked at (Szept 499)
 
 Owner's test of 6bb282e: Cards fine, Mosaic still a card out, both ways
