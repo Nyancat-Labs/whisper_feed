@@ -21,6 +21,7 @@ bc0ba74 are gone; `MainActivity.underTabIntent` only marks the feed so it
 shows no splash. The read timer starts in the panel again and the feed's
 resume settles it. `openOutside` builds its intent in `outsideViewIntent`.
 `PanelOutsideTest` rewritten, 3 tests (Robolectric sees both starts, in order).
+Preview af8ac5f sent (Szept 478). 1424 tests, lint and picture tests pass.
 
 ## 25 November 2026 — In-app and Browser from the panel close onto Whisper's feed (Szept 474)
 
