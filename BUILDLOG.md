@@ -22,6 +22,11 @@ at the same height but its neighbours can differ; an idea in Szept (501).
 `FeedPlaceTest`, 10 tests. Preview 720afc0 sent (Szept 500, replacing 499).
 1434 tests, lint and picture tests pass.
 
+Owner's test of 720afc0: good enough for what it is for and for the few who
+use the launcher page; it ships in 1.0.7. Mosaic is sometimes a line out, and
+after a layout change the place only syncs once the reader scrolls (a place
+is recorded when a scroll ends). Fine-tuning left for later (Szept 502).
+
 ## 25 November 2026 — Sync lands on the same pixel, not a card out (Szept 483, T5)
 
 Owner's test of dc4e5bb: 9 of 10. The sync worked but the article landed

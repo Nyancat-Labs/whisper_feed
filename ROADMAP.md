@@ -84,7 +84,9 @@ Translations move to 1.0.8; they wait on Weblate (Szept 215) either way.
 
 - **Saturday 28:** the owner tests preview 720afc0 (Szept 500). dc4e5bb (483)
   passed 9 of 10 with the sync a card out; 6bb282e fixed Cards, and 720afc0
-  fixes Mosaic, where the sync anchored on a sliver of the other lane. If scroll
+  fixes Mosaic, where the sync anchored on a sliver of the other lane.
+  **Done 25 November:** the owner accepted 720afc0; scroll sync ships.
+  Fine-tuning later (Szept 502), if launcher-page users ask. If scroll
   sync is not smooth, it is reverted and 1.0.7 ships without it rather than
   waiting. Code freeze in the evening: blockers only.
 - **Sunday 29, afternoon:** version 1.0.7 (versionCode 8), the CHANGELOG
