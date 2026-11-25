@@ -26,6 +26,7 @@ no longer records on a tap. The same spot within 2 px is no news.
 `FeedPlaceTest`, 9 tests: two lists with different items above the articles,
 stopped part-way through a card, land on the same pixel both ways.
 T6's brief blank was the feed finding its place (at most 0.6 s), as designed.
+Preview 6bb282e sent (Szept 499). 1433 tests, lint and picture tests pass.
 
 ## 25 November 2026 — The app's feed and the launcher panel keep one place (Szept 481)
 

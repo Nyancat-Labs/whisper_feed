@@ -82,7 +82,8 @@ week after 1.0.6, carrying everything under *Unreleased* in the CHANGELOG
 return and scroll sync, and the fixes, three of them reported by a reader).
 Translations move to 1.0.8; they wait on Weblate (Szept 215) either way.
 
-- **Saturday 28:** the owner tests preview dc4e5bb (Szept 483). If scroll
+- **Saturday 28:** the owner tests preview 6bb282e (Szept 499; dc4e5bb, Szept 483,
+  passed 9 of 10, the sync landing a card out, fixed in 6bb282e). If scroll
   sync is not smooth, it is reverted and 1.0.7 ships without it rather than
   waiting. Code freeze in the evening: blockers only.
 - **Sunday 29, afternoon:** version 1.0.7 (versionCode 8), the CHANGELOG
