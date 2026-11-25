@@ -157,15 +157,25 @@ object FeedPlace {
     }
 }
 
+/** One item on screen, as a place is chosen from it. */
+internal class SeenItem(val key: Any, val top: Int, val height: Int, val left: Int = 0)
+
 /**
  * The place to record for a list at rest: the top while the header shows,
- * otherwise the first article on screen (day headings are passed over), and
- * how far down its top is. [visible] pairs each visible item's key with its
- * offset from the top of the list.
+ * otherwise the article the reader is looking at, and how far down its top
+ * is. That is the highest article with at least half of it on screen (the
+ * left one when two sit level), not the first in the list: in Mosaic the
+ * first was often a tile in the other lane with a few pixels left showing,
+ * and the other surface then showed that sliver and everything a card out
+ * (Szept 499). Day headings are passed over.
  */
-internal fun placeOf(firstVisibleIndex: Int, visible: List<Pair<Any, Int>>, ids: Set<String>): Pair<String, Int>? =
-    if (firstVisibleIndex == 0) FeedPlace.TOP to 0
-    else visible.firstOrNull { (key, _) -> key is String && key in ids }?.let { (key, offset) -> key as String to offset }
+internal fun placeOf(firstVisibleIndex: Int, visible: List<SeenItem>, ids: Set<String>): Pair<String, Int>? {
+    if (firstVisibleIndex == 0) return FeedPlace.TOP to 0
+    val articles = visible.filter { it.key is String && it.key in ids }
+    val looked = articles.filter { it.top + it.height / 2 >= 0 }.ifEmpty { articles }
+    return looked.minWithOrNull(compareBy<SeenItem> { it.top }.thenBy { it.left })
+        ?.let { it.key as String to it.top }
+}
 
 /**
  * Keeps this surface's feed in step with the other's: takes the other's
@@ -250,9 +260,17 @@ fun SyncFeedPlace(
             .collect {
                 val ids = currentArticles.mapTo(HashSet()) { it.id }
                 val place = if (isGrid) {
-                    placeOf(gridState.firstVisibleItemIndex, gridState.layoutInfo.visibleItemsInfo.map { it.key to it.offset.y }, ids)
+                    placeOf(
+                        gridState.firstVisibleItemIndex,
+                        gridState.layoutInfo.visibleItemsInfo.map { SeenItem(it.key, it.offset.y, it.size.height, it.offset.x) },
+                        ids,
+                    )
                 } else {
-                    placeOf(listState.firstVisibleItemIndex, listState.layoutInfo.visibleItemsInfo.map { it.key to it.offset }, ids)
+                    placeOf(
+                        listState.firstVisibleItemIndex,
+                        listState.layoutInfo.visibleItemsInfo.map { SeenItem(it.key, it.offset, it.size) },
+                        ids,
+                    )
                 }
                 if (place != null) FeedPlace.record(surface, place.first, place.second)
             }

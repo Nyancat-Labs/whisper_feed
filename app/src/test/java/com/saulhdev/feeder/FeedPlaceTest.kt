@@ -21,6 +21,7 @@ import com.saulhdev.feeder.data.db.models.Feed
 import com.saulhdev.feeder.data.db.models.FeedItem
 import com.saulhdev.feeder.ui.overlay.FEED_HEADER_KEY
 import com.saulhdev.feeder.ui.overlay.PLACE_WAIT_MS
+import com.saulhdev.feeder.ui.overlay.SeenItem
 import com.saulhdev.feeder.ui.overlay.FeedPlace
 import com.saulhdev.feeder.ui.overlay.FeedSurface
 import com.saulhdev.feeder.ui.overlay.SyncFeedPlace
@@ -171,10 +172,25 @@ class FeedPlaceTest {
 
     @Test
     fun `the place is the top while the header shows, else the first article, past day headings`() {
-        val ids = setOf("a1", "a2")
-        assertEquals(FeedPlace.TOP to 0, placeOf(0, listOf(FEED_HEADER_KEY to 0, "a1" to 100), ids))
-        assertEquals("a1" to -40, placeOf(3, listOf("day-2026-11-25" to -90, "a1" to -40, "a2" to 60), ids))
-        assertEquals(null, placeOf(3, listOf("bookmarks-empty" to 0), ids))
+        val ids = setOf("a1", "a2", "a3")
+        assertEquals(FeedPlace.TOP to 0, placeOf(0, listOf(SeenItem(FEED_HEADER_KEY, 0, 100), SeenItem("a1", 100, 100)), ids))
+        assertEquals("a1" to -40, placeOf(3, listOf(SeenItem("day-2026-11-25", -90, 50), SeenItem("a1", -40, 100), SeenItem("a2", 60, 100)), ids))
+        assertEquals(null, placeOf(3, listOf(SeenItem("bookmarks-empty", 0, 100)), ids))
+    }
+
+    @Test
+    fun `in Mosaic, the tile looked at, not a sliver in the other lane that comes first in the list`() {
+        // Your screenshot: a right-lane tile with a few pixels left on screen
+        // comes first in the list; the tile the reader sees is the next one.
+        val ids = setOf("a1", "a2", "a3")
+        val seen = listOf(
+            SeenItem("a1", -530, 545, left = 500),
+            SeenItem("a2", 4, 545, left = 0),
+            SeenItem("a3", 570, 700, left = 0),
+        )
+        assertEquals("a2" to 4, placeOf(5, seen, ids))
+        // Two tiles level: the left one.
+        assertEquals("a2" to 0, placeOf(5, listOf(SeenItem("a1", 0, 300, left = 500), SeenItem("a2", 0, 300, left = 0)), ids))
     }
 
     @Test

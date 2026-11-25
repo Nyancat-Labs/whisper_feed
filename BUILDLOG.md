@@ -8,6 +8,19 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 25 November 2026 — Mosaic: sync anchors on the tile being looked at (Szept 499)
+
+Owner's test of 6bb282e: Cards fine, Mosaic still a card out, both ways
+(screenshots archive/screenshots/2026-11-25-1950-* and -1951-*). The place was
+the first article in list order, which in Mosaic was often a tile in the
+other lane with a few pixels left on screen; the other surface showed that
+sliver and everything below a card out. `placeOf` now takes the highest
+article with at least half of it on screen (left one when two are level).
+Left as is: the two surfaces pair Mosaic tiles differently (the panel is
+10 dp narrower each side and levels its own lanes), so the anchored tile is
+at the same height but its neighbours can differ; an idea in Szept.
+`FeedPlaceTest`, 10 tests.
+
 ## 25 November 2026 — Sync lands on the same pixel, not a card out (Szept 483, T5)
 
 Owner's test of dc4e5bb: 9 of 10. The sync worked but the article landed
