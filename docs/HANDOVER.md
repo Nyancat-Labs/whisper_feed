@@ -129,7 +129,8 @@ Put the `.p12` somewhere in the new container and set `storeFile` in
 **Builds:**
 - Preview APK: `./gradlew :app:assemblePreview`, then copy to `out/preview/`
   and send to the owner. It installs over the Play build.
-- Tests: `./gradlew :app:testDebugUnitTest`. 1122 tests passing at handover.
+- Tests: `./gradlew :app:testDebugUnitTest`. 1439 tests passing on 25 November 2026 (with lint and the
+  Roborazzi picture tests: `:app:verifyRoborazziDebug :app:lintDebug`).
 
 ## F-Droid releases
 

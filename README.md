@@ -141,6 +141,7 @@ for distribution.
 **Reading**
 - Four layouts — Cards, Magazine, List, Mosaic
 - Each article's category, source and age on one line under the headline
+- Category buttons that work like tabs: one category at a time, or All
 - Article size earned rather than positional: recency, your own reading habits
   and whether several sources are covering one story
 - **Today**, **Yesterday** and the days before as headings, with the time of
@@ -154,8 +155,8 @@ for distribution.
   can stay at the top until you scroll past it
 - **Read later**: save an article and the whole of it, pictures included, is
   downloaded at once and kept, readable offline, until you remove it
-- Pinning, and full article text fetched per-feed or globally, and kept for
-  reading offline
+- Pinning, and full article text fetched per-feed or globally (with any
+  source left out), and kept for reading offline
 - A reader and an in-app browser, matched to each other; articles open in
   the reader, a browser tab inside Whisper, or the browser app, for all
   sources or one at a time
@@ -212,7 +213,9 @@ Home screen → swipe right → Whisper
 
 It is a genuine native launcher overlay, **not** a home-screen widget, and it
 is the same app: the panel and the app window are deliberately identical, with
-the same layouts, cards and gestures.
+the same layouts, cards and gestures. They keep one place between them:
+scroll either and the other opens where you were, and Back from an article
+opened on the panel lands on Whisper's feed at that article.
 
 **You do not need this.** Most people installing a reader want a reader, and
 Whisper is one whether or not a launcher ever asks it for a page. The setup
