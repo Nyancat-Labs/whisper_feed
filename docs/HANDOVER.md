@@ -161,7 +161,8 @@ ROADMAP, *Next release: 1.0.7*). Every change is tested on the owner's Pixel:
 In-app tab, one source out of full articles (database 32), category buttons
 one at a time (GitHub #3), the launcher-page return and scroll sync, and the
 fixes (Fade, [IMG], feed after Settings, Back to top in Mosaic, previous
-article flash). Play notes drafted in `changelogs/8.txt` (457 of 500
+article flash), and About's Contact us without its intro paragraph. The
+candidate the owner tests until Friday is preview 89590d0. Play notes drafted in `changelogs/8.txt` (457 of 500
 characters). F-Droid checks clean on main (25 November). Code freeze
 Saturday evening; Sunday: Szept 490 (Claude: version 1.0.7 / code 8,
 CHANGELOG section, GitHub text, signed AAB and APK) then 491 (owner: Play
