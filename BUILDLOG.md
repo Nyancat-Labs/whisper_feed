@@ -23,6 +23,8 @@ repeated when the activity is recreated from Recents; no splash on the way;
 the read timer starts after the previous trip is settled. `PanelOutsideTest`,
 3 tests.
 
+Preview bc0ba74 sent (Szept 476). 1424 tests, lint and picture tests pass.
+
 ## 24 November 2026 — Back from a panel article goes to Whisper's feed (Szept 470)
 
 Owner's test on the Pixel 10: Reader opened from the launcher panel, then
