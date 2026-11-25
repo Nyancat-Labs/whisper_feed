@@ -148,12 +148,13 @@ Store text and screenshots are in `fastlane/metadata/android/en-US/`.
 
 1.0.6 (build 7) went out on 22 November 2026: Play (in review, then live),
 GitHub v1.0.6 (tag on 3a108b2), F-Droid from the tag. Nothing unreleased
-yet. Next is 1.0.7 with the translations (board 56).
+yet. Next is 1.0.7, a bug-fix release on 29 November (Szept 486), then
+1.0.8 with the translations (board 56).
 
 **After releasing the translations:** remind the owner to email the user
 in France who asked for them (his email of 27 October is in the hej@
 inbox). He has agreed (28 October) to check the French: invite him to
-Weblate once it is set up, and send him the French preview before 1.0.7
+Weblate once it is set up, and send him the French preview before 1.0.8
 ships, so his corrections go into the release.
 
 `CHANGELOG.md` "Unreleased" has the wording. Store changelogs go in

@@ -74,6 +74,25 @@ layout; the four layouts are what the user chooses between. Both exist now.
 
 ---
 
+## Next release: 1.0.7 (Sunday 29 November 2026)
+
+**Decided 25 November (owner, Szept 486):** a bug-fix release from main, a
+week after 1.0.6, carrying everything under *Unreleased* in the CHANGELOG
+(In-app tab, leaving one source out of full articles, the launcher-page
+return and scroll sync, and the fixes, three of them reported by a reader).
+Translations move to 1.0.8; they wait on Weblate (Szept 215) either way.
+
+- **Saturday 28:** the owner tests preview dc4e5bb (Szept 483). If scroll
+  sync is not smooth, it is reverted and 1.0.7 ships without it rather than
+  waiting. Code freeze in the evening: blockers only.
+- **Sunday 29, afternoon:** version 1.0.7 (versionCode 8), the CHANGELOG
+  section, store notes (`changelogs/8.txt`, drafted 25 November), GitHub
+  release text, signed AAB and APK, the release-key check.
+- **Sunday 29, evening:** the owner uploads to Play; tag v1.0.7 on the
+  release commit and the owner publishes the GitHub release; F-Droid follows
+  the tag. Then the Play update on the owner's Sony Xperia (Play-installed)
+  shows it installs over 1.0.6 with data kept, database 31 → 32 included.
+
 ## Released: 1.0.6 (22 November 2026)
 
 **Out:** Play live (confirmed 25 November: the owner's Play-installed Sony Xperia
@@ -92,7 +111,7 @@ evening.
 pass on the phone (breaking-news notification, feeds that keep coming back
 empty, Reset all settings) and after a solid day or two of use, not
 necessarily a full week. Target the weekend of 28 November, earlier if
-they pass. Markdown photo posts (Cyberspace) are optional: an unusual feed. Translations (board 56) go in 1.0.7 unless Weblate
+they pass. Markdown photo posts (Cyberspace) are optional: an unusual feed. Translations (board 56) go in 1.0.8 (moved from 1.0.7, owner, 25 November) unless Weblate
 is ready in time.
 
 - [x] **Reader fixes from the real-feed check**: the headline once, lazily
@@ -218,7 +237,7 @@ is ready in time.
 
 - **New store screenshots** (132): phone and tablet, once the Material 3 Expressive overhaul (§19e) is finished (owner, 22 November), so one shoot shows the final look. The owner takes them from a list, Claude frames them and adds them to fastlane, the owner uploads to Play.
 
-- **What's new after an update** (131): a one-off card at the top of the feed, 3-5 lines from the store notes (`changelogs/<build>.txt`), a link to the full changelog, an ×. Once per version, not on a fresh install. Aim for 1.0.7, so the translations are announced.
+- **What's new after an update** (131): a one-off card at the top of the feed, 3-5 lines from the store notes (`changelogs/<build>.txt`), a link to the full changelog, an ×. Once per version, not on a fresh install. Aim for 1.0.8, so the translations are announced.
 
 - **Native debug symbols for Play** (22 November): Play warns that the bundle has native code without a symbol file. The code is only two AndroidX libraries (graphics path, DataStore counter), so it is harmless; adding `ndk.debugSymbolLevel` to the release build would quieten it and make any crash in them readable.
 
@@ -265,7 +284,7 @@ which is private; here they are "a user". Item numbers are the sheet's.
   player that brings tracking with it (YouTube's does); plain video and
   audio files can play with Android's own player. A full podcast app
   (queues, downloads) is out of scope.
-- **Translations**: in 1.0.7 (moved from 1.0.6, owner, 20 November), see *Translations*. A French user reviews the
+- **Translations**: in 1.0.8 (moved from 1.0.6 on 20 November, then from 1.0.7 on 25 November, owner), see *Translations*. A French user reviews the
   French.
 - **"Related articles" left in the reader** (76): French sites keep
   "Sur le même sujet" and linked "à lire aussi" headlines. Review batch 5:
