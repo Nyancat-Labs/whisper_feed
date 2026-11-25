@@ -25,6 +25,9 @@ it where it is. Replaces 2f542f3's one-way `PanelReturnAnchor`; opening the
 app from its icon now also takes the panel's place, which is the point.
 `FeedPlaceTest`, 6 tests, two lists syncing both ways among them.
 
+Preview d851be3 sent (Szept 482, replacing the untested 2f542f3, Szept 480).
+1430 tests, lint and picture tests pass.
+
 ## 25 November 2026 — Back from the panel lands on the article read (Szept 479)
 
 Owner's quick test of af8ac5f, with screenshots: from the launcher page, an
