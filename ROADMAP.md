@@ -3387,6 +3387,11 @@ so back works, and the browser in the app, where back already works.
 - An existing install keeps the app setting it has; the panel setting starts
   at its default.
 
+**Not doing, decided 25 November 2026 (owner, Szept 470):** Back now lands on
+Whisper's feed at the same place (scroll sync), and the swipe back to the
+panel itself is not worth days of work for the few who use it. The plan
+below is kept in case panel users ask for it.
+
 Placed last because it affects only readers who use the panel. *24 November
 2026:* in the meantime Back from a panel article goes to Whisper's own feed
 rather than closing the app, so the reader no longer lands on the desktop
