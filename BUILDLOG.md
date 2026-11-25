@@ -30,6 +30,8 @@ state still held the last article until the database flow caught up; inside
 the app the slide hid it. `ArticlePage` now shows state only when it belongs
 to the article asked for (`ifFor`). One more test in `LoneArticleBackTest`.
 Preview ff68716 sent (Szept 473); 1421 tests, lint and picture tests pass.
+Owner's test of ff68716 (25 November): 4 of 4 passed, both from the launcher
+page and in the app.
 
 ## 24 November 2026 — A source can opt out of full articles (Szept 463)
 
