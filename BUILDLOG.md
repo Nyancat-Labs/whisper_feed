@@ -19,6 +19,7 @@ the change read as All (`oneCategory`, in the row and in
 `ArticleListViewModel`), not whichever came first. Same row on the launcher
 page. The tour already said "one subject at a time". Play notes updated
 (changelogs/8.txt). `CategoryOneAtATimeTest`, 5 tests.
+Preview 92bbda1 sent (Szept 504). 1439 tests, lint and picture tests pass.
 
 ## 25 November 2026 — F-Droid checks on the 1.0.7 candidate
 
