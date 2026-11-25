@@ -18,8 +18,9 @@ sliver and everything below a card out. `placeOf` now takes the highest
 article with at least half of it on screen (left one when two are level).
 Left as is: the two surfaces pair Mosaic tiles differently (the panel is
 10 dp narrower each side and levels its own lanes), so the anchored tile is
-at the same height but its neighbours can differ; an idea in Szept.
-`FeedPlaceTest`, 10 tests.
+at the same height but its neighbours can differ; an idea in Szept (501).
+`FeedPlaceTest`, 10 tests. Preview 720afc0 sent (Szept 500, replacing 499).
+1434 tests, lint and picture tests pass.
 
 ## 25 November 2026 — Sync lands on the same pixel, not a card out (Szept 483, T5)
 
