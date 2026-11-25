@@ -24,6 +24,8 @@ the read timer starts after the previous trip is settled. `PanelOutsideTest`,
 3 tests.
 
 Preview bc0ba74 sent (Szept 476). 1424 tests, lint and picture tests pass.
+Owner's test (25 November): 7 of 7 passed. Sometimes the feed shows for a
+moment before the tab or browser opens; a cleaner launch is Szept 477.
 
 ## 24 November 2026 — Back from a panel article goes to Whisper's feed (Szept 470)
 
