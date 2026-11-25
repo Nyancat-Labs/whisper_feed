@@ -16,6 +16,7 @@ say, and no other section has one. Removed (`about_contact_summary` gone);
 the heading and the Email us row that Play's News policy asks for stay, and
 `PlayNewsPolicyTest` still guards them. Into 1.0.7.
 Preview 89590d0 sent (Szept 505). 1439 tests, lint and picture tests pass.
+Owner's check: passed.
 
 ## 25 November 2026 — Category buttons: one at a time (GitHub #3, Szept 503)
 
