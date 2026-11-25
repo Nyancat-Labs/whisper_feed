@@ -34,6 +34,8 @@ while a feed is still on its way to the other surface's place, and the app
 keeps its feed out of sight (alpha 0) until it is there, for 600 ms at most
 (`PLACE_WAIT_MS`). Not done on the panel yet: whether Lawnchair lets it move
 while closed is for the device to show. Two more tests in `FeedPlaceTest`.
+Preview dc4e5bb sent (Szept 483, replacing the untested d851be3, Szept 482).
+1432 tests, lint and picture tests pass.
 
 ## 25 November 2026 — Back from the panel lands on the article read (Szept 479)
 
