@@ -1,4 +1,5 @@
 - Open articles with: In-app, a browser tab inside Whisper, beside Reader and Browser.
+- Category buttons show one category at a time, like tabs.
 - Leave one source out of full-article downloads, even when every feed gets them.
 - Launcher page: closing an article returns to Whisper's feed, which keeps your place.
 - Fixes: "Fade" for read articles no longer resets to "Keep"; Back to top in Mosaic; no "[IMG]" summaries; the feed stays put after Settings.

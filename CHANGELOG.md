@@ -9,6 +9,9 @@ Whisper's. See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 Unreleased
 ----------
 
+- **One category at a time.** The category buttons now work like tabs: tap
+  one to see only that category, tap it again for All. A chosen category is
+  scrolled into view. Asked for on GitHub (#3).
 - **Fade stays Fade.** Reset in the filter sheet used to put "Articles
   you've read" back to Keep. It now only undoes a Hide set in the sheet and
   leaves Keep or Fade from Settings alone. Reported by a reader.

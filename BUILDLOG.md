@@ -8,6 +8,18 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 25 November 2026 — Category buttons: one at a time (GitHub #3, Szept 503)
+
+Owner's decision: Chrizzle is right, one category at a time, no setting and
+no long-press; if anyone asks for several again, they come back as an
+option. Into this weekend's 1.0.7. `CategoryChipRow`: a tap selects only
+that category (`chipTapped`), tapping it again is All, and the row scrolls a
+chosen chip into view if it is not wholly on screen. Several saved before
+the change read as All (`oneCategory`, in the row and in
+`ArticleListViewModel`), not whichever came first. Same row on the launcher
+page. The tour already said "one subject at a time". Play notes updated
+(changelogs/8.txt). `CategoryOneAtATimeTest`, 5 tests.
+
 ## 25 November 2026 — F-Droid checks on the 1.0.7 candidate
 
 fdroidserver 2.4.6 in a scratchpad venv, on main at 3892171 (what 1.0.7 will

@@ -27,6 +27,8 @@ import com.saulhdev.feeder.ui.components.categoryChipShape
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Text
@@ -43,6 +45,13 @@ import com.saulhdev.feeder.R
  * Selection maps onto the existing tag filter, so choosing a chip filters the
  * feed through the same path the filter sheet already uses. Selecting none is
  * "All": an empty tag set is what the article query treats as unfiltered.
+ *
+ * One category at a time, like tabs (owner, 25 November, GitHub #3): a tap
+ * shows only that category, and tapping it again goes back to All. It was
+ * multi-select, which meant switching categories off and on to see one, and
+ * a chosen chip scrolled off the end of the row stayed on unseen. The row now
+ * scrolls a chosen chip into view. If several are asked for again, they come
+ * back as an option, not as the default.
  *
  * The "All" chip is always drawn, even with no categories to sit beside it.
  * That is partly so the row is visibly present before any source has been
@@ -71,8 +80,22 @@ fun CategoryChipRow(
     // Sources default to an empty tag and the query does not exclude it, so an
     // untagged feed otherwise shows up here as a nameless chip.
     val named = categories.filter { it.isNotBlank() }
+    val current = oneCategory(selected)
+    val rowState = rememberLazyListState()
+    // A chosen chip is always on screen, so it is never on without the
+    // reader seeing that it is.
+    LaunchedEffect(current, named) {
+        val index = named.indexOf(current.singleOrNull() ?: return@LaunchedEffect) + 1
+        if (index < 1) return@LaunchedEffect
+        val info = rowState.layoutInfo
+        val chip = info.visibleItemsInfo.firstOrNull { it.index == index }
+        val whole = chip != null && chip.offset >= info.viewportStartOffset &&
+                chip.offset + chip.size <= info.viewportEndOffset
+        if (!whole) rowState.animateScrollToItem(index - 1)
+    }
 
     LazyRow(
+        state = rowState,
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
@@ -80,22 +103,18 @@ fun CategoryChipRow(
         item(key = ALL_CHIP_KEY) {
             CategoryChip(
                 label = stringResource(R.string.all_categories),
-                selected = selected.isEmpty(),
+                selected = current.isEmpty(),
                 // Already unfiltered, so re-tapping "All" should not churn the feed.
                 onClick = { if (selected.isNotEmpty()) onSelectedChange(emptySet()) },
             )
         }
 
         items(named, key = { it }) { category ->
-            val isSelected = category in selected
+            val isSelected = category in current
             CategoryChip(
                 label = category,
                 selected = isSelected,
-                onClick = {
-                    onSelectedChange(
-                        if (isSelected) selected - category else selected + category
-                    )
-                },
+                onClick = { onSelectedChange(chipTapped(current, category)) },
             )
         }
     }
@@ -130,3 +149,14 @@ private fun CategoryChip(
 
 
 private const val ALL_CHIP_KEY = "__all__"
+
+/**
+ * The selection as one category at a time. Several, as saved before the
+ * buttons became one at a time, is All: picking whichever came first would
+ * be a guess.
+ */
+fun oneCategory(selected: Set<String>): Set<String> = if (selected.size > 1) emptySet() else selected
+
+/** Tapping [category]: only it, or back to All if it was the one shown. */
+internal fun chipTapped(current: Set<String>, category: String): Set<String> =
+    if (category in current) emptySet() else setOf(category)

@@ -20,6 +20,7 @@ package com.saulhdev.feeder.viewmodels
 
 import androidx.lifecycle.viewModelScope
 import com.saulhdev.feeder.data.content.FeedPreferences
+import com.saulhdev.feeder.ui.overlay.oneCategory
 import com.saulhdev.feeder.data.db.models.FeedItem
 import com.saulhdev.feeder.data.entity.SORT_SOURCE
 import com.saulhdev.feeder.data.entity.SORT_TITLE
@@ -175,7 +176,8 @@ class ArticleListViewModel(
         // the News chip was active would open an empty screen that had
         // obediently done what both instructions said.
         combine(
-            prefs.categoryFilter.get(),
+            // One category at a time: several, saved before that, is All.
+            prefs.categoryFilter.get().map { oneCategory(it) },
             _searchQuery.map { it.isNotBlank() },
             _focusedSource,
         ) { categories, searching, focused ->
