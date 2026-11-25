@@ -87,6 +87,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -403,7 +404,7 @@ fun ArticleListPage(
     )
     // In step with the launcher panel: opens where the reader last was
     // there, and tells it where the reader stops here. See FeedPlace.
-    SyncFeedPlace(
+    val findingPlace = SyncFeedPlace(
         surface = FeedSurface.APP,
         articles = frame.articles,
         isGrid = isGridLayout,
@@ -606,7 +607,10 @@ fun ArticleListPage(
                                 .fillMaxSize()
                                 .padding(paddingValues)
                         ) {
-                        Column(modifier = Modifier.fillMaxSize()) {
+                        // Out of sight until it is at the launcher panel's
+                        // place, so it appears there rather than at the top
+                        // and then jumping. See SyncFeedPlace.
+                        Column(modifier = Modifier.fillMaxSize().graphicsLayer { alpha = if (findingPlace) 0f else 1f }) {
                             // Same strip as the launcher surface, reading the same
                             // preference, so a category chosen in one is reflected
                             // in the other.

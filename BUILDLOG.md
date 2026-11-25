@@ -28,6 +28,13 @@ app from its icon now also takes the panel's place, which is the point.
 Preview d851be3 sent (Szept 482, replacing the untested 2f542f3, Szept 480).
 1430 tests, lint and picture tests pass.
 
+Owner: it must be smooth, not jerky. A freshly opened app feed drew at the
+top while its articles loaded and then jumped; `SyncFeedPlace` now reports
+while a feed is still on its way to the other surface's place, and the app
+keeps its feed out of sight (alpha 0) until it is there, for 600 ms at most
+(`PLACE_WAIT_MS`). Not done on the panel yet: whether Lawnchair lets it move
+while closed is for the device to show. Two more tests in `FeedPlaceTest`.
+
 ## 25 November 2026 — Back from the panel lands on the article read (Szept 479)
 
 Owner's quick test of af8ac5f, with screenshots: from the launcher page, an

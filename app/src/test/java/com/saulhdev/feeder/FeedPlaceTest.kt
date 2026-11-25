@@ -20,6 +20,7 @@ import com.saulhdev.feeder.data.db.models.Article
 import com.saulhdev.feeder.data.db.models.Feed
 import com.saulhdev.feeder.data.db.models.FeedItem
 import com.saulhdev.feeder.ui.overlay.FEED_HEADER_KEY
+import com.saulhdev.feeder.ui.overlay.PLACE_WAIT_MS
 import com.saulhdev.feeder.ui.overlay.FeedPlace
 import com.saulhdev.feeder.ui.overlay.FeedSurface
 import com.saulhdev.feeder.ui.overlay.SyncFeedPlace
@@ -28,6 +29,7 @@ import com.saulhdev.feeder.ui.overlay.placeOf
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -54,9 +56,11 @@ class FeedPlaceTest {
     @After
     fun reset() = FeedPlace.clear()
 
+    private var placing = false
+
     @Composable
     private fun Surface(surface: FeedSurface, items: List<FeedItem>, state: LazyListState) {
-        SyncFeedPlace(surface, items, isGrid = false, listState = state, gridState = rememberLazyStaggeredGridState())
+        placing = SyncFeedPlace(surface, items, isGrid = false, listState = state, gridState = rememberLazyStaggeredGridState())
         LazyColumn(state = state, modifier = Modifier.height(400.dp)) {
             item(key = FEED_HEADER_KEY) { Text("header", Modifier.height(100.dp)) }
             items(items, key = { it.id }) { Text(it.article.title, Modifier.height(100.dp)) }
@@ -71,9 +75,30 @@ class FeedPlaceTest {
         compose.setContent { app = rememberLazyListState(); Surface(FeedSurface.APP, loaded, app) }
         compose.waitForIdle()
         assertEquals(0, app.firstVisibleItemIndex)
+        assertTrue("kept out of sight while it loads", placing)
         loaded = all
         compose.waitForIdle()
         assertEquals(feedListIndex(40, emptyList()), app.firstVisibleItemIndex)
+        assertFalse("shown once it is there", placing)
+    }
+
+    @Test
+    fun `never kept out of sight for long, even if the articles never come`() {
+        FeedPlace.record(FeedSurface.PANEL, "a40")
+        compose.mainClock.autoAdvance = false
+        compose.setContent { Surface(FeedSurface.APP, emptyList(), rememberLazyListState()) }
+        compose.mainClock.advanceTimeBy(100)
+        assertTrue(placing)
+        compose.mainClock.advanceTimeBy(PLACE_WAIT_MS)
+        assertFalse(placing)
+    }
+
+    @Test
+    fun `a feed without the article is shown at once`() {
+        FeedPlace.record(FeedSurface.PANEL, "not-here")
+        compose.setContent { Surface(FeedSurface.APP, all, rememberLazyListState()) }
+        compose.waitForIdle()
+        assertFalse(placing)
     }
 
     @Test

@@ -34,6 +34,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.saveable.rememberSaveable
 import com.saulhdev.feeder.data.db.models.FeedItem
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -153,6 +154,11 @@ internal fun placeOf(firstVisibleIndex: Int, visibleKeys: List<Any>, ids: Set<St
  * newest place once it holds that article, and records its own whenever the
  * reader stops scrolling. Off ([enabled] false) for a search or Saved, which
  * are not the feed.
+ *
+ * Returns true while this feed is still on its way to the other surface's
+ * place: a freshly opened feed draws at the top while its articles load and
+ * would then jump, so the caller keeps it out of sight until it is there,
+ * for [PLACE_WAIT_MS] at most (owner: smooth, not jerky).
  */
 @Composable
 fun SyncFeedPlace(
@@ -163,9 +169,20 @@ fun SyncFeedPlace(
     gridState: LazyStaggeredGridState,
     breaks: List<DayBreak> = emptyList(),
     enabled: Boolean = true,
-) {
+): Boolean {
     val mark by FeedPlace.mark.collectAsState()
     var taken by remember { mutableLongStateOf(0L) }
+    val owed = mark?.takeIf { enabled && it.by != surface && it.seq > taken }
+    // Owed and reachable: the article is here, or the list is still empty.
+    val placing = owed != null && (articles.isEmpty() || owed.articleId == FeedPlace.TOP ||
+            articles.any { it.id == owed.articleId })
+    var gaveUp by remember { mutableStateOf(false) }
+    LaunchedEffect(owed?.seq) {
+        gaveUp = false
+        if (owed == null) return@LaunchedEffect
+        delay(PLACE_WAIT_MS)
+        gaveUp = true
+    }
     LaunchedEffect(mark, articles, enabled) {
         val m = mark ?: return@LaunchedEffect
         if (!enabled || m.by == surface || m.seq <= taken || articles.isEmpty()) return@LaunchedEffect
@@ -196,4 +213,8 @@ fun SyncFeedPlace(
                 if (place != null) FeedPlace.record(surface, place)
             }
     }
+    return placing && !gaveUp
 }
+
+/** The longest a feed is kept out of sight while it finds its place. */
+const val PLACE_WAIT_MS = 600L
