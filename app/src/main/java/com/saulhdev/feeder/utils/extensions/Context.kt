@@ -97,25 +97,41 @@ fun Context.launchView(url: String): Boolean {
  * installed browser offers Custom Tabs, the page goes to the browser app, as
  * before. Same scheme allowlist as [launchView].
  */
-fun Context.openOutside(url: String, mode: String): Boolean {
-    if (mode != FeedPreferences.OPEN_MODE_TAB || CustomTabsClient.getPackageName(this, null) == null) {
-        return launchView(url)
+fun Context.openOutside(url: String, mode: String, beneath: Intent? = null): Boolean {
+    val view = outsideViewIntent(url, mode) ?: return false
+    if (beneath != null && this !is Activity) {
+        try {
+            launchWithBalPendingIntents(arrayOf(beneath, view))
+        } catch (e: Exception) {
+            Log.e("Context", "Failed to start activities: ${e.message}")
+        }
+    } else {
+        safeStartActivity(view)
     }
+    return true
+}
+
+/**
+ * The intent that shows [url] in a browser tab ([mode] tab, when a browser
+ * offers Custom Tabs) or the browser app, or null for a link that is not a
+ * web page. Same scheme allowlist as [launchView].
+ */
+internal fun Context.outsideViewIntent(url: String, mode: String): Intent? {
     if (!isViewable(url)) {
         Log.w("Context", "Refusing to open: ${schemeOf(url)}")
-        return false
+        return null
     }
-    val uri = runCatching { url.toUri() }.getOrNull() ?: return false
+    val uri = runCatching { url.toUri() }.getOrNull() ?: return null
+    if (mode != FeedPreferences.OPEN_MODE_TAB || CustomTabsClient.getPackageName(this, null) == null) {
+        return Intent(Intent.ACTION_VIEW, uri)
+    }
     val tab = CustomTabsIntent.Builder()
         .setShowTitle(true)
         .setShareState(CustomTabsIntent.SHARE_STATE_ON)
         .setColorScheme(CustomTabsIntent.COLOR_SCHEME_SYSTEM)
         .build()
-    // From the launcher page there is no Activity to put the tab on top of.
-    if (this !is Activity) tab.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     tab.intent.data = uri
-    safeStartActivity(tab.intent)
-    return true
+    return tab.intent
 }
 
 /**
@@ -186,6 +202,25 @@ private fun Context.launchWithBalPendingIntent(intent: Intent) {
         null,
         senderOptions
     )
+}
+
+/**
+ * Starts [intents] as one stack, the last on top, from a context with no
+ * Activity (the launcher panel). Only the top one is created now; the ones
+ * beneath are created when the reader comes back to them.
+ */
+private fun Context.launchWithBalPendingIntents(intents: Array<Intent>) {
+    val stack = intents.mapIndexed { i, it ->
+        Intent(it).apply { if (i == 0) addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }
+    }.toTypedArray()
+    val pendingIntent = PendingIntent.getActivities(
+        this,
+        System.currentTimeMillis().toInt(),
+        stack,
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        buildBalCreatorOptions(),
+    )
+    pendingIntent.send(this, 0, null, null, null, null, buildBalSenderOptions())
 }
 
 private fun buildBalCreatorOptions(): Bundle? {

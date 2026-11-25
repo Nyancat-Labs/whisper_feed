@@ -8,6 +8,20 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 25 November 2026 — No flash of the feed on the way to the tab (Szept 477)
+
+Owner's test of bc0ba74: the feed sometimes showed for a moment before the
+tab or browser. bc0ba74 started the app first, which drew its feed, looked the
+link up and only then opened the page. Now the panel starts both in one go
+(`PendingIntent.getActivities`, with the same background-start opt-in as the
+single launch): `MainActivity` beneath, the page on top. Only the top one is
+created; the feed is built when the reader closes the page. The panel has the
+link already, so the database lookup and the hand-off to `MainActivity` from
+bc0ba74 are gone; `MainActivity.underTabIntent` only marks the feed so it
+shows no splash. The read timer starts in the panel again and the feed's
+resume settles it. `openOutside` builds its intent in `outsideViewIntent`.
+`PanelOutsideTest` rewritten, 3 tests (Robolectric sees both starts, in order).
+
 ## 25 November 2026 — In-app and Browser from the panel close onto Whisper's feed (Szept 474)
 
 Same idea as the reader fix the day before. From the launcher panel, the tab
