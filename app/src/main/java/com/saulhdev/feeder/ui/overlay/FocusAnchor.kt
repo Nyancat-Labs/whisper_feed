@@ -21,11 +21,15 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.saveable.rememberSaveable
 import com.saulhdev.feeder.data.db.models.FeedItem
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * Lands both edges of a narrowing on the article the reader tapped.
@@ -90,3 +94,60 @@ fun AnchorFeedOnFocusChange(
 /** One narrowing and the article it started from; see AnchorFeedOnFocusChange. */
 internal fun anchorChangeKey(appliedFocus: String?, anchorId: String): String =
     "${appliedFocus.orEmpty()}\u0000$anchorId"
+
+/**
+ * The article last opened from the launcher panel, for the app's feed to
+ * land on when the reader comes back to it.
+ *
+ * From the panel, Back (or closing the tab or browser) arrives on the app's
+ * feed, not the panel's, and that feed starts at the top and then refreshes,
+ * so the reader found newer articles instead of where they were (Szept 479).
+ * The panel runs in Whisper's own process, so it can leave the id here
+ * directly; the app's feed takes it once, when the article is in its list.
+ */
+object PanelReturnAnchor {
+    private val pending = MutableStateFlow<String?>(null)
+    val articleId: StateFlow<String?> = pending.asStateFlow()
+
+    fun leave(articleId: String) {
+        pending.value = articleId
+    }
+
+    /** Opened as an app, from its icon: nothing to come back to. */
+    fun clear() {
+        pending.value = null
+    }
+
+    /** Taken: cleared only if it is still [articleId], not a newer one. */
+    fun take(articleId: String) {
+        pending.compareAndSet(articleId, null)
+    }
+}
+
+/**
+ * Scrolls the app's feed to [PanelReturnAnchor]'s article, once.
+ *
+ * Waits for the article to arrive rather than giving up on the first, empty
+ * list a fresh feed starts with. Dropped when the loaded feed does not hold
+ * it (a category chip or hide-read can leave it out): guessing a place
+ * would be worse than the top.
+ */
+@Composable
+fun AnchorFeedOnPanelReturn(
+    articles: List<FeedItem>,
+    isGrid: Boolean,
+    listState: LazyListState,
+    gridState: LazyStaggeredGridState,
+    breaks: List<DayBreak> = emptyList(),
+) {
+    val id by PanelReturnAnchor.articleId.collectAsState()
+    LaunchedEffect(id, articles) {
+        val anchor = id ?: return@LaunchedEffect
+        if (articles.isEmpty()) return@LaunchedEffect
+        val position = articles.indexOfFirst { it.id == anchor }
+        PanelReturnAnchor.take(anchor)
+        if (position < 0) return@LaunchedEffect
+        val index = feedListIndex(position, breaks)
+        if (isGrid) gridState.scrollToItem(index) else listState.scrollToItem(index)
+    }
+}

@@ -36,6 +36,7 @@ import com.saulhdev.feeder.data.repository.SourcesRepository
 import androidx.compose.ui.platform.LocalDensity
 import com.saulhdev.feeder.data.db.models.FeedItem
 import com.saulhdev.feeder.ui.overlay.FeedScaffold
+import com.saulhdev.feeder.ui.overlay.PanelReturnAnchor
 import com.saulhdev.feeder.ui.overlay.gateLog
 import com.saulhdev.feeder.ui.overlay.LocalFeedVisible
 import com.saulhdev.feeder.utils.BrowserReadTimer
@@ -612,6 +613,8 @@ class OverlayView(val context: Context) :
         // panel-state change happened to report.
         settleBrowserRead()
         syncScope.launch { viewModel.markOpened(item.id) }
+        // Coming back lands on the app's feed; it should open on this article.
+        PanelReturnAnchor.leave(item.id)
         launchKeepingPanel {
             val mode = FeedPreferences.openModeFor(item.feed.openMode, prefs.articleOpenMode.getValue())
             if (FeedPreferences.opensOutside(mode)) {

@@ -149,6 +149,7 @@ import com.saulhdev.feeder.ui.overlay.rememberFeedFrame
 import com.saulhdev.feeder.ui.overlay.feedContentType
 import com.saulhdev.feeder.ui.overlay.ActiveFilterBar
 import com.saulhdev.feeder.ui.overlay.AnchorFeedOnFocusChange
+import com.saulhdev.feeder.ui.overlay.AnchorFeedOnPanelReturn
 import com.saulhdev.feeder.ui.overlay.FEED_HEADER_KEY
 import com.saulhdev.feeder.ui.overlay.rememberFeedEndSpace
 import com.saulhdev.feeder.ui.overlay.feedEnd
@@ -393,6 +394,15 @@ fun ArticleListPage(
     AnchorFeedOnFocusChange(
         appliedFocus = frame.focus,
         anchorId = focusAnchor,
+        articles = frame.articles,
+        isGrid = isGridLayout,
+        listState = listState,
+        gridState = gridState,
+        breaks = dayBreaks,
+    )
+    // Back from an article opened on the launcher panel lands here; land on
+    // that article rather than the top. See PanelReturnAnchor.
+    AnchorFeedOnPanelReturn(
         articles = frame.articles,
         isGrid = isGridLayout,
         listState = listState,

@@ -23,6 +23,8 @@ Unreleased
 - Opening an article no longer flashes the one you read before it.
 - From the launcher page, closing an In-app tab or the browser now returns
   to Whisper's feed too.
+- Coming back from an article opened on the launcher page, Whisper's feed
+  opens on that article, not at the top.
 - **Leave one source out of full articles.** With "Fetch full articles for
   every feed" on, a source's own switch is no longer greyed out: switch it
   off to skip that source.

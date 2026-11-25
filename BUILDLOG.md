@@ -8,6 +8,21 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 25 November 2026 — Back from the panel lands on the article read (Szept 479)
+
+Owner's quick test of af8ac5f, with screenshots: from the launcher page, an
+article and then Back landed on the app's feed at the top, which then
+refreshed ("Updating…"), so newer articles showed instead of the one just
+read. The app's feed starts fresh, and the panel and the app do not share a
+scroll position. The panel runs in Whisper's process, so it now leaves the
+opened article's id in `PanelReturnAnchor`, and the app's feed scrolls to it
+once it is in the list (`AnchorFeedOnPanelReturn`, waiting past the first
+empty list a fresh feed starts with). Same for Reader, In-app and Browser.
+Dropped when the feed does not hold it (a chip or hide-read), and forgotten
+when the app is opened from its icon. The refresh that follows adds articles
+above without moving it, because the list keeps its place by article.
+`PanelReturnAnchorTest`, 4 tests.
+
 ## 25 November 2026 — No flash of the feed on the way to the tab (Szept 477)
 
 Owner's test of bc0ba74: the feed sometimes showed for a moment before the
