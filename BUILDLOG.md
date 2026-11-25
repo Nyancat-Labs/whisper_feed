@@ -23,6 +23,9 @@ when the app is opened from its icon. The refresh that follows adds articles
 above without moving it, because the list keeps its place by article.
 `PanelReturnAnchorTest`, 4 tests.
 
+Preview 2f542f3 sent (Szept 480, replacing the untested af8ac5f, Szept 478).
+1428 tests, lint and picture tests pass.
+
 ## 25 November 2026 — No flash of the feed on the way to the tab (Szept 477)
 
 Owner's test of bc0ba74: the feed sometimes showed for a moment before the
