@@ -142,14 +142,35 @@ check with fdroidserver:
    with `./gradlew -p <copy>`)
 3. `scan_binary`
 
+Both scans are scripted in `scripts/fdroid/` (run with fdroidserver from PyPI
+in a venv, `python -I`). `fdroid lint` needs fdroiddata's
+`config/categories.yml`; strip it to the names (the icons it points to are
+not needed and their absence crashes lint).
+
 Store text and screenshots are in `fastlane/metadata/android/en-US/`.
 
 ## Unreleased on main (the next release)
 
-1.0.6 (build 7) went out on 22 November 2026: Play (in review, then live),
-GitHub v1.0.6 (tag on 3a108b2), F-Droid from the tag. Nothing unreleased
-yet. Next is 1.0.7, a bug-fix release on 29 November (Szept 486), then
-1.0.8 with the translations (board 56).
+1.0.6 (build 7) went out on 22 November 2026: Play (live, confirmed on the
+owner's Play-installed Sony Xperia), GitHub v1.0.6 (tag on 3a108b2), F-Droid
+from the tag.
+
+**1.0.7 is ready on main, to release Sunday 29 November** (Szept 486; plan in
+ROADMAP, *Next release: 1.0.7*). Every change is tested on the owner's Pixel:
+In-app tab, one source out of full articles (database 32), category buttons
+one at a time (GitHub #3), the launcher-page return and scroll sync, and the
+fixes (Fade, [IMG], feed after Settings, Back to top in Mosaic, previous
+article flash). Play notes drafted in `changelogs/8.txt` (457 of 500
+characters). F-Droid checks clean on main (25 November). Code freeze
+Saturday evening; Sunday: Szept 490 (Claude: version 1.0.7 / code 8,
+CHANGELOG section, GitHub text, signed AAB and APK) then 491 (owner: Play
+upload, GitHub release, Xperia update check). After it is live: the "it's
+out" line on GitHub #3 (Szept 503). Then 1.0.8 with the translations
+(board 56).
+
+The release signing files are not in the repo: the owner holds them (backup
+checked, Szept 147) and hands `keystore.properties` and the `.p12` to a
+session that builds a release.
 
 **After releasing the translations:** remind the owner to email the user
 in France who asked for them (his email of 27 October is in the hej@
