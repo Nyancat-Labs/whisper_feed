@@ -8,6 +8,14 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 25 November 2026 — About: the Contact us intro paragraph removed
+
+Owner, with a screenshot (archive/screenshots/2026-11-25-2053-*): the line
+under "Contact us" looked lost on its own. It repeated what the three rows
+say, and no other section has one. Removed (`about_contact_summary` gone);
+the heading and the Email us row that Play's News policy asks for stay, and
+`PlayNewsPolicyTest` still guards them. Into 1.0.7.
+
 ## 25 November 2026 — Category buttons: one at a time (GitHub #3, Szept 503)
 
 Owner's decision: Chrizzle is right, one category at a time, no setting and

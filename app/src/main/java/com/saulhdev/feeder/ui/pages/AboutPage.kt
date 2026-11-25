@@ -224,19 +224,13 @@ fun AboutPage() {
             item {
                 PreferenceGroupHeading(heading = stringResource(id = R.string.about_contact), insideMargin = true)
             }
-            // The intro line, then three rows in the same joined group as
-            // Settings, each with an icon (review 61). The Website row went:
-            // the header already has the nyancatlabs.com pill (review 33).
-            // Rows in one group also end the uneven gaps of the old plain
-            // text (review 34).
-            item {
-                Text(
-                    text = stringResource(R.string.about_contact_summary),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 4.dp),
-                )
-            }
+            // Three rows in the same joined group as Settings, each with an
+            // icon (review 61), straight under the heading like every other
+            // section: the intro paragraph above them looked lost on its own
+            // and said what the rows already say (owner, 25 November). The
+            // Website row went: the header already has the nyancatlabs.com
+            // pill (review 33). Rows in one group also end the uneven gaps of
+            // the old plain text (review 34).
             itemsIndexed(contactRows) { i, row ->
                 BasePreference(
                     titleId = row.titleId,
