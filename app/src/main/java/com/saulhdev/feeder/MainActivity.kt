@@ -50,7 +50,6 @@ import com.saulhdev.feeder.manager.sync.FeedSyncer
 import com.saulhdev.feeder.manager.sync.SyncWatchdog
 import com.saulhdev.feeder.manager.update.UpdateCheckWorker
 import com.saulhdev.feeder.ui.navigation.NAV_BASE
-import com.saulhdev.feeder.ui.overlay.PanelReturnAnchor
 import com.saulhdev.feeder.ui.navigation.NavigationManager
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -110,9 +109,6 @@ class MainActivity : ComponentActivity() {
         // composition, where a later onNewIntent could change the answer
         // mid-session.
         val launchedDirectly = intent?.data == null && !intent.hasExtra(EXTRA_UNDER_TAB)
-        // Opened from its icon, not on the way back from the launcher panel,
-        // so an article read there an hour ago must not move this feed.
-        if (launchedDirectly) PanelReturnAnchor.clear()
         setContent {
             navController = rememberNavController()
             // Collected rather than read once, so changing the theme or the

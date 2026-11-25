@@ -21,6 +21,13 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.distinctUntilChanged
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -95,59 +102,98 @@ fun AnchorFeedOnFocusChange(
 internal fun anchorChangeKey(appliedFocus: String?, anchorId: String): String =
     "${appliedFocus.orEmpty()}\u0000$anchorId"
 
+/** The two places the feed is shown. */
+enum class FeedSurface { APP, PANEL }
+
 /**
- * The article last opened from the launcher panel, for the app's feed to
- * land on when the reader comes back to it.
+ * Where the reader last was in the feed, on either surface, for the other to
+ * start from (Szept 479, 481).
  *
- * From the panel, Back (or closing the tab or browser) arrives on the app's
- * feed, not the panel's, and that feed starts at the top and then refreshes,
- * so the reader found newer articles instead of where they were (Szept 479).
- * The panel runs in Whisper's own process, so it can leave the id here
- * directly; the app's feed takes it once, when the article is in its list.
+ * The app and the launcher panel kept separate scroll positions: back from an
+ * article opened on the panel, the app's feed started at the top and then
+ * refreshed, so the reader found newer articles instead of their place; and
+ * scrolling one left the other where it was. Both run in Whisper's process,
+ * so this is shared in memory. Each surface records where the reader stopped
+ * scrolling (or the article they tapped), and the other takes the newest
+ * mark once, when it holds that article. Only the surface being looked at is
+ * scrolled by a finger, so the other never moves under one.
  */
-object PanelReturnAnchor {
-    private val pending = MutableStateFlow<String?>(null)
-    val articleId: StateFlow<String?> = pending.asStateFlow()
+object FeedPlace {
+    /** The top of the feed, header and all. */
+    const val TOP = "\u0000top"
 
-    fun leave(articleId: String) {
-        pending.value = articleId
+    class Mark(val articleId: String, val by: FeedSurface, val seq: Long)
+
+    private val current = MutableStateFlow<Mark?>(null)
+    val mark: StateFlow<Mark?> = current.asStateFlow()
+    private var seq = 0L
+
+    /** The reader is at [articleId] on [by]. The same article again is no news. */
+    @Synchronized
+    fun record(by: FeedSurface, articleId: String) {
+        if (current.value?.articleId == articleId) return
+        current.value = Mark(articleId, by, ++seq)
     }
 
-    /** Opened as an app, from its icon: nothing to come back to. */
     fun clear() {
-        pending.value = null
-    }
-
-    /** Taken: cleared only if it is still [articleId], not a newer one. */
-    fun take(articleId: String) {
-        pending.compareAndSet(articleId, null)
+        current.value = null
     }
 }
 
 /**
- * Scrolls the app's feed to [PanelReturnAnchor]'s article, once.
- *
- * Waits for the article to arrive rather than giving up on the first, empty
- * list a fresh feed starts with. Dropped when the loaded feed does not hold
- * it (a category chip or hide-read can leave it out): guessing a place
- * would be worse than the top.
+ * The place to record for a list at rest: the top while the header shows,
+ * otherwise the first article on screen (day headings are passed over).
+ */
+internal fun placeOf(firstVisibleIndex: Int, visibleKeys: List<Any>, ids: Set<String>): String? =
+    if (firstVisibleIndex == 0) FeedPlace.TOP
+    else visibleKeys.firstOrNull { it is String && it in ids } as String?
+
+/**
+ * Keeps this surface's feed in step with the other's: takes the other's
+ * newest place once it holds that article, and records its own whenever the
+ * reader stops scrolling. Off ([enabled] false) for a search or Saved, which
+ * are not the feed.
  */
 @Composable
-fun AnchorFeedOnPanelReturn(
+fun SyncFeedPlace(
+    surface: FeedSurface,
     articles: List<FeedItem>,
     isGrid: Boolean,
     listState: LazyListState,
     gridState: LazyStaggeredGridState,
     breaks: List<DayBreak> = emptyList(),
+    enabled: Boolean = true,
 ) {
-    val id by PanelReturnAnchor.articleId.collectAsState()
-    LaunchedEffect(id, articles) {
-        val anchor = id ?: return@LaunchedEffect
-        if (articles.isEmpty()) return@LaunchedEffect
-        val position = articles.indexOfFirst { it.id == anchor }
-        PanelReturnAnchor.take(anchor)
-        if (position < 0) return@LaunchedEffect
-        val index = feedListIndex(position, breaks)
+    val mark by FeedPlace.mark.collectAsState()
+    var taken by remember { mutableLongStateOf(0L) }
+    LaunchedEffect(mark, articles, enabled) {
+        val m = mark ?: return@LaunchedEffect
+        if (!enabled || m.by == surface || m.seq <= taken || articles.isEmpty()) return@LaunchedEffect
+        taken = m.seq
+        val index = if (m.articleId == FeedPlace.TOP) 0 else {
+            // Not in this feed (a chip or hide-read can leave it out): stay put
+            // rather than guess.
+            val position = articles.indexOfFirst { it.id == m.articleId }
+            if (position < 0) return@LaunchedEffect
+            feedListIndex(position, breaks)
+        }
         if (isGrid) gridState.scrollToItem(index) else listState.scrollToItem(index)
+    }
+    val currentArticles by rememberUpdatedState(articles)
+    LaunchedEffect(isGrid, enabled) {
+        if (!enabled) return@LaunchedEffect
+        snapshotFlow { if (isGrid) gridState.isScrollInProgress else listState.isScrollInProgress }
+            .distinctUntilChanged()
+            .drop(1)
+            .filter { moving -> !moving }
+            .collect {
+                val ids = currentArticles.mapTo(HashSet()) { it.id }
+                val place = if (isGrid) {
+                    placeOf(gridState.firstVisibleItemIndex, gridState.layoutInfo.visibleItemsInfo.map { it.key }, ids)
+                } else {
+                    placeOf(listState.firstVisibleItemIndex, listState.layoutInfo.visibleItemsInfo.map { it.key }, ids)
+                }
+                if (place != null) FeedPlace.record(surface, place)
+            }
     }
 }

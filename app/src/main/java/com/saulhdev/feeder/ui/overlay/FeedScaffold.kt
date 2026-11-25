@@ -253,6 +253,14 @@ fun FeedScaffold(
         listState = listState,
         gridState = gridState,
     )
+    // In step with the app's feed. See FeedPlace.
+    SyncFeedPlace(
+        surface = FeedSurface.PANEL,
+        articles = frame.articles,
+        isGrid = isGrid,
+        listState = listState,
+        gridState = gridState,
+    )
 
     // Hiding a source is one tap with no confirmation, so the way back is
     // offered here rather than left to the sources screen.

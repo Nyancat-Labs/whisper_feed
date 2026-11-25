@@ -8,6 +8,23 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 25 November 2026 — The app's feed and the launcher panel keep one place (Szept 481)
+
+Owner: sync the scroll positions; agreed as sync on arrival, not live.
+`FeedPlace` (in memory; the panel and the app share Whisper's process) holds
+the newest mark: the article tapped on the panel, or where the reader stopped
+scrolling on either surface (the first article on screen, or the top while
+the header shows; day headings passed over). `SyncFeedPlace`, in both
+`ArticleListPage` and the panel's `FeedScaffold`, records its own marks and
+takes the other surface's newest one once, as soon as it holds that article.
+Only the surface being looked at is scrolled by a finger, so the other never
+moves under one; the same article recorded again changes nothing, so a
+surface catching up does not bounce the other. Off for search and Saved in
+the app. An article the other feed does not hold (a chip, hide-read) leaves
+it where it is. Replaces 2f542f3's one-way `PanelReturnAnchor`; opening the
+app from its icon now also takes the panel's place, which is the point.
+`FeedPlaceTest`, 6 tests, two lists syncing both ways among them.
+
 ## 25 November 2026 — Back from the panel lands on the article read (Szept 479)
 
 Owner's quick test of af8ac5f, with screenshots: from the launcher page, an
