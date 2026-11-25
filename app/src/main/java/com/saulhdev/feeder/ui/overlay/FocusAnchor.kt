@@ -17,6 +17,7 @@
  */
 package com.saulhdev.feeder.ui.overlay
 
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.runtime.Composable
@@ -36,6 +37,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import com.saulhdev.feeder.data.db.models.FeedItem
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import java.util.concurrent.atomic.AtomicBoolean
+import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
@@ -123,18 +127,30 @@ object FeedPlace {
     /** The top of the feed, header and all. */
     const val TOP = "\u0000top"
 
-    class Mark(val articleId: String, val by: FeedSurface, val seq: Long)
+    /**
+     * [offset]: where the article's top was, in pixels from the top of the
+     * list (negative when partly scrolled off), so the other surface can put
+     * it in the same spot rather than a card's height out (Szept 483, T5).
+     */
+    class Mark(val articleId: String, val by: FeedSurface, val seq: Long, val offset: Int = 0)
 
     private val current = MutableStateFlow<Mark?>(null)
     val mark: StateFlow<Mark?> = current.asStateFlow()
     private var seq = 0L
 
-    /** The reader is at [articleId] on [by]. The same article again is no news. */
+    /**
+     * The reader is at [articleId], [offset] pixels down, on [by]. The same
+     * spot again (within a couple of pixels) is no news, so a surface that
+     * has just caught up does not send the other one back.
+     */
     @Synchronized
-    fun record(by: FeedSurface, articleId: String) {
-        if (current.value?.articleId == articleId) return
-        current.value = Mark(articleId, by, ++seq)
+    fun record(by: FeedSurface, articleId: String, offset: Int = 0) {
+        val now = current.value
+        if (now != null && now.articleId == articleId && kotlin.math.abs(now.offset - offset) <= SAME_SPOT_PX) return
+        current.value = Mark(articleId, by, ++seq, offset)
     }
+
+    private const val SAME_SPOT_PX = 2
 
     fun clear() {
         current.value = null
@@ -143,11 +159,13 @@ object FeedPlace {
 
 /**
  * The place to record for a list at rest: the top while the header shows,
- * otherwise the first article on screen (day headings are passed over).
+ * otherwise the first article on screen (day headings are passed over), and
+ * how far down its top is. [visible] pairs each visible item's key with its
+ * offset from the top of the list.
  */
-internal fun placeOf(firstVisibleIndex: Int, visibleKeys: List<Any>, ids: Set<String>): String? =
-    if (firstVisibleIndex == 0) FeedPlace.TOP
-    else visibleKeys.firstOrNull { it is String && it in ids } as String?
+internal fun placeOf(firstVisibleIndex: Int, visible: List<Pair<Any, Int>>, ids: Set<String>): Pair<String, Int>? =
+    if (firstVisibleIndex == 0) FeedPlace.TOP to 0
+    else visible.firstOrNull { (key, _) -> key is String && key in ids }?.let { (key, offset) -> key as String to offset }
 
 /**
  * Keeps this surface's feed in step with the other's: takes the other's
@@ -172,6 +190,10 @@ fun SyncFeedPlace(
 ): Boolean {
     val mark by FeedPlace.mark.collectAsState()
     var taken by remember { mutableLongStateOf(0L) }
+    // Set while this feed is being put in place: its own jump is not the
+    // reader stopping somewhere, and recording it cancelled the exact
+    // placing half-way (Szept 483).
+    val applying = remember { AtomicBoolean(false) }
     val owed = mark?.takeIf { enabled && it.by != surface && it.seq > taken }
     // Owed and reachable: the article is here, or the list is still empty.
     val placing = owed != null && (articles.isEmpty() || owed.articleId == FeedPlace.TOP ||
@@ -194,7 +216,29 @@ fun SyncFeedPlace(
             if (position < 0) return@LaunchedEffect
             feedListIndex(position, breaks)
         }
-        if (isGrid) gridState.scrollToItem(index) else listState.scrollToItem(index)
+        // The index is a first guess: the two surfaces do not hold quite the
+        // same items above the articles. Then the article is found by its key
+        // and set exactly where it was on the other surface.
+        // The layout is read once it has caught up with the jump, not before:
+        // read straight after, it still described the old place.
+        applying.set(true)
+        try { if (isGrid) {
+            gridState.scrollToItem(index)
+            val found = withTimeoutOrNull(LAYOUT_WAIT_MS) {
+                snapshotFlow { gridState.layoutInfo.visibleItemsInfo }
+                    .first { items -> items.firstOrNull()?.index == index }
+                    .firstOrNull { it.key == m.articleId }
+            }
+            found?.let { gridState.scrollBy((it.offset.y - m.offset).toFloat()) }
+        } else {
+            listState.scrollToItem(index)
+            val found = withTimeoutOrNull(LAYOUT_WAIT_MS) {
+                snapshotFlow { listState.layoutInfo.visibleItemsInfo }
+                    .first { items -> items.firstOrNull()?.index == index }
+                    .firstOrNull { it.key == m.articleId }
+            }
+            found?.let { listState.scrollBy((it.offset - m.offset).toFloat()) }
+        } } finally { applying.set(false) }
     }
     val currentArticles by rememberUpdatedState(articles)
     LaunchedEffect(isGrid, enabled) {
@@ -202,19 +246,22 @@ fun SyncFeedPlace(
         snapshotFlow { if (isGrid) gridState.isScrollInProgress else listState.isScrollInProgress }
             .distinctUntilChanged()
             .drop(1)
-            .filter { moving -> !moving }
+            .filter { moving -> !moving && !applying.get() }
             .collect {
                 val ids = currentArticles.mapTo(HashSet()) { it.id }
                 val place = if (isGrid) {
-                    placeOf(gridState.firstVisibleItemIndex, gridState.layoutInfo.visibleItemsInfo.map { it.key }, ids)
+                    placeOf(gridState.firstVisibleItemIndex, gridState.layoutInfo.visibleItemsInfo.map { it.key to it.offset.y }, ids)
                 } else {
-                    placeOf(listState.firstVisibleItemIndex, listState.layoutInfo.visibleItemsInfo.map { it.key }, ids)
+                    placeOf(listState.firstVisibleItemIndex, listState.layoutInfo.visibleItemsInfo.map { it.key to it.offset }, ids)
                 }
-                if (place != null) FeedPlace.record(surface, place)
+                if (place != null) FeedPlace.record(surface, place.first, place.second)
             }
     }
     return placing && !gaveUp
 }
+
+/** How long to wait for a jump to be laid out before setting the article exactly. */
+private const val LAYOUT_WAIT_MS = 300L
 
 /** The longest a feed is kept out of sight while it finds its place. */
 const val PLACE_WAIT_MS = 600L

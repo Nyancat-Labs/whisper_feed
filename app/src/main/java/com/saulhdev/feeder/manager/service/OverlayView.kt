@@ -36,8 +36,6 @@ import com.saulhdev.feeder.data.repository.SourcesRepository
 import androidx.compose.ui.platform.LocalDensity
 import com.saulhdev.feeder.data.db.models.FeedItem
 import com.saulhdev.feeder.ui.overlay.FeedScaffold
-import com.saulhdev.feeder.ui.overlay.FeedPlace
-import com.saulhdev.feeder.ui.overlay.FeedSurface
 import com.saulhdev.feeder.ui.overlay.gateLog
 import com.saulhdev.feeder.ui.overlay.LocalFeedVisible
 import com.saulhdev.feeder.utils.BrowserReadTimer
@@ -614,8 +612,9 @@ class OverlayView(val context: Context) :
         // panel-state change happened to report.
         settleBrowserRead()
         syncScope.launch { viewModel.markOpened(item.id) }
-        // Coming back lands on the app's feed; it should open on this article.
-        FeedPlace.record(FeedSurface.PANEL, item.id)
+        // No place recorded for the tap: where the reader stopped scrolling
+        // already is one, card and pixel, and recording the tapped article at
+        // the top moved the feed by up to a card on the way back (Szept 483).
         launchKeepingPanel {
             val mode = FeedPreferences.openModeFor(item.feed.openMode, prefs.articleOpenMode.getValue())
             if (FeedPreferences.opensOutside(mode)) {

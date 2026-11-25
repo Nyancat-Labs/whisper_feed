@@ -8,6 +8,25 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 25 November 2026 — Sync lands on the same pixel, not a card out (Szept 483, T5)
+
+Owner's test of dc4e5bb: 9 of 10. The sync worked but the article landed
+almost a card lower than it had been, both ways (screenshots in
+archive/screenshots/2026-11-25-1908-*). Three causes. (1) Only the article was
+recorded, not where on screen it sat, so it was put at the very top. (2) Its
+place in the other list was found by counting items, and the two surfaces do
+not hold the same items above the articles. (3) Tapping an article on the
+panel recorded that article at the top, over the place the reader had
+stopped at. Now a mark carries the article's offset in pixels; the other
+surface jumps to a first guess, waits for the layout to catch up, finds the
+article by its key and scrolls it to the same offset. A surface records
+nothing while it is being placed (its own jump had been recorded as the
+reader stopping there, which cancelled the placing half-way), and the panel
+no longer records on a tap. The same spot within 2 px is no news.
+`FeedPlaceTest`, 9 tests: two lists with different items above the articles,
+stopped part-way through a card, land on the same pixel both ways.
+T6's brief blank was the feed finding its place (at most 0.6 s), as designed.
+
 ## 25 November 2026 — The app's feed and the launcher panel keep one place (Szept 481)
 
 Owner: sync the scroll positions; agreed as sync on arrival, not live.

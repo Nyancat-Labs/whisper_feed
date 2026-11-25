@@ -58,14 +58,20 @@ class FeedPlaceTest {
 
     private var placing = false
 
+    /** [extra]: an item between the header and the articles, as one surface has and the other not. */
     @Composable
-    private fun Surface(surface: FeedSurface, items: List<FeedItem>, state: LazyListState) {
+    private fun Surface(surface: FeedSurface, items: List<FeedItem>, state: LazyListState, extra: Boolean = false) {
         placing = SyncFeedPlace(surface, items, isGrid = false, listState = state, gridState = rememberLazyStaggeredGridState())
-        LazyColumn(state = state, modifier = Modifier.height(400.dp)) {
+        LazyColumn(state = state, modifier = Modifier.height(220.dp)) {
             item(key = FEED_HEADER_KEY) { Text("header", Modifier.height(100.dp)) }
+            if (extra) item(key = "glance") { Text("glance", Modifier.height(60.dp)) }
             items(items, key = { it.id }) { Text(it.article.title, Modifier.height(100.dp)) }
         }
     }
+
+    /** The first article on screen and how far down its top is. */
+    private fun spot(state: LazyListState): Pair<Any, Int> =
+        state.layoutInfo.visibleItemsInfo.first { it.key.toString().startsWith("a") }.let { it.key to it.offset }
 
     @Test
     fun `a fresh app feed waits for its articles, then opens on the article tapped in the panel`() {
@@ -131,6 +137,29 @@ class FeedPlaceTest {
     }
 
     @Test
+    fun `the same article lands on the same pixel, though the surfaces hold different items above it`() {
+        lateinit var app: LazyListState
+        lateinit var panel: LazyListState
+        compose.setContent {
+            app = rememberLazyListState()
+            panel = rememberLazyListState()
+            Column {
+                Surface(FeedSurface.APP, all, app)
+                Surface(FeedSurface.PANEL, all, panel, extra = true)
+            }
+        }
+        compose.waitForIdle()
+        // Stopped part-way through a card, as a finger leaves it.
+        runBlocking { panel.scroll { scrollBy(2345f) } }
+        compose.waitForIdle()
+        assertEquals("panel to app", spot(panel), spot(app))
+
+        runBlocking { app.scroll { scrollBy(-777f) } }
+        compose.waitForIdle()
+        assertEquals("app to panel", spot(app), spot(panel))
+    }
+
+    @Test
     fun `an article this feed does not hold leaves it where it is`() {
         lateinit var app: LazyListState
         compose.setContent { app = rememberLazyListState(); Surface(FeedSurface.APP, all, app) }
@@ -143,25 +172,27 @@ class FeedPlaceTest {
     @Test
     fun `the place is the top while the header shows, else the first article, past day headings`() {
         val ids = setOf("a1", "a2")
-        assertEquals(FeedPlace.TOP, placeOf(0, listOf(FEED_HEADER_KEY, "a1"), ids))
-        assertEquals("a1", placeOf(3, listOf("day-2026-11-25", "a1", "a2"), ids))
-        assertEquals(null, placeOf(3, listOf("bookmarks-empty"), ids))
+        assertEquals(FeedPlace.TOP to 0, placeOf(0, listOf(FEED_HEADER_KEY to 0, "a1" to 100), ids))
+        assertEquals("a1" to -40, placeOf(3, listOf("day-2026-11-25" to -90, "a1" to -40, "a2" to 60), ids))
+        assertEquals(null, placeOf(3, listOf("bookmarks-empty" to 0), ids))
     }
 
     @Test
-    fun `the same article again is no news, so neither side is moved for nothing`() {
-        FeedPlace.record(FeedSurface.PANEL, "a5")
+    fun `the same spot again is no news, so neither side is moved for nothing`() {
+        FeedPlace.record(FeedSurface.PANEL, "a5", -30)
         val first = FeedPlace.mark.value
-        FeedPlace.record(FeedSurface.APP, "a5")
+        FeedPlace.record(FeedSurface.APP, "a5", -29)
         assertEquals(first, FeedPlace.mark.value)
+        FeedPlace.record(FeedSurface.APP, "a5", 10)
+        assertEquals("the same article further down is news", 10, FeedPlace.mark.value?.offset)
     }
 
     @Test
-    fun `wired into both feeds, off for search and Saved, and set by a tap in the panel`() {
+    fun `wired into both feeds, off for search and Saved, and not moved by a tap in the panel`() {
         val src = { p: String -> File("src/main/java/com/saulhdev/feeder/$p").readText() }
         assertTrue(src("ui/pages/ArticleListPage.kt").contains("surface = FeedSurface.APP"))
         assertTrue(src("ui/pages/ArticleListPage.kt").contains("enabled = !searching && !showBookmarks"))
         assertTrue(src("ui/overlay/FeedScaffold.kt").contains("surface = FeedSurface.PANEL"))
-        assertTrue(src("manager/service/OverlayView.kt").contains("FeedPlace.record(FeedSurface.PANEL, item.id)"))
+        assertTrue(!src("manager/service/OverlayView.kt").contains("FeedPlace.record("))
     }
 }
