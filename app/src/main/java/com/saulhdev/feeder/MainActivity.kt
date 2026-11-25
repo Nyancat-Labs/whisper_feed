@@ -72,6 +72,8 @@ import com.saulhdev.feeder.utils.VolumeScroll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import com.saulhdev.feeder.utils.BrowserReadTimer
+import com.saulhdev.feeder.data.repository.ArticleRepository
+import com.saulhdev.feeder.utils.extensions.openOutside
 import org.koin.java.KoinJavaComponent.inject
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
@@ -82,6 +84,13 @@ class MainActivity : ComponentActivity() {
     private val prefs: FeedPreferences by inject(FeedPreferences::class.java)
     private val viewModel: ArticleListViewModel by inject(ArticleListViewModel::class.java)
     private val sources: SourcesRepository by inject(SourcesRepository::class.java)
+    private val articles: ArticleRepository by inject(ArticleRepository::class.java)
+
+    /**
+     * An article the launcher panel asked this activity to open in a browser
+     * tab or the browser app, held until resume. See [outsideIntent].
+     */
+    private var pendingOutside: OutsideRequest? = null
 
     /**
      * Cached rather than read per press: reading the preference goes through
@@ -108,7 +117,9 @@ class MainActivity : ComponentActivity() {
         // data; a tap on the app icon does not. Read here rather than in
         // composition, where a later onNewIntent could change the answer
         // mid-session.
-        val launchedDirectly = intent?.data == null
+        val launchedDirectly = intent?.data == null && OutsideRequest.from(intent) == null
+        // Not again after the system recreates the activity from Recents.
+        if (savedInstanceState == null) pendingOutside = OutsideRequest.from(intent)
         setContent {
             navController = rememberNavController()
             // Collected rather than read once, so changing the theme or the
@@ -240,6 +251,9 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         BrowserReadTimer.settle()?.let { (id, millis) -> viewModel.addReading(id, millis) }
+        // After the settle, so the trip it starts is not settled at once.
+        pendingOutside?.let { openPendingOutside(it) }
+        pendingOutside = null
         syncIfStale()
         lifecycleScope.launch(Dispatchers.IO) { runCatching { clearStaleSyncNotice(applicationContext) } }
     }
@@ -263,7 +277,27 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
+        OutsideRequest.from(intent)?.let { pendingOutside = it }
         handleDeepLink(intent)
+    }
+
+    /**
+     * Opens the article from the launcher panel in a tab or the browser, from
+     * here rather than from the panel. A tab opened by this activity belongs
+     * to Whisper's task, so closing it lands on Whisper's feed; opened from
+     * the panel it closed onto Lawnchair, which had gone to the home screen
+     * (Szept 474). The link comes from the database, so only an article
+     * already in the feed can be opened this way.
+     */
+    private fun openPendingOutside(request: OutsideRequest) {
+        lifecycleScope.launch {
+            val link = withContext(Dispatchers.IO) {
+                articles.getArticleById(request.articleId).first()?.link
+            }
+            if (link.isNullOrBlank()) return@launch
+            BrowserReadTimer.left(request.articleId)
+            openOutside(link, request.mode)
+        }
     }
 
     /**
@@ -425,6 +459,12 @@ class MainActivity : ComponentActivity() {
     }
 
     companion object {
+        /** For the launcher panel: open [articleId] in a tab or the browser, over Whisper's feed. */
+        fun outsideIntent(context: Context, articleId: String, mode: String): Intent =
+            Intent(context, MainActivity::class.java)
+                .putExtra(OutsideRequest.EXTRA_ARTICLE, articleId)
+                .putExtra(OutsideRequest.EXTRA_MODE, mode)
+
         fun navigateIntent(context: Context, destination: String): Intent {
             val uri = "$NAV_BASE$destination".toUri()
             return Intent(Intent.ACTION_VIEW, uri, context, MainActivity::class.java)
@@ -437,5 +477,20 @@ class MainActivity : ComponentActivity() {
         // the classic intent-redirection hole, and this activity is exported,
         // so the next person to wire it up would have handed every app on the
         // device a way to launch arbitrary intents with Whisper's identity.
+    }
+}
+
+/** An article to open outside the reader, as the launcher panel asked. */
+internal data class OutsideRequest(val articleId: String, val mode: String) {
+    companion object {
+        const val EXTRA_ARTICLE = "com.saulhdev.feeder.OUTSIDE_ARTICLE"
+        const val EXTRA_MODE = "com.saulhdev.feeder.OUTSIDE_MODE"
+
+        /** The request in [intent], or null when it has none or a mode that opens nothing outside. */
+        fun from(intent: Intent?): OutsideRequest? {
+            val id = intent?.getStringExtra(EXTRA_ARTICLE)?.takeIf { it.isNotBlank() } ?: return null
+            val mode = intent.getStringExtra(EXTRA_MODE)?.takeIf { FeedPreferences.opensOutside(it) } ?: return null
+            return OutsideRequest(id, mode)
+        }
     }
 }

@@ -8,6 +8,21 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 25 November 2026 — In-app and Browser from the panel close onto Whisper's feed (Szept 474)
+
+Same idea as the reader fix the day before. From the launcher panel, the tab
+or the browser was opened by the panel itself, on top of Lawnchair, so closing
+it landed on the home screen Lawnchair had snapped to. The panel now starts
+`MainActivity` with the article's id and the mode (`outsideIntent`), and the
+activity opens the tab or browser itself on resume. A Custom Tab opened by an
+activity belongs to that activity's task, so X or Back returns to Whisper's
+feed; the browser app is its own task and usually returns to its caller.
+The link is read from the database, never from the intent: the activity is
+exported, so only an article already in the feed can be opened this way. Not
+repeated when the activity is recreated from Recents; no splash on the way;
+the read timer starts after the previous trip is settled. `PanelOutsideTest`,
+3 tests.
+
 ## 24 November 2026 — Back from a panel article goes to Whisper's feed (Szept 470)
 
 Owner's test on the Pixel 10: Reader opened from the launcher panel, then

@@ -40,7 +40,6 @@ import com.saulhdev.feeder.ui.overlay.gateLog
 import com.saulhdev.feeder.ui.overlay.LocalFeedVisible
 import com.saulhdev.feeder.utils.BrowserReadTimer
 import com.saulhdev.feeder.utils.FrameWatch
-import com.saulhdev.feeder.utils.extensions.openOutside
 import com.saulhdev.feeder.utils.LAYOUT_CARDS
 import com.saulhdev.feeder.utils.extensions.safeShareIntent
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -615,10 +614,11 @@ class OverlayView(val context: Context) :
         launchKeepingPanel {
             val mode = FeedPreferences.openModeFor(item.feed.openMode, prefs.articleOpenMode.getValue())
             if (FeedPreferences.opensOutside(mode)) {
-                // No lifecycle to tick against once the browser is in front,
-                // so the trip away is the measurement. See BrowserReadTimer.
-                BrowserReadTimer.left(item.id)
-                context.openOutside(item.link, mode)
+                // Through the app, so closing the tab or the browser lands on
+                // Whisper's feed rather than on Lawnchair, which has gone to
+                // the home screen by then (Szept 474). The app starts the
+                // read timer; see MainActivity.openPendingOutside.
+                context.safeStartActivity(MainActivity.outsideIntent(context, item.id, mode))
             } else {
                 context.safeStartActivity(
                     MainActivity.navigateIntent(context, "${Routes.ARTICLE_VIEW}/${item.id}")
