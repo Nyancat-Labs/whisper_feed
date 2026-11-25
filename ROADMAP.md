@@ -87,7 +87,7 @@ Translations move to 1.0.8; they wait on Weblate (Szept 215) either way.
   fixes Mosaic, where the sync anchored on a sliver of the other lane.
   **Done 25 November:** the owner accepted 720afc0; scroll sync ships.
   Also into 1.0.7 (owner, 25 November): category buttons one at a time
-  (GitHub #3, Szept 503), preview 92bbda1, test Szept 504 before the freeze.
+  (GitHub #3, Szept 503), preview 92bbda1: passed 7 of 7 (Szept 504).
   Fine-tuning later (Szept 502), if launcher-page users ask. If scroll
   sync is not smooth, it is reverted and 1.0.7 ships without it rather than
   waiting. Code freeze in the evening: blockers only.
