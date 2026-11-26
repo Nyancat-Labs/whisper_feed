@@ -8,6 +8,15 @@ in [`ROADMAP.md`](ROADMAP.md).
 release key, so each installs over the last with data kept) on a Pixel 10,
 and Google Play builds on two other devices.
 
+## 26 November 2026 — GitHub #21 and #22 answered
+
+Two feature requests from one FreshRSS user, both about breaking news: a
+configurable daily notification limit (#21) and breaking news for any chosen
+category, decided per category (#22). Replied on both at the owner's request:
+the current behaviour and why, a good idea, on the list, not in this
+weekend's 1.0.7. Szept 508 and 509, to do with 262 as one batch; ROADMAP
+*After 1.0.6*.
+
 ## 25 November 2026 — About: the Contact us intro paragraph removed
 
 Owner, with a screenshot (archive/screenshots/2026-11-25-2053-*): the line

@@ -248,6 +248,13 @@ is ready in time.
 
 - **Native debug symbols for Play** (22 November): Play warns that the bundle has native code without a symbol file. The code is only two AndroidX libraries (graphics path, DataStore counter), so it is harmless; adding `ndk.debugSymbolLevel` to the release build would quieten it and make any crash in them readable.
 
+- [ ] **Breaking news, from readers (GitHub #21 and #22, 25-26 November;
+  Szept 508, 509).** A choice of daily notification limit (today 3 a day, 1
+  per sync), up to no limit; and breaking news for any chosen category,
+  decided within each category separately (today only "News"). Both from a
+  FreshRSS user, who cannot give a source a second category. Do them with
+  the scaling below as one breaking-news batch. Replied on both: noted, not
+  in 1.0.7, no date promised.
 - [ ] **Breaking news scales with your list (board 126, owner 20 November).**
   Today a story is breaking at a fixed 3 News sources in 12 hours
   (Clustering.MIN_SOURCES), so a long News list fires far more often than a
